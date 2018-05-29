@@ -1,0 +1,12 @@
+*************************************************************help
+All commands displayed!
+save_log : Use to save current console session to Data/Log
+quit : Use to quit the program
+help : Use to show all supported commands
+echo_with_color : Use to print supplied text with chosen color in console
+clear : Use to delete all dev console input history
+lkajsdfkl
+INVALID: Unknown command
+hello
+INVALID: Unknown command
+*************************************************************

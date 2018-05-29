@@ -1,0 +1,24 @@
+<MapDefinitions>
+	<MapDefinition name="Island" defaultTile="ShallowWater" width="20~32" height="20~32">
+		<GenerationSteps iterations="1" chanceToRun="1.0">
+			<FillAndEdge fillTile="Grass" edgeTile="DeepWater"></FillAndEdge>
+			<CellularAutomata ifType="Grass" ifNeighborType="DeepWater" ifNeighborCount="1~8" changeToType="ShallowWater" chanceToMutate="0.1"/>
+			<CellularAutomata ifType="Grass" ifNeighborType="ShallowWater" ifNeighborCount="1~8" changeToType="Sand" chanceToMutate="0.75" iterations="2~3"/>
+			<Mutate chanceToMutate=".01" mutateTile="Stone" setTags="breakable"></Mutate>      
+			<SpawnActor type="SkeletonMage" onTile="Grass" chanceToRun="0.75" iterations="2~5"/>
+			<SpawnItem type="Potion" onTile="Grass" chanceToRun="0.75" iterations="1~3"/>
+      <SpawnItem type="Helm" onTile="Grass" chanceToRun="1.0" iterations="1"/>
+      <SpawnItem type="Torso" onTile="Grass" chanceToRun="1.0" iterations="1"/>
+      <SpawnItem type="Shoes" onTile="Grass" chanceToRun="1.0" iterations="1"/>
+      <SpawnItem type="Sword" onTile="Grass" chanceToRun="1.0" iterations="1"/>
+      <CellularAutomata ifType="Grass" changeToType="BlueGrass" chanceToMutate="0.1"/>
+    </GenerationSteps>
+	</MapDefinition>
+	<MapDefinition name="Dungeon" defaultTile="Water" width="16~32" height="9~18">
+		<GenerationSteps iterations="3~5" chanceToRun="1.0">
+			<FillAndEdge fillTile="Grass" edgeTile="Lava"></FillAndEdge>
+			<Mutate chanceToMutate=".01" mutateTile="Stone" setTags="breakable"></Mutate>			
+		</GenerationSteps>
+	</MapDefinition>
+</MapDefinitions>
+

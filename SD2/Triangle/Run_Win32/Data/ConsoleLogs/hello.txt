@@ -1,0 +1,6 @@
+*************************************************************save_log hello
+INVALID: Unknown command
+lkajsdflkj
+INVALID: Unknown command
+kasdjlkjlkj 
+*************************************************************

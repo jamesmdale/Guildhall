@@ -1,0 +1,7 @@
+<material name="asteroid">
+	<shader name="lit" />
+	<textures>
+		<texture bind="0" file="Data\Images\asteroid.png" />
+		<texture bind="1" file="Data\Images\asteroid_normal.png" />
+	</textures>
+</material>

@@ -1,0 +1,13 @@
+<EncounterDefinitions>
+
+	<EncounterDefinition id="standard">
+		<MapInfo mapImageName="Data/Images/map0.png" maxHeight="6"/>
+		<Actors redFaction="archer,mage" blueFaction="knight" />
+	</EncounterDefinition>
+
+	<EncounterDefinition id="standard2">
+		<MapInfo mapImageName="Data/Images/map0.png" maxHeight="8"/>
+		<Actors redFaction="archer,mage,knight" blueFaction="archer,mage,knight" />
+	</EncounterDefinition>
+
+</EncounterDefinitions>

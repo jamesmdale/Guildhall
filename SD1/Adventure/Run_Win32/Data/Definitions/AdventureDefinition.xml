@@ -1,0 +1,18 @@
+<AdventureDefinitions>
+  <AdventureDefinition name="Balrog" title="Kill the Balrog">
+    <StartConditions startMap="The Village" startOnTileType="Grass"/>
+    <VictoryConditions haveDied="Balrog"/>
+    <Map name="The Village" mapDefinition="Island">
+		<Portal type="TeleportVortex" onTileType="Grass" toMap="The Cellar" toTileType="Grass" reciprocalType="TeleportVortex"/>
+    </Map>
+    <Map name="The Cellar" mapDefinition="Island">
+		<Portal type="TeleportVortex" onTileType="Grass" toMap ="Upper Crypt" toTileType="Grass" reciprocalType="TeleportVortex"/>
+    </Map>
+    <Map name="Upper Crypt" mapDefinition="Island">
+		<Portal type="TeleportVortex" onTileType="Grass" toMap="Lower Crypt" toTileType="Grass" reciprocalType="TeleportVortex"/>
+   </Map>
+    <Map name="Lower Crypt" mapDefinition="Island">
+    </Map>
+
+  </AdventureDefinition>
+</AdventureDefinitions>

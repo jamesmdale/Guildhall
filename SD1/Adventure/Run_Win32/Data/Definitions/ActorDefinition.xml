@@ -1,0 +1,89 @@
+<ActorDefinitions>
+	<ActorDefinition name="Player" faction="good" startingTags="canPickupItems" attackType ="melee" attackableFactions="evil,good">
+		<Stats minStrength="0" minArmor="0" minDamage="5" maxStrength="0" maxArmor="0" maxDamage="10" minMeleeRange="1" maxMeleeRange="1" />
+		<Size physicsRadius="0.25" localDrawBounds="-0.5,-0.3,0.5,1.033"/>
+		<Movement>
+			<Walk speed="2.0"/>
+		</Movement>
+		<Health max="100" start="50"/>
+		<SpriteAnimSet spriteSheet="/actors/BODY_light.png" spriteLayout="13,21" fps="10">
+      <SpriteAnim name="MoveSouth"  spriteIndexes="130,131,132,133,134,135,136,137,138"/>
+      <SpriteAnim name="MoveWest"   spriteIndexes="117,118,119,120,121,122,123,124,125"/>
+      <SpriteAnim name="MoveNorth"  spriteIndexes="104,105,106,107,108,109,110,111,112"/>
+      <SpriteAnim name="MoveEast"   spriteIndexes="143,144,145,146,147,148,149,150,151"/>
+      <SpriteAnim name="Idle"		spriteIndexes="130,131,132" fps="3"/>
+
+      <SpriteAnim name="AttackSouth"  spriteIndexes="182,183,184,185,186,187" isLooping="false" fps="6"/>
+      <SpriteAnim name="AttackWest"   spriteIndexes="169,170,171,172,173,174" isLooping="false" fps="6"/>
+      <SpriteAnim name="AttackNorth"  spriteIndexes="156,157,158,159,160,161" isLooping="false" fps="6"/>
+      <SpriteAnim name="AttackEast"   spriteIndexes="195,196,197,198,199,200" isLooping="false" fps="6"/>
+		</SpriteAnimSet>
+	</ActorDefinition>
+
+	
+	<ActorDefinition name="SkeletonMage" faction="evil" mass="1.0" attackType ="cast" attackableFactions="good">
+		<Size physicsRadius="0.25" localDrawBounds="-0.5,-0.3,0.5,1.033"/>
+		<Stats minStrength="1" minArmor="10" minDamage="1" maxStrength="5" maxArmor="15" maxDamage="2"></Stats>
+		<Movement>
+			<Walk speed="1.0"/>
+		</Movement>
+		<Health max="30" start="30"/>
+    <SpriteAnimSet spriteSheet="/actors/SkeletonMage.png" spriteLayout="13,21" fps="10">
+      <SpriteAnim name="MoveSouth"  spriteIndexes="130,131,132,133,134,135,136,137,1;   38"/>
+      <SpriteAnim name="MoveWest"   spriteIndexes="117,118,119,120,121,122,123,124,125"/>
+      <SpriteAnim name="MoveNorth"  spriteIndexes="104,105,106,107,108,109,110,111,112"/>
+      <SpriteAnim name="MoveEast"   spriteIndexes="143,144,145,146,147,148,149,150,151"/>
+      <SpriteAnim name="Idle"		spriteIndexes="130,131,132" fps="3"/>
+
+      <SpriteAnim name="CastSouth"  spriteIndexes="26,27,28,29,30,31,32" isLooping="false"/>
+      <SpriteAnim name="CastWest"   spriteIndexes="13,14,15,16,17,18,19" isLooping="false"/>
+      <SpriteAnim name="CastNorth"  spriteIndexes="0,1,2,3,4,5,6" isLooping="false"/>
+      <SpriteAnim name="CastEast"   spriteIndexes="39,40,41,42,43,44,45" isLooping="false"/>      
+		</SpriteAnimSet>
+	</ActorDefinition>
+	
+	<!-- <ActorDefinition name="SkeletonMage" faction="evil" doesHaveActorToActorPhysics="false" mass="1.0" isUnpushable="true"> -->
+		<!-- <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.3,0.5,1.033"/> -->
+		<!-- <Movement> -->
+			<!-- <Walk speed="1.0"/> -->
+		<!-- </Movement> -->
+		<!-- <Health max="30" start="30"/> -->
+		<!-- <SpriteAnimSet spriteSheet="/walk/BODY_skeleton.png" spriteLayout="9,4" fps="10"> -->
+			<!-- <SpriteAnim name="MoveEast"		spriteIndexes="27,28,29,30,31,32,33,34"/> -->
+			<!-- <SpriteAnim name="MoveWest"		spriteIndexes="9,10,11,12,13,14,15,16,17"/> -->
+			<!-- <SpriteAnim name="MoveNorth"	spriteIndexes="0,1,2,3,4,5,6,7,8"/> -->
+			<!-- <SpriteAnim name="MoveSouth"	spriteIndexes="18,19,20,21,22,23,24,25,26"/> -->
+			<!-- <SpriteAnim name="Idle"		spriteIndexes="18,19,20,19" fps="3"/> -->
+		<!-- </SpriteAnimSet> -->
+	<!-- </ActorDefinition> -->
+		
+	<!-- <ActorDefinition name="SkeletonMage" faction="evil" doesHaveActorToActorPhysics="false" mass="1.0" isUnpushable="true"> -->
+		<!-- <Size physicsRadius="0.25" localDrawBounds="-0.5,-0.3,0.5,1.033"/> -->
+		<!-- <Movement> -->
+			<!-- <Walk speed="1.0"/> -->
+		<!-- </Movement> -->
+		<!-- <Health max="30" start="30"/> -->
+		<!-- <SpriteAnimSet spriteSheet="/actors/SkeletonMage.png" spriteLayout="13,20" fps="10"> -->
+			<!-- <SpriteAnim name="MoveNorth"		spriteIndexes="97,98,99,100,101,102,103,104,105" fps="5"/> -->
+			<!-- <SpriteAnim name="MoveEast"		spriteIndexes="133,134,135,136,137,138,139,140,141" fps="5" /> -->
+			<!-- <SpriteAnim name="MoveSouth"	spriteIndexes="121,122,123,124,125,126,127,128,129" fps="5"/> -->
+			<!-- <SpriteAnim name="MoveWest"	spriteIndexes="109,110,111,112,113,114,115,116,117" fps="5"/> -->
+			<!-- <SpriteAnim name="Idle"		spriteIndexes="121,122,123" fps="3"/>  -->
+		<!-- </SpriteAnimSet> -->
+	<!-- </ActorDefinition> -->
+
+	<!-- <ActorDefinition name="Goblin" faction="evil"> -->
+		<!-- <Size physicsRadius="0.3" drawRadius="0.4"/> -->
+		<!-- <Movement> -->
+			<!-- <Walk speed="1.0"/> -->
+		<!-- </Movement> -->
+		<!-- <Health max="30" start="30"/> -->
+		<!-- <SpriteAnimSet spriteSheet="KushnariovaCharacters_12x53.png" spriteLayout="8,8"> -->
+			<!-- <SpriteAnim name="MoveEast"		spriteIndexes="0,1,2,1" fps="5"/> -->
+			<!-- <SpriteAnim name="MoveWest"		spriteIndexes="3,4,5,4" fps="5" /> -->
+			<!-- <SpriteAnim name="MoveNorth"	spriteIndexes="6,7,8,7" fps="5"/> -->
+			<!-- <SpriteAnim name="MoveSouth"	spriteIndexes="9,10,11,10" fps="5"/> -->
+			<!-- <SpriteAnim name="Idle"		spriteIndexes="12"/> -->
+		<!-- </SpriteAnimSet> -->
+	<!-- </ActorDefinition> -->
+</ActorDefinitions>

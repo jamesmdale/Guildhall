@@ -1,0 +1,11 @@
+<TileDefinitions>
+  <TileDefinition
+	  name="Grass"
+	  spriteCoords="0,1"
+	  spriteTint="180,180,180"
+	  allowsSight="true"
+	  allowsWalking="true"
+	  allowsFlying="true"
+	  allowsSwimming="false"
+  />
+</TileDefinitions>

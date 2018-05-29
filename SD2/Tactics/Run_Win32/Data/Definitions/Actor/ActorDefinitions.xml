@@ -1,0 +1,31 @@
+<ActorDefinitions>
+	<ActorDefinition name="archer">
+		<Stats maxHealth="60" maxJumpHeight="2" maxActionSpeed="1" maxTilesMovement="5" height="2"/>
+		<AnimSet id="archer_f" />
+		<Abilities>
+			<Ability id="Shoot" range="2~5" valueRange="15~30" cost="40" type="physical"/>
+			<Ability id="Attack" range="0~1" valueRange = "5~10" cost="30" type="physical"/>
+		</Abilities>
+	</ActorDefinition>
+
+	<ActorDefinition name="mage">
+		<Stats maxHealth="40" maxJumpHeight="1" maxActionSpeed="1" maxTilesMovement="4" height="2"/>
+		<AnimSet id="mage_f"/>
+		<Abilities>
+			<Ability id="Attack" range="0~1" valueRange="5~10" cost="30" type="physical"/>
+			<Ability id="Fire" range="0~4" valueRange="20~30" cost="50" delay="30" areaHorizontal="0~2" areaVertical="-1~1" type="spell"/>
+			<Ability id="Heal" range="0~3" valueRange="20~30" cost="40" delay="30" type="spell"/>
+		</Abilities>
+	</ActorDefinition>
+
+	<ActorDefinition name="knight">
+		<Stats maxHealth="100" maxJumpHeight="1" maxActionSpeed="1" maxTilesMovement="4" height="2"/>
+		<AnimSet id="knight_f"/>
+		<Abilities>
+			<Ability id="Attack" range="0~1" valueRange="20~40" cost="30" type="physical"/>
+			<Ability id="Defend" range="0~0" cost="10" blockChanceBuff=".5"/>
+		</Abilities>
+	</ActorDefinition>
+
+
+</ActorDefinitions>

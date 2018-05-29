@@ -1,0 +1,14 @@
+<ProjectileDefinitions>
+
+	<ProjectileDefinition name="Fireball" startingTags="badass">
+	<Size drawRadius="0.3"/>
+		<Movement>
+			<Fly speed="3.0"/>
+		</Movement>
+		<Damage amount="3~5"/>
+		<SpriteAnimSet spriteSheet="Extras_4x4.png" spriteLayout="4,4">
+			<SpriteAnim name="Idle" spriteIndexes="5"/>
+		</SpriteAnimSet>
+	</ProjectileDefinition>
+	
+</ProjectileDefinitions>

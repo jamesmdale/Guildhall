@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="General">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="General\Definitions">
+      <UniqueIdentifier>{55a262ae-3690-4e38-9be1-8beeffc69007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General\Sprite">
+      <UniqueIdentifier>{8cf8e9a0-ec28-4b3f-99f7-428b04b617ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General\Actions">
+      <UniqueIdentifier>{304ffad7-1cb9-4db6-91cc-cf9336cc7f01}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main_Win32.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="TheApp.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCommon.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Encounter.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockDefinition.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="UIMenu.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="HeatMap.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="DistanceField.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSpriteAnimDefinition.cpp">
+      <Filter>General\Definitions</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSpriteAnimSetDefinition.cpp">
+      <Filter>General\Definitions</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSpriteDefinition.cpp">
+      <Filter>General\Definitions</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteDefinition.cpp">
+      <Filter>General\Definitions</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorDefinition.cpp">
+      <Filter>General\Definitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EncounterDefinition.cpp">
+      <Filter>General\Definitions</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSprite.cpp">
+      <Filter>General\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>General\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSpriteAnim.cpp">
+      <Filter>General\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSpriteAnimSet.cpp">
+      <Filter>General\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatingTextAction.cpp">
+      <Filter>General\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementAction.cpp">
+      <Filter>General\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="ShootingAction.cpp">
+      <Filter>General\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PauseMenu.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="TheApp.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCommon.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineBuildPreferences.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Encounter.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockDefinition.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="UIMenu.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="HeatMap.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="DistanceField.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSpriteAnimDefinition.hpp">
+      <Filter>General\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSpriteAnimSetDefinition.hpp">
+      <Filter>General\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSpriteDefinition.hpp">
+      <Filter>General\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteDefinition.hpp">
+      <Filter>General\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorDefinition.hpp">
+      <Filter>General\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="EncounterDefinition.hpp">
+      <Filter>General\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSprite.hpp">
+      <Filter>General\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.hpp">
+      <Filter>General\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSpriteAnim.hpp">
+      <Filter>General\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSpriteAnimSet.hpp">
+      <Filter>General\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="FloatingTextAction.hpp">
+      <Filter>General\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementAction.hpp">
+      <Filter>General\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="ShootingAction.hpp">
+      <Filter>General\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseMenu.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
