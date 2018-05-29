@@ -3,7 +3,7 @@
 *.lo
 *.o
 *.obj
-!data/*/*.obj
+!data/**.obj
 
 # Precompiled Headers
 *.gch
@@ -14,6 +14,7 @@
 *.dylib
 *.dll
 !data/*.dll
+!data/**.obj
 
 # Fortran module files
 *.mod
@@ -95,8 +96,11 @@ $RECYCLE.BIN/
 data/log/
 *.suo
 *.TMP
+
+
 data/screenshot/
 *.log
 data/config/user.config
+*.ipch
 **/.vs/
 **/Temporary/
