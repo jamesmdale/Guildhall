@@ -1,0 +1,104 @@
+#pragma once
+
+
+enum RenderDataType
+{
+	//more types as we need
+	FLOAT_RENDER_TYPE,
+	UNSIGNED_BYTE_RENDER_TYPE,
+	NUM_RENDER_RENDER_TYPES
+};
+
+//render types
+
+enum DrawPrimitiveType
+{
+	POINT_DRAW_PRIMITIVE,		//GL_POINT
+	LINES_DRAW_PRIMITIVE,		//GL_LINES
+	LINE_LOOP_DRAW_PRIMITIVE,	//GL_LINE_LOOP
+	TRIANGLES_DRAW_PRIMITIVE,	//GL_TRIANGLES
+	NUM_DRAW_PRIMITIVE_TYPES
+};
+
+enum DrawModeType
+{
+	POINT_DRAW_MODE,			//GL_POINT		ex. glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+	LINE_DRAW_MODE,				//GL_LINE
+	FILL_DRAW_MODE,				//GL_FILL
+	NUM_DRAW_MODE_TYPES
+};
+
+enum DrawModeFaceType
+{
+	FRONT_FACE_MODE,			//GL_FRONT
+	BACK_FACE_MODE,				//GL_BACK
+	FRONT_AND_BACK_FACE_MODE,	//GL_FRONT_AND_BACK
+	NUM_DRAW_TYPES
+};
+
+enum DepthComparisonType
+{
+	NEVER_DEPTH_TYPE,					//GL_NEVER
+	LESS_DEPTH_TYPE,					//GL_LESS
+	EQUAL_DEPTH_TYPE,					//GL_EQUAL
+	LESS_THAN_OR_EQUAL_DEPTH_TYPE,		//GL_LEQUAL
+	GREATER_DEPTH_TYPE,					//GL_GREATER
+	NOT_EQUAL_DEPTH_TYPE,				//GL_NOTEQUAL
+	GREATER_THAN_OR_EQUAL_DEPTH_TYPE,	//GL_GEQUAL
+	ALWAYS_DEPTH_TYPE,					//GL_ALWAYS
+	NUM_DEPTH_TYPES
+};
+
+enum CullModeType
+{
+	CULL_MODE_BACK,          // GL_BACK     glEnable(GL_CULL_FACE); glCullFace(GL_BACK); 
+	CULL_MODE_FRONT,         // GL_FRONT    glEnable(GL_CULL_FACE); glCullFace(GL_FRONT); 
+	CULL_MODE_NONE,          // GL_NONE     glDisable(GL_CULL_FACE)
+	NUM_CULL_MODE_TYPES
+};
+
+enum WindOrderType
+{
+	WIND_CLOCKWISE,         // GL_CW       glFrontFace( GL_CW ); 
+	WIND_COUNTER_CLOCKWISE, // GL_CCW      glFrontFace( GL_CCW ); 
+	NUM_WIND_ORDER_TYPES
+};
+
+enum BlendFactorType
+{
+	BLEND_ZERO,							//GL_ZERO
+	BLEND_ONE,							//GL_ONE
+	BLEND_SOURCE_COLOR,					//GL_SRC_COLOR
+	BLEND_ONE_MINUS_SOURCE_COLOR,		//GL_ONE_MINUS_SRC_COLOR
+	BLEND_DESTINATION_COLOR,			//GL_DST_COLOR
+	BLEND_ONE_MINUS_DESTINATION_COLOR,	//GL_ONE_MINUS_DST_COLOR
+	BLEND_SOURCE_ALPHA,					//GL_SRC_ALPHA
+	BLEND_ONE_MINUS_SOURCE_ALPHA,		//GL_ONE_MINUS_SRC_ALPHA
+	BLEND_DESTINATION_ALPHA,			//GL_DST_ALPHA
+	BLEND_ONE_MINUS_DESTINATION_ALPHA,	//GL_ONE_MINUS_DST_ALPHA
+	BLEND_CONSTANT_COLOR,				//GL_CONSTANT_COLOR
+	BLEND_ONE_MINUS_CONSTANT_COLOR,		//GL_ONE_MINUS_CONSTANT_COLOR
+	BLEND_CONSTANT_ALPHA,				//GL_CONSTANT_ALPHA
+	BLEND_ONE_MINUS_CONSTANT_ALPHA,		//GL_ONE_MINUS_CONSTANT_ALPHA
+	NUM_BLEND_FACTOR_TYPES				
+};
+
+enum BlendOperationType
+{
+	BLEND_OP_ADD,					//GL_FUNC_ADD
+	BLEND_OP_SUBTRACT,				//GL_FUNC_SUBTRACT
+	BLEND_OP_REVERSE_SUBTRACT,		//GL_FUNC_REVERSE_SUBTRACT
+	BLEND_OP_MIN,					//GL_MIN
+	BLEND_OP_MAX,					//GL_MAX
+	NUM_BLEND_OP_TYPES
+};
+
+//gl modes -------------------------------------------------------------------------------------------------------------------------
+int GetGLDrawPrimitive(DrawPrimitiveType type);
+int GetGLDrawFace(DrawModeFaceType type);
+int GetGLDrawMode(DrawModeType type);
+int GetGLDepthComparison(DepthComparisonType type);
+int GetGLRenderDataType(RenderDataType type);
+int GetGLBlendFactorType(BlendFactorType type);
+int GetGLWindOrderType(WindOrderType type);
+int GetGLBlendOperationType(BlendOperationType type);

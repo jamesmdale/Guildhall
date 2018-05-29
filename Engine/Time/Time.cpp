@@ -1,0 +1,91 @@
+//-----------------------------------------------------------------------------------------------
+// Time.cpp
+//	
+
+//-----------------------------------------------------------------------------------------------
+#include "Engine/Time/Time.hpp"
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+
+////-----------------------------------------------------------------------------------------------
+//double InitializeTime( LARGE_INTEGER& out_initialTime )
+//{
+//	LARGE_INTEGER countsPerSecond;
+//	QueryPerformanceFrequency( &countsPerSecond );
+//	QueryPerformanceCounter( &out_initialTime );
+//	return( 1.0 / static_cast< double >( countsPerSecond.QuadPart ) );
+//}
+//
+//
+////-----------------------------------------------------------------------------------------------
+//double GetCurrentTimeSeconds()
+//{
+//	static LARGE_INTEGER initialTime;
+//	static double secondsPerCount = InitializeTime( initialTime );
+//	LARGE_INTEGER currentCount;
+//	QueryPerformanceCounter( &currentCount );
+//	LONGLONG elapsedCountsSinceInitialTime = currentCount.QuadPart - initialTime.QuadPart;
+//
+//	double currentSeconds = static_cast< double >( elapsedCountsSinceInitialTime ) * secondsPerCount;
+//	return currentSeconds;
+//}
+
+
+//this is a new test set of functions
+//double GetCurrentTimeSeconds()
+//{
+//	static LARGE_INTEGER initialTime;
+//	LARGE_INTEGER countsPerSecond;
+//	QueryPerformanceFrequency( &countsPerSecond );
+//	QueryPerformanceCounter( &initialTime );
+
+//	static double countsPerSecond = ( 1.0 / static_cast< double >( countsPerSecond.QuadPart ) );
+//	LARGE_INTEGER currentCount;
+//	QueryPerformanceCounter( &currentCount );
+//	LONGLONG elapsedCountsSinceInitialTime = currentCount.QuadPart - initialTime.QuadPart;
+//
+//	double currentSeconds = static_cast< double >( elapsedCountsSinceInitialTime ) * secondsPerCount;
+//	return currentSeconds;
+//}
+
+class TimeSystem
+{
+public:
+	TimeSystem()
+	{
+		LARGE_INTEGER li;
+		::QueryPerformanceFrequency(&li);
+
+		//this might need to be the quadpart
+		m_frequency = (uint64_t)li.QuadPart;
+		m_secondsPerCount = 1.0/(double)m_frequency;
+	}
+public:
+	uint64_t m_frequency;
+	double m_secondsPerCount;
+};
+
+static TimeSystem g_timeSystem;
+
+
+uint64_t GetPerformanceCounter()
+{
+	LARGE_INTEGER li;
+	::QueryPerformanceCounter(&li);
+
+	return (uint64_t)li.QuadPart;
+}
+
+// converts a performance count to the seconds it represents
+double PerformanceCounterToSeconds( uint64_t const hpc )
+{
+	double secondsPerCount = GetSecondsPerCount();
+	return(double)hpc * g_timeSystem.m_secondsPerCount;
+}
+
+double GetSecondsPerCount()
+{
+	return g_timeSystem.m_secondsPerCount;
+}
+
