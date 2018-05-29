@@ -103,4 +103,6 @@ data/screenshot/
 data/config/user.config
 *.ipch
 **/.vs/
+
 **/Temporary/
+!**/ThirdParty/**/*.*
