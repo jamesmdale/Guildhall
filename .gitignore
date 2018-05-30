@@ -3,7 +3,7 @@
 *.lo
 *.o
 *.obj
-!data/**.obj
+!Data/**/*.obj
 
 # Precompiled Headers
 *.gch
@@ -13,8 +13,7 @@
 *.so
 *.dylib
 *.dll
-!data/*.dll
-!data/**.obj
+!Data/*.dll
 
 # Fortran module files
 *.mod
@@ -98,9 +97,9 @@ data/log/
 *.TMP
 
 
-data/screenshot/
+
 *.log
-data/config/user.config
+Data/Config/User.config
 *.ipch
 **/.vs/
 
