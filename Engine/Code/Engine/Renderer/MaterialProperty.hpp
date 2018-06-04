@@ -5,6 +5,7 @@
 #include "Engine\Math\Vector4.hpp"
 #include "Engine\Math\Matrix44.hpp"
 #include "Engine\Core\Rgba.hpp"
+#include "Engine\Core\EngineCommon.hpp"
 
 enum MaterialPropertyDataType
 {
@@ -26,7 +27,7 @@ public:
 	}
 	virtual ~MaterialProperty(){};
 
-	virtual void SetData(const void* data){};
+	virtual void SetData(const void* data){UNUSED(data);};
 	virtual void* GetData(){return nullptr;};	
 	virtual void Bind(int bindpoint) = 0;
 	virtual MaterialPropertyDataType GetDataType(){return UNDEFINED_MATERIAL_PROPERTY;}

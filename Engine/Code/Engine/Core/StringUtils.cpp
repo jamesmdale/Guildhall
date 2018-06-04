@@ -265,10 +265,6 @@ std::string TrimStringToDecimalPlace(std::string stringToTrim)
 	return stringToTrim;
 }
 
-void TrimEmpty(std::string& outString)
-{
-}
-
 //void ToLower(std::string convertString)
 //{
 //	for(int charIndex = 0; charIndex < (int)convertString.size(); charIndex++)

@@ -1,6 +1,7 @@
 #include "Engine\Core\TextureCube.hpp"
 #include "Engine\Core\Image.hpp"
 #include "Engine\Renderer\GlFunctions.hpp"
+#include "Engine\Core\EngineCommon.hpp"
 
 TextureCube::TextureCube()
 {
@@ -35,10 +36,12 @@ bool TextureCube::MakeFromImages(const Image* images)
 
 bool TextureCube::MakeFromImage(const Image& image)
 {
+	UNUSED(image);
 	return false;
 }
 
 bool TextureCube::MakeFromImage(const char* fileName)
 {
+	UNUSED(fileName);
 	return false;
 }

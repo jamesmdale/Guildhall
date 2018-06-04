@@ -54,5 +54,10 @@ float Asteroid::GetAsteroidRadius()
 			return 5.f;
 			break;
 		}
+		default:
+		{
+			return 20.f;
+			break;
+		}
 	}
 }

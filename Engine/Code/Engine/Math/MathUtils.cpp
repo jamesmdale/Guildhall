@@ -426,9 +426,9 @@ float SmoothStep3( float t )
 //equivalent to GLSL smoothstep
 float GLSLSmoothStep(float edge0, float edge1, float x)
 {
-	float value= (x - edge0) / (edge1 - edge0);
+	float value = (x - edge0) / (edge1 - edge0);
 	float t = ClampFloatZeroToOne(value);
-	return t * t * (3.0 - 2.0 * t);
+	return t * t * (3.0f - 2.0f * t);
 }
 
 float Crossfade(float a, float b, float t)
@@ -453,8 +453,6 @@ const int Interpolate(const int& start, const int& end, float fractionTowardEnd)
 
 const unsigned char Interpolate(const unsigned char& start, const unsigned char& end, float fractionTowardEnd)
 {
-	unsigned char value = ((end - start) * fractionTowardEnd) + start;
-	
 	return (unsigned char)(RoundToNearestInt((end - start) * fractionTowardEnd) + start);
 }
 
@@ -535,6 +533,11 @@ float Modulus(float dividend, float divisor)
 float Modulus(Vector2 mod)
 {
 	return fmodf(mod.x, mod.y);
+}
+
+double Modulus(double dividend, double divisor)
+{
+	return fmod(dividend, divisor);
 }
 
 Vector2 PolarDegreesToCartesian(float radius, float degrees)

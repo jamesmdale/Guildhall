@@ -14,7 +14,7 @@ class Clock
 {
 public:
 	Clock( Clock* parent = nullptr );
-	~Clock(); // make sure to cleanup the heirachy
+	~Clock(); // make sure to cleanup the heirarchy
 
 			  // resets the clock - everything should be zeroes out
 			  // and the reference hpc variables set 
@@ -24,7 +24,7 @@ public:
 	void Reset(); 
 
 	// used on a root clock
-	// calcualtes elapsed time since last call
+	// calculates elapsed time since last call
 	// and calls advance.
 	void BeginFrame(); 
 

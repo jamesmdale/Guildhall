@@ -14,8 +14,10 @@ float GetMagnitude(float inputFloat);
 float GetAbsoluteValue(float inputFloat);
 bool SolveQuadratic(Vector2* out, float a, float b, float c); //Returns true if roots were found, false otherwise
 bool GetIsPointInsideCube(const Vector3& pointToCheck, const Vector3& cubeCenterPosition, const Vector3& dimensions);
+
 float Modulus(float dividend, float divisor);
 float Modulus(Vector2 mod);
+double Modulus(double dividend, double divisor);
 
 //trig functions
 float CosDegrees(float degrees);

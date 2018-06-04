@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "Engine\Renderer\BitmapFont.hpp"
 #include "Engine\Renderer\Texture.hpp"
+#include "Engine\Core\EngineCommon.hpp"
 
 void MeshBuilder::Begin(DrawPrimitiveType type, bool doesUseIndices)
 {
@@ -712,6 +713,7 @@ void MeshBuilder::LoadObjectFromFile(const std::string& objFilePath)
 
 	FILE* file = nullptr;
 	errno_t errorVal = fopen_s( &file, objFilePath.c_str(), "r" );
+	UNUSED(errorVal); //used for debugging in case we get a fileread error here
 
 	std::string buffer = (const char*) FileReadToNewBuffer(objFilePath.c_str());
 

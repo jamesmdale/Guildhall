@@ -305,6 +305,7 @@ void Renderer::EndFrame()
 
 void Renderer::LineWidth(float lineWidth)
 {
+	UNUSED(lineWidth);
 	UNIMPLEMENTED();//glLineWidth(lineWidth);
 }
 
@@ -676,12 +677,12 @@ void Renderer::BindMeshToProgram(ShaderProgram* program, Mesh* mesh)
 			// be sure mesh and program are bound at this point
 			// as this links them together
 			glVertexAttribPointer( bind,
-				attribute.elementCount,      // how many? 
-				GetGLRenderDataType(attribute.type),  // what are they 
-				attribute.isNormalized,      // are theynormalized 
-				vertexStride,          // vertex size?
-				(GLvoid*)attribute.memberOffset // data offset from start
-				);                         // of vertex 
+					attribute.elementCount,      // how many? 
+					GetGLRenderDataType(attribute.type),  // what are they 
+					attribute.isNormalized,      // are they normalized?
+					vertexStride,          // vertex size?
+					(GLvoid*)(int*)attribute.memberOffset // data offset from start of vertex
+				);              
 		}
 	}
 }
@@ -689,7 +690,7 @@ void Renderer::BindMeshToProgram(ShaderProgram* program, Mesh* mesh)
 
 void Renderer::DrawTexturedAABB(const AABB2& bounds, const Texture& texture, const Vector2& texCoordsAtMins, const Vector2& texCoordsAtMaxs, const Rgba& tint)
 {
-	int textureIndex = 0;
+	//int textureIndex = 0;
 
 	SetTexture(texture);
 
@@ -925,7 +926,7 @@ void Renderer::DrawMeshImmediate(const VertexPCU* verts, int const numVerts, int
 	m_defaultMesh->ClearVertices();
 	m_defaultMesh->SetVertices(numVerts, verts);
 
-	DrawMesh(m_defaultMesh, Matrix44::IDENTITY);
+	DrawMesh(m_defaultMesh, modelMatrix);
 }
 
 TODO("Complete mesh immediate with indices.  Maybe consolidate into one method with a bool for indices 'True/False'");
@@ -1016,14 +1017,16 @@ void Renderer::DrawText2DCentered(const Vector2& drawCenterPoint, const std::str
 void Renderer::DrawOrientedText2DCentered(Matrix44 & transformMatrix, const std::string & asciiText, float cellHeight, const Rgba& tint, float aspectScale, const BitmapFont * font)
 {
 	float cellWidth = cellHeight * (font->m_baseAspect * aspectScale);
-	//float stringWidth = font->GetStringWidth(asciiText, cellHeight, aspectScale);
+	
 	Texture fontTexture = *font->m_spriteSheet.GetSpriteSheetTexture();
-	float offsetFromCenterX = (asciiText.length() * cellWidth) * .5f;
-	float offsetFromCenterY = cellHeight * .5f;
-
+	
 	Vector3 drawCenterPoint = transformMatrix.GetPosition();
 
+	//float offsetFromCenterX = (asciiText.length() * cellWidth) * .5f;
+	//float offsetFromCenterY = cellHeight * .5f;
+	//float stringWidth = font->GetStringWidth(asciiText, cellHeight, aspectScale);
 	//Vector2 drawMins = Vector2(drawCenterPoint.x - offsetFromCenterX, drawCenterPoint.y - offsetFromCenterY);
+
 	Vector2 drawMins = Vector2(-0.5f, 1.5f);
 
 	for(size_t charIndex = 0; charIndex < asciiText.length(); charIndex++)
@@ -1073,9 +1076,6 @@ void Renderer::PostStartup()
 
 	//load shader programs
 	CreateOrGetShaderProgramFromPath("Data/Shaders/fromFileTest"); //TEST FOR LOADING FROM FILES (TO BE USED IN CONJUNCTION WITH RELOAD SHADERS)
-
-	Shader* test = CreateOrGetShader("lit");
-	Material* mat = CreateOrGetMaterial("ship");	
 
 	Enable();
 	ResetBlend();	
@@ -1569,7 +1569,7 @@ ShaderProgram* Renderer::CreateOrGetShaderProgramFromSeparatePaths(const std::st
 		if(success == false)
 		{
 			//if shader didn't load or compile properly, we should load the invalid shader instead.
-			std::map<std::string, ShaderProgram*>::iterator shaderProgram = m_loadedShaderPrograms.find("invalid"); //FIND SHOULD ALWAYS WORK. Invalid should always be loaded.
+			shaderProgram = m_loadedShaderPrograms.find("invalid"); //FIND SHOULD ALWAYS WORK. Invalid should always be loaded.
 			if(shaderProgram != m_loadedShaderPrograms.end())
 			{
 				newShaderProgramPtr->m_programHandle = shaderProgram->second->m_programHandle;

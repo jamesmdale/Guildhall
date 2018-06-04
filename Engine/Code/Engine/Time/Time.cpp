@@ -80,8 +80,16 @@ uint64_t GetPerformanceCounter()
 // converts a performance count to the seconds it represents
 double PerformanceCounterToSeconds( uint64_t const hpc )
 {
-	double secondsPerCount = GetSecondsPerCount();
-	return(double)hpc * g_timeSystem.m_secondsPerCount;
+	return(double)hpc * GetSecondsPerCount();
+}
+
+// converts given seconds to the number of HPCS it represents
+uint64_t SecondsToPerformanceCounter(const double seconds)
+{
+	double secondsPerHPC = PerformanceCounterToSeconds(1);
+	double hpcsForSeconds = seconds/secondsPerHPC;
+
+	return (uint64_t)hpcsForSeconds;
 }
 
 double GetSecondsPerCount()

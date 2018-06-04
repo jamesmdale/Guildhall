@@ -169,7 +169,7 @@ void Game::Initialize()
 	m_playerShip->m_thrusterEmitter->m_isTemporary = false;
 	m_playerShip->m_thrusterEmitter->m_renderable->SetMaterial(theRenderer->CreateOrGetMaterial("smoke"));
 	m_playerShip->m_thrusterEmitter->SetCamera(m_gameCamera);
-	m_playerShip->m_thrusterEmitter->SetSpawnRatePerSecond(1.f);
+	m_playerShip->m_thrusterEmitter->SetSpawnRatePerSecond(1);
 	m_playerShip->m_thrusterEmitter->m_renderScene = m_renderScene;
 	
 	m_playerShip->m_spotLight->m_renderable->m_watch = m_playerShip->m_spotLight->m_transform;
@@ -296,7 +296,6 @@ void Game::Render()
 void Game::PostRender()
 {
 	MeshBuilder meshBuilder;
-	Renderer* theRenderer = Renderer::GetInstance();
 
 	for (int asteroidIndex = 0; asteroidIndex < (int)m_asteroids.size(); asteroidIndex++)
 	{		

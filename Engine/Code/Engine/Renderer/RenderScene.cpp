@@ -65,7 +65,7 @@ std::vector<Light*> RenderScene::GetMostContributingLights(Vector3 renderablePos
 
 			Vector3 lightForward = light->m_lightForward.GetNormalized();
 
-			float dotAngle = DotProduct(lightForward, -1 * lightDirection);
+			//float dotAngle = DotProduct(lightForward, -1 * lightDirection);
 			float lightIntensity = light->m_colorAndIntensity.w;
 
 			//float angleAttenuation = GLSLSmoothStep(light->m_lightOuterAngle, light->m_lightInnerAngle, dotAngle);

@@ -5,6 +5,7 @@
 #include "Engine\Core\ErrorWarningAssert.hpp"
 
 
+
 ShaderLoader::ShaderLoader(const tinyxml2::XMLElement& element)
 {
 	m_id = ParseXmlAttribute(element, "name", m_id);
@@ -136,7 +137,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_renderQueue == "alpha")
 		shader->m_renderQueueType = RENDER_QUEUE_ALPHA;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: RENDER QUEUE INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: RENDER QUEUE INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//does use lighting
 	shader->m_doesUseLighting = m_doesUseLighting;
@@ -149,7 +150,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_cullMode == "none")
 		shader->m_state.m_cullMode = CULL_MODE_NONE;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: CULL MODE INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: CULL MODE INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//draw mode
 	if(m_drawMode == "fill")
@@ -159,7 +160,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_drawMode == "point")
 		shader->m_state.m_drawMode = POINT_DRAW_MODE;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: DRAW MODE INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: DRAW MODE INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//draw mode face
 	if(m_drawModeFace == "front")
@@ -169,7 +170,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_drawModeFace == "front_and_back")
 		shader->m_state.m_drawModeFace = FRONT_AND_BACK_FACE_MODE;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: DRAAW MODE FACE INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: DRAAW MODE FACE INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//wind order mode
 	if(m_windOrder == "ccw")
@@ -177,7 +178,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_windOrder == "cw")
 		shader->m_state.m_windOrder = WIND_CLOCKWISE;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: WIND ORDER INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: WIND ORDER INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//blend color op
 	if(m_colorBlendOperation == "add")
@@ -191,7 +192,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_colorBlendOperation == "max")
 		shader->m_state.m_colorBlendOperation = BLEND_OP_MAX;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: BLEND OP INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: BLEND OP INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//blend color factor source
 	if(m_colorSourceFactor == "zero")
@@ -223,7 +224,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_colorSourceFactor == "inv_const_alpha")
 		shader->m_state.m_colorSourceFactor = BLEND_ONE_MINUS_CONSTANT_ALPHA;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: BLEND OP SRC INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: BLEND OP SRC INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//blend color factor destination
 	if(m_colorDestinationFactor == "zero")
@@ -255,7 +256,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_colorDestinationFactor == "inv_const_alpha")
 		shader->m_state.m_colorDestinationFactor = BLEND_ONE_MINUS_CONSTANT_ALPHA;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: BLEND OP DEST INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: BLEND OP DEST INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//blend alpha operation
 	if(m_alphaBlendOperation == "add")
@@ -269,7 +270,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_alphaBlendOperation == "max")
 		shader->m_state.m_alphaBlendOperation = BLEND_OP_MAX;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: ALPHA BLEND OP INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: ALPHA BLEND OP INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//blend alpha factor source
 	if(m_alphaSourceFactor == "zero")
@@ -301,7 +302,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_alphaSourceFactor == "inv_const_alpha")
 		shader->m_state.m_alphaSourceFactor = BLEND_ONE_MINUS_CONSTANT_ALPHA;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: ALPHA BLEND SRC INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: ALPHA BLEND SRC INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//blend alpha factor destination
 	if(m_alphaDestinationFactor == "zero")
@@ -333,7 +334,7 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_alphaDestinationFactor == "inv_const_alpha")
 		shader->m_state.m_alphaDestinationFactor = BLEND_ONE_MINUS_CONSTANT_ALPHA;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: ALPHA BLEND DEST INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: ALPHA BLEND DEST INVALID FOR SHADER: %s", m_id.c_str()));
 
 	//depth write
 	shader->m_state.m_depthWrite = m_depthWrite;
@@ -356,13 +357,13 @@ Shader* ShaderLoader::CreateShaderFromDefinition()
 	else if(m_depthCompare == "always")
 		shader->m_state.m_depthCompare = ALWAYS_DEPTH_TYPE;
 	else
-		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: DEPTH TYPE INVALID FOR SHADER: %s", m_id));
+		GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: DEPTH TYPE INVALID FOR SHADER: %s", m_id.c_str()));
 
 	for (Binding binding : m_bindings)
 	{
 		if(binding.m_bindingName == "" || binding.m_dataType == "" || binding.m_value == "")
 		{
-			GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: CUSTOM BINDING %s INVALID FOR SHADER: %s", binding.m_bindingName, m_id));
+			GUARANTEE_OR_DIE(false, Stringf("XML SHADER LOAD ERROR: CUSTOM BINDING %s INVALID FOR SHADER: %s", binding.m_bindingName.c_str(), m_id.c_str()));
 		}
 		else
 		{

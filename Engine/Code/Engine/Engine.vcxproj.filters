@@ -226,6 +226,9 @@
     <ClCompile Include="Core\TextureCube.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Time\Stopwatch.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -319,6 +322,7 @@
     <ClInclude Include="Core\Light.hpp" />
     <ClInclude Include="ParticleSystem\ParticleEmitter.hpp" />
     <ClInclude Include="Core\TextureCube.hpp" />
+    <ClInclude Include="Time\Stopwatch.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

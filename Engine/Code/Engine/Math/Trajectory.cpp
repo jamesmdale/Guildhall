@@ -1,6 +1,7 @@
 #include "Engine\Math\Trajectory.hpp"
 #include <math.h>
 #include "Engine\Math\MathUtils.hpp"
+#include "Engine\Core\EngineCommon.hpp"
 
 Vector2 Trajectory::Evaluate(float gravity, Vector2 launchVelocity, float time)
 {
@@ -94,6 +95,7 @@ Vector2 Trajectory::GetLaunchVelocity(float gravity, float apexHeight, float dis
 
 	Vector2 outTimeValues;
 	bool isQuadraticValid = SolveQuadratic(&outTimeValues, a, b, c);
+	GUARANTEE_OR_DIE(isQuadraticValid, "QUADRATIC VALUE IN GETLAUNCHVELOCITY() IS INVALID");
 
 	float Vx = distance / outTimeValues.y;
 

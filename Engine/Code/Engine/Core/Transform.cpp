@@ -203,7 +203,7 @@ void Transform::RemoveChildTransform(Transform * child)
 		if(m_childrenTransforms[childIndex] == child)
 		{
 			m_childrenTransforms[childIndex]->m_parentTransform = nullptr;
-			m_childrenTransforms[childIndex] == nullptr;
+			m_childrenTransforms[childIndex] = nullptr;
 			m_childrenTransforms.erase(m_childrenTransforms.begin() + childIndex);
 		}
 	}
