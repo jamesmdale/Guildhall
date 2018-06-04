@@ -1,4 +1,4 @@
-#include "Game.hpp"
+#include "Game\Game.hpp"
 #include <stdlib.h>
 #include "Engine\Math\MathUtils.hpp"
 #include "engine\renderer\renderer.hpp"
@@ -10,29 +10,21 @@
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
-#include "Engine\Camera\OrbitCamera.hpp"
 #include "Engine\Core\GameObject.hpp"
 #include <vector>
 #include <string>
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include "Game\Menu\MenuState.hpp"
 
 Game* g_theGame = nullptr;
 Clock* g_gameClock = nullptr;
 
-GameState g_currentState;
-GameState g_transitionState;
-float g_secondsInState;
-float g_secondsTransistioning;
-bool g_isFinishedTransistioning;
-
 bool m_isPaused = false;
-
 
 Game::Game()
 {
-	m_renderScene = new RenderScene();
 	m_forwardRenderingPath = new ForwardRenderingPath();
 }
 
@@ -41,15 +33,11 @@ Game::~Game()
 	delete(m_forwardRenderingPath);
 	m_forwardRenderingPath = nullptr;
 
-	delete(m_renderScene);
-	m_renderScene = nullptr;	
-
 	delete(m_gameCamera);
 	m_gameCamera = nullptr;
 
 	//add any other data to cleanup
 }
-
 
 void Game::Initialize()
 {
@@ -60,15 +48,14 @@ void Game::Initialize()
 
 	g_gameClock = new Clock(GetMasterClock());
 
-	
 	//Add camera
 	m_gameCamera = new Camera();
 	m_gameCamera->SetDepthStencilTarget(theRenderer->GetDefaultDepthStencilTarget());
 	m_gameCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
 	m_gameCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
-	m_gameCamera->SetView(Matrix44::IDENTITY)
+	m_gameCamera->SetView(Matrix44::IDENTITY);
 
-	m_renderScene->AddCamera(m_gameCamera); 
+	TODO("Create MenuStates");
 
 	//cleanup
 	theRenderer = nullptr;
@@ -77,123 +64,28 @@ void Game::Initialize()
 
 void Game::Update(float timeDelta)
 {
-	if (g_transitionState != NONE_STATE)
-	{
-		g_currentState = g_transitionState;
-		g_transitionState = NONE_STATE;
-		g_secondsInState = 0.f;
-	}
-
-	switch (g_currentState)
-	{
-	case MAIN_MENU_STATE:
-		UpdateMainMenu(timeDelta);
-		break;
-	case LOADING_STATE:
-		UpdateLoading(timeDelta);
-		break;
-	case PLAYING_STATE:
-		UpdateGame(timeDelta);
-		break;
-	}
-
-	g_secondsInState += timeDelta;
+	MenuState::s_currentState->Update(timeDelta);
 }
-
-
 
 void Game::PreRender()
 {
-	//add any prerender tasks here
+	MenuState::s_currentState->PreRender();
 }
 
 void Game::Render()
 {
-	Renderer* theRenderer = Renderer::GetInstance();
-	theRenderer->SetCamera(m_gameCamera);
-
-	//always do this first at the beginning of the frame's render
-	theRenderer->ClearDepth(1.f);
-	theRenderer->ClearColor(Rgba::BLACK);
-
-	//render from forward rendering path
-	m_forwardRenderingPath->Render(m_renderScene);
-
-	theRenderer = nullptr;
+	MenuState::s_currentState->Render();
 }
 
 void Game::PostRender()
 {
-	//add any postrender tasks here
+	MenuState::s_currentState->PostRender();
 }
 
 
 float Game::UpdateInput(float timeDelta)
 {
-	//update any input here
+	float adjustedTimeDelta = MenuState::s_currentState->UpdateFromInput(timeDelta);
 
-	return timeDelta;
+	return adjustedTimeDelta;
 }
-
-//State management
-void Game::TransitionGameStates(GameState toState)
-{
-	g_transitionState = toState;
-}
-
-
-void Game::Render()
-{
-	switch (g_currentState)
-	{
-	case MAIN_MENU_STATE:
-		RenderMainMenu();
-		break;
-	case LOADING_STATE:
-		RenderLoading();
-		break;
-	case PLAYING_STATE:
-		RenderGame();
-		break;
-	}
-}
-
-
-//Update & Render for MAIN_MENU state
-void Game::UpdateMainMenu(float deltaSeconds)
-{
-	g_theMenu->Update(deltaSeconds);
-}
-
-void Game::RenderMainMenu()
-{
-	g_theMenu->Render();
-}
-
-
-//update & render for LOADING state
-void Game::UpdateLoading(float deltaSeconds)
-{
-	UNUSED(deltaSeconds);
-}
-
-TODO("Complete loading rendering");
-void Game::RenderLoading()
-{
-
-}
-
-//update & render for GAME state
-void Game::UpdateGame(float deltaSeconds)
-{
-	g_theEncounter->Update(deltaSeconds);
-}
-
-void Game::RenderGame()
-{
-	g_theEncounter->Render();
-};
-
-
-
-

@@ -11,22 +11,20 @@
 
 class Game
 {
-public:  
-	Camera* m_gameCamera = nullptr;
-
-	ForwardRenderingPath* m_forwardRenderingPath = nullptr;
-	RenderScene* m_renderScene = nullptr;
 
 public:
 	Game();
 	~Game();
 	void Update(float timeDelta);
-	void TransitionGameStates(GameState toState);
 	void PreRender();
 	void Render();
 	void PostRender();
 	void Initialize();
 	float UpdateInput(float timeDelta);
+
+public:  
+	Camera* m_gameCamera = nullptr;
+	ForwardRenderingPath* m_forwardRenderingPath = nullptr;
 };
 
 extern Game* g_theGame;

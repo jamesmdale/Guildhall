@@ -22,6 +22,12 @@
     <ClCompile Include="Actor.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Menu\MainMenuState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu\MenuState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -39,5 +45,7 @@
     <ClInclude Include="Actor.hpp">
       <Filter>General</Filter>
     </ClInclude>
+    <ClInclude Include="Menu\MenuState.hpp" />
+    <ClInclude Include="Menu\MainMenuState.hpp" />
   </ItemGroup>
 </Project>
