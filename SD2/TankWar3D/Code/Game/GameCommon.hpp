@@ -16,8 +16,12 @@ const Rgba g_backgroundColor = Rgba(1.f, 1.f, 1.f, 1.f);
 extern bool g_isDebug;
 extern bool g_isQuitting;
 
-//gloabl engine systems go here
-extern Renderer* g_theRenderer;
-extern InputSystem* g_theInput;
-
-
+enum GameState
+{
+	NONE_STATE,
+	LOADING_STATE,
+	MAIN_MENU_STATE,	
+	READY_UP,
+	PLAYING_STATE,
+	NUM_GAME_STATES
+};

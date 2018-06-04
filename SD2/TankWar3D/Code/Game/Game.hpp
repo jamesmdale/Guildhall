@@ -13,16 +13,16 @@ class Game
 {
 public:  
 	Camera* m_gameCamera = nullptr;
+	Camera* m_uiCamera = nullptr;
 
 	ForwardRenderingPath* m_forwardRenderingPath = nullptr;
 	RenderScene* m_renderScene = nullptr;
 
-	bool m_isPaused = false;
-
 public:
 	Game();
 	~Game();
-	void Update(float TimeDelta);
+	void Update(float timeDelta);
+	void TransitionGameStates(GameState toState);
 	void PreRender();
 	void Render();
 	void PostRender();
