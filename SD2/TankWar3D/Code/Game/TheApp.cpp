@@ -67,7 +67,7 @@ void TheApp::Initialize()
 	std::vector<float> indicies;
 	std::vector<Vector3> normals;
 
-	g_theGame->Initialize();
+	//g_theGame->Initialize();
 }
 
 void TheApp::Update()
@@ -78,7 +78,7 @@ void TheApp::Update()
 
 	float gamedelta = (float)g_gameClock->GetDeltaSeconds();
 
-	g_theGame->Update(gamedelta); 
+	//g_theGame->Update(gamedelta); 
 
 	if(DebugRender::GetInstance()->IsEnabled())
 	{
@@ -93,7 +93,7 @@ void TheApp::Update()
 
 void TheApp::PreRender()
 {
-	g_theGame->PreRender();
+	//g_theGame->PreRender();
 }
 
 void TheApp::Render()
@@ -107,7 +107,7 @@ void TheApp::Render()
 
 	//Renderer::GetInstance()->Clear();
 
-	g_theGame->Render();
+	//g_theGame->Render();
 
 	if(DebugRender::GetInstance()->IsEnabled())
 	{
@@ -122,7 +122,7 @@ void TheApp::Render()
 
 void TheApp::PostRender()
 {
-	g_theGame->PostRender();
+	//g_theGame->PostRender();
 }
 
 

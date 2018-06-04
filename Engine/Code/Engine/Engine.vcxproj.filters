@@ -229,6 +229,9 @@
     <ClCompile Include="Time\Stopwatch.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Core\LightObject.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -319,10 +322,11 @@
     <ClInclude Include="Renderer\RenderScene.hpp" />
     <ClInclude Include="Renderer\ForwardRenderingPath.hpp" />
     <ClInclude Include="Renderer\MaterialLoader.hpp" />
-    <ClInclude Include="Core\Light.hpp" />
     <ClInclude Include="ParticleSystem\ParticleEmitter.hpp" />
     <ClInclude Include="Core\TextureCube.hpp" />
     <ClInclude Include="Time\Stopwatch.hpp" />
+    <ClInclude Include="Core\LightObject.hpp" />
+    <ClInclude Include="Core\Light.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

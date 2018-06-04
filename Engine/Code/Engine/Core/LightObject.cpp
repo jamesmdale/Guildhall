@@ -1,24 +1,23 @@
-#include "Game\LightObject.hpp"
+#include "Engine\Core\LightObject.hpp"
 #include "Engine\Renderer\Renderer.hpp"
-#include "Game\Game.hpp"
 #include "Engine\Renderer\RendererTypes.hpp"
 #include "Engine\Math\Vector4.hpp"
 
 
 LightObject::LightObject()
 {
-	
+
 }
 
 LightObject::~LightObject()
 {
 	m_renderScene->RemoveLight(m_light);
 
-	if(m_light != nullptr)
+	if (m_light != nullptr)
 	{
 		delete(m_light);
 		m_light = nullptr;
-	}	
+	}
 }
 
 void LightObject::Update(float deltaTime)
@@ -30,14 +29,14 @@ void LightObject::Update(float deltaTime)
 void LightObject::PreRender()
 {
 	//update renderable model matrix.
-	if(m_transform->IsTransformDirty())
+	if (m_transform->IsTransformDirty())
 	{
 		UpdateRenderableFromTransform();
-		UpdateLightDataFromWorldTransform();
-	}	
+		UpdateLightFromWorldTransform();
+	}
 }
 
-void LightObject::UpdateLightDataFromWorldTransform()
+void LightObject::UpdateLightFromWorldTransform()
 {
 	m_light->m_lightForward = m_transform->GetWorldForward();
 	m_light->m_lightPosition = m_transform->GetWorldPosition();

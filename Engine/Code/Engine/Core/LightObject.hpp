@@ -20,7 +20,7 @@ public:
 	LightObject(const std::string& name, const LightType& lightType) : GameObject(name)
 	{
 		m_light = new Light();
-		m_lightType = lightType;	
+		m_lightType = lightType;
 	}
 
 	LightObject(const std::string& name, const LightType& lightType, const Rgba& color, float intensity, const Vector3& attenuation, float directionFactor, float innerAngle, float outerAngle) : GameObject(name)
@@ -40,13 +40,13 @@ public:
 
 	virtual void Update(float deltaTime) override;
 	virtual void PreRender() override;
-	void UpdateLightDataFromWorldTransform();
+	void UpdateLightFromWorldTransform();
 	Rgba GetLightColor();
 
 public:
 
 	TODO("Might want to remove this and make lights work regardless of type. (Fill in spot constants and direction in all scenarious)");
-	LightType m_lightType = LIGHT_TYPE_POINT_LIGHT;	
+	LightType m_lightType = LIGHT_TYPE_POINT_LIGHT;
 	Light* m_light = nullptr;
 };
 

@@ -35,6 +35,7 @@
     <ClCompile Include="Core\EngineCommon.cpp" />
     <ClCompile Include="Core\ErrorWarningAssert.cpp" />
     <ClCompile Include="Core\Image.cpp" />
+    <ClCompile Include="Core\LightObject.cpp" />
     <ClCompile Include="Core\Rgba.cpp" />
     <ClCompile Include="Core\StringUtils.cpp" />
     <ClCompile Include="Core\Vertex.cpp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="Core\ErrorWarningAssert.hpp" />
     <ClInclude Include="Core\Image.hpp" />
     <ClInclude Include="Core\Light.hpp" />
+    <ClInclude Include="Core\LightObject.hpp" />
     <ClInclude Include="Core\Rgba.hpp" />
     <ClInclude Include="Core\StringUtils.hpp" />
     <ClInclude Include="Debug\DebugRenderObject.hpp" />
