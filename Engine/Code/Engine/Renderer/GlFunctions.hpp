@@ -80,6 +80,9 @@ extern PFNGLUNIFORM3FVPROC glUniform3fv;
 extern PFNGLUNIFORM2FVPROC glUniform2fv;
 extern PFNGLUNIFORM1FVPROC glUniform1fv;
 extern PFNGLDELETETEXTURESPROC glDeleteTextures;
+extern PFNGLTEXSTORAGE2DPROC glTexStorage2D;
+extern PFNGLPIXELSTOREIPROC glPixelStorei;
+extern PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D;
 
 //bind functions
 extern void BindNewWGLFunctions();

@@ -75,6 +75,7 @@ PFNGLDELETESAMPLERSPROC glDeleteSamplers = nullptr;
 PFNGLBINDSAMPLERPROC glBindSampler = nullptr;
 PFNGLACTIVETEXTUREPROC glActiveTexture = nullptr;
 PFNGLBINDTEXTUREPROC glBindTexture = nullptr;
+PFNGLTEXSTORAGE2DPROC glTexStorage2D = nullptr;
 PFNGLDISABLEPROC glDisable = nullptr;
 PFNGLPIXELSTOREIPROC glPixelStorei = nullptr;
 PFNGLGENTEXTURESPROC glGenTextures = nullptr;
@@ -99,6 +100,8 @@ PFNGLBLENDEQUATIONPROC glBlendEquation = nullptr;
 PFNGLBLENDEQUATIONSEPARATEPROC glBlendEquationSeparate = nullptr;
 PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate = nullptr;
 PFNGLDELETETEXTURESPROC glDeleteTextures = nullptr;
+PFNGLPIXELSTOREIPROC glPixelStorei = nullptr;
+PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D = nullptr;
 
 void BindNewWGLFunctions()
 {
@@ -180,7 +183,9 @@ void BindGLFunctions()
 	GL_BIND_FUNCTION(glBlendEquationSeparate);
 	GL_BIND_FUNCTION(glBlendFuncSeparate);
 	GL_BIND_FUNCTION(glDeleteTextures);
-	
+	GL_BIND_FUNCTION(glTexStorage2D);
+	GL_BIND_FUNCTION(glPixelStorei);
+	GL_BIND_FUNCTION(glTexSubImage2D);
 }
 
 bool GLCheckError( char const* file, int line )

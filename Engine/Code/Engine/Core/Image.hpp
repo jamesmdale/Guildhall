@@ -15,6 +15,7 @@ public:
 	int GetWidth() const {return m_dimensions.x;}
 	int GetHeight() const {return m_dimensions.y;}
 	std::vector<Rgba> GetTexels();
+	const void* GetTexelsAsData(int xOffset, int yOffset);
 	std::string GetImagePath(){return m_ImagePath;}
 
 private:

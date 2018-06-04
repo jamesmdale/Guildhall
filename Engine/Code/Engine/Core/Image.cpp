@@ -57,6 +57,12 @@ std::vector<Rgba> Image::GetTexels()
 	return m_texels;
 }
 
+const void* Image::GetTexelsAsData(int xOffset, int yOffset)
+{
+	int offsetIndex = m_dimensions.x * yOffset + xOffset;
+	return (void*) (m_texels.data() + offsetIndex);
+}
+
 void Image::SetTexel( int x, int y, const Rgba& color )
 {
 	int texelIndex = y + (m_dimensions.x * x);
