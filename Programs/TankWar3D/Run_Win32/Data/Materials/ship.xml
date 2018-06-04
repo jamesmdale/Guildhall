@@ -1,0 +1,7 @@
+<material name="ship">
+	<shader name="lit" />
+	<textures>
+		<texture bind="0" file="Data\Model\scifi_fighter_mk6\SciFi_Fighter-MK6-diffuse.jpg" />
+		<texture bind="1" file="Data\Images\default_normal.png" />
+	</textures>
+</material>
