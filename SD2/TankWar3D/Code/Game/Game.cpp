@@ -128,7 +128,7 @@ void Game::Initialize()
 /************************************************************************/
 
 	m_playerShip = new Ship();
-	m_playerShip->SetCamera(m_gameCamera);
+	m_playerShip->SetCamera(m_gameCamera); 
 
 	//create ship game object
 	meshBuilder.LoadObjectFromFile("Data/Model/scifi_fighter_mk6/scifi_fighter_mk6.obj");
