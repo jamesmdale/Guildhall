@@ -13,6 +13,8 @@ TextureCube::~TextureCube()
 {
 	if (IsValid()) {
 		glDeleteTextures( 1, (GLuint*)&m_handle );
+		GL_CHECK_ERROR();
+
 		m_handle = NULL; 
 	}
 
@@ -66,6 +68,7 @@ void TextureCube::Cleanup()
 	if (IsValid())
 	{
 		glDeleteTextures(1, (GLuint*)&m_handle);
+		GL_CHECK_ERROR();
 		m_handle = NULL;
 	}
 
@@ -83,6 +86,7 @@ bool TextureCube::MakeFromImage(Image& image)
 
 	if (m_handle == NULL) {
 		glGenTextures( 1, (GLuint*)&m_handle ); 
+		GL_CHECK_ERROR();
 		ASSERT_OR_DIE(IsValid(), "TEXTURE CUBE TEXTURE GENERATION FAILED");
 	}
 

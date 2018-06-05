@@ -61,8 +61,11 @@ public:
 	virtual void Bind(int bindPoint) override
 	{
 		GLint idx = glGetUniformLocation( bindPoint, m_name.c_str() ); 
+		GL_CHECK_ERROR();
+
 		if (idx >= 0) {
 			glUniform1fv(idx, 1, (const GLfloat*) &m_data);
+			GL_CHECK_ERROR();
 		}
 	}
 
@@ -98,8 +101,11 @@ public:
 	virtual void Bind(int bindPoint) override
 	{
 		GLint idx = glGetUniformLocation( bindPoint, m_name.c_str() ); 
+		GL_CHECK_ERROR();
+
 		if (idx >= 0) {
 			glUniform2fv(idx, 1, (const GLfloat*) &m_data);
+			GL_CHECK_ERROR();
 		}
 	}
 
@@ -135,8 +141,11 @@ public:
 	virtual void Bind(int bindPoint) override
 	{
 		GLint idx = glGetUniformLocation( bindPoint, m_name.c_str() ); 
+		GL_CHECK_ERROR();
+
 		if (idx >= 0) {
 			glUniform3fv(idx, 1, (const GLfloat*) &m_data);
+			GL_CHECK_ERROR();
 		}
 	}
 
@@ -172,8 +181,11 @@ public:
 	virtual void Bind(int bindPoint) override
 	{
 		GLint idx = glGetUniformLocation( bindPoint, m_name.c_str() ); 
+		GL_CHECK_ERROR();
+
 		if (idx >= 0) {
 			glUniform4fv(idx, 1, (const GLfloat*) &m_data);
+			GL_CHECK_ERROR();
 		}
 	}
 
@@ -213,8 +225,11 @@ public:
 		Vector4 rgba = Vector4(m_data);
 
 		GLint idx = glGetUniformLocation( bindPoint, m_name.c_str() ); 
+		GL_CHECK_ERROR();
+
 		if (idx >= 0) {
 			glUniform4fv(idx, 1, (const GLfloat*) &rgba);
+			GL_CHECK_ERROR();
 		}
 	}
 
@@ -251,8 +266,11 @@ public:
 	virtual void Bind(int bindPoint) override
 	{
 		GLint idx = glGetUniformLocation( bindPoint, m_name.c_str() ); 
+		GL_CHECK_ERROR();
+
 		if (idx >= 0) {
 			glUniformMatrix4fv(idx, 1, GL_FALSE, (const GLfloat*) &m_data);
+			GL_CHECK_ERROR();
 		}
 	}
 

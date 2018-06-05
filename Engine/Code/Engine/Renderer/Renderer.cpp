@@ -312,30 +312,45 @@ void Renderer::LineWidth(float lineWidth)
 void Renderer::Enable()
 {
 	glEnable(GL_BLEND);
+	GL_CHECK_ERROR();
+
 	glEnable(GL_LINE_SMOOTH);
+	GL_CHECK_ERROR();
 }
 
 void Renderer::ClearColor(const Rgba& color) const
 {
 	glClearColor( color.r, color.g, color.b, color.a);
+	GL_CHECK_ERROR();
+
 	glClear(GL_COLOR_BUFFER_BIT);	
+	GL_CHECK_ERROR();
 }
 
 void Renderer::EnableDepth(DepthComparisonType compareType, bool shouldWrite)
 {
 	//enable/disable the test
 	glEnable(GL_DEPTH_TEST);
+	GL_CHECK_ERROR();
+
 	glDepthFunc(GetGLDepthComparison(compareType));
+	GL_CHECK_ERROR();
 
 	// enable/disable write
 	glDepthMask( shouldWrite ? GL_TRUE : GL_FALSE ); 
+	GL_CHECK_ERROR();
 }
 
 void Renderer::ClearDepth(const float& amount = 1.0f) const
 {
 	glDepthMask(GL_TRUE);
+	GL_CHECK_ERROR();
+
 	glClearDepthf(amount);
+	GL_CHECK_ERROR();
+
 	glClear(GL_DEPTH_BUFFER_BIT);
+	GL_CHECK_ERROR();
 }
 
 void Renderer::DisableDepth()
@@ -350,6 +365,7 @@ void Renderer::DisableDepth()
 void Renderer::Clear() const
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+	GL_CHECK_ERROR();
 }
 
 void Renderer::DrawLine(const Vector2& startingPoint, const Vector2& endPoint)
@@ -441,20 +457,24 @@ void Renderer::DrawLineWithColor(const Vector3& startingPoint, const Vector3& en
 void Renderer::Blend() const
 {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	GL_CHECK_ERROR();
 }
 void Renderer::ResetBlend() const
 {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL_CHECK_ERROR();
 }
 
 void Renderer::SetDrawMode(DrawModeFaceType face, DrawModeType mode)
 {
 	glPolygonMode(GetGLDrawFace(face), GetGLDrawMode(mode));
+	GL_CHECK_ERROR();
 }
 
 void Renderer::SetDefaultDrawMode()
 {
 	glPolygonMode(FRONT_AND_BACK_FACE_MODE, FILL_DRAW_MODE);
+	GL_CHECK_ERROR();
 }
 
 void Renderer::DrawAABB(const AABB2& bounds, const Rgba& tint)
@@ -468,7 +488,10 @@ void Renderer::DrawAABB(const AABB2& bounds, const Rgba& tint)
 	// Bind the texture
 
 	glActiveTexture( GL_TEXTURE0 + textureIndex );
+	GL_CHECK_ERROR();
+
 	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
+	GL_CHECK_ERROR();
 
 	VertexPCU vertex[6];
 	vertex[0] =  VertexPCU(Vector3(bounds.mins.x, bounds.mins.y, 0), tint, Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
@@ -500,7 +523,10 @@ void Renderer::DrawOrientedTexturedAABB(Matrix44& transformMatrix,
 
 	// Bind the texture
 	glActiveTexture( GL_TEXTURE0 + textureIndex );
+	GL_CHECK_ERROR();
+
 	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
+	GL_CHECK_ERROR();
 
 	//position + (transformMatrixGetRight() * spriteDimensions.x) + (transformMatrix.GetUp() * spriteDimensions.y)
 	VertexPCU vertex[6];
@@ -553,7 +579,10 @@ void Renderer::BindTexture(Texture* texture, int index) //for now always zero
 
 	// Bind the texture
 	glActiveTexture( GL_TEXTURE0 + index );
+	GL_CHECK_ERROR();
+
 	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
+	GL_CHECK_ERROR();
 }
 
 void Renderer::BindTextureCube(TextureCube* textureCube, int index)
@@ -562,7 +591,10 @@ void Renderer::BindTextureCube(TextureCube* textureCube, int index)
 
 	//Bind texturecube
 	glActiveTexture(GL_TEXTURE0 + index);
+	GL_CHECK_ERROR();
+
 	glBindTexture(GL_TEXTURE_CUBE_MAP, (GLuint)textureCube->GetHandle());
+	GL_CHECK_ERROR();
 }
 
 void Renderer::BindSampler(Sampler* sampler, int textureIndex)
@@ -594,7 +626,10 @@ void Renderer::DrawCube(const Vector3& center, const Vector3& dimensions,
 
 	// Bind the texture
 	glActiveTexture( GL_TEXTURE0 + textureIndex );
+	GL_CHECK_ERROR();
+
 	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
+	GL_CHECK_ERROR();
 
 	/*int indices [36] = {};*/
 	VertexPCU vertex[36];
@@ -677,7 +712,10 @@ void Renderer::DrawSkybox(Skybox* skybox)
 void Renderer::BindMeshToProgram(ShaderProgram* program, Mesh* mesh)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->m_vbo->GetHandle());
+	GL_CHECK_ERROR();
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->m_ibo->GetHandle());
+	GL_CHECK_ERROR();
 
 	int vertexStride = mesh->GetVertexStride();
 
@@ -688,9 +726,11 @@ void Renderer::BindMeshToProgram(ShaderProgram* program, Mesh* mesh)
 	{
 		const VertexAttribute& attribute = mesh->m_layout->GetAttribute(attributeIndex);
 		GLint bind = glGetAttribLocation(programHandle, attribute.name.c_str());
+		GL_CHECK_ERROR();
 
 		if (bind >= 0) {
 			glEnableVertexAttribArray( bind );
+			GL_CHECK_ERROR();
 
 			// be sure mesh and program are bound at this point
 			// as this links them together
@@ -700,7 +740,8 @@ void Renderer::BindMeshToProgram(ShaderProgram* program, Mesh* mesh)
 					attribute.isNormalized,      // are they normalized?
 					vertexStride,          // vertex size?
 					(GLvoid*)(int*)attribute.memberOffset // data offset from start of vertex
-				);              
+				);     
+			GL_CHECK_ERROR();
 		}
 	}
 }
@@ -736,7 +777,10 @@ void Renderer::DrawTriangle(const Vector3& aPosition, const Vector3& bPosition, 
 	// Bind the texture
 
 	glActiveTexture( GL_TEXTURE0 + textureIndex );
+	GL_CHECK_ERROR();
+
 	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
+	GL_CHECK_ERROR();
 
 	VertexPCU vertex[3];
 	vertex[0] = VertexPCU(aPosition, tint, Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
@@ -876,13 +920,16 @@ bool Renderer::CopyFrameBuffer(FrameBuffer* destination, FrameBuffer* source)
 
 	// the GL_READ_FRAMEBUFFER is where we copy from
 	glBindFramebuffer( GL_READ_FRAMEBUFFER, srcFBO ); 
+	GL_CHECK_ERROR();
 
 	GLenum target = GL_COLOR_ATTACHMENT0 + 0;
 	// Update target bindings
 	glDrawBuffers( 1, &target ); 
+	GL_CHECK_ERROR();
 
 	// what are we copying to?
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, dstFBO ); 
+	GL_CHECK_ERROR();
 
 	TODO("Later you might want to legitimately get Framebuffer widths according to the target sizes");
 	// blit it over - get the size
@@ -909,6 +956,7 @@ bool Renderer::CopyFrameBuffer(FrameBuffer* destination, FrameBuffer* source)
 	// cleanup after ourselves
 	glBindFramebuffer( GL_READ_FRAMEBUFFER, NULL ); 
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, NULL ); 
+	GL_CHECK_ERROR();
 
 	return GLSucceeded();
 }
@@ -972,6 +1020,7 @@ void Renderer::DrawMesh(Mesh* mesh, const Matrix44& modelMatrix)
 	glBindBufferBase(GL_UNIFORM_BUFFER, 
 		LIGHT_BUFFER_BINDING_SLOT, 
 		m_lightBuffer->GetHandle() );
+	GL_CHECK_ERROR();
 
 //	LightBuffer* lightPtr = m_lightBuffer->as<LightBuffer>();
 
@@ -979,20 +1028,24 @@ void Renderer::DrawMesh(Mesh* mesh, const Matrix44& modelMatrix)
 	glBindBufferBase(GL_UNIFORM_BUFFER, 
 		LIGHT_SPECULAR_BUFFER_BINDING_SLORT, 
 		m_specularLightBuffer->GetHandle() );
+	GL_CHECK_ERROR();
 
 //	SpecularLightBuffer* specLightPtr = m_specularLightBuffer->as<SpecularLightBuffer>();
 
 	// Sometime before the draw call
 	glBindFramebuffer( GL_FRAMEBUFFER, m_currentCamera->m_frameBufferOutput.GetHandle());
+	GL_CHECK_ERROR();
 
 
 	if(mesh->m_drawInstruction.m_isUsingIndices)
 	{
 		glDrawElements(GetGLDrawPrimitive(mesh->m_drawInstruction.m_primitiveType), mesh->m_ibo->m_indexCount, GL_UNSIGNED_INT, 0);
+		GL_CHECK_ERROR();
 	}
 	else
 	{
 		glDrawArrays( GetGLDrawPrimitive(mesh->m_drawInstruction.m_primitiveType), 0, mesh->m_vbo->m_vertexCount );
+		GL_CHECK_ERROR();
 	}
 	
 }
@@ -1061,6 +1114,8 @@ void Renderer::PostStartup()
 	// m_defaultVAO is a GLuint member variable
 	glGenVertexArrays( 1, &m_defaultVAO ); 
 	glBindVertexArray( m_defaultVAO );
+
+	GL_CHECK_ERROR();
 
 	//create default sampler
 	m_defaultSampler = new Sampler();
@@ -1368,12 +1423,15 @@ bool Renderer::SetMatrix44Uniform(int programHandle, std::string uniformName, co
 	//bind uniforms
 	GLint matrixBind = glGetUniformLocation(programHandle, uniformName.c_str());
 
+
 	if (matrixBind >= 0)
 	{		
 		glUniformMatrix4fv( matrixBind, 1, GL_FALSE, (GLfloat*)&input );
+		
 		success = true;
 	}
 
+	GL_CHECK_ERROR();
 	return success;
 }
 
@@ -1387,9 +1445,11 @@ bool Renderer::SetFloatUniform(int programHandle, std::string uniformName, float
 	if (floatBind >= 0)
 	{		
 		glUniform1f(floatBind, (GLfloat)input);	
+		
 		success = true;
 	}
 
+	GL_CHECK_ERROR();
 	return success;
 }
 
@@ -1403,9 +1463,11 @@ bool Renderer::SetVector2Uniform(int programHandle, std::string uniformName, con
 	if (floatBind >= 0)
 	{		
 		glUniform2f(floatBind, (GLfloat)input.x, (GLfloat)input.y);	
+		
 		success = true;
 	}
 
+	GL_CHECK_ERROR();
 	return success;
 }
 
@@ -1422,6 +1484,8 @@ bool Renderer::SetVector3Uniform(int programHandle, std::string uniformName, con
 		success = true;
 	}
 
+	GL_CHECK_ERROR();
+
 	return success;
 }
 
@@ -1437,6 +1501,8 @@ bool Renderer::SetVector4Uniform(int programHandle, std::string uniformName, con
 		glUniform4f(vector4Bind, (GLfloat)input.x, (GLfloat)input.y, (GLfloat)input.z, (GLfloat)input.w);	
 		success = true;
 	}
+
+	GL_CHECK_ERROR();
 
 	return success;
 }
@@ -1483,33 +1549,43 @@ void Renderer::BindMaterial(Material* material)
 
 void Renderer::BindRenderState(const RenderState& state)
 {
+	GL_CHECK_ERROR();
+
 	glEnable(GL_BLEND);
 
 	//color
 	glBlendEquationSeparate(GetGLBlendOperationType(state.m_colorBlendOperation), GetGLBlendOperationType(state.m_alphaBlendOperation));
 	glBlendFuncSeparate(GetGLBlendFactorType(state.m_colorSourceFactor), GetGLBlendFactorType(state.m_colorDestinationFactor), GetGLBlendFactorType(state.m_alphaSourceFactor), GetGLBlendFactorType(state.m_alphaDestinationFactor));
+	GL_CHECK_ERROR();
 
 	//enable/disable the test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GetGLDepthComparison(state.m_depthCompare));
+	GL_CHECK_ERROR();
 
 	// enable/disable write
 	glDepthMask( state.m_depthWrite ? GL_TRUE : GL_FALSE ); 
+	GL_CHECK_ERROR();
 
 	//draw mode
 	glPolygonMode(GetGLDrawFace(state.m_drawModeFace), GetGLDrawMode(state.m_drawMode));
+	GL_CHECK_ERROR();
 
 	//wind order
+	TODO("GL ERROR HERE!!!!!!!!!");
 	glFrontFace(state.m_windOrder);
+	GL_CHECK_ERROR();
 
 	if(state.m_cullMode != CULL_MODE_NONE)
 	{
 		glEnable(GL_CULL_FACE);
-		glCullFace(state.m_cullMode);		
+		glCullFace(state.m_cullMode);	
+		GL_CHECK_ERROR();
 	}
 	else
 	{
 		glDisable(GL_CULL_FACE);
+		GL_CHECK_ERROR();
 	}
 }
 

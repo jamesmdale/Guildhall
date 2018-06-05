@@ -63,10 +63,6 @@ void* Image::GetTexelsAsByteArray()
 
 const void* Image::GetTexelsAsData(int xOffset, int yOffset)
 {
-	if (xOffset >= m_dimensions.x || yOffset >= m_dimensions.y || xOffset < 0 || yOffset < 0)
-	{
-		__debugbreak();
-	}
 	int offsetIndex = (m_dimensions.x * yOffset) + xOffset;
 	return &m_texels[offsetIndex];
 }

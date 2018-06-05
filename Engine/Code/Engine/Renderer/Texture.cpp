@@ -54,14 +54,18 @@ void Texture::PopulateFromData( unsigned char* imageData, const IntVector2& texe
 
 	// Tell OpenGL that our pixel data is single-byte aligned
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+	GL_CHECK_ERROR();
 
 	// Ask OpenGL for an unused texName (ID number) to use for this texture
 	glGenTextures( 1, (GLuint*) &m_textureID );
+	GL_CHECK_ERROR();
 
 	glActiveTexture(GL_TEXTURE0);
+	GL_CHECK_ERROR();
 
 	// Tell OpenGL to bind (set) this as the currently active texture
 	glBindTexture( GL_TEXTURE_2D, m_textureID );
+	GL_CHECK_ERROR();
 
 	GLenum internalFormat = GL_RGBA8;	
 	GLenum channels = GL_RGBA;
@@ -111,6 +115,7 @@ bool Texture::CreateRenderTarget(int width, int height, TextureFormatType format
 	// Copy the texture - first, get use to be using texture unit 0 for this; 
 	glActiveTexture( GL_TEXTURE0 ); 
 	glBindTexture( GL_TEXTURE_2D, m_textureID );    // bind our texture to our current texture unit (0)
+	GL_CHECK_ERROR();
 
 												 // Copy data into it;
 	glTexImage2D( GL_TEXTURE_2D, 0, 
@@ -122,13 +127,13 @@ bool Texture::CreateRenderTarget(int width, int height, TextureFormatType format
 		pixel_layout,  // how is the data laid out
 		nullptr );     // don't need to pass it initialization data 
 
-					   // make sure it suceeded
+	GL_CHECK_ERROR();	// make sure it suceeded
 
-	TODO("Add gl_checkError functionality");
-	//GL_CHECK_ERROR(); 
+	
 
 	// cleanup after myself; 
 	glBindTexture( GL_TEXTURE_2D, NULL ); // unset it; 
+	GL_CHECK_ERROR();
 
 										  // Save this all off
 	m_dimensions.x = width;  
