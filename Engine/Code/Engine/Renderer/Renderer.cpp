@@ -1572,14 +1572,13 @@ void Renderer::BindRenderState(const RenderState& state)
 	GL_CHECK_ERROR();
 
 	//wind order
-	TODO("GL ERROR HERE!!!!!!!!!");
-	glFrontFace(state.m_windOrder);
+	glFrontFace(GetGLWindOrderType(state.m_windOrder));
 	GL_CHECK_ERROR();
 
 	if(state.m_cullMode != CULL_MODE_NONE)
 	{
 		glEnable(GL_CULL_FACE);
-		glCullFace(state.m_cullMode);	
+		glCullFace(GetGLCullModeType(state.m_cullMode));	
 		GL_CHECK_ERROR();
 	}
 	else

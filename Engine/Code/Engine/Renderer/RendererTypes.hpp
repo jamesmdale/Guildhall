@@ -101,4 +101,5 @@ int GetGLDepthComparison(DepthComparisonType type);
 int GetGLRenderDataType(RenderDataType type);
 int GetGLBlendFactorType(BlendFactorType type);
 int GetGLWindOrderType(WindOrderType type);
+int GetGLCullModeType(CullModeType type);
 int GetGLBlendOperationType(BlendOperationType type);

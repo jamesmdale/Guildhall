@@ -1,5 +1,6 @@
 #include "Engine\Renderer\RendererTypes.hpp"
 #include "Engine\Renderer\GlFunctions.hpp"
+#include "Engine\Core\EngineCommon.hpp"
 
 
 
@@ -13,7 +14,7 @@ int GetGLDrawPrimitive(DrawPrimitiveType type)
 	{
 	case POINT_DRAW_PRIMITIVE:
 	{
-		glConstant = GL_POINT;
+		glConstant = GL_POINTS;
 		break;
 	}
 	case LINES_DRAW_PRIMITIVE:
@@ -252,16 +253,38 @@ int GetGLWindOrderType(WindOrderType type)
 	int glConstant = -1;
 	switch(type)
 	{
-	case WIND_CLOCKWISE:
-	{
-		glConstant = GL_CW;
-		break;
+		case WIND_CLOCKWISE:
+		{
+			glConstant = GL_CW;
+			break;
+		}
+		case WIND_COUNTER_CLOCKWISE:
+		{
+			glConstant = GL_CCW;
+			break;
+		}	
 	}
-	case WIND_COUNTER_CLOCKWISE:
+
+	return glConstant;
+}
+
+int GetGLCullModeType(CullModeType type)
+{
+	int glConstant = -1;
+	switch (type)
 	{
-		glConstant = GL_CCW;
+	case CULL_MODE_BACK:
+		glConstant = GL_BACK;
 		break;
-	}	
+	case CULL_MODE_FRONT:
+		glConstant = GL_FRONT;
+		break;
+	case CULL_MODE_NONE:
+		glConstant = -1;
+		break;
+	default:
+		ASSERT_OR_DIE(false, "UNSUPPORTED GL CULLMODE TYPE");
+		break;
 	}
 
 	return glConstant;

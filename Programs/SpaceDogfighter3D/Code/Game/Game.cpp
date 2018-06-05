@@ -63,6 +63,20 @@ void Game::Initialize()
 	MeshBuilder meshBuilder;
 
 /************************************************************************/
+/*  Create Camera                                                       */
+/************************************************************************/
+
+	m_gameCamera = new Camera();
+	m_gameCamera->SetDepthStencilTarget(theRenderer->GetDefaultDepthStencilTarget());
+	m_gameCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());	
+	m_gameCamera->SetPerspective(60.f, CLIENT_ASPECT, 0.1f, 10000.f);
+	m_gameCamera->Translate(Vector3(0.f, 5.f, -20.f));
+
+	m_gameCamera->m_skybox = new Skybox("Data/Images/galaxy2.png");
+
+	m_renderScene->AddCamera(m_gameCamera);	
+
+/************************************************************************/
 /* Create Asteroids In Scene                                            */
 /************************************************************************/
 
@@ -84,19 +98,7 @@ void Game::Initialize()
 		m_asteroids.push_back(asteroid);
 	}
 
-/************************************************************************/
-/*  Create Camera                                                       */
-/************************************************************************/
 
-	m_gameCamera = new Camera();
-	m_gameCamera->SetDepthStencilTarget(theRenderer->GetDefaultDepthStencilTarget());
-	m_gameCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());	
-	m_gameCamera->SetPerspective(60.f, CLIENT_ASPECT, 0.1f, 10000.f);
-	m_gameCamera->Translate(Vector3(0.f, 5.f, -20.f));
-
-	//m_gameCamera->m_skybox = new Skybox("Data/Images/galaxy2.png");
-
-	m_renderScene->AddCamera(m_gameCamera);	
 
 /************************************************************************/
 /* Create Directional Light                                             */

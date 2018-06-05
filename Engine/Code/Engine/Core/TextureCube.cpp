@@ -99,6 +99,8 @@ bool TextureCube::MakeFromImage(Image& image)
 	GLenum pixelLayout = GL_UNSIGNED_BYTE;
 
 	// bind it; 
+	//glActiveTexture(GL_TEXTURE0 + 8);   test for bug
+
 	glBindTexture( GL_TEXTURE_CUBE_MAP, m_handle ); 
 	glTexStorage2D( GL_TEXTURE_CUBE_MAP, 1, internalFormat, m_size, m_size ); 
 	GL_CHECK_ERROR(); 

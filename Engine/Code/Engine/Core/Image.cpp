@@ -63,6 +63,7 @@ void* Image::GetTexelsAsByteArray()
 
 const void* Image::GetTexelsAsData(int xOffset, int yOffset)
 {
+	//size_t offsetIndex = (m_dimensions.x * yOffset) + xOffset;
 	int offsetIndex = (m_dimensions.x * yOffset) + xOffset;
 	return &m_texels[offsetIndex];
 }
