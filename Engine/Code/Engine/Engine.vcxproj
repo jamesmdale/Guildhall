@@ -58,6 +58,7 @@
     <ClCompile Include="Renderer\ShaderLoader.cpp" />
     <ClCompile Include="Renderer\RenderScene.cpp" />
     <ClCompile Include="Core\TextureCube.cpp" />
+    <ClCompile Include="Camera\Skybox.cpp" />
     <ClCompile Include="Time\Stopwatch.cpp" />
     <ClCompile Include="Time\Clock.cpp" />
     <ClCompile Include="Time\Time.cpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="Renderer\ShaderLoader.hpp" />
     <ClInclude Include="Renderer\RenderScene.hpp" />
     <ClInclude Include="Core\TextureCube.hpp" />
+    <ClInclude Include="Camera\Skybox.hpp" />
     <ClInclude Include="Time\Stopwatch.hpp" />
     <ClInclude Include="Time\Clock.hpp" />
     <ClInclude Include="Time\Time.hpp" />

@@ -1,23 +1,16 @@
 #version 420 core
 
+//Uniforms
+uniform mat4 MODEL;
+uniform mat4 VIEW;
+uniform mat4 PROJECTION; 
+
 // Attributes
 in vec3 POSITION;
 in vec4 COLOR;
 
-out vec3 passWorldPosition;
+out vec3 passWorldPos;
 out vec4 passColor; 
-
-layout(binding=2, std140) uniform cCameraBlock 
-{
-   mat4 VIEW;
-   mat4 PROJECTION; 
-}; 
-
-layout(binding=3, std140) uniform cModelBlock 
-{
-   mat4 MODEL; 
-}; 
-
 
 void main( void )
 {
@@ -25,7 +18,7 @@ void main( void )
    vec4 local_pos = vec4( POSITION, 0.0f );	
 
    vec4 world_pos = local_pos * MODEL; // assume local is world for now; 
-   passWorldPosition = world_pos.xyz;
+   passWorldPos = world_pos.xyz;
 
    vec4 camera_pos = local_pos * VIEW; 
 

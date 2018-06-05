@@ -4,6 +4,7 @@
 #include "Engine\math\Matrix44.hpp"
 #include "Engine\Renderer\FrameBuffer.hpp"
 #include "Engine\Core\Transform.hpp"
+#include "Engine\Camera\Skybox.hpp"
 
 class Camera
 {
@@ -40,6 +41,10 @@ public:
 	//camera transform
 	Transform* m_transform = nullptr;
 
+	//skybox
+	Skybox* m_skybox = nullptr;
+
 	FrameBuffer m_frameBufferOutput;
+	
 };
 

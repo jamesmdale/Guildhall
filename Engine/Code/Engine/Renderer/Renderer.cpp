@@ -556,6 +556,15 @@ void Renderer::BindTexture(Texture* texture, int index) //for now always zero
 	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
 }
 
+void Renderer::BindTextureCube(TextureCube* textureCube, int index)
+{
+	BindSampler(m_defaultSampler, index);
+
+	//Bind texturecube
+	glActiveTexture(GL_TEXTURE0 + index);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, (GLuint)textureCube->GetHandle());
+}
+
 void Renderer::BindSampler(Sampler* sampler, int textureIndex)
 {
 	glBindSampler( textureIndex, sampler->GetHandle() ); 
@@ -654,6 +663,15 @@ void Renderer::DrawCube(const Vector3& center, const Vector3& dimensions,
 	DrawMeshImmediate(&vertex[0], 36, TRIANGLES_DRAW_PRIMITIVE);
 
 	//DrawMeshImmediateWithIndices(&vertex[0], )
+}
+
+void Renderer::DrawSkybox(Skybox* skybox)
+{
+	SetShader(skybox->m_shader);
+
+	BindTextureCube(skybox->m_textureCube, 8);
+
+	DrawMesh(skybox->m_mesh, skybox->m_model);	
 }
 
 void Renderer::BindMeshToProgram(ShaderProgram* program, Mesh* mesh)

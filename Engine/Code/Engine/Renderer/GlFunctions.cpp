@@ -100,7 +100,6 @@ PFNGLBLENDEQUATIONPROC glBlendEquation = nullptr;
 PFNGLBLENDEQUATIONSEPARATEPROC glBlendEquationSeparate = nullptr;
 PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate = nullptr;
 PFNGLDELETETEXTURESPROC glDeleteTextures = nullptr;
-PFNGLPIXELSTOREIPROC glPixelStorei = nullptr;
 PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D = nullptr;
 
 void BindNewWGLFunctions()
@@ -184,7 +183,6 @@ void BindGLFunctions()
 	GL_BIND_FUNCTION(glBlendFuncSeparate);
 	GL_BIND_FUNCTION(glDeleteTextures);
 	GL_BIND_FUNCTION(glTexStorage2D);
-	GL_BIND_FUNCTION(glPixelStorei);
 	GL_BIND_FUNCTION(glTexSubImage2D);
 }
 

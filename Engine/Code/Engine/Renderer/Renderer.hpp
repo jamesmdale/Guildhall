@@ -147,10 +147,14 @@ public:
 	void DrawOrientedText2DCentered(Matrix44& transformMatrix, const std::string & asciiText, float cellHeight, const Rgba & tint, float aspectScale, const BitmapFont * font);
 	//void DrawOrientedTexturedAABB(const Vector3& position, const AABB2& bounds, Texture* texture, const Rgba& tint, const AABB2& uvs);
 
-	//cube-------------------------------------------------------------------------------------------------------------------------
+	//cube -------------------------------------------------------------------------------------------------------------------------
 	void DrawCube(const Vector3& center, const Vector3& dimensions, const Rgba& tint = Rgba::WHITE, const AABB2& uvTop = AABB2::ZERO_TO_ONE, const AABB2& uvSide = AABB2::ZERO_TO_ONE, const AABB2& uvBottom = AABB2::ZERO_TO_ONE);
 
-	//mesh-------------------------------------------------------------------------------------------------------------------------
+	//skybox-------------------------------------------------------------------------------------------------------------------------
+	void DrawSkybox(Skybox* skybox);
+
+
+	//mesh -------------------------------------------------------------------------------------------------------------------------
 	void BindMeshToProgram(ShaderProgram* program, Mesh* mesh);
 
 	//GL Functions -------------------------------------------------------------------------------------------------------------------------
@@ -167,7 +171,7 @@ public:
 	void SetDrawMode(DrawModeFaceType face, DrawModeType mode);
 	void SetDefaultDrawMode();	
 
-	//render traget -------------------------------------------------------------------------------------------------------------------------
+	//render target -------------------------------------------------------------------------------------------------------------------------
 	Texture* CreateRenderTarget(int width, int height, TextureFormatType format = TEXTURE_FORMAT_RGBA8);
 	Texture* CreateDepthStencilTarget(int width, int height);
 	Texture* GetDefaultDepthStencilTarget();
@@ -180,6 +184,8 @@ public:
 	void SetTexture(const Texture& texture);
 	void SetTexture(const Texture & texture, int index);
 	void BindTexture(Texture* texture, int index);
+
+	void BindTextureCube(TextureCube * textureCube, int index);
 
 	//samplers -------------------------------------------------------------------------------------------------------------------------
 	void BindSampler(Sampler* sampler, int textureIndex);
@@ -227,7 +233,7 @@ public:
 	void EnableDirectionalLight(int index, const Vector3& position, const Rgba& color, float intensity = 1.0f, const Vector3& attenuationConstants = Vector3(0.f, 0.f, 1.f), const Vector3& forward = Vector3::FORWARD, float directionFactor = 1.f, float innerAngle = 360.f, float outerAngle = 360.f);
 	void EnableConeLight(int index, const Vector3& position, Rgba& color, float intensity = 1.0f, const Vector3& attenuationConstants = Vector3(0.f, 0.f, 1.f), const Vector3& forward = Vector3::FORWARD, float directionFactor = 1.f, float innerAngle = 360.f, float outerAngle = 360.f);
 	
-	//enable light regardless of type
+	//enable light regardless of type -----------------------------------------------------------------------------------------------------------------------
 	void EnableLight(int index, const Vector3& position, const Rgba& color, float intensity = 1.0f, const Vector3& attenuationConstants = Vector3(0.f, 0.f, 1.f), const Vector3& forward = Vector3::FORWARD, float directionFactor = 1.f, float innerAngle = 360.f, float outerAngle = 360.f);
 	void EnableLight(int index, const Light& light);
 	void SetLightBufferFromArray(std::vector<Light*> lights);

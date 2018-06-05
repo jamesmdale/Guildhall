@@ -19,6 +19,59 @@ TextureCube::~TextureCube()
 	m_size = 0;
 }
 
+GLenum GetGLCubeSide(eTextureCubeSide side)
+{
+	GLenum convertedTex = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+	switch (side)
+	{
+	case TEXCUBE_RIGHT:
+		convertedTex = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+	case TEXCUBE_LEFT:
+		convertedTex = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+	case TEXCUBE_TOP:
+		convertedTex = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+	case TEXCUBE_BOTTOM:
+		convertedTex = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+	case TEXCUBE_FRONT:
+		convertedTex = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+	case TEXCUBE_BACK:
+		convertedTex = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+	}
+
+	return convertedTex;
+}
+
+void BindImageToSide(eTextureCubeSide side, Image& image, int size, int offsetX, int offsetY, GLenum channels, GLenum pixel_layout)
+{
+	const void* ptr = image.GetTexelsAsData(offsetX, offsetY);
+	glTexSubImage2D(GetGLCubeSide(side),
+		0,          // mip_level
+		0, 0,       // offset
+		size, size,
+		channels,
+		pixel_layout,
+		ptr);
+
+	GL_CHECK_ERROR();
+}
+
+void FlipAndBindImage(eTextureCubeSide side, Image& image, GLenum channels, GLenum pixelLayout)
+{
+	BindImageToSide(side, image, image.GetWidth(), 0, 0, channels, pixelLayout);
+}
+
+void TextureCube::Cleanup()
+{
+	if (IsValid())
+	{
+		glDeleteTextures(1, (GLuint*)&m_handle);
+		m_handle = NULL;
+	}
+
+	m_size = 0;
+}
+
+
 bool TextureCube::MakeFromImage(Image& image)
 {
 	int imageWidth = image.GetWidth(); 
@@ -66,57 +119,5 @@ bool TextureCube::MakeFromImage(const char* fileName)
 	return MakeFromImage(image);	
 }
 
-
-static void BindImageToSide( eTextureCubeSide side, Image& image, int size, int offsetX, int offsetY, GLenum channels, GLenum pixel_layout ) 
-{
-	const void* ptr = image.GetTexelsAsData(offsetX, offsetY);
-	glTexSubImage2D( GetGLCubeSide(side),
-		0,          // mip_level
-		0, 0,       // offset
-		size, size, 
-		channels, 
-		pixel_layout, 
-		ptr ); 
-
-	GL_CHECK_ERROR(); 
-}
-
-static void FlipAndBindImage( eTextureCubeSide side, Image& image, GLenum channels, GLenum pixelLayout ) 
-{ 
-	BindImageToSide( side, image, image.GetWidth(), 0, 0, channels, pixelLayout ); 
-}
-
-void TextureCube::Cleanup()
-{
-	if (IsValid())
-	{
-		glDeleteTextures(1, (GLuint*)&m_handle);
-		m_handle = NULL;
-	}
-
-	m_size = 0;
-}
-
-static GLenum GetGLCubeSide(eTextureCubeSide side)
-{
-	GLenum convertedTex = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-	switch (side)
-	{
-	case TEXCUBE_RIGHT:
-		convertedTex = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-	case TEXCUBE_LEFT:
-		convertedTex = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-	case TEXCUBE_TOP:
-		convertedTex = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-	case TEXCUBE_BOTTOM:
-		convertedTex = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-	case TEXCUBE_FRONT:
-		convertedTex = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-	case TEXCUBE_BACK:
-		convertedTex = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-	}
-
-	return convertedTex;
-}
 
 

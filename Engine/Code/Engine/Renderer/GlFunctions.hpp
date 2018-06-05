@@ -49,7 +49,6 @@ extern PFNGLBINDSAMPLERPROC glBindSampler;
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;
 extern PFNGLBINDTEXTUREPROC glBindTexture;
 extern PFNGLDISABLEPROC glDisable;
-extern PFNGLPIXELSTOREIPROC glPixelStorei;
 extern PFNGLGENTEXTURESPROC glGenTextures;
 extern PFNGLTEXPARAMETERIPROC glTexParameteri;
 extern PFNGLTEXIMAGE2DPROC glTexImage2D;

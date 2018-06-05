@@ -13,6 +13,9 @@ Camera::~Camera()
 {
 	delete(m_transform);
 	m_transform = nullptr;
+
+	delete(m_skybox);
+	m_skybox = nullptr;
 }
 
 //will add later

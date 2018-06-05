@@ -22,12 +22,12 @@ public:
 	bool MakeFromImage(Image& image);
 	bool MakeFromImage(const char* fileName);
 
-	inline int GetWidth() const { return m_size; }
-	inline int GetHeight() const { return m_size; }
+	int GetWidth() const { return m_size; }
+	int GetHeight() const { return m_size; }
 
-	inline bool IsValid() const { return (m_handle >= 0); }
+	bool IsValid() const { return (m_handle >= 0); }
 
-	inline int GetHandle() const { return m_handle; }
+	int GetHandle() const { return m_handle; }
 
 	void Cleanup();
 

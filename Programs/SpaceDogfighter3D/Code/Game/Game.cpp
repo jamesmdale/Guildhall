@@ -94,6 +94,8 @@ void Game::Initialize()
 	m_gameCamera->SetPerspective(60.f, CLIENT_ASPECT, 0.1f, 10000.f);
 	m_gameCamera->Translate(Vector3(0.f, 5.f, -20.f));
 
+	m_gameCamera->m_skybox = new Skybox("Data/Images/galaxy2.png");
+
 	m_renderScene->AddCamera(m_gameCamera);	
 
 /************************************************************************/

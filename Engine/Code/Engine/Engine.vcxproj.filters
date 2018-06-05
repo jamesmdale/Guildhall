@@ -232,6 +232,9 @@
     <ClCompile Include="Core\LightObject.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Camera\Skybox.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -327,6 +330,7 @@
     <ClInclude Include="Time\Stopwatch.hpp" />
     <ClInclude Include="Core\LightObject.hpp" />
     <ClInclude Include="Core\Light.hpp" />
+    <ClInclude Include="Camera\Skybox.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

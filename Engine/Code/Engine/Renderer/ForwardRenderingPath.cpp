@@ -27,6 +27,10 @@ void ForwardRenderingPath::RenderSceneForCamera(Camera* camera, RenderScene* sce
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	theRenderer->SetCamera(camera);
+	if (camera->m_skybox != nullptr)
+	{
+		theRenderer->DrawSkybox(camera->m_skybox);
+	}
 	
 	std::vector<DrawCallData> drawCalls;
 
