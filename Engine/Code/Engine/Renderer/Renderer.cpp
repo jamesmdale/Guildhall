@@ -1068,6 +1068,7 @@ void Renderer::PostStartup()
 
 	//load default texture
 	Image* defaultImage = new Image(IntVector2(1,1), Rgba::WHITE, "default");
+
 	m_defaultTexture = CreateOrGetTexture(*defaultImage);
 	m_currentTexture = new Texture();
 	
@@ -1514,6 +1515,7 @@ void Renderer::BindRenderState(const RenderState& state)
 
 void Renderer::BindShaderProgram(ShaderProgram* program)
 {
+	GL_CHECK_ERROR();
 	glUseProgram(program->GetHandle());
 	GL_CHECK_ERROR();
 }

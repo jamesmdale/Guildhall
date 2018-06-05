@@ -22,13 +22,14 @@ Texture::Texture( const std::string& imageFilePath)
 	, m_dimensions( 0, 0 )
 {
 	int numComponents = 0; // Filled in for us to indicate how many color/alpha components the image had (e.g. 3=RGB, 4=RGBA)
-	int numComponentsRequested = 4; // don't care; we support 3 (RGB) or 4 (RGBA)
+	int numComponentsRequested = 0; // don't care; we support 3 (RGB) or 4 (RGBA)
 
+	GL_CHECK_ERROR();
 	// Load (and decompress) the image RGB(A) bytes from a file on disk, and create an OpenGL texture instance from it
 	stbi_set_flip_vertically_on_load(1);
 	unsigned char* imageData = stbi_load( imageFilePath.c_str(), &m_dimensions.x, &m_dimensions.y, &numComponents, numComponentsRequested );
 	stbi_set_flip_vertically_on_load(0);
-	PopulateFromData( imageData, m_dimensions, numComponentsRequested );
+	PopulateFromData( imageData, m_dimensions, numComponents );
 	stbi_image_free( imageData );
 }
 
@@ -39,7 +40,7 @@ Texture::Texture( Image& image )
 	int numComponents = 0; // Filled in for us to indicate how many color/alpha components the image had (e.g. 3=RGB, 4=RGBA)
 
 	// Load (and decompress) the image RGB(A) bytes from a file on disk, and create an OpenGL texture instance from it
-	unsigned char* imageData = (unsigned char*)image.GetTexels().data();
+	unsigned char* imageData = (unsigned char*)image.GetTexelsAsByteArray();
 	PopulateFromData( imageData, image.GetDimensions(), numComponents );	
 }
 
@@ -57,33 +58,36 @@ void Texture::PopulateFromData( unsigned char* imageData, const IntVector2& texe
 	// Ask OpenGL for an unused texName (ID number) to use for this texture
 	glGenTextures( 1, (GLuint*) &m_textureID );
 
+	glActiveTexture(GL_TEXTURE0);
+
 	// Tell OpenGL to bind (set) this as the currently active texture
 	glBindTexture( GL_TEXTURE_2D, m_textureID );
 
-	// Set texture clamp vs. wrap (repeat)
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE  ); // GL_CLAMP_TO_EDGE or GL_REPEAT
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE  ); // GL_CLAMP_TO_EDGE or GL_REPEAT
+	GLenum internalFormat = GL_RGBA8;	
+	GLenum channels = GL_RGBA;
+	GLenum pixelLayout = GL_UNSIGNED_BYTE;
 
-	// Set magnification (texel > pixel) and minification (texel < pixel) filters
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST ); // one of: GL_NEAREST, GL_LINEAR
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR ); // one of: GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_LINEAR
-
-	GLenum bufferFormat = GL_RGBA; // the format our source pixel data is in; any of: GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, ...
+	//if jpg
 	if( numComponents == 3 )
-		bufferFormat = GL_RGB;
+	{
+		channels = GL_RGB;
+		internalFormat = GL_RGB8;
+	}
 
-	GLenum internalFormat = bufferFormat; // the format we want the texture to be on the card; allows us to translate into a different texture format as we upload to OpenGL
+	glTexStorage2D(GL_TEXTURE_2D, 1, internalFormat, m_dimensions.x, m_dimensions.y);
 
-	glTexImage2D(			// Upload this pixel data to our new OpenGL texture
-		GL_TEXTURE_2D,		// Creating this as a 2d texture
+	GL_CHECK_ERROR();
+
+	glTexSubImage2D(GL_TEXTURE_2D,
 		0,					// Which mipmap level to use as the "root" (0 = the highest-quality, full-res image), if mipmaps are enabled
-		internalFormat,		// Type of texel format we want OpenGL to use for this texture internally on the video card
-		m_dimensions.x,			// Texel-width of image; for maximum compatibility, use 2^N + 2^B, where N is some integer in the range [3,11], and B is the border thickness [0,1]
-		m_dimensions.y,			// Texel-height of image; for maximum compatibility, use 2^M + 2^B, where M is some integer in the range [3,11], and B is the border thickness [0,1]
-		0,					// Border size, in texels (must be 0 or 1, recommend 0)
-		bufferFormat,		// Pixel format describing the composition of the pixel data in buffer
-		GL_UNSIGNED_BYTE,	// Pixel color components are unsigned bytes (one byte per color channel/component)
-		imageData );		// Address of the actual pixel data bytes/buffer in system memory
+		0, 0,				//offset of image (since we only have one they are zero
+		m_dimensions.x,		// Texel-width of image; for maximum compatibility, use 2^N + 2^B, where N is some integer in the range [3,11], and B is the border thickness [0,1]
+		m_dimensions.y,		// Texel-height of image; for maximum compatibility, use 2^M + 2^B, where M is some integer in the range [3,11], and B is the border thickness [0,1]
+		channels,			// r-g-b-a
+		pixelLayout,		//data type
+		imageData);
+
+	GL_CHECK_ERROR();
 }
 
 bool Texture::CreateRenderTarget(int width, int height, TextureFormatType format)
