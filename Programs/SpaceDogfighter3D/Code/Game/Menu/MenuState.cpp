@@ -54,7 +54,7 @@ void MenuState::PostRender()
 float MenuState::UpdateFromInput(float deltaTime)
 {
 	//input update tasks here
-	UNUSED(deltaTime);
+	return deltaTime;
 }
 
 void MenuState::ResetMenuState()

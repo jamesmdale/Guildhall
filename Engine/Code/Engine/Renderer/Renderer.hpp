@@ -143,7 +143,7 @@ public:
 	
 	//text ------------------------------------------------------------------------------------------------------------------------
 	void DrawText2D( const Vector2& drawMins, const std::string& asciiText, float cellHeight, const Rgba& tint = Rgba::WHITE, float aspectScale = 1.f, const BitmapFont* font = nullptr );
-	void DrawText2DCentered(const Vector2 & drawCenterPoint, const std::string & asciiText, float cellHeight, const Rgba & tint, float aspectScale, const BitmapFont * font);
+	void DrawText2DCentered(const Vector2& drawCenterPoint, const std::string& asciiText, float cellHeight, const Rgba& tint, float aspectScale, const BitmapFont* font);
 	void DrawOrientedText2DCentered(Matrix44& transformMatrix, const std::string & asciiText, float cellHeight, const Rgba & tint, float aspectScale, const BitmapFont * font);
 	//void DrawOrientedTexturedAABB(const Vector3& position, const AABB2& bounds, Texture* texture, const Rgba& tint, const AABB2& uvs);
 

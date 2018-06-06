@@ -1081,7 +1081,7 @@ void Renderer::DrawText2DCentered(const Vector2& drawCenterPoint, const std::str
 	{	
 		AABB2 uvs = font->GetUVsForGlyph(asciiText.at(charIndex));
 		AABB2 drawBounds = AABB2(Vector2(drawMins.x + (cellWidth * charIndex), drawMins.y), Vector2(drawMins.x + (cellWidth * (charIndex + 1)), drawMins.y + cellHeight));
-		DrawTexturedAABB(drawBounds, fontTexture, uvs.mins, uvs.maxs, tint); 
+		DrawTexturedAABB(drawBounds, fontTexture, Vector2(uvs.mins.x, uvs.maxs.y), Vector2(uvs.maxs.x, uvs.mins.y), tint); 
 	}
 }
 

@@ -24,70 +24,69 @@ bool DevConsoleMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t
 		switch( wmMessageCode )
 		{			
 			// process keys that don't pass to wmchar
-		case WM_KEYDOWN:
-		{		
-			if(asKey == VK_LEFT) //left arrow
-			{
-				g_theDevConsole->DecrementCursorPosition();
-			}
-
-			if(asKey == VK_RIGHT)
-			{
-				g_theDevConsole->IncrementCursorPosition();
-			}
-
-			if(asKey == VK_UP) //left arrow
-			{
-				g_theDevConsole->PopulateWithPreviousHistoryItem();
-			}
-
-			if(asKey == VK_DOWN) //left arrow
-			{
-				g_theDevConsole->PopulateWithNextMostRecentHistoryItem();
-			}
-
-			if(asKey == VK_DELETE)
-			{
-				g_theDevConsole->RemoveCharacterAtNextIndex();
-			}
-			return false;
-			break;				
-		}
-		case WM_CHAR:
-		{
-			if(asKey == '\x1b') //escape
-			{
-				std::string input = g_theDevConsole->GetCurrentInput();
-				if(input != "")
+			case WM_KEYDOWN:
+			{		
+				if(asKey == VK_LEFT) //left arrow
 				{
-					g_theDevConsole->ClearInput();
+					g_theDevConsole->DecrementCursorPosition();
 				}
-				else
-				{
-					g_theDevConsole->Close();
-				}								
-			}
-			else if(asKey == '\r') //return
-			{
-				g_theDevConsole->ExecuteInput();
-			}
-			else if(asKey == '\b')
-			{
-				g_theDevConsole->RemoveCharacterAtIndex();
-			}
-			//else if(asKey = )
-			else
-			{					
-				if(g_theDevConsole->CheckIfValidInput((int)asKey))
-				{
-					g_theDevConsole->AppendCharacterToInput(asKey);
-				}					
-			}				
-			return false;
-			break;
-		}
-		}
 
+				if(asKey == VK_RIGHT)
+				{
+					g_theDevConsole->IncrementCursorPosition();
+				}
+
+				if(asKey == VK_UP) //left arrow
+				{
+					g_theDevConsole->PopulateWithPreviousHistoryItem();
+				}
+
+				if(asKey == VK_DOWN) //left arrow
+				{
+					g_theDevConsole->PopulateWithNextMostRecentHistoryItem();
+				}
+
+				if(asKey == VK_DELETE)
+				{
+					g_theDevConsole->RemoveCharacterAtNextIndex();
+				}
+				return false;
+				break;				
+			}
+			case WM_CHAR:
+			{
+				if(asKey == '\x1b') //escape
+				{
+					std::string input = g_theDevConsole->GetCurrentInput();
+					if(input != "")
+					{
+						g_theDevConsole->ClearInput();
+					}
+					else
+					{
+						g_theDevConsole->Close();
+					}								
+				}
+				else if(asKey == '\r') //return
+				{
+					g_theDevConsole->ExecuteInput();
+				}
+				else if(asKey == '\b')
+				{
+					g_theDevConsole->RemoveCharacterAtIndex();
+				}
+				//else if(asKey = )
+				else
+				{					
+					if(g_theDevConsole->CheckIfValidInput((int)asKey))
+					{
+						g_theDevConsole->AppendCharacterToInput(asKey);
+					}					
+				}				
+				return false;
+				break;
+			}
+		}
 	}
 
 	return true;	
@@ -109,7 +108,6 @@ void DevConsole::Startup()
 
 	//set camera info
 	m_consoleCamera = new Camera();
-	//m_consoleCamera->SetDepthStencilTarget(Renderer::GetInstance()->GetDefaultDepthStencilTarget());
 	m_consoleCamera->SetColorTarget(Renderer::GetInstance()->GetDefaultRenderTarget());
 
 	m_consoleCamera->SetOrtho(0.f, Window::GetInstance()->m_clientWidth, 0.f, Window::GetInstance()->m_clientHeight, -1.f, 1.f);

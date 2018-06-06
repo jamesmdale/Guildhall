@@ -72,7 +72,7 @@ void TheApp::Initialize()
 
 void TheApp::Update()
 {
-	float deltaSeconds = GetMasterDeltaTime();
+	float deltaSeconds = GetMasterDeltaSeconds();
 
 	deltaSeconds = UpdateInput(deltaSeconds);
 
