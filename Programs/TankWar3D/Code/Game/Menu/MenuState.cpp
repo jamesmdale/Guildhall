@@ -85,6 +85,11 @@ void MenuState::TransitionOut(float secondsTransitioning)
 	s_isFinishedTransitioningOut = true;
 }
 
+void MenuState::ResetState()
+{
+	//reset menu options or game states here
+}
+
 //static methods
 
 void MenuState::UpdateGlobalMenuState(float deltaSeconds)
@@ -108,6 +113,7 @@ void MenuState::UpdateGlobalMenuState(float deltaSeconds)
 		{
 			//reset transition state
 			g_currentState = g_transitionState;
+			FinishTransition();
 		}
 	}
 	
@@ -116,6 +122,7 @@ void MenuState::UpdateGlobalMenuState(float deltaSeconds)
 void MenuState::FinishTransition()
 {
 	g_currentState = g_transitionState;
+	g_transitionState = nullptr;
 	s_isFinishedTransitioningIn = true;
 	s_isFinishedTransitioningOut = true;
 	s_secondsInState = 0.0f;
@@ -125,6 +132,8 @@ void MenuState::FinishTransition()
 
 void MenuState::TransitionMenuStates(MenuState* toState)
 {
+	GUARANTEE_OR_DIE(toState != nullptr, "INVALID MENU STATE TRANSITION");
+
 	g_transitionState = toState;
 	s_isFinishedTransitioningOut = false;
 	s_isFinishedTransitioningIn = false;
@@ -132,8 +141,10 @@ void MenuState::TransitionMenuStates(MenuState* toState)
 
 void MenuState::TransitionMenuStatesImmediate( MenuState* toState)
 {
-	FinishTransition();
-	g_currentState = toState;
+	GUARANTEE_OR_DIE(toState != nullptr, "INVALID MENU STATE TRANSITION");
+	g_transitionState = toState;
+	s_isFinishedTransitioningOut = true;
+	s_isFinishedTransitioningIn = true;
 }
 
 MenuState* MenuState::GetCurrentMenuState()
@@ -147,7 +158,7 @@ MenuState* MenuState::GetTransitionMenuState()
 }
 
 //For now, we assume they will only ever have one of each possible type in the list
-MenuState* MenuState::GetMenuStateFromListByType(eMenuState menuStateType)
+MenuState* MenuState::GetMenuStateFromGlobalListByType(eMenuState menuStateType)
 {
 	for (int menuStateIndex = 0; menuStateIndex < (int)s_menuStates.size(); menuStateIndex++)
 	{

@@ -1,23 +1,17 @@
 #pragma once
 #include "Game\Menu\MenuState.hpp"
 
-enum eMainMenuOptions
-{
-	PLAY,
-	EXIT,
-	NUM_MAIN_MENU_OPTIONS
-};
 
-class MainMenuState : public MenuState
+class PlayingState : public MenuState
 {
 public:
-	MainMenuState(Camera* camera) : MenuState(camera)
+	PlayingState(Camera* camera) : MenuState(camera)
 	{
-		m_type = MAIN_MENU_STATE;
+		m_type = PLAYING_MENU_STATE;
 		m_backGroundTexture = Renderer::GetInstance()->CreateOrGetTexture("default");
 	}
 
-	virtual ~MainMenuState() override;
+	virtual ~PlayingState() override;
 
 	virtual void Update(float deltaSeconds) override;
 	virtual void PreRender() override;
@@ -25,10 +19,7 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
-	virtual void ResetState() override;
-
 public:
 	Texture* m_backGroundTexture;
-	eMainMenuOptions m_selectedMenuOption = PLAY;
 };
 

@@ -3,6 +3,9 @@
 #include "Game\GameCommon.hpp"
 #include "Game\Menu\MenuState.hpp"
 #include "Game\Menu\MainMenuState.hpp"
+#include "Game\Menu\ReadyState.hpp"
+#include "Game\Menu\LoadingState.hpp"
+#include "Game\Menu\PlayingState.hpp"
 #include "Engine\Math\MathUtils.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Math\Matrix44.hpp"
@@ -86,13 +89,17 @@ void Game::Initialize()
 
 	//add menu states
 	TODO("Add other menu states");
+	MenuState::AddMenuState(new LoadingState(m_uiCamera));
 	MenuState::AddMenuState(new MainMenuState(m_uiCamera));
+	MenuState::AddMenuState(new ReadyState(m_uiCamera));
+	MenuState::AddMenuState(new PlayingState(m_uiCamera));
 	//loadingMenuState
 	//readyUp
 	//play/level
 
 	//set to initial menu
-	MenuState::TransitionMenuStatesImmediate(MenuState::GetMenuStateFromListByType(MAIN_MENU_STATE));
+	MenuState::TransitionMenuStatesImmediate(MenuState::GetMenuStateFromGlobalListByType(LOADING_MENU_STATE));
+	MenuState::UpdateGlobalMenuState(0);
 
 	//cleanup
 	theRenderer = nullptr;

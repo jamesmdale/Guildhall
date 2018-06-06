@@ -84,8 +84,8 @@ float MainMenuState::UpdateFromInput(float deltaSeconds)
 		switch (m_selectedMenuOption)
 		{
 		case(PLAY):
-			//ResetMenuState();
-			//MenuState::TransitionMenuStates(GetMenuStateFromListByType(READY_UP_MENU_STATE));
+			ResetState();
+			MenuState::TransitionMenuStates(GetMenuStateFromGlobalListByType(READY_UP_MENU_STATE));
 			break;
 		case(EXIT):
 			g_isQuitting = true;
@@ -103,6 +103,12 @@ float MainMenuState::UpdateFromInput(float deltaSeconds)
 	return deltaSeconds; //new deltaSeconds
 }
 
+void MainMenuState::ResetState()
+{
+	m_selectedMenuOption = PLAY;
+}
+
 void MainMenuState::PostRender()
 {
 }
+

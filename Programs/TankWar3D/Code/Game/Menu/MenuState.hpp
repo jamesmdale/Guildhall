@@ -32,6 +32,8 @@ public:
 	virtual void TransitionIn(float secondsTransitioning);
 	virtual void TransitionOut(float secondsTransitioning);
 
+	virtual void ResetState();
+
 	//static methods
 	static void UpdateGlobalMenuState(float deltaSeconds);
 
@@ -44,7 +46,7 @@ public:
 
 	//list managers
 	TODO("6/5 - Add better way of managing these. For now, we assume they only have one max of each possibel type");
-	static MenuState* GetMenuStateFromListByType(eMenuState menuStateType);
+	static MenuState* GetMenuStateFromGlobalListByType(eMenuState menuStateType);
 	static void AddMenuState(MenuState* menuState);
 
 	static float GetSecondsInCurrentState();
