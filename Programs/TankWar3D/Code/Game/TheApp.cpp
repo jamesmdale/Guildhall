@@ -16,15 +16,12 @@ TheApp* g_theApp = nullptr;
 
 TheApp::TheApp()
 { 
-	g_theGame = new Game();
+	Game::CreateInstance();
 }
 
 TheApp::~TheApp()
 {
-	delete g_theGame;
-	g_theGame = nullptr;
-
-	TODO("Cleanup (delete and null out) input system and renderer");
+	TODO("Cleanup (delete and null out) input system, renderer, game");
 }
 
 void TheApp::RunFrame()
@@ -67,18 +64,16 @@ void TheApp::Initialize()
 	std::vector<float> indicies;
 	std::vector<Vector3> normals;
 
-	//g_theGame->Initialize();
+	Game::CreateInstance();
+	Game::GetInstance()->Initialize();
 }
 
 void TheApp::Update()
 {
 	float deltaSeconds = GetMasterDeltaTime();
-
 	deltaSeconds = UpdateInput(deltaSeconds);
 
-	float gamedelta = (float)g_gameClock->GetDeltaSeconds();
-
-	//g_theGame->Update(gamedelta); 
+	Game::GetInstance()->Update();
 
 	if(DebugRender::GetInstance()->IsEnabled())
 	{
@@ -93,21 +88,13 @@ void TheApp::Update()
 
 void TheApp::PreRender()
 {
-	//g_theGame->PreRender();
+	Game::GetInstance()->PreRender();
 }
 
 void TheApp::Render()
 {
 	//set up screen
-
-	Window* theWindow = Window::GetInstance();
-	//Renderer::GetInstance()->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
-
-	theWindow = nullptr;
-
-	//Renderer::GetInstance()->Clear();
-
-	//g_theGame->Render();
+	Game::GetInstance()->Render();
 
 	if(DebugRender::GetInstance()->IsEnabled())
 	{
@@ -122,7 +109,7 @@ void TheApp::Render()
 
 void TheApp::PostRender()
 {
-	//g_theGame->PostRender();
+	Game::GetInstance()->PostRender();
 }
 
 

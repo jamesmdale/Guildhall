@@ -1,9 +1,11 @@
-#include "Game.hpp"
 #include <stdlib.h>
+#include "Game\Game.hpp"
+#include "Game\GameCommon.hpp"
+#include "Game\Menu\MenuState.hpp"
+#include "Game\Menu\MainMenuState.hpp"
 #include "Engine\Math\MathUtils.hpp"
-#include "engine\renderer\renderer.hpp"
-#include "game\GameCommon.hpp"
-#include "engine\Math\Matrix44.hpp"
+#include "Engine\Renderer\Renderer.hpp"
+#include "Engine\Math\Matrix44.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Math\Vector3.hpp"
 #include "Engine\Core\Command.hpp"
@@ -12,47 +14,59 @@
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Camera\OrbitCamera.hpp"
 #include "Engine\Core\GameObject.hpp"
-#include <vector>
-#include <string>
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include <vector>
+#include <string>
 
-Game* g_theGame = nullptr;
-Clock* g_gameClock = nullptr;
+//game instance
+static Game* g_theGame = nullptr;
 
-GameState g_currentState;
-GameState g_transitionState;
-float g_secondsInState;
-float g_secondsTransistioning;
-bool g_isFinishedTransistioning;
+//menu states
+MainMenuState* mainMenuState = nullptr;
 
 bool m_isPaused = false;
 
-
 Game::Game()
 {
-	m_renderScene = new RenderScene();
 	m_forwardRenderingPath = new ForwardRenderingPath();
 }
 
 Game::~Game()
 {
+	//delete render members
 	delete(m_forwardRenderingPath);
 	m_forwardRenderingPath = nullptr;
 
-	delete(m_renderScene);
-	m_renderScene = nullptr;	
-
+	//delete camera members
 	delete(m_gameCamera);
 	m_gameCamera = nullptr;
 
 	delete(m_uiCamera);
 	m_uiCamera = nullptr;
 
+	//cleanup global members
+	delete(mainMenuState);
+	mainMenuState = nullptr;
+
 	//add any other data to cleanup
 }
 
+Game* Game::GetInstance()
+{
+	return g_theGame;
+}
+
+Game* Game::CreateInstance()
+{
+	if (g_theGame == nullptr)
+	{
+		g_theGame = new Game();
+	}
+
+	return g_theGame;
+}
 
 void Game::Initialize()
 {
@@ -61,7 +75,7 @@ void Game::Initialize()
 
 	theRenderer->SetAmbientLightIntensity(0.15f);
 
-	g_gameClock = new Clock(GetMasterClock());
+	m_gameClock = new Clock(GetMasterClock());
 
 	//Add camera
 	m_gameCamera = new Camera();
@@ -70,132 +84,52 @@ void Game::Initialize()
 	m_gameCamera->SetPerspective(60.f, CLIENT_ASPECT, 0.1f, 10000.f);
 	m_gameCamera->Translate(Vector3(0.f, 5.f, -20.f));
 
-	m_renderScene->AddCamera(m_gameCamera); 
+	m_uiCamera = new Camera();
+	m_uiCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
+	m_uiCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
+	m_uiCamera->SetView(Matrix44::IDENTITY);
+
+	//add menu states
+	TODO("Add other menu states");
+	mainMenuState = new MainMenuState(m_uiCamera);
+	//loadingMenuState
+	//readyUp
+	//play/level
+
+	//set to initial menu
+	MenuState::TransitionMenuStatesImmediate(mainMenuState);
 
 	//cleanup
 	theRenderer = nullptr;
 	theWindow = nullptr;
 }
 
-void Game::Update(float timeDelta)
+void Game::Update()
 {
-	if (g_transitionState != NONE_STATE)
-	{
-		g_currentState = g_transitionState;
-		g_transitionState = NONE_STATE;
-		g_secondsInState = 0.f;
-	}
-
-	switch (g_currentState)
-	{
-	case MAIN_MENU_STATE:
-		UpdateMainMenu(timeDelta);
-		break;
-	case LOADING_STATE:
-		UpdateLoading(timeDelta);
-		break;
-	case PLAYING_STATE:
-		UpdateGame(timeDelta);
-		break;
-	}
-
-	g_secondsInState += timeDelta;
+	float timeDelta = m_gameClock->GetDeltaSeconds();
+	MenuState::GetCurrentMenuState()->Update(timeDelta);
 }
-
-
 
 void Game::PreRender()
 {
-	//add any prerender tasks here
+	MenuState::GetCurrentMenuState()->PreRender();
 }
 
 void Game::Render()
 {
-	Renderer* theRenderer = Renderer::GetInstance();
-	theRenderer->SetCamera(m_gameCamera);
-
-	//always do this first at the beginning of the frame's render
-	theRenderer->ClearDepth(1.f);
-	theRenderer->ClearColor(Rgba::BLACK);
-
-	//render from forward rendering path
-	m_forwardRenderingPath->Render(m_renderScene);
-
-	theRenderer = nullptr;
+	MenuState::GetCurrentMenuState()->Render();
 }
 
 void Game::PostRender()
 {
-	//add any postrender tasks here
+	MenuState::GetCurrentMenuState()->PostRender();
 }
-
 
 float Game::UpdateInput(float timeDelta)
 {
-	//update any input here
+	timeDelta = MenuState::GetCurrentMenuState()->UpdateFromInput(timeDelta);
 
 	return timeDelta;
 }
-
-//State management
-void Game::TransitionGameStates(GameState toState)
-{
-	g_transitionState = toState;
-}
-
-
-void Game::Render()
-{
-	switch (g_currentState)
-	{
-	case MAIN_MENU_STATE:
-		RenderMainMenu();
-		break;
-	case LOADING_STATE:
-		RenderLoading();
-		break;
-	case PLAYING_STATE:
-		RenderGame();
-		break;
-	}
-}
-
-
-//Update & Render for MAIN_MENU state
-void Game::UpdateMainMenu(float deltaSeconds)
-{
-	g_theMenu->Update(deltaSeconds);
-}
-
-void Game::RenderMainMenu()
-{
-	g_theMenu->Render();
-}
-
-
-//update & render for LOADING state
-void Game::UpdateLoading(float deltaSeconds)
-{
-	UNUSED(deltaSeconds);
-}
-
-TODO("Complete loading rendering");
-void Game::RenderLoading()
-{
-
-}
-
-//update & render for GAME state
-void Game::UpdateGame(float deltaSeconds)
-{
-	g_theEncounter->Update(deltaSeconds);
-}
-
-void Game::RenderGame()
-{
-	g_theEncounter->Render();
-};
-
-
 
 

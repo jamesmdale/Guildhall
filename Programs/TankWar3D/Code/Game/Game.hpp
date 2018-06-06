@@ -12,26 +12,34 @@
 class Game
 {
 public:  
+
+	//camera members
 	Camera* m_gameCamera = nullptr;
 	Camera* m_uiCamera = nullptr;
 
+	//rendering members
 	ForwardRenderingPath* m_forwardRenderingPath = nullptr;
-	RenderScene* m_renderScene = nullptr;
+
+	//clock
+	Clock* m_gameClock = nullptr;
+
+	//game members
+	TODO("Add player tank class");
+	//Tank* m_playerTank = nullptr;
 
 public:
 	Game();
 	~Game();
-	void Update(float timeDelta);
-	void TransitionGameStates(GameState toState);
+	static Game* GetInstance();
+	static Game* CreateInstance();
+
+	void Update(); //use internal clock for delta seconds;
 	void PreRender();
 	void Render();
 	void PostRender();
 	void Initialize();
 	float UpdateInput(float timeDelta);
 };
-
-extern Game* g_theGame;
-extern Clock* g_gameClock;
 
 
 
