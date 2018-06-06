@@ -116,6 +116,10 @@ bool TextureCube::MakeFromImage(Image& image)
 	BindImageToSide( TEXCUBE_FRONT,  image, m_size, m_size * 1, m_size * 1, channels, pixelLayout ); 
 	BindImageToSide( TEXCUBE_BACK,   image, m_size, m_size * 3, m_size * 1, channels, pixelLayout ); 
 
+	glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 ); 
+	GL_CHECK_ERROR(); 
+
+
 	return GLSucceeded(); 
 }
 
