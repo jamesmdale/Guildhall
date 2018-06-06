@@ -26,9 +26,7 @@ public:
 	virtual void PreRender();
 	virtual void Render();
 	virtual void PostRender();
-	virtual void PreRender();
 	virtual float UpdateFromInput(float deltaTime);
-	virtual void ResetMenuState();
 
 	//transition methods
 	virtual void TransitionIn(float secondsTransitioning);
@@ -42,8 +40,10 @@ public:
 	static MenuState* GetCurrentMenuState();
 	static MenuState* GetTransitionMenuState();
 
+	static MenuState* GetMenuStateFromListByType(eMenuState menuStateType);
+
 public:
-	eMenuState m_state = NONE_MENU_STATE;
+	eMenuState m_type = NONE_MENU_STATE;
 	Camera* m_camera = nullptr;
 	RenderScene* m_renderScene = nullptr;
 
@@ -53,6 +53,7 @@ public:
 	static float s_secondsTransitioning;
 	static bool s_isFinishedTransitioningOut;
 	static bool s_isFinishedTransitioningIn;
+	static std::vector<MenuState*> s_menuStates;
 };
 
 //static variables

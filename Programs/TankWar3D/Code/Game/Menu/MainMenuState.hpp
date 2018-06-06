@@ -13,6 +13,7 @@ public:
 
 	virtual void Update(float deltaTime) override;
 	virtual void PreRender() override;
+	//uses parent Render()
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaTime) override;
 

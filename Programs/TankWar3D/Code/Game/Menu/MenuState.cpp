@@ -7,6 +7,7 @@ float s_secondsInState = 0.0f;
 float s_secondsTransistioning = 0.0f;
 bool s_isFinishedTransitioningOut = true;
 bool s_isFinishedTransitioningIn = true;
+std::vector<MenuState*> s_menuStates;
 
 MenuState::MenuState(Camera* camera)
 {
@@ -23,6 +24,12 @@ MenuState::~MenuState()
 
 	//game will manage deletion of camera
 	m_camera = nullptr; 
+
+	for (int menuStateIndex = 0; menuStateIndex < (int)s_menuStates.size(); menuStateIndex++)
+	{
+		delete(s_menuStates[menuStateIndex]);
+	}
+	s_menuStates.clear();
 }
 
 void MenuState::Update(float deltaTime)
@@ -60,11 +67,6 @@ float MenuState::UpdateFromInput(float deltaTime)
 {
 	//input update tasks here
 	UNUSED(deltaTime);
-}
-
-void MenuState::ResetMenuState()
-{
-	//after transitioning, reset the state here
 }
 
 void MenuState::TransitionIn(float secondsTransitioning)
@@ -132,6 +134,19 @@ MenuState* MenuState::GetCurrentMenuState()
 MenuState* MenuState::GetTransitionMenuState()
 {
 	return g_transitionState;
+}
+
+MenuState* MenuState::GetMenuStateFromListByType(eMenuState menuStateType)
+{
+	for (int menuStateIndex = 0; menuStateIndex < (int)s_menuStates.size(); menuStateIndex++)
+	{
+		if (s_menuStates[menuStateIndex]->m_type == menuStateType)
+		{
+			return s_menuStates[menuStateIndex];
+		}
+	}
+
+	return nullptr;
 }
 
 

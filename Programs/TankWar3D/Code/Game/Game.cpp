@@ -24,7 +24,7 @@
 static Game* g_theGame = nullptr;
 
 //menu states
-MainMenuState* mainMenuState = nullptr;
+std::vector<MenuState*> menuStates;
 
 bool m_isPaused = false;
 
@@ -47,8 +47,13 @@ Game::~Game()
 	m_uiCamera = nullptr;
 
 	//cleanup global members
-	delete(mainMenuState);
-	mainMenuState = nullptr;
+
+	//delete menuStates
+	for (int menuStateIndex = 0; menuStateIndex < (int)menuStates.size(); menuStateIndex++)
+	{
+		delete(menuStates[menuStateIndex]);
+	}
+	menuStates.clear();
 
 	//add any other data to cleanup
 }
@@ -91,13 +96,13 @@ void Game::Initialize()
 
 	//add menu states
 	TODO("Add other menu states");
-	mainMenuState = new MainMenuState(m_uiCamera);
+	menuStates.push_back(new MainMenuState(m_uiCamera));
 	//loadingMenuState
 	//readyUp
 	//play/level
 
 	//set to initial menu
-	MenuState::TransitionMenuStatesImmediate(mainMenuState);
+	MenuState::TransitionMenuStatesImmediate(MenuState::GetMenuStateFromListByType(MAIN_MENU_STATE));
 
 	//cleanup
 	theRenderer = nullptr;
