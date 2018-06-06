@@ -86,6 +86,11 @@ public:
 	Vector3 GetUp();
 	Vector3 GetForward();
 
+	Vector2 GetPosition2D(){return Vector2(Tx, Ty); };
+	Vector2 GetTranslation2D(){return GetPosition2D(); };
+	Vector2 GetRight2D();
+	Vector2 GetUp2D();
+
 
 	//setters
 	void SetFromBasisVectors(Vector4 iBasis, Vector4 jBasis, Vector4 kBasis, Vector4 tBasis);	

@@ -235,6 +235,21 @@
     <ClCompile Include="Camera\Skybox.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Transform2D.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ForwardRenderingPath2D.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Renderable2D.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Widget.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\RenderScene2D.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -331,6 +346,11 @@
     <ClInclude Include="Core\LightObject.hpp" />
     <ClInclude Include="Core\Light.hpp" />
     <ClInclude Include="Camera\Skybox.hpp" />
+    <ClInclude Include="Core\Transform2D.hpp" />
+    <ClInclude Include="Renderer\ForwardRenderingPath2D.hpp" />
+    <ClInclude Include="Renderer\Renderable2D.hpp" />
+    <ClInclude Include="Core\Widget.hpp" />
+    <ClInclude Include="Renderer\RenderScene2D.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

@@ -42,7 +42,9 @@
     <ClCompile Include="Debug\DebugRenderObject.cpp" />
     <ClCompile Include="Debug\DebugRender.cpp" />
     <ClCompile Include="Core\GameObject.cpp" />
+    <ClCompile Include="Renderer\ForwardRenderingPath2D.cpp" />
     <ClCompile Include="ParticleSystem\ParticleEmitter.cpp" />
+    <ClCompile Include="Renderer\Renderable2D.cpp" />
     <ClCompile Include="Renderer\MaterialLoader.cpp" />
     <ClCompile Include="Renderer\ForwardRenderingPath.cpp" />
     <ClCompile Include="Input\Mouse.cpp" />
@@ -59,6 +61,7 @@
     <ClCompile Include="Renderer\RenderScene.cpp" />
     <ClCompile Include="Core\TextureCube.cpp" />
     <ClCompile Include="Camera\Skybox.cpp" />
+    <ClCompile Include="Renderer\RenderScene2D.cpp" />
     <ClCompile Include="Time\Stopwatch.cpp" />
     <ClCompile Include="Time\Clock.cpp" />
     <ClCompile Include="Time\Time.cpp" />
@@ -101,6 +104,8 @@
     <ClCompile Include="Renderer\VertexBuffer.cpp" />
     <ClCompile Include="Renderer\VertexLayout.cpp" />
     <ClCompile Include="Renderer\UniformBuffer.cpp" />
+    <ClCompile Include="Core\Transform2D.cpp" />
+    <ClCompile Include="Core\Widget.cpp" />
     <ClCompile Include="Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -119,7 +124,9 @@
     <ClInclude Include="Debug\DebugRenderObject.hpp" />
     <ClInclude Include="Debug\DebugRender.hpp" />
     <ClInclude Include="Core\GameObject.hpp" />
+    <ClInclude Include="Renderer\ForwardRenderingPath2D.hpp" />
     <ClInclude Include="ParticleSystem\ParticleEmitter.hpp" />
+    <ClInclude Include="Renderer\Renderable2D.hpp" />
     <ClInclude Include="Renderer\MaterialLoader.hpp" />
     <ClInclude Include="Renderer\ForwardRenderingPath.hpp" />
     <ClInclude Include="Input\Mouse.hpp" />
@@ -137,6 +144,7 @@
     <ClInclude Include="Renderer\RenderScene.hpp" />
     <ClInclude Include="Core\TextureCube.hpp" />
     <ClInclude Include="Camera\Skybox.hpp" />
+    <ClInclude Include="Renderer\RenderScene2D.hpp" />
     <ClInclude Include="Time\Stopwatch.hpp" />
     <ClInclude Include="Time\Clock.hpp" />
     <ClInclude Include="Time\Time.hpp" />
@@ -191,6 +199,8 @@
     <ClInclude Include="Renderer\VertexBuffer.hpp" />
     <ClInclude Include="Renderer\VertexLayout.hpp" />
     <ClInclude Include="Renderer\UniformBuffer.hpp" />
+    <ClInclude Include="Core\Transform2D.hpp" />
+    <ClInclude Include="Core\Widget.hpp" />
     <ClInclude Include="Window\Window.hpp" />
   </ItemGroup>
   <ItemGroup>

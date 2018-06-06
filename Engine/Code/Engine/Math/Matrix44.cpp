@@ -753,6 +753,20 @@ Vector3 Matrix44::GetForward()
 	return forwardVector;
 }
 
+Vector2 Matrix44::GetRight2D()
+{
+	Vector3 forwardVector = Vector3(GetIBasis());
+	forwardVector.Normalize();
+	return Vector2(forwardVector.x, forwardVector.y);
+}
+
+Vector2 Matrix44::GetUp2D()
+{
+	Vector3 forwardVector = Vector3(GetKBasis());
+	forwardVector.Normalize();
+	return Vector2(forwardVector.x, forwardVector.y);
+}
+
 void Matrix44::SetFromBasisVectors(Vector4 iBasis, Vector4 jBasis, Vector4 kBasis, Vector4 tBasis)
 {
 	SetIBasis(iBasis);

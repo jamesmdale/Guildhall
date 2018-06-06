@@ -21,6 +21,7 @@ public:
 	void RemoveCamera(Camera* cameraToRemove);
 	void RemoveLight(Light* lightToRemove);
 
+public:
 	//max of MAX_LIGHTS
 	std::vector<Light*> GetMostContributingLights(Vector3 renderablePosition);
 
