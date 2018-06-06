@@ -14,7 +14,7 @@ public:
 	void PostRender();
 	void Initialize();
 	void RunFrame();
-	float UpdateInput(float timeDelta);
+	float UpdateInput(float deltaSeconds);
 };
 
 void Quit(Command &cmd);

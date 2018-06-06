@@ -39,9 +39,9 @@ GameObject::~GameObject()
 	m_renderScene = nullptr;		
 }
 
-void GameObject::Update(float deltaTime)
+void GameObject::Update(float deltaSeconds)
 {
-	UNUSED(deltaTime);
+	UNUSED(deltaSeconds);
 	return;
 }
 

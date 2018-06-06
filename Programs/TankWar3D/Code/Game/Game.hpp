@@ -38,7 +38,7 @@ public:
 	void Render();
 	void PostRender();
 	void Initialize();
-	float UpdateInput(float timeDelta);
+	float UpdateInput(float deltaSeconds);
 };
 
 

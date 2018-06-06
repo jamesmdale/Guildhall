@@ -38,7 +38,7 @@ public:
 
 	~LightObject();
 
-	virtual void Update(float deltaTime) override;
+	virtual void Update(float deltaSeconds) override;
 	virtual void PreRender() override;
 	void UpdateLightFromWorldTransform();
 	Rgba GetLightColor();

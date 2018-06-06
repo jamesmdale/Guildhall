@@ -6,16 +6,16 @@
 #include "Engine\Renderer\RenderScene.hpp"
 #include "Engine\Renderer\ForwardRenderingPath.hpp"
 
-
-enum eMenuState
-{
-	NONE_MENU_STATE,
-	LOADING_MENU_STATE,
-	MAIN_MENU_STATE,	
-	DECK_SELECTION_MENU_STATE,
-	PLAYING_MENU_STATE,
-	NUM_GAME_STATES
-};
+//
+//enum eMenuState
+//{
+//	NONE_MENU_STATE,
+//	LOADING_MENU_STATE,
+//	MAIN_MENU_STATE,	
+//	DECK_SELECTION_MENU_STATE,
+//	PLAYING_MENU_STATE,
+//	NUM_GAME_STATES
+//};
 
 class MenuState
 {
@@ -28,7 +28,6 @@ public:
 	virtual void PreRender();
 	virtual void Render();
 	virtual void PostRender();
-	virtual void PreRender();
 	virtual float UpdateFromInput(float deltaTime);
 	virtual void ResetMenuState();
 
@@ -37,7 +36,7 @@ public:
 	static void TransitionMenuStates(const MenuState& toState);
 
 public:
-	eMenuState m_state = NONE_MENU_STATE;
+	//eMenuState m_state = NONE_MENU_STATE;
 	Camera* m_camera = nullptr;
 	ForwardRenderingPath* m_renderingPath = nullptr;
 	RenderScene* m_renderScene = nullptr;

@@ -299,6 +299,8 @@
     <ClCompile Include="GameCommon.cpp" />
     <ClCompile Include="LightObject.cpp" />
     <ClCompile Include="Main_Win32.cpp" />
+    <ClCompile Include="Menu\MainMenuState.cpp" />
+    <ClCompile Include="Menu\MenuState.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="TheApp.cpp" />
   </ItemGroup>
@@ -315,6 +317,8 @@
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
     <ClInclude Include="LightObject.hpp" />
+    <ClInclude Include="Menu\MainMenuState.hpp" />
+    <ClInclude Include="Menu\MenuState.hpp" />
     <ClInclude Include="Ship.hpp" />
     <ClInclude Include="TheApp.hpp" />
   </ItemGroup>

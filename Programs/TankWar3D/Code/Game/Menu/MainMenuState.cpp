@@ -1,10 +1,12 @@
 #include "Game\Menu\MainMenuState.hpp"
+#include "Engine\Window\Window.hpp"
 
 MainMenuState::~MainMenuState()
 {
+	m_backGroundTexture = nullptr;
 }
 
-void MainMenuState::Update(float deltaTime)
+void MainMenuState::Update(float deltaSeconds)
 {
 }
 
@@ -12,9 +14,84 @@ void MainMenuState::PreRender()
 {
 }
 
-float MainMenuState::UpdateFromInput(float deltaTime)
+void MainMenuState::Render()
 {
-	return 0.0f;
+	Renderer* theRenderer = Renderer::GetInstance();
+	Window* theWindow = Window::GetInstance();
+
+	Rgba playColor = Rgba::GRAY;
+	Rgba quitColor = Rgba::GRAY;
+
+	switch (m_selectedMenuOption)
+	{
+	case PLAY:
+		playColor = Rgba::WHITE;
+		break;
+	case EXIT:
+		quitColor = Rgba::WHITE;
+		break;
+	}
+
+	theRenderer->SetCamera(m_camera);
+	theRenderer->SetTexture(*m_backGroundTexture);
+
+	theRenderer->DrawAABB(theWindow->GetClientWindow(), Rgba(0.f, 0.f, 0.f, 1.f));
+	theRenderer->DrawText2DCentered(Vector2(theWindow->m_clientWidth * .5f, theWindow->m_clientHeight * .66666f), "Tactics", theWindow->m_clientHeight * .1f, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	theRenderer->DrawText2DCentered(Vector2(theWindow->m_clientWidth * .5f, theWindow->m_clientHeight * .35f), "Play", theWindow->m_clientHeight * .075f, playColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	theRenderer->DrawText2DCentered(Vector2(theWindow->m_clientWidth * .5f, theWindow->m_clientHeight * .25f), "Quit", theWindow->m_clientHeight * .075f, quitColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+}
+
+float MainMenuState::UpdateFromInput(float deltaSeconds)
+{
+	InputSystem* theInput = InputSystem::GetInstance();
+
+
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_W || theInput->KEYBOARD_UP_ARROW))
+	{
+		if (m_selectedMenuOption == PLAY)
+		{
+			m_selectedMenuOption = EXIT;
+		}
+		else
+		{
+			m_selectedMenuOption = PLAY;
+		}		
+	}
+
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_S || theInput->KEYBOARD_DOWN_ARROW))
+	{
+		if (m_selectedMenuOption == PLAY)
+		{
+			m_selectedMenuOption = EXIT;
+		}
+		else
+		{
+			m_selectedMenuOption = PLAY;
+		}
+	}
+
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_SPACE))
+	{
+		switch (m_selectedMenuOption)
+		{
+		case(PLAY):
+			//ResetMenuState();
+			//MenuState::TransitionMenuStates(GetMenuStateFromListByType(READY_UP_MENU_STATE));
+			break;
+		case(EXIT):
+			g_isQuitting = true;
+			break;
+		}
+	}
+
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_ESCAPE))
+	{
+		g_isQuitting = true;
+	}
+
+	theInput = nullptr;
+	delete(theInput);
+	return deltaSeconds; //new deltaSeconds
 }
 
 void MainMenuState::PostRender()

@@ -3,11 +3,12 @@
 
 MenuState* g_currentState = nullptr;
 MenuState* g_transitionState = nullptr;
-float s_secondsInState = 0.0f;
-float s_secondsTransistioning = 0.0f;
-bool s_isFinishedTransitioningOut = true;
-bool s_isFinishedTransitioningIn = true;
-std::vector<MenuState*> s_menuStates;
+
+float MenuState::s_secondsInState = 0.0f;
+float MenuState::s_secondsTransitioning = 0.0f;
+bool MenuState::s_isFinishedTransitioningOut = true;
+bool MenuState::s_isFinishedTransitioningIn = true;
+std::vector<MenuState*> MenuState::s_menuStates;
 
 MenuState::MenuState(Camera* camera)
 {
@@ -32,9 +33,9 @@ MenuState::~MenuState()
 	s_menuStates.clear();
 }
 
-void MenuState::Update(float deltaTime)
+void MenuState::Update(float deltaSeconds)
 {
-	UNUSED(deltaTime);
+	UNUSED(deltaSeconds);
 }
 
 void MenuState::PreRender()
@@ -63,10 +64,9 @@ void MenuState::PostRender()
 }
 
 
-float MenuState::UpdateFromInput(float deltaTime)
+float MenuState::UpdateFromInput(float deltaSeconds)
 {
-	//input update tasks here
-	UNUSED(deltaTime);
+	return deltaSeconds;
 }
 
 void MenuState::TransitionIn(float secondsTransitioning)
@@ -87,22 +87,22 @@ void MenuState::TransitionOut(float secondsTransitioning)
 
 //static methods
 
-void MenuState::UpdateGlobalMenuState(float timeDelta)
+void MenuState::UpdateGlobalMenuState(float deltaSeconds)
 {	
-	s_secondsInState += timeDelta;
+	s_secondsInState += deltaSeconds;
 
 	if (g_transitionState != nullptr)
 	{
-		s_secondsTransistioning += timeDelta;
+		s_secondsTransitioning += deltaSeconds;
 
 		//make sure the current state and transition state complete their transitions
 		if (s_isFinishedTransitioningOut == false)
 		{
-			g_currentState->TransitionOut(s_secondsTransistioning);
+			g_currentState->TransitionOut(s_secondsTransitioning);
 		}
 		else if (s_isFinishedTransitioningIn == false)
 		{
-			g_transitionState->TransitionIn(s_secondsTransistioning);
+			g_transitionState->TransitionIn(s_secondsTransitioning);
 		}
 		else
 		{
@@ -112,6 +112,16 @@ void MenuState::UpdateGlobalMenuState(float timeDelta)
 	}
 	
 }
+
+void MenuState::FinishTransition()
+{
+	g_currentState = g_transitionState;
+	s_isFinishedTransitioningIn = true;
+	s_isFinishedTransitioningOut = true;
+	s_secondsInState = 0.0f;
+	s_secondsTransitioning = 0.0f;
+}
+
 
 void MenuState::TransitionMenuStates(MenuState* toState)
 {
@@ -136,6 +146,7 @@ MenuState* MenuState::GetTransitionMenuState()
 	return g_transitionState;
 }
 
+//For now, we assume they will only ever have one of each possible type in the list
 MenuState* MenuState::GetMenuStateFromListByType(eMenuState menuStateType)
 {
 	for (int menuStateIndex = 0; menuStateIndex < (int)s_menuStates.size(); menuStateIndex++)
@@ -149,12 +160,15 @@ MenuState* MenuState::GetMenuStateFromListByType(eMenuState menuStateType)
 	return nullptr;
 }
 
-
-void FinishTransition()
+//For now, we assume they will only ever have one of each possible type in the list
+void MenuState::AddMenuState(MenuState* menuState)
 {
-	g_currentState = g_transitionState;
-	s_isFinishedTransitioningIn = true;
-	s_isFinishedTransitioningOut = true;
-	s_secondsInState = 0.0f;
-	s_secondsTransistioning = 0.0f;
+	s_menuStates.push_back(menuState);
 }
+
+float MenuState::GetSecondsInCurrentState()
+{
+	return s_secondsInState;
+}
+
+

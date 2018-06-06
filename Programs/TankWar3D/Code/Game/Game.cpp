@@ -23,9 +23,6 @@
 //game instance
 static Game* g_theGame = nullptr;
 
-//menu states
-std::vector<MenuState*> menuStates;
-
 bool m_isPaused = false;
 
 Game::Game()
@@ -47,13 +44,6 @@ Game::~Game()
 	m_uiCamera = nullptr;
 
 	//cleanup global members
-
-	//delete menuStates
-	for (int menuStateIndex = 0; menuStateIndex < (int)menuStates.size(); menuStateIndex++)
-	{
-		delete(menuStates[menuStateIndex]);
-	}
-	menuStates.clear();
 
 	//add any other data to cleanup
 }
@@ -96,7 +86,7 @@ void Game::Initialize()
 
 	//add menu states
 	TODO("Add other menu states");
-	menuStates.push_back(new MainMenuState(m_uiCamera));
+	MenuState::AddMenuState(new MainMenuState(m_uiCamera));
 	//loadingMenuState
 	//readyUp
 	//play/level
@@ -111,8 +101,12 @@ void Game::Initialize()
 
 void Game::Update()
 {
-	float timeDelta = m_gameClock->GetDeltaSeconds();
-	MenuState::GetCurrentMenuState()->Update(timeDelta);
+	float deltaSeconds = m_gameClock->GetDeltaSeconds();
+
+	//update global menu data (handles transitions and timers)
+	MenuState::UpdateGlobalMenuState(deltaSeconds);
+
+	MenuState::GetCurrentMenuState()->Update(deltaSeconds);
 }
 
 void Game::PreRender()
@@ -130,11 +124,11 @@ void Game::PostRender()
 	MenuState::GetCurrentMenuState()->PostRender();
 }
 
-float Game::UpdateInput(float timeDelta)
+float Game::UpdateInput(float deltaSeconds)
 {
-	timeDelta = MenuState::GetCurrentMenuState()->UpdateFromInput(timeDelta);
+	deltaSeconds = MenuState::GetCurrentMenuState()->UpdateFromInput(deltaSeconds);
 
-	return timeDelta;
+	return deltaSeconds;
 }
 
 

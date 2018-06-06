@@ -6,7 +6,7 @@ class MainMenuState : public MenuState
 public:
 	MainMenuState(ForwardRenderingPath* renderingPath, Camera* camera) : MenuState(renderingPath, camera)
 	{
-		m_state = MAIN_MENU_STATE;
+		//m_state = MAIN_MENU_STATE;
 	}
 
 	virtual ~MainMenuState() override;

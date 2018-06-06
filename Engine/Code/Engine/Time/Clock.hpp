@@ -64,7 +64,7 @@ private:
 }; 
 
 Clock* GetMasterClock();
-float GetMasterDeltaTime();
+float GetMasterDeltaSeconds();
 void MasterClockBeginFrame();
 
 // returns time since this clock 

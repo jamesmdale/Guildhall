@@ -15,13 +15,3 @@ const Rgba g_backgroundColor = Rgba(1.f, 1.f, 1.f, 1.f);
 //game related globals
 extern bool g_isDebug;
 extern bool g_isQuitting;
-
-enum GameState
-{
-	NONE_STATE,
-	LOADING_STATE,
-	MAIN_MENU_STATE,	
-	READY_UP,
-	PLAYING_STATE,
-	NUM_GAME_STATES
-};

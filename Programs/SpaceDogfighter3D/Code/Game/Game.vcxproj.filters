@@ -34,6 +34,12 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Menu\MainMenuState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu\MenuState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -63,5 +69,7 @@
     <ClInclude Include="Asteroid.hpp">
       <Filter>General</Filter>
     </ClInclude>
+    <ClInclude Include="Menu\MainMenuState.hpp" />
+    <ClInclude Include="Menu\MenuState.hpp" />
   </ItemGroup>
 </Project>

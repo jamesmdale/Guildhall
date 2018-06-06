@@ -113,7 +113,7 @@ void Clock::Reset()
 	m_total.hpcSeconds = 0;
 }
 
-float GetMasterDeltaTime()
+float GetMasterDeltaSeconds()
 {
 	if((float)g_masterClock->m_frame.hpcSeconds < std::numeric_limits<float>::min())
 	{

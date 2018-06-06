@@ -14,13 +14,13 @@ struct Particle
 
 public:
 
-	void Update(float timeDelta)
+	void Update(float deltaSeconds)
 	{
-		m_remainingTimeToLive -= timeDelta;
+		m_remainingTimeToLive -= deltaSeconds;
 
 		Vector3 acceleration = m_force / m_mass;
-		m_velocity += acceleration * timeDelta;
-		m_position += m_velocity * timeDelta;
+		m_velocity += acceleration * deltaSeconds;
+		m_position += m_velocity * deltaSeconds;
 	}
 
 	inline bool IsDead(){ return m_remainingTimeToLive <= 0;}
@@ -61,7 +61,7 @@ public:
 	~ParticleEmitter();
 
 	void Burst();
-	void Update(float timeDelta);
+	void Update(float deltaSeconds);
 	void PreRender();
 
 	inline int GetParticleCount() const {return (int)m_particles.size();}

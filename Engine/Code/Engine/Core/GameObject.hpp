@@ -14,7 +14,7 @@ public:
 
 	virtual ~GameObject();	
 
-	virtual void Update(float deltaTime);
+	virtual void Update(float deltaSeconds);
 	virtual void PreRender();	
 
 	void UpdateRenderableFromTransform();

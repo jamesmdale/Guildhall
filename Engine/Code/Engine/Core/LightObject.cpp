@@ -20,9 +20,9 @@ LightObject::~LightObject()
 	}
 }
 
-void LightObject::Update(float deltaTime)
+void LightObject::Update(float deltaSeconds)
 {
-	UNUSED(deltaTime);
+	UNUSED(deltaSeconds);
 	return;
 }
 

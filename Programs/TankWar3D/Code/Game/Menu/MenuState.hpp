@@ -5,14 +5,14 @@
 #include "Game\Game.hpp"
 #include "Engine\Renderer\RenderScene.hpp"
 
-enum eMenuState
+static enum eMenuState
 {
 	NONE_MENU_STATE,
 	LOADING_MENU_STATE,
 	MAIN_MENU_STATE,	
-	DECK_SELECTION_MENU_STATE,
+	READY_UP_MENU_STATE,
 	PLAYING_MENU_STATE,
-	NUM_GAME_STATES
+	NUM_MENU_STATES
 };
 
 class MenuState
@@ -22,25 +22,36 @@ public:
 
 	virtual ~MenuState();	
 
-	virtual void Update(float deltaTime);
+	virtual void Update(float deltaSeconds);
 	virtual void PreRender();
 	virtual void Render();
 	virtual void PostRender();
-	virtual float UpdateFromInput(float deltaTime);
+	virtual float UpdateFromInput(float deltaSeconds);
 
 	//transition methods
 	virtual void TransitionIn(float secondsTransitioning);
 	virtual void TransitionOut(float secondsTransitioning);
 
 	//static methods
-	static void UpdateGlobalMenuState(float timeDelta);
+	static void UpdateGlobalMenuState(float deltaSeconds);
+
+	TODO("6/5 - Add logic for handling update,prerender,render, etc when transitioning");
 	static void TransitionMenuStates(MenuState* toState);
 	static void TransitionMenuStatesImmediate(MenuState* toState);
 
 	static MenuState* GetCurrentMenuState();
 	static MenuState* GetTransitionMenuState();
 
+	//list managers
+	TODO("6/5 - Add better way of managing these. For now, we assume they only have one max of each possibel type");
 	static MenuState* GetMenuStateFromListByType(eMenuState menuStateType);
+	static void AddMenuState(MenuState* menuState);
+
+	static float GetSecondsInCurrentState();
+
+private:
+	static void FinishTransition();
+	
 
 public:
 	eMenuState m_type = NONE_MENU_STATE;
@@ -49,6 +60,7 @@ public:
 
 	bool m_doesResetOnTransition = true;
 
+private:
 	static float s_secondsInState;
 	static float s_secondsTransitioning;
 	static bool s_isFinishedTransitioningOut;

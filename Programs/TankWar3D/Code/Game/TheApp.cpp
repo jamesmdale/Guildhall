@@ -70,7 +70,7 @@ void TheApp::Initialize()
 
 void TheApp::Update()
 {
-	float deltaSeconds = GetMasterDeltaTime();
+	float deltaSeconds = GetMasterDeltaSeconds();
 	deltaSeconds = UpdateInput(deltaSeconds);
 
 	Game::GetInstance()->Update();
@@ -115,8 +115,6 @@ void TheApp::PostRender()
 
 float TheApp::UpdateInput(float deltaSeconds)
 {
-	UNUSED(deltaSeconds); //remove if deltaSeconds needed
-
 	if(InputSystem::GetInstance()->WasKeyJustPressed((InputSystem::GetInstance()->KEYBOARD_TILDE)))
 	{
 		if(!DevConsole::GetInstance()->IsOpen())
@@ -134,9 +132,15 @@ float TheApp::UpdateInput(float deltaSeconds)
 		g_isQuitting = true;
 	}
 
+	if (!DevConsole::GetInstance()->IsOpen())
+	{
+		deltaSeconds = Game::GetInstance()->UpdateInput(deltaSeconds);
+	}
+
 	return deltaSeconds;
 }
 
+// command callbacks =========================================================================================
 
 void Quit(Command &cmd)
 {

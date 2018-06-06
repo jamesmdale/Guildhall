@@ -46,7 +46,7 @@ void ParticleEmitter::Burst()
 	SpawnParticles(numParticlesToBurst);
 }
 
-void ParticleEmitter::Update(float timeDelta)
+void ParticleEmitter::Update(float deltaSeconds)
 {	
 	MeshBuilder meshBuilder;
 	float timePerParticleSpawn = GetTimePerParticleSpawn();
@@ -55,7 +55,7 @@ void ParticleEmitter::Update(float timeDelta)
 	{
 		if(timePerParticleSpawn > 0.f)
 		{
-			m_timeUntilNextSpawn -= timeDelta;
+			m_timeUntilNextSpawn -= deltaSeconds;
 
 			if(m_timeUntilNextSpawn <= 0.f)
 			{
@@ -76,7 +76,7 @@ void ParticleEmitter::Update(float timeDelta)
 			return; 
 		}
 		
-		m_particles[particleIndex].Update(timeDelta);
+		m_particles[particleIndex].Update(deltaSeconds);
 		
 		meshBuilder.CreateBillboardQuad3d(m_particles[particleIndex].m_position, m_camera->m_transform->GetWorldUp(), m_camera->m_transform->GetWorldRight(), Vector2(1.f, 1.f), Rgba::WHITE);			
 	}	
