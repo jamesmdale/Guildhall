@@ -129,7 +129,7 @@ void DevConsole::PopulateWithNextMostRecentHistoryItem()
 			return;
 		}
 	}
-	
+	 
 	//if we got here nothing was found.  let's put the current history index to the max size of the list and loop again over the ones we missed just in case.
 	//if we still don't find anything, there are no legitimate commands in the list.
 	for(int historyIndex = (int)m_inputHistoryStack.size(); historyIndex > tempHistoryIndex; historyIndex--)
