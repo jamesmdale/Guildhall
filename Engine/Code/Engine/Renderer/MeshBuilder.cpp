@@ -706,12 +706,12 @@ void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> Su
 {
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); 
 
-	int stepAmountX = (uvRangeMax.x - uvRangeMin.x)/sampleFrequency.x;
-	int stepAmountY = (uvRangeMax.y - uvRangeMin.y)/sampleFrequency.y;
+	float stepAmountX = (uvRangeMax.x - uvRangeMin.x)/sampleFrequency.x;
+	float stepAmountY = (uvRangeMax.y - uvRangeMin.y)/sampleFrequency.y;
 
-	for (int v = uvRangeMin.x; v <= uvRangeMax.x; v += stepAmountX)
+	for (float v = uvRangeMin.x; v < uvRangeMax.x; v += stepAmountX)
 	{
-		for (int u = uvRangeMin.y; u <= uvRangeMax.y; u += stepAmountY)
+		for (float u = uvRangeMin.y; u < uvRangeMax.y; u += stepAmountY)
 		{
 			Vector3  vertexPos = SurfacePatchFunc(u, v);
 
@@ -726,19 +726,21 @@ void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> Su
 			SetColor(tint);
 			SetNormal(normal.GetNormalized());
 			SetTangent(Vector4(directionTowardV.GetNormalized(), 1));
+
+			PushVertex(vertexPos);	
 		}
 	}
 
 	//now that we have all the verts...we need to construct faces via indices
 	//best to think of vertexes as a 2D array
-	for (int v = 0; v < sampleFrequency.y; v++)
+	for (int v = 0; v < sampleFrequency.y - 1; v++)
 	{
-		for (int u = 0; u < sampleFrequency.x; u++)
+		for (int u = 0; u < sampleFrequency.x - 1; u++)
 		{
-			int bottomLeftIndex = (u * sampleFrequency.x) + v;
-			int topLeftIndex = bottomLeftIndex + sampleFrequency.y + 1;
+			int bottomLeftIndex = (v * sampleFrequency.x) + u;
+			int topLeftIndex = bottomLeftIndex + sampleFrequency.x;
 			int bottomRightIndex = bottomLeftIndex + 1;
-			int topRightIndex = bottomRightIndex + 1;
+			int topRightIndex = topLeftIndex + 1;
 
 			AddQuadIndices(bottomLeftIndex, bottomRightIndex, topRightIndex, topLeftIndex);
 		}

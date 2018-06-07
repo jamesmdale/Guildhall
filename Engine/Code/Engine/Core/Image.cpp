@@ -22,7 +22,7 @@ Image::Image( const std::string& imageFilePath )
 		if(numComponents == 4)
 		{
 			aData = imageData[offset + 3];
-		}		
+		}
 
 		m_texels.push_back(Rgba(imageData[offset], imageData[offset + 1], imageData[offset + 2], aData));
 	}

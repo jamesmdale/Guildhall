@@ -11,7 +11,7 @@ public:
 
 	Terrain(const std::string& name, Vector3 position, AABB2 bounds, float heightScale, const char* filePath) : GameObject(name)
 	{
-		m_bounds = bounds;
+		m_uvBounds = bounds;
 		m_heightScale = heightScale;
 
 		m_heightMap = new Image(filePath);
@@ -23,7 +23,7 @@ public:
 	virtual ~Terrain() override;
 
 public:
-	AABB2 m_bounds;
+	AABB2 m_uvBounds;
 	float m_heightScale;
 	Image* m_heightMap = nullptr;
 };

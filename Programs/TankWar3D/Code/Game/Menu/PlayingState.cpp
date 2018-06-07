@@ -56,7 +56,7 @@ void PlayingState::Initialize()
 	meshBuilder.CreateUVSphere( Vector3::ZERO, 1.f, 15, 15, Rgba::WHITE);
 	m_playerTank->m_renderable->SetMesh(meshBuilder.CreateMesh<VertexLit>());	
 	m_playerTank->m_renderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("tank"));
-	m_playerTank->m_transform->SetLocalPosition(Vector3::ZERO);
+	m_playerTank->m_transform->SetLocalPosition(Vector3(0.f, 3.f, 0.f));
 	m_playerTank->m_breadCrumbTimer = new Stopwatch(Game::GetInstance()->m_gameClock);
 	m_playerTank->m_breadCrumbTimer->SetTimer(0.5f);
 
@@ -64,9 +64,15 @@ void PlayingState::Initialize()
 	m_renderScene->AddRenderable(m_playerTank->m_renderable);	
 
 	//add terrain
-	/*m_terrain = new Terrain("terrain", Vector3(0.f, -1.f, 0.f), AABB2(Vector2::ZERO, 50.f, 50.f), 1.f, "Data/Images/heightmap.png");
+	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(Vector2::ZERO, 50.f, 50.f), 15.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
-	m_renderScene->AddRenderable(m_terrain->m_renderable);*/
+	m_terrain->m_renderable->SetMaterial(new Material());
+	m_terrain->m_renderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
+	m_terrain->m_renderable->GetMaterial()->SetTexture(m_terrain->m_renderable->GetMaterial()->GetNumTextures(), theRenderer->CreateOrGetTexture("Data/Images/asteroid.png"));
+	m_terrain->m_renderable->GetMaterial()->SetSampler(m_terrain->m_renderable->GetMaterial()->GetNumSamplers(), theRenderer->m_defaultSampler);
+	m_terrain->m_transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
+
+	m_renderScene->AddRenderable(m_terrain->m_renderable);
 
 	theRenderer = nullptr;	
 }

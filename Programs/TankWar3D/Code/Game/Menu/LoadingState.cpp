@@ -17,7 +17,7 @@ void LoadingState::Update(float deltaSeconds)
 
 		//load intensive resources (big textures, audio, etc)
 		theRenderer->CreateOrGetImage("Data/Images/galaxy2.png");
-		theRenderer->CreateOrGetImage("Data/Images/heightmap.png");
+		theRenderer->CreateOrGetImage("Data/Images/terrain.jpg");
 		Sleep(1);
 
 		//after you are finished loading
