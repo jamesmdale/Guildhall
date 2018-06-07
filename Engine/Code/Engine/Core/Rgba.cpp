@@ -92,6 +92,46 @@ void Rgba::SetAlphaAsFloat(float normalizedAlpha)
 	a = (char)(normalizedAlpha * 255);
 }
 
+float Rgba::GetRedAsFloat()
+{
+	float divisor = 1.f / 255.f;
+
+	float red = r * divisor;
+
+	float redNormalized = ClampFloatZeroToOne(red);
+	return redNormalized;
+}
+
+float Rgba::GetGreenAsFloat()
+{
+	float divisor = 1.f / 255.f;
+
+	float green = g * divisor;
+
+	float greenNormalized = ClampFloatZeroToOne(green);
+	return greenNormalized;
+}
+
+float Rgba::GetBlueAsFloat()
+{
+	float divisor = 1.f / 255.f;
+
+	float blue = a * divisor;
+
+	float blueNormalized = ClampFloatZeroToOne(blue);
+	return blueNormalized;
+}
+
+float Rgba::GetAlphaAsFloat()
+{
+	float divisor = 1.f / 255.f;
+
+	float alpha = a * divisor;
+
+	float alphaNormalized = ClampFloatZeroToOne(alpha);
+	return alphaNormalized;
+}
+
 void Rgba::GetAsFloats(float& out_normalizedRed, float& out_normalizedGreen, float& out_normalizedBlue, float& out_normalizedAlpha) const
 {
 	float divisor = 1.f/255.f;
@@ -140,15 +180,7 @@ Vector3 Rgba::ConvertToVector3(const Rgba& color)
 	return outVector;
 }
 
-float Rgba::GetAlphaAsFloat()
-{
-	float divisor = 1.f/255.f;
-	
-	float out_normalizedAlpha = a * divisor;
 
-	out_normalizedAlpha = ClampFloatZeroToOne(out_normalizedAlpha);
-	return out_normalizedAlpha;
-}
 
 
 

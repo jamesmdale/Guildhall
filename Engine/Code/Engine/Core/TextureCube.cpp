@@ -120,7 +120,6 @@ bool TextureCube::MakeFromImage(Image& image)
 	glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 ); 
 	GL_CHECK_ERROR(); 
 
-
 	return GLSucceeded(); 
 }
 

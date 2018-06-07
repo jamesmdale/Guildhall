@@ -13,19 +13,28 @@ public:
 	explicit Rgba(Vector4 color);
 	bool operator==( const Rgba& compare ) const;	
 	bool operator!=(const Rgba& compare) const;
+
+	//setters
 	void SetAsBytes(unsigned char redByte, unsigned char greenByte, unsigned char blueByte, unsigned char alphaByte = 255);
 	void SetAsFloats(float normalizedRed, float normalizedGreen, float normalizedBlue, float normalizedAlpha = 1.0f);
 	void SetRedAsFloat(float normalizedRed);
 	void SetGreenAsFloat(float normalizedGreen);
 	void SetBlueAsFloat(float normalizedBlue);
 	void SetAlphaAsFloat(float normalizedAlpha);
+
+	//getters
+	float GetRedAsFloat();
+	float GetGreenAsFloat();
+	float GetBlueAsFloat();
+	float GetAlphaAsFloat();
 	void GetAsFloats(float& out_normalizedRed, float& out_normalizedGreen, float& out_normalizedBlue, float& out_normalizedAlpha) const;
+
+	//conversions
 	static Vector4 ConvertToVector4(const Rgba& color);
 	static Vector3 ConvertToVector3(const Rgba& color);
 	void ScaleRGB(float rgbScale); //scales (and clamps) rgb components but not A
 	void ScaleAlpha(float alphaScale); //scales and clamps Alpha, RGB is untouched
 	void SetFromText(const char* text);
-	float GetAlphaAsFloat();
 public:
 	unsigned char r; //red byte, 0-255
 	unsigned char g; //green byte, 0-255

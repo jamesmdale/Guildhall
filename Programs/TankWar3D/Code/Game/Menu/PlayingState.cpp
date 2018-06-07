@@ -28,7 +28,7 @@ void PlayingState::Initialize()
 	Rgba lightColor = Rgba::WHITE;
 	LightObject* directionalLight = new LightObject("directionalLight", LIGHT_TYPE_DIRECTIONAL_LIGHT, lightColor, 0.8f, Vector3(1.f, 0.f, 0.f), 1.f, 360.f, 360.f);
 
-	directionalLight->m_transform->SetLocalPosition(Vector3(1000.f, 0.f, 0.f));
+	directionalLight->m_transform->SetLocalPosition(Vector3(500.f, 0.f, 0.f));
 	directionalLight->m_renderScene = m_renderScene;
 
 	meshBuilder.CreateUVSphere( Vector3::ZERO, 20.f, 15, 15, Rgba::WHITE);
@@ -65,7 +65,8 @@ void PlayingState::Initialize()
 
 	//add terrain
 	/*m_terrain = new Terrain("terrain", Vector3(0.f, -1.f, 0.f), AABB2(Vector2::ZERO, 50.f, 50.f), 1.f, "Data/Images/heightmap.png");
-	m_renderScene->AddRenderable(m_terrain);	*/
+	m_terrain->GenerateMeshFromHeightMap();
+	m_renderScene->AddRenderable(m_terrain->m_renderable);*/
 
 	theRenderer = nullptr;	
 }
