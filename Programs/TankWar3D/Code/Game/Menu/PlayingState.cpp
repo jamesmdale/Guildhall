@@ -78,7 +78,7 @@ void PlayingState::Initialize()
 }
 
 void PlayingState::Update(float deltaSeconds)
-{
+{ 
 	m_playerTank->Update(deltaSeconds);
 }
 
