@@ -11,7 +11,7 @@ Terrain::~Terrain()
 	m_heightMap = nullptr;
 }
 
-void Terrain::CreateMeshFromImage(float u, float v)
+Vector3 Terrain::CreateMeshFromImage(float u, float v)
 {
-
+	return Vector3::ONE;
 }
