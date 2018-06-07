@@ -16,15 +16,17 @@ void PlayingState::Initialize()
 	MeshBuilder meshBuilder;
 
 	//position camera behind player
-	m_camera->Translate(Vector3(0.f, 2.f, -5.f));
+	m_camera->Translate(Vector3(0.f, 2.f, -10.f));
 	m_renderScene->AddCamera(m_camera);
 
 	//create directional light
 	Rgba lightColor = Rgba::WHITE;
 	LightObject* directionalLight = new LightObject("directionalLight", LIGHT_TYPE_DIRECTIONAL_LIGHT, lightColor, 0.8f, Vector3(1.f, 0.f, 0.f), 1.f, 360.f, 360.f);
 
-	directionalLight->m_transform->SetLocalPosition(Vector3(200.f, 0.f, 0.f));
+	directionalLight->m_transform->SetLocalPosition(Vector3(1000.f, 0.f, 0.f));
 	directionalLight->m_renderScene = m_renderScene;
+
+	meshBuilder.CreateUVSphere( Vector3::ZERO, 20.f, 15, 15, Rgba::WHITE);
 	directionalLight->m_renderable->SetMesh(meshBuilder.CreateMesh<VertexPCU>());
 	directionalLight->m_renderable->SetMaterial(new Material());
 	directionalLight->m_renderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);

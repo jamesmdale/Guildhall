@@ -54,7 +54,7 @@ void Tank::UpdateFromInput(float timeDelta)
 	mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
 
 	//calculate rotation for camera and use same rotation for tank
-	m_transform->AddRotation(Vector3(mouseDelta.y, 0.f, 0.f) * timeDelta * 10.f);
+	m_transform->AddRotation(Vector3(0.f, mouseDelta.x, 0.f) * timeDelta * 10.f);
 
 	float clampedX = ClampFloat(m_transform->GetLocalRotationAroundX(), -90.f, 90.f);
 	float clampedY = Modulus(m_transform->GetLocalRotationAroundY(), 360.f);
