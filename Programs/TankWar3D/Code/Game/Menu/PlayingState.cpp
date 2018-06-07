@@ -52,6 +52,8 @@ void PlayingState::Initialize()
 	m_playerTank->m_renderable->SetMesh(meshBuilder.CreateMesh<VertexLit>());	
 	m_playerTank->m_renderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("tank"));
 	m_playerTank->m_transform->SetLocalPosition(Vector3::ZERO);
+	m_playerTank->m_breadCrumbTimer = new Stopwatch(Game::GetInstance()->m_gameClock);
+	m_playerTank->m_breadCrumbTimer->SetTimer(0.5f);
 
 	//add tank to lists
 	m_renderScene->AddRenderable(m_playerTank->m_renderable);	

@@ -19,12 +19,18 @@ Tank::~Tank()
 
 void Tank::Update(float timeDelta)
 {
-	return;
+	bool doesAddNewBreadCrumb = m_breadCrumbTimer->Decrement();
+	if (doesAddNewBreadCrumb)
+	{
+		m_breadCrumbTimer->Reset();
+		DebugRender::GetInstance()->CreateDebugPoint(m_transform->GetWorldPosition() + m_transform->GetWorldForward(), .25f, Rgba::GREEN, Rgba::RED, 4.f, LESS_DEPTH_TYPE, m_camera);
+	}
 }
 
 void Tank::PreRender()
 {
 	UpdateRenderableFromTransform();
+
 }
 
 

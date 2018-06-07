@@ -15,6 +15,8 @@ public:
 	virtual ~GameObject();	
 
 	virtual void Update(float deltaSeconds);
+
+	TODO("REMOVE PRERENDER STATES. SOLVED WITH WATCH. THIS IS REDUNDANT");
 	virtual void PreRender();	
 
 	void UpdateRenderableFromTransform();

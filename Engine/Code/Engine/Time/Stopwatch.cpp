@@ -47,7 +47,8 @@ double Stopwatch::GetElapsedTimeInSeconds()
 
 uint64_t Stopwatch::GetElapsedTimeInHPC()
 {
-	return m_referenceClock->m_total.hpc - m_startHPC;
+	uint64_t elapsedHPC = m_referenceClock->m_total.hpc - m_startHPC;
+	return elapsedHPC;
 }
 
 

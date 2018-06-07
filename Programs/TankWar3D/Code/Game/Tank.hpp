@@ -2,6 +2,7 @@
 #include "Engine\Core\LightObject.hpp"
 #include "Engine\Core\GameObject.hpp"
 #include "Engine\Camera\Camera.hpp"
+#include "Engine\Time\Stopwatch.hpp"
 
 class Tank : public GameObject
 {
@@ -27,8 +28,10 @@ public:
 	void SetCamera(Camera* camera);
 	void UpdateFromInput(float timeDelta);
 
+
+
 public:
 	Camera* m_camera = nullptr;
-
+	Stopwatch* m_breadCrumbTimer = nullptr;
 };
 
