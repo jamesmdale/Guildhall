@@ -13,11 +13,20 @@ void LoadingState::Update(float deltaSeconds)
 {
 	if (s_isLoading)
 	{
+		Renderer* theRenderer = Renderer::GetInstance();
+
+		//load intensive resources (big textures, audio, etc)
+		theRenderer->CreateOrGetImage("Data/Images/galaxy2.png");
+		theRenderer->CreateOrGetImage("Data/Images/heightmap.png");
+		Sleep(1);
+
 		//after you are finished loading
 		MenuState* state = GetMenuStateFromGlobalListByType(MAIN_MENU_STATE);
 		GUARANTEE_OR_DIE(state != nullptr, "LOADING STATE TRANSITION: PLAYING STATE NOT FOUND");
 
 		TransitionMenuStatesImmediate(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
+
+		theRenderer = nullptr;
 	}	
 }
 

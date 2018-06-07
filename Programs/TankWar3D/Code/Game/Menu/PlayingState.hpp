@@ -1,6 +1,7 @@
 #pragma once
 #include "Game\Menu\MenuState.hpp"
 #include "Game\Tank.hpp"
+#include "Engine\Core\Terrain.hpp"
 
 
 class PlayingState : public MenuState
@@ -24,5 +25,6 @@ public:
 public:
 	Tank* m_playerTank = nullptr;
 	RenderScene* m_renderScene = nullptr;
+	Terrain* m_terrain = nullptr;
 };
 

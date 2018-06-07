@@ -16,6 +16,7 @@
 #include "Engine\Renderer\UniformBuffer.hpp"
 #include "Engine\Renderer\Material.hpp"
 #include "Engine\Core\Light.hpp"
+#include "Engine\Core\Image.hpp"
 
 //class RenderBuffer;
 //class Mesh;
@@ -26,6 +27,7 @@ class ShaderProgram;
 class Shader;
 struct RenderState; 
 class Material;
+
 
 
 struct LightBuffer
@@ -66,6 +68,7 @@ public:
 	std::map<std::string, Shader*> m_loadedShaders;
 	std::map<std::string, Mesh*> m_loadedMeshes;
 	std::map<std::string, Material*> m_loadedMaterials;
+	std::map<std::string, Image*> m_loadedImages;
 	//std::map<std::string, Material*> m_loadedMaterials
 
 	GLuint m_defaultVAO = 0;
@@ -251,6 +254,7 @@ public:
 	Texture* CreateOrGetTexture(const std::string& imageFilePath );
 	Texture* CreateOrGetTexture(Image& imageFilePath);
 	BitmapFont* CreateOrGetBitmapFont(const char* bitmapFontName);	
+	Image* CreateOrGetImage(const std::string imageFilePath);
 
 };
 

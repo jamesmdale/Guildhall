@@ -2,6 +2,7 @@
 #include "Engine\Core\Image.hpp"
 #include "Engine\Renderer\GlFunctions.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Renderer\Renderer.hpp"
 
 TextureCube::TextureCube()
 {
@@ -125,7 +126,7 @@ bool TextureCube::MakeFromImage(Image& image)
 
 bool TextureCube::MakeFromImage(const char* fileName)
 {
-	Image image = Image(fileName);
+	Image image = *Renderer::GetInstance()->CreateOrGetImage(fileName);
 
 	return MakeFromImage(image);	
 }

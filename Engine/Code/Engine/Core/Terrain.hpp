@@ -1,6 +1,6 @@
 #include "Engine\Core\GameObject.hpp"
 #include "Engine\Math\AABB2.hpp"
-#include "Engine\Renderer\MeshBuilder.hpp"
+//#include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Math\Vector3.hpp"
 
 class Terrain : public GameObject
@@ -17,9 +17,9 @@ public:
 
 		m_heightMap = new Image(filePath);
 
-		/*	MeshBuilder mb;
-			mb.CreateFromSurfacePatch(CreateMeshFromImage, bounds.mins, bounds.maxs, m_heightMap->GetDimensions(), Rgba::WHITE);
-			m_renderable->SetMesh(mb.CreateMesh());*/
+		/*MeshBuilder mb;
+		mb.CreateFromSurfacePatch(CreateMeshFromImage, bounds.mins, bounds.maxs, m_heightMap->GetDimensions(), Rgba::WHITE);
+		m_renderable->SetMesh(mb.CreateMesh());*/
 	}	
 
 	//overrides

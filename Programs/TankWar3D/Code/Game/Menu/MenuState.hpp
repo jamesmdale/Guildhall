@@ -5,7 +5,7 @@
 #include "Game\Game.hpp"
 #include "Engine\Renderer\RenderScene.hpp"
 
-static enum eMenuState
+enum eMenuState
 {
 	NONE_MENU_STATE,
 	LOADING_MENU_STATE,

@@ -5,7 +5,6 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Renderer\GlFunctions.hpp"
 #include <cstddef>
-#include "Engine\Core\Image.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Time\Clock.hpp"
 #include "Engine\Core\Vertex.hpp"
@@ -839,6 +838,22 @@ BitmapFont* Renderer::CreateOrGetBitmapFont(const char* bitmapFontName)
 	else
 	{
 		return m_loadedFonts[bitmapFontName];
+	}
+}
+
+Image * Renderer::CreateOrGetImage(const std::string imageFilePath)
+{
+	std::map<std::string, Image*>::iterator image = m_loadedImages.find(imageFilePath);
+	if (image == m_loadedImages.end())
+	{
+		Image* newImage = new Image(imageFilePath);
+		m_loadedImages[imageFilePath] = newImage;
+
+		return newImage;
+	}
+	else
+	{
+		return m_loadedImages[imageFilePath];
 	}
 }
 

@@ -82,7 +82,7 @@ void Game::Initialize()
 	m_gameCamera->SetPerspective(60.f, CLIENT_ASPECT, 0.1f, 10000.f);
 	m_gameCamera->Translate(Vector3::ZERO);
 
-	m_gameCamera->m_skybox = new Skybox("Data/Images/galaxy2.png");
+	//m_gameCamera->m_skybox = new Skybox("Data/Images/galaxy2.png");
 
 	m_uiCamera = new Camera();
 	m_uiCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());

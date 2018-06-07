@@ -1,13 +1,16 @@
 #include "Game\Menu\PlayingState.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Debug\DebugRender.hpp"
-#include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Core\LightObject.hpp"
+#include "Engine\Renderer\MeshBuilder.hpp"
 
 PlayingState::~PlayingState()
 {
 	delete(m_playerTank);
 	m_playerTank = nullptr;
+
+	delete(m_terrain);
+	m_terrain = nullptr;
 }
 
 void PlayingState::Initialize()
@@ -17,6 +20,8 @@ void PlayingState::Initialize()
 
 	//position camera behind player
 	m_camera->Translate(Vector3(0.f, 2.f, -10.f));
+	m_camera->m_skybox = new Skybox("Data/Images/galaxy2.png");
+
 	m_renderScene->AddCamera(m_camera);
 
 	//create directional light
@@ -57,6 +62,10 @@ void PlayingState::Initialize()
 
 	//add tank to lists
 	m_renderScene->AddRenderable(m_playerTank->m_renderable);	
+
+	//add terrain
+	/*m_terrain = new Terrain("terrain", Vector3(0.f, -1.f, 0.f), AABB2(Vector2::ZERO, 50.f, 50.f), 1.f, "Data/Images/heightmap.png");
+	m_renderScene->AddRenderable(m_terrain);	*/
 
 	theRenderer = nullptr;	
 }
