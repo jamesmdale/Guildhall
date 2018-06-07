@@ -6,6 +6,7 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\Vertex.hpp"
 #include "Engine\Math\AABB2.hpp"
+#include <functional>
 
 class MeshBuilder
 {
@@ -54,6 +55,10 @@ public:
 	void CreateText2D(const Vector2& center, float cellHeight, float aspectScale, const std::string& text);
 	void CreateBillboardQuad3d(const Vector3& center, const Vector3& up, const Vector3& right, const Vector2& dimensions, const Rgba& tint);
 
+	//surface patch implementation
+	void CreateFromSurfacePatch(std::function<Vector3(float, float)> SurfacePatchFunc, const Vector2& uvRangeMin, const Vector2& uvRangeMax, int sampleFrequency, const Rgba& tint);
+
+	//load from file
 	void LoadObjectFromFile( const std::string& objFilePath);
 	Vector4 GenerateTangent(const Vector3& normal);
 

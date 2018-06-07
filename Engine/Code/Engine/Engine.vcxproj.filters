@@ -250,6 +250,9 @@
     <ClCompile Include="Renderer\RenderScene2D.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -351,6 +354,7 @@
     <ClInclude Include="Renderer\Renderable2D.hpp" />
     <ClInclude Include="Core\Widget.hpp" />
     <ClInclude Include="Renderer\RenderScene2D.hpp" />
+    <ClInclude Include="Terrain.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

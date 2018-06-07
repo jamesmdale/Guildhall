@@ -16,7 +16,7 @@ void PlayingState::Initialize()
 	MeshBuilder meshBuilder;
 
 	//position camera behind player
-	m_camera->Translate(Vector3(0.f, 5.f, -20.f));
+	m_camera->Translate(Vector3(0.f, 2.f, -5.f));
 	m_renderScene->AddCamera(m_camera);
 
 	//create directional light

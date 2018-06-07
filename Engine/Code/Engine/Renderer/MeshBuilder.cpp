@@ -702,6 +702,48 @@ void MeshBuilder::CreateBillboardQuad3d(const Vector3& center, const Vector3& up
 }
 
 
+void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> SurfacePatchFunc, const Vector2& uvRangeMin, const Vector2& uvRangeMax, int sampleFrequency, const Rgba& tint)
+{
+	Begin(TRIANGLES_DRAW_PRIMITIVE, true); 
+
+	Vector2 stepAmount = (uvRangeMax - uvRangeMin)/sampleFrequency;
+	for (int v = uvRangeMin.x; v <= uvRangeMax.x; v += stepAmount.x)
+	{
+		for (int u = uvRangeMin.y; u <= uvRangeMax.y; u += stepAmount.y)
+		{
+			Vector3  vertexPos = SurfacePatchFunc(u, v);
+
+			Vector3 stepTowardNextU = SurfacePatchFunc(u + stepAmount.x, v);
+			Vector3 stepTowardNextV = SurfacePatchFunc(u, v + stepAmount.y);
+			Vector3 directionTowardU = vertexPos - stepTowardNextU;
+			Vector3 directionTowardV = vertexPos - stepTowardNextV;
+
+			Vector3 normal = CrossProduct(directionTowardU, directionTowardV);
+
+			SetUV(Vector2(u, v));
+			SetColor(tint);
+			SetNormal(normal.GetNormalized());
+			SetTangent(Vector4(directionTowardV.GetNormalized(), 1));
+		}
+	}
+
+	//now that we have all the verts...we need to construct faces via indices
+	//best to think of vertexes as a 2D array
+	for (int v = 0; v < sampleFrequency; v++)
+	{
+		for (int u = 0; u < sampleFrequency; u++)
+		{
+			int bottomLeftIndex = (u * sampleFrequency) + v;
+			int topLeftIndex = bottomLeftIndex + sampleFrequency + 1;
+			int bottomRightIndex = bottomLeftIndex + 1;
+			int topRightIndex = bottomRightIndex + 1;
+
+			AddQuadIndices(bottomLeftIndex, bottomRightIndex, topRightIndex, topLeftIndex);
+		}
+	}
+
+	return;
+}
 
 void MeshBuilder::LoadObjectFromFile(const std::string& objFilePath)
 {
