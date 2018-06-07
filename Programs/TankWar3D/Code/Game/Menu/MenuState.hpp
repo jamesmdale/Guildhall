@@ -33,6 +33,9 @@ public:
 	virtual void TransitionOut(float secondsTransitioning);
 
 	virtual void ResetState();
+	virtual void Initialize();
+
+	bool IsInitialized(){return m_isInitialized;};
 
 	//static methods
 	static void UpdateGlobalMenuState(float deltaSeconds);
@@ -51,8 +54,11 @@ public:
 
 	static float GetSecondsInCurrentState();
 
+	
+
 private:
 	static void FinishTransition();
+	bool m_isInitialized = false;
 	
 
 public:
@@ -61,6 +67,7 @@ public:
 	RenderScene* m_renderScene = nullptr;
 
 	bool m_doesResetOnTransition = true;
+	
 
 private:
 	static float s_secondsInState;

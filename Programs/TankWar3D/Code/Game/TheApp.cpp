@@ -11,6 +11,7 @@
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\File\ObjectFileLoader.hpp"
+#include "Game\Menu\MenuState.hpp"
 
 TheApp* g_theApp = nullptr;
 
@@ -71,6 +72,10 @@ void TheApp::Initialize()
 void TheApp::Update()
 {
 	float deltaSeconds = GetMasterDeltaSeconds();
+
+	//update global menu data (handles transitions and timers)
+	MenuState::UpdateGlobalMenuState(deltaSeconds);
+
 	deltaSeconds = UpdateInput(deltaSeconds);
 
 	Game::GetInstance()->Update();

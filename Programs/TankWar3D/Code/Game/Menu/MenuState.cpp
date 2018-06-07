@@ -90,6 +90,12 @@ void MenuState::ResetState()
 	//reset menu options or game states here
 }
 
+void MenuState::Initialize()
+{
+	//run initialization tasks here
+	m_isInitialized = true;
+}
+
 //static methods
 
 void MenuState::UpdateGlobalMenuState(float deltaSeconds)
@@ -127,6 +133,12 @@ void MenuState::FinishTransition()
 	s_isFinishedTransitioningOut = true;
 	s_secondsInState = 0.0f;
 	s_secondsTransitioning = 0.0f;
+
+	if (!g_currentState->IsInitialized())
+	{
+		g_currentState->Initialize();
+	}
+	
 }
 
 

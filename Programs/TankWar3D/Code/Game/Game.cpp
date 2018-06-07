@@ -80,7 +80,7 @@ void Game::Initialize()
 	m_gameCamera->SetDepthStencilTarget(theRenderer->GetDefaultDepthStencilTarget());
 	m_gameCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
 	m_gameCamera->SetPerspective(60.f, CLIENT_ASPECT, 0.1f, 10000.f);
-	m_gameCamera->Translate(Vector3(0.f, 5.f, -20.f));
+	m_gameCamera->Translate(Vector3::ZERO);
 
 	m_uiCamera = new Camera();
 	m_uiCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
@@ -92,7 +92,7 @@ void Game::Initialize()
 	MenuState::AddMenuState(new LoadingState(m_uiCamera));
 	MenuState::AddMenuState(new MainMenuState(m_uiCamera));
 	MenuState::AddMenuState(new ReadyState(m_uiCamera));
-	MenuState::AddMenuState(new PlayingState(m_uiCamera));
+	MenuState::AddMenuState(new PlayingState(m_gameCamera));
 	//loadingMenuState
 	//readyUp
 	//play/level
@@ -109,9 +109,6 @@ void Game::Initialize()
 void Game::Update()
 {
 	float deltaSeconds = m_gameClock->GetDeltaSeconds();
-
-	//update global menu data (handles transitions and timers)
-	MenuState::UpdateGlobalMenuState(deltaSeconds);
 
 	MenuState::GetCurrentMenuState()->Update(deltaSeconds);
 }

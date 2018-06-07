@@ -27,6 +27,9 @@ void ForwardRenderingPath::RenderSceneForCamera(Camera* camera, RenderScene* sce
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	theRenderer->SetCamera(camera);
+	theRenderer->ClearDepth(1.f);
+	theRenderer->ClearColor(Rgba::BLACK);
+
 	if (camera->m_skybox != nullptr)
 	{
 		theRenderer->DrawSkybox(camera->m_skybox);

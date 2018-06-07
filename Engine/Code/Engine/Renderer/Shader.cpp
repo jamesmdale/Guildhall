@@ -1,6 +1,8 @@
 #include "Engine\Renderer\Shader.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Renderer\ShaderProgram.hpp"
+#include "Engine\Core\EngineCommon.hpp"
+
 Shader::Shader()
 {
 	m_program = nullptr;
@@ -97,6 +99,13 @@ void Shader::ResetRenderState()
 	m_state.m_alphaBlendOperation = BLEND_OP_ADD;			// COMPARE_ADD
 	m_state.m_alphaSourceFactor = BLEND_SOURCE_ALPHA;				// BLEND_ONE
 	m_state.m_alphaDestinationFactor = BLEND_ONE_MINUS_SOURCE_ALPHA;			// BLEND_ONE
+
+	//sorting and alpha
+	m_sortingLayer = 0;
+	m_renderQueueType = RENDER_QUEUE_OPAQUE;
+	m_bindings.clear();
+
+	TODO("reset does use lighting");
 }
 
 
