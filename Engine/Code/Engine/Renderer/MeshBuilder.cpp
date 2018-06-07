@@ -702,19 +702,21 @@ void MeshBuilder::CreateBillboardQuad3d(const Vector3& center, const Vector3& up
 }
 
 
-void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> SurfacePatchFunc, const Vector2& uvRangeMin, const Vector2& uvRangeMax, int sampleFrequency, const Rgba& tint)
+void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> SurfacePatchFunc, const Vector2& uvRangeMin, const Vector2& uvRangeMax, const IntVector2& sampleFrequency, const Rgba& tint)
 {
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); 
 
-	Vector2 stepAmount = (uvRangeMax - uvRangeMin)/sampleFrequency;
-	for (int v = uvRangeMin.x; v <= uvRangeMax.x; v += stepAmount.x)
+	int stepAmountX = (uvRangeMax.x - uvRangeMin.x)/sampleFrequency.x;
+	int stepAmountY = (uvRangeMax.y - uvRangeMin.y)/sampleFrequency.y;
+
+	for (int v = uvRangeMin.x; v <= uvRangeMax.x; v += stepAmountX)
 	{
-		for (int u = uvRangeMin.y; u <= uvRangeMax.y; u += stepAmount.y)
+		for (int u = uvRangeMin.y; u <= uvRangeMax.y; u += stepAmountY)
 		{
 			Vector3  vertexPos = SurfacePatchFunc(u, v);
 
-			Vector3 stepTowardNextU = SurfacePatchFunc(u + stepAmount.x, v);
-			Vector3 stepTowardNextV = SurfacePatchFunc(u, v + stepAmount.y);
+			Vector3 stepTowardNextU = SurfacePatchFunc(u + stepAmountX, v);
+			Vector3 stepTowardNextV = SurfacePatchFunc(u, v + stepAmountY);
 			Vector3 directionTowardU = vertexPos - stepTowardNextU;
 			Vector3 directionTowardV = vertexPos - stepTowardNextV;
 
@@ -729,12 +731,12 @@ void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> Su
 
 	//now that we have all the verts...we need to construct faces via indices
 	//best to think of vertexes as a 2D array
-	for (int v = 0; v < sampleFrequency; v++)
+	for (int v = 0; v < sampleFrequency.y; v++)
 	{
-		for (int u = 0; u < sampleFrequency; u++)
+		for (int u = 0; u < sampleFrequency.x; u++)
 		{
-			int bottomLeftIndex = (u * sampleFrequency) + v;
-			int topLeftIndex = bottomLeftIndex + sampleFrequency + 1;
+			int bottomLeftIndex = (u * sampleFrequency.x) + v;
+			int topLeftIndex = bottomLeftIndex + sampleFrequency.y + 1;
 			int bottomRightIndex = bottomLeftIndex + 1;
 			int topRightIndex = bottomRightIndex + 1;
 
@@ -744,6 +746,7 @@ void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> Su
 
 	return;
 }
+
 
 void MeshBuilder::LoadObjectFromFile(const std::string& objFilePath)
 {

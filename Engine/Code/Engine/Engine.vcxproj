@@ -62,7 +62,7 @@
     <ClCompile Include="Core\TextureCube.cpp" />
     <ClCompile Include="Camera\Skybox.cpp" />
     <ClCompile Include="Renderer\RenderScene2D.cpp" />
-    <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="Core\Terrain.cpp" />
     <ClCompile Include="Time\Stopwatch.cpp" />
     <ClCompile Include="Time\Clock.cpp" />
     <ClCompile Include="Time\Time.cpp" />
@@ -146,7 +146,7 @@
     <ClInclude Include="Core\TextureCube.hpp" />
     <ClInclude Include="Camera\Skybox.hpp" />
     <ClInclude Include="Renderer\RenderScene2D.hpp" />
-    <ClInclude Include="Terrain.hpp" />
+    <ClInclude Include="Core\Terrain.hpp" />
     <ClInclude Include="Time\Stopwatch.hpp" />
     <ClInclude Include="Time\Clock.hpp" />
     <ClInclude Include="Time\Time.hpp" />
