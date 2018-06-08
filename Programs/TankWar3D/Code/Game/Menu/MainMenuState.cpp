@@ -85,7 +85,7 @@ float MainMenuState::UpdateFromInput(float deltaSeconds)
 		{
 		case(PLAY):
 			ResetState();
-			MenuState::TransitionMenuStates(GetMenuStateFromGlobalListByType(READY_UP_MENU_STATE));
+			GameState::TransitionMenuStates(GetMenuStateFromGlobalListByType(READY_UP_MENU_STATE));
 			break;
 		case(EXIT):
 			g_isQuitting = true;

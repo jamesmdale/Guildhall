@@ -706,26 +706,23 @@ void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> Su
 {
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); 
 
-	float stepAmountX = (uvRangeMax.x - uvRangeMin.x)/sampleFrequency.x;
-	float stepAmountY = (uvRangeMax.y - uvRangeMin.y)/sampleFrequency.y;
+	float stepAmountX = ((uvRangeMax.x  - uvRangeMin.x)/sampleFrequency.x) * cellUniformScale;
+	float stepAmountY = ((uvRangeMax.y - uvRangeMin.y)/sampleFrequency.y) * cellUniformScale;
 
-	Vector3 uniformScale = Vector3(cellUniformScale, 1.f, cellUniformScale);
-
-	for (float v = uvRangeMin.x; v < uvRangeMax.x; v += stepAmountX)
+	for (float v = uvRangeMin.x * cellUniformScale; v < uvRangeMax.x * cellUniformScale; v += stepAmountX)
 	{
-		for (float u = uvRangeMin.y; u < uvRangeMax.y; u += stepAmountY)
+		for (float u = uvRangeMin.y * cellUniformScale; u < uvRangeMax.y * cellUniformScale; u += stepAmountY)
 		{
 			Vector3 vertexPos = SurfacePatchFunc(u, v);
-			vertexPos *= uniformScale;
 
-			Vector3 stepTowardNextU = SurfacePatchFunc(u + stepAmountX, v) * uniformScale;
-			Vector3 stepTowardNextV = SurfacePatchFunc(u, v + stepAmountY) * uniformScale;
+			Vector3 stepTowardNextU = SurfacePatchFunc(u + stepAmountX, v);
+			Vector3 stepTowardNextV = SurfacePatchFunc(u, v + stepAmountY);
 			Vector3 directionTowardU = vertexPos - stepTowardNextU;
 			Vector3 directionTowardV = vertexPos - stepTowardNextV;
 
 			Vector3 normal = CrossProduct(directionTowardU, directionTowardV);
 
-			SetUV(Vector2(u, v));
+			SetUV(Vector2(vertexPos.x, vertexPos.y));
 			SetColor(tint);
 			SetNormal(normal.GetNormalized());
 			SetTangent(Vector4(directionTowardV.GetNormalized(), 1));

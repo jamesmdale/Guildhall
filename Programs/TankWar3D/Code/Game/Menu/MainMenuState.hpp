@@ -8,10 +8,10 @@ enum eMainMenuOptions
 	NUM_MAIN_MENU_OPTIONS
 };
 
-class MainMenuState : public MenuState
+class MainMenuState : public GameState
 {
 public:
-	MainMenuState(Camera* camera) : MenuState(camera)
+	MainMenuState(Camera* camera) : GameState(camera)
 	{
 		m_type = MAIN_MENU_STATE;
 		m_backGroundTexture = Renderer::GetInstance()->CreateOrGetTexture("default");

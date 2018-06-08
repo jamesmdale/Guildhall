@@ -8,7 +8,7 @@ class Terrain : public GameObject
 public:
 	Terrain();
 
-	Vector3 CreateMeshFromImage(float u, float v);
+	Vector3 GetTerrainVertexPositionAtUV(float u, float v);
 
 	Terrain(const std::string& name, Vector3 position, AABB2 bounds, float cellScale, float heightScale, const char* filePath) : GameObject(name)
 	{
@@ -21,7 +21,7 @@ public:
 
 	void GenerateMeshFromHeightMap();
 
-	float GetHeightAtPosition(Vector2 position);
+	float GetHeightAtPositionXZ(Vector2 positionXZ);
 
 	//overrides
 	virtual ~Terrain() override;

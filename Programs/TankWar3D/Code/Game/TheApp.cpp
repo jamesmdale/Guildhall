@@ -74,7 +74,7 @@ void TheApp::Update()
 	float deltaSeconds = GetMasterDeltaSeconds();
 
 	//update global menu data (handles transitions and timers)
-	MenuState::UpdateGlobalMenuState(deltaSeconds);
+	GameState::UpdateGlobalMenuState(deltaSeconds);
 
 	deltaSeconds = UpdateInput(deltaSeconds);
 

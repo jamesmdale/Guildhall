@@ -1,13 +1,12 @@
 #pragma once
 #include "Game\Menu\MenuState.hpp"
-#include "Game\Tank.hpp"
 #include "Engine\Core\Terrain.hpp"
 
-
-class PlayingState : public MenuState
+class Tank;
+class PlayingState : public GameState
 {
 public:
-	PlayingState(Camera* camera) : MenuState(camera)
+	PlayingState(Camera* camera) : GameState(camera)
 	{
 		m_type = PLAYING_MENU_STATE;
 		m_renderScene = new RenderScene();

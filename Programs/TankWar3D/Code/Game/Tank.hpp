@@ -3,6 +3,7 @@
 #include "Engine\Core\GameObject.hpp"
 #include "Engine\Camera\Camera.hpp"
 #include "Engine\Time\Stopwatch.hpp"
+#include "Game\Menu\PlayingState.hpp"
 
 class Tank : public GameObject
 {
@@ -33,5 +34,6 @@ public:
 public:
 	Camera* m_camera = nullptr;
 	Stopwatch* m_breadCrumbTimer = nullptr;
+	PlayingState* m_playingState = nullptr;
 };
 

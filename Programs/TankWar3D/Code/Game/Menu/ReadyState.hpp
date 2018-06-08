@@ -7,10 +7,10 @@ enum eReadyStateOptions
 	NUM_READY_STATE_OPTIONS
 };
 
-class ReadyState : public MenuState
+class ReadyState : public GameState
 {
 public:
-	ReadyState(Camera* camera) : MenuState(camera)
+	ReadyState(Camera* camera) : GameState(camera)
 	{
 		m_type = READY_UP_MENU_STATE;
 		m_backGroundTexture = Renderer::GetInstance()->CreateOrGetTexture("default");

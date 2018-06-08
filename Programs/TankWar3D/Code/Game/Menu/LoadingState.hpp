@@ -1,10 +1,10 @@
 #pragma once
 #include "Game\Menu\MenuState.hpp"
 
-class LoadingState : public MenuState
+class LoadingState : public GameState
 {
 public:
-	LoadingState(Camera* camera) : MenuState(camera)
+	LoadingState(Camera* camera) : GameState(camera)
 	{
 		m_type = LOADING_MENU_STATE;
 		m_backGroundTexture = Renderer::GetInstance()->CreateOrGetTexture("default");

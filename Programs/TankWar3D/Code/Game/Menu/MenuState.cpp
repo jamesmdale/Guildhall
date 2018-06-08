@@ -1,16 +1,16 @@
 #include "Game\Menu\MenuState.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 
-MenuState* g_currentState = nullptr;
-MenuState* g_transitionState = nullptr;
+GameState* g_currentState = nullptr;
+GameState* g_transitionState = nullptr;
 
-float MenuState::s_secondsInState = 0.0f;
-float MenuState::s_secondsTransitioning = 0.0f;
-bool MenuState::s_isFinishedTransitioningOut = true;
-bool MenuState::s_isFinishedTransitioningIn = true;
-std::vector<MenuState*> MenuState::s_menuStates;
+float GameState::s_secondsInState = 0.0f;
+float GameState::s_secondsTransitioning = 0.0f;
+bool GameState::s_isFinishedTransitioningOut = true;
+bool GameState::s_isFinishedTransitioningIn = true;
+std::vector<GameState*> GameState::s_menuStates;
 
-MenuState::MenuState(Camera* camera)
+GameState::GameState(Camera* camera)
 {
 	m_camera = camera;
 	m_renderScene = new RenderScene();
@@ -18,7 +18,7 @@ MenuState::MenuState(Camera* camera)
 	m_renderScene->AddCamera(m_camera);
 }
 
-MenuState::~MenuState()
+GameState::~GameState()
 {	
 	delete(m_renderScene);
 	m_renderScene = nullptr;
@@ -33,17 +33,17 @@ MenuState::~MenuState()
 	s_menuStates.clear();
 }
 
-void MenuState::Update(float deltaSeconds)
+void GameState::Update(float deltaSeconds)
 {
 	UNUSED(deltaSeconds);
 }
 
-void MenuState::PreRender()
+void GameState::PreRender()
 {
 	//prerender tasks here
 }
 
-void MenuState::Render()
+void GameState::Render()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
 	theRenderer->SetCamera(m_camera);
@@ -58,18 +58,18 @@ void MenuState::Render()
 	theRenderer = nullptr;
 }
 
-void MenuState::PostRender()
+void GameState::PostRender()
 {
 	//postrender tasks here
 }
 
 
-float MenuState::UpdateFromInput(float deltaSeconds)
+float GameState::UpdateFromInput(float deltaSeconds)
 {
 	return deltaSeconds;
 }
 
-void MenuState::TransitionIn(float secondsTransitioning)
+void GameState::TransitionIn(float secondsTransitioning)
 {
 	/*	does whatever it wants in terms of transitioning. when finished,
 	set s_isFinishedTransitioningIn to true
@@ -77,7 +77,7 @@ void MenuState::TransitionIn(float secondsTransitioning)
 	s_isFinishedTransitioningIn = true;
 }
 
-void MenuState::TransitionOut(float secondsTransitioning)
+void GameState::TransitionOut(float secondsTransitioning)
 {
 	/*	does whatever it wants in terms of transitioning. when finished,
 		set s_isFinishedTransitioningOut to true
@@ -85,12 +85,12 @@ void MenuState::TransitionOut(float secondsTransitioning)
 	s_isFinishedTransitioningOut = true;
 }
 
-void MenuState::ResetState()
+void GameState::ResetState()
 {
 	//reset menu options or game states here
 }
 
-void MenuState::Initialize()
+void GameState::Initialize()
 {
 	//run initialization tasks here
 	m_isInitialized = true;
@@ -98,7 +98,7 @@ void MenuState::Initialize()
 
 //static methods
 
-void MenuState::UpdateGlobalMenuState(float deltaSeconds)
+void GameState::UpdateGlobalMenuState(float deltaSeconds)
 {	
 	s_secondsInState += deltaSeconds;
 
@@ -125,7 +125,7 @@ void MenuState::UpdateGlobalMenuState(float deltaSeconds)
 	
 }
 
-void MenuState::FinishTransition()
+void GameState::FinishTransition()
 {
 	g_currentState = g_transitionState;
 	g_transitionState = nullptr;
@@ -142,7 +142,7 @@ void MenuState::FinishTransition()
 }
 
 
-void MenuState::TransitionMenuStates(MenuState* toState)
+void GameState::TransitionMenuStates(GameState* toState)
 {
 	GUARANTEE_OR_DIE(toState != nullptr, "INVALID MENU STATE TRANSITION");
 
@@ -151,7 +151,7 @@ void MenuState::TransitionMenuStates(MenuState* toState)
 	s_isFinishedTransitioningIn = false;
 }
 
-void MenuState::TransitionMenuStatesImmediate( MenuState* toState)
+void GameState::TransitionMenuStatesImmediate( GameState* toState)
 {
 	GUARANTEE_OR_DIE(toState != nullptr, "INVALID MENU STATE TRANSITION");
 	g_transitionState = toState;
@@ -159,18 +159,18 @@ void MenuState::TransitionMenuStatesImmediate( MenuState* toState)
 	s_isFinishedTransitioningIn = true;
 }
 
-MenuState* MenuState::GetCurrentMenuState()
+GameState* GameState::GetCurrentMenuState()
 {
 	return g_currentState;
 }
 
-MenuState* MenuState::GetTransitionMenuState()
+GameState* GameState::GetTransitionMenuState()
 {
 	return g_transitionState;
 }
 
 //For now, we assume they will only ever have one of each possible type in the list
-MenuState* MenuState::GetMenuStateFromGlobalListByType(eMenuState menuStateType)
+GameState* GameState::GetMenuStateFromGlobalListByType(eGameState menuStateType)
 {
 	for (int menuStateIndex = 0; menuStateIndex < (int)s_menuStates.size(); menuStateIndex++)
 	{
@@ -184,12 +184,12 @@ MenuState* MenuState::GetMenuStateFromGlobalListByType(eMenuState menuStateType)
 }
 
 //For now, we assume they will only ever have one of each possible type in the list
-void MenuState::AddMenuState(MenuState* menuState)
+void GameState::AddMenuState(GameState* menuState)
 {
 	s_menuStates.push_back(menuState);
 }
 
-float MenuState::GetSecondsInCurrentState()
+float GameState::GetSecondsInCurrentState()
 {
 	return s_secondsInState;
 }

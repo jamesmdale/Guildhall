@@ -5,7 +5,7 @@
 #include "Game\Game.hpp"
 #include "Engine\Renderer\RenderScene.hpp"
 
-enum eMenuState
+enum eGameState
 {
 	NONE_MENU_STATE,
 	LOADING_MENU_STATE,
@@ -15,12 +15,12 @@ enum eMenuState
 	NUM_MENU_STATES
 };
 
-class MenuState
+class GameState
 {
 public:
-	MenuState(Camera* camera);
+	GameState(Camera* camera);
 
-	virtual ~MenuState();	
+	virtual ~GameState();	
 
 	virtual void Update(float deltaSeconds);
 	virtual void PreRender();
@@ -41,16 +41,16 @@ public:
 	static void UpdateGlobalMenuState(float deltaSeconds);
 
 	TODO("6/5 - Add logic for handling update,prerender,render, etc when transitioning");
-	static void TransitionMenuStates(MenuState* toState);
-	static void TransitionMenuStatesImmediate(MenuState* toState);
+	static void TransitionMenuStates(GameState* toState);
+	static void TransitionMenuStatesImmediate(GameState* toState);
 
-	static MenuState* GetCurrentMenuState();
-	static MenuState* GetTransitionMenuState();
+	static GameState* GetCurrentMenuState();
+	static GameState* GetTransitionMenuState();
 
 	//list managers
 	TODO("6/5 - Add better way of managing these. For now, we assume they only have one max of each possibel type");
-	static MenuState* GetMenuStateFromGlobalListByType(eMenuState menuStateType);
-	static void AddMenuState(MenuState* menuState);
+	static GameState* GetMenuStateFromGlobalListByType(eGameState menuStateType);
+	static void AddMenuState(GameState* menuState);
 
 	static float GetSecondsInCurrentState();
 
@@ -62,7 +62,7 @@ private:
 	
 
 public:
-	eMenuState m_type = NONE_MENU_STATE;
+	eGameState m_type = NONE_MENU_STATE;
 	Camera* m_camera = nullptr;
 	RenderScene* m_renderScene = nullptr;
 
@@ -74,11 +74,11 @@ private:
 	static float s_secondsTransitioning;
 	static bool s_isFinishedTransitioningOut;
 	static bool s_isFinishedTransitioningIn;
-	static std::vector<MenuState*> s_menuStates;
+	static std::vector<GameState*> s_menuStates;
 };
 
 //static variables
-extern MenuState* g_currentState;
-extern MenuState* g_transitionState;
+extern GameState* g_currentState;
+extern GameState* g_transitionState;
 
 

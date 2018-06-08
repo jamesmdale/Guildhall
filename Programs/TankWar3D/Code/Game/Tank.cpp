@@ -15,6 +15,7 @@ Tank::Tank()
 Tank::~Tank()
 {
 	m_camera = nullptr;
+	m_playingState = nullptr;
 }
 
 void Tank::Update(float timeDelta)
@@ -25,12 +26,17 @@ void Tank::Update(float timeDelta)
 		m_breadCrumbTimer->Reset();
 		DebugRender::GetInstance()->CreateDebugPoint(m_transform->GetWorldPosition() + m_transform->GetWorldForward(), .25f, Rgba::GREEN, Rgba::RED, 4.f, LESS_DEPTH_TYPE, m_camera);
 	}
+	
+	Vector3 currentPosition = m_transform->GetWorldPosition();
+	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
+
+	/*m_transform->TranslatePosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));*/
+	m_transform->SetLocalPosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));
 }
 
 void Tank::PreRender()
 {
 	UpdateRenderableFromTransform();
-
 }
 
 

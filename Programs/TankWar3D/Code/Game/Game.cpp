@@ -91,17 +91,17 @@ void Game::Initialize()
 
 	//add menu states
 	TODO("Add other menu states");
-	MenuState::AddMenuState(new LoadingState(m_uiCamera));
-	MenuState::AddMenuState(new MainMenuState(m_uiCamera));
-	MenuState::AddMenuState(new ReadyState(m_uiCamera));
-	MenuState::AddMenuState(new PlayingState(m_gameCamera));
+	GameState::AddMenuState(new LoadingState(m_uiCamera));
+	GameState::AddMenuState(new MainMenuState(m_uiCamera));
+	GameState::AddMenuState(new ReadyState(m_uiCamera));
+	GameState::AddMenuState(new PlayingState(m_gameCamera));
 	//loadingMenuState
 	//readyUp
 	//play/level
 
 	//set to initial menu
-	MenuState::TransitionMenuStatesImmediate(MenuState::GetMenuStateFromGlobalListByType(LOADING_MENU_STATE));
-	MenuState::UpdateGlobalMenuState(0);
+	GameState::TransitionMenuStatesImmediate(GameState::GetMenuStateFromGlobalListByType(LOADING_MENU_STATE));
+	GameState::UpdateGlobalMenuState(0);
 
 	//cleanup
 	theRenderer = nullptr;
@@ -112,27 +112,27 @@ void Game::Update()
 {
 	float deltaSeconds = m_gameClock->GetDeltaSeconds();
 
-	MenuState::GetCurrentMenuState()->Update(deltaSeconds);
+	GameState::GetCurrentMenuState()->Update(deltaSeconds);
 }
 
 void Game::PreRender()
 {
-	MenuState::GetCurrentMenuState()->PreRender();
+	GameState::GetCurrentMenuState()->PreRender();
 }
 
 void Game::Render()
 {
-	MenuState::GetCurrentMenuState()->Render();
+	GameState::GetCurrentMenuState()->Render();
 }
 
 void Game::PostRender()
 {
-	MenuState::GetCurrentMenuState()->PostRender();
+	GameState::GetCurrentMenuState()->PostRender();
 }
 
 float Game::UpdateInput(float deltaSeconds)
 {
-	deltaSeconds = MenuState::GetCurrentMenuState()->UpdateFromInput(deltaSeconds);
+	deltaSeconds = GameState::GetCurrentMenuState()->UpdateFromInput(deltaSeconds);
 
 	return deltaSeconds;
 }
