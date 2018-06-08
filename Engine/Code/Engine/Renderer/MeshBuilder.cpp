@@ -702,21 +702,24 @@ void MeshBuilder::CreateBillboardQuad3d(const Vector3& center, const Vector3& up
 }
 
 
-void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> SurfacePatchFunc, const Vector2& uvRangeMin, const Vector2& uvRangeMax, const IntVector2& sampleFrequency, const Rgba& tint)
+void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> SurfacePatchFunc, const Vector2& uvRangeMin, const Vector2& uvRangeMax, const IntVector2& sampleFrequency, float cellUniformScale, const Rgba& tint)
 {
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); 
 
 	float stepAmountX = (uvRangeMax.x - uvRangeMin.x)/sampleFrequency.x;
 	float stepAmountY = (uvRangeMax.y - uvRangeMin.y)/sampleFrequency.y;
 
+	Vector3 uniformScale = Vector3(cellUniformScale, 1.f, cellUniformScale);
+
 	for (float v = uvRangeMin.x; v < uvRangeMax.x; v += stepAmountX)
 	{
 		for (float u = uvRangeMin.y; u < uvRangeMax.y; u += stepAmountY)
 		{
-			Vector3  vertexPos = SurfacePatchFunc(u, v);
+			Vector3 vertexPos = SurfacePatchFunc(u, v);
+			vertexPos *= uniformScale;
 
-			Vector3 stepTowardNextU = SurfacePatchFunc(u + stepAmountX, v);
-			Vector3 stepTowardNextV = SurfacePatchFunc(u, v + stepAmountY);
+			Vector3 stepTowardNextU = SurfacePatchFunc(u + stepAmountX, v) * uniformScale;
+			Vector3 stepTowardNextV = SurfacePatchFunc(u, v + stepAmountY) * uniformScale;
 			Vector3 directionTowardU = vertexPos - stepTowardNextU;
 			Vector3 directionTowardV = vertexPos - stepTowardNextV;
 

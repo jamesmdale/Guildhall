@@ -72,6 +72,11 @@ const Vector3 Vector3::operator*( float uniformScale ) const
 	return Vector3( x * uniformScale, y * uniformScale, z * uniformScale ); // #MP1Fixme
 }
 
+const Vector3 Vector3::operator*(const Vector3& uniformScale) const
+{
+	return Vector3(x * uniformScale.x, y * uniformScale.y, z * uniformScale.z);
+}
+
 
 //-----------------------------------------------------------------------------------------------
 const Vector3 Vector3::operator/( float inverseScale ) const
@@ -104,6 +109,13 @@ void Vector3::operator*=( const float uniformScale )
 	x = x * uniformScale;
 	y = y * uniformScale; 
 	z = z * uniformScale;
+}
+
+void Vector3::operator*=( const Vector3& uniformScale )
+{
+	x = x * uniformScale.x;
+	y = y * uniformScale.y; 
+	z = z * uniformScale.z;
 }
 
 

@@ -22,8 +22,10 @@ public:
 	const Vector3 operator+( const Vector3& vecToAdd ) const;		// vec2 + vec2
 	const Vector3 operator-( const Vector3& vecToSubtract ) const;	// vec2 - vec2
 	const Vector3 operator*( float uniformScale ) const;			// vec2 * float
+	const Vector3 operator*( const Vector3& uniformScale ) const;			// vec2 * float
 	const Vector3 operator/( float inverseScale ) const;			// vec2 / float
 	const Vector3 operator-() const { return Vector3(-x, -y, -z ); }// -vec2
+	void operator*=(const Vector3& vecToMultiply);
 	void operator+=( const Vector3& vecToAdd );						// vec2 += vec2
 	void operator-=( const Vector3& vecToSubtract );				// vec2 -= vec2
 	void operator*=( const float uniformScale );					// vec2 *= float
