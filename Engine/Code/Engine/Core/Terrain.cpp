@@ -45,12 +45,6 @@ float Terrain::GetHeightAtPositionXZ(Vector2 positionXZ)
 	Vector2 terrainWorldMin = Vector2(terrainPositionXZ.x + (m_uvBounds.mins.x * m_cellScale), terrainPositionXZ.y + (m_uvBounds.mins.y * m_cellScale));
 	Vector2 terrainWorldMax = Vector2(terrainPositionXZ.x + (m_uvBounds.maxs.x * m_cellScale), terrainPositionXZ.y + (m_uvBounds.maxs.y * m_cellScale));
 
-	//positionXZ = positionXZ + terrainWorldMin;
-// 	positionXZ.x = RangeMapFloat(positionXZ.x, m_uvBounds.mins.x, m_uvBounds.maxs.x, terrainWorldMin.x, terrainWorldMax.x);
-// 	positionXZ.y = RangeMapFloat(positionXZ.y, m_uvBounds.mins.y, m_uvBounds.maxs.y, terrainWorldMin.y, terrainWorldMax.y);
-
-	//float x = RangeMapFloat(positionXZ.x, terrainWorldMin.x, terrainWorldMax.y, )
-
 	positionXZ.x = ClampFloat(positionXZ.x, terrainWorldMin.x, terrainWorldMax.x);
 	positionXZ.y = ClampFloat(positionXZ.y, terrainWorldMin.y, terrainWorldMax.y);
 

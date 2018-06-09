@@ -66,7 +66,7 @@ void PlayingState::Initialize()
 	m_renderScene->AddRenderable(m_playerTank->m_renderable);	
 
 	//add terrain
-	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 5.f, 10.f, "Data/Images/terrain.jpg");
+	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 1.f, 10.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
 	m_terrain->m_renderable->SetMaterial(new Material());
 	m_terrain->m_renderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
