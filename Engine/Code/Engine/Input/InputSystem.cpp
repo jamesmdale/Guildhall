@@ -173,7 +173,7 @@ void InputSystem::BeginFrame()
 
 void InputSystem::EndFrame()
 {
-
+	//cleanup
 }
 
 //insert process key function
@@ -199,17 +199,21 @@ void InputSystem::UpdateControllers()
 	}
 }
 
-
 //mouse handling
 void InputSystem::UpdateMouse()
 {
-	InputSystem::GetInstance()->m_mouse->UpdateMouse();
+	for (int keyCode = 0; keyCode < InputSystem::NUM_MOUSE_BUTTONS; ++keyCode)
+	{
+		InputSystem::GetInstance()->m_buttonStates[keyCode].m_wasJustPressed = false;
+		InputSystem::GetInstance()->m_buttonStates[keyCode].m_wasJustReleased = false;
+	}
+
+	InputSystem::GetInstance()->GetMouse()->m_doubleClickLeft = false;
+	InputSystem::GetInstance()->GetMouse()->m_doubleClickRight = false;
+
+	InputSystem::GetInstance()->GetMouse()->UpdateMousePosition();
 }
 
-void InputSystem::ProcessMouseInput(size_t wm)
-{
-	InputSystem::GetInstance()->m_mouse->ProcessInput(wm);
-}
 
 //keyboard handling
 bool InputSystem::WasKeyJustPressed(unsigned char keyCode) const
@@ -248,6 +252,49 @@ void InputSystem::ProcessKeyUp(unsigned char keyCode)
 {
 	InputSystem::GetInstance()->m_keyStates[keyCode].m_wasJustReleased = true;
 	InputSystem::GetInstance()->m_keyStates[keyCode].m_isDown = false;
+}
+
+void InputSystem::ProcessMouseButtons(size_t wParam)
+{
+	//process left mouse
+	if (wParam & MK_LBUTTON)	
+		ProcessKeyDown(VK_LBUTTON);
+	else if(IsKeyPressed(VK_LBUTTON))
+		ProcessKeyUp(VK_LBUTTON);
+
+	//process right mouse
+	if (wParam & MK_RBUTTON)
+		ProcessKeyDown(VK_RBUTTON);
+	else if(IsKeyPressed(VK_RBUTTON))
+		ProcessKeyUp(VK_RBUTTON);
+
+	//process middle mouse
+	if (wParam & MK_MBUTTON)
+		ProcessKeyDown(VK_MBUTTON);
+	else if(IsKeyPressed(VK_MBUTTON))
+		ProcessKeyUp(VK_MBUTTON);
+
+	//process mouse 4
+	if (wParam & MK_XBUTTON1)
+		ProcessKeyDown(VK_XBUTTON1);
+	else if(IsKeyPressed(VK_XBUTTON1))
+		ProcessKeyUp(VK_XBUTTON1);
+
+	//process mouse 5
+	if (wParam & MK_XBUTTON2)
+		ProcessKeyDown(VK_XBUTTON2);
+	else if(IsKeyPressed(VK_XBUTTON2))
+		ProcessKeyUp(VK_XBUTTON2);
+}
+
+bool InputSystem::GetMouseDoubleClickLeft()
+{
+	return GetMouse()->m_doubleClickLeft;
+}
+
+bool InputSystem::GetMouseDoubleClickRight()
+{
+	return GetMouse()->m_doubleClickRight;
 }
 
 //-----------------------------------------------------------------------------------------------

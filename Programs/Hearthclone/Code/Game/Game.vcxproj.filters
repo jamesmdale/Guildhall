@@ -40,6 +40,18 @@
     <ClCompile Include="Board.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Player.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Card.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Minion.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\HeroClass.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -63,5 +75,9 @@
     <ClInclude Include="GameStates\ReadyState.hpp" />
     <ClInclude Include="GameStates\GameState.hpp" />
     <ClInclude Include="Board.hpp" />
+    <ClInclude Include="Entity\Player.hpp" />
+    <ClInclude Include="Entity\Card.hpp" />
+    <ClInclude Include="Entity\Minion.hpp" />
+    <ClInclude Include="Entity\HeroClass.hpp" />
   </ItemGroup>
 </Project>

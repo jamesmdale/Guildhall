@@ -6,14 +6,14 @@
 #include "Engine\Renderer\Renderer.hpp"
 
 //board tints
-Rgba boardBase = Rgba(228, 187, 118, 255); //light brown
-Rgba boardHand = Rgba(161, 156, 154);	//gray
+Rgba boardBaseColor = Rgba(228, 187, 118, 255); //light brown
+Rgba boardHandColor = Rgba(161, 156, 154);	//gray
 
-Rgba enemyPortrait = Rgba::RED;
-Rgba playerPortrait = Rgba::BLUE;
+Rgba enemyPortraitColor = Rgba::RED;
+Rgba playerPortraitColor = Rgba::BLUE;
 
-Rgba heroAbility = Rgba::ORANGE;
-Rgba heroWeapon = Rgba(75, 75, 75, 255);
+Rgba heroAbilityColor = Rgba::ORANGE;
+Rgba heroWeaponColor = Rgba(75, 75, 75, 255);
 
 Board::Board()
 {
@@ -85,7 +85,7 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	Vector2 manaDimensions = clientWindowDimensions * g_manaPercentageOfClientWindow;
 	Vector2 endTurnDimensions = clientWindowDimensions * g_endTurnButtonPercentageOfClientWindow;
 
-	mb.CreateQuad2D(AABB2(clientWindow->GetClientWindow().mins, clientWindow->GetClientWindow().maxs), boardBase); //whole board
+	mb.CreateQuad2D(AABB2(clientWindow->GetClientWindow().mins, clientWindow->GetClientWindow().maxs), boardBaseColor); //whole board
 	renderable->AddMesh(mb.CreateMesh<VertexPCU>());
     
 	// create quads for each hand =========================================================================================
@@ -98,8 +98,8 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	m_enemyHandQuad = AABB2(enemyHandCenter, handDimensions.x * 0.5f, handDimensions.y * 0.5f);
 	m_playerHandQuad = AABB2(playerHandCenter, handDimensions.x * 0.5f, handDimensions.y * 0.5f);
 
-	mb.CreateQuad2D(enemyHandCenter, handDimensions, boardHand);
-	mb.CreateQuad2D(playerHandCenter, handDimensions, boardHand);
+	mb.CreateQuad2D(enemyHandCenter, handDimensions, boardHandColor);
+	mb.CreateQuad2D(playerHandCenter, handDimensions, boardHandColor);
 
 	// create quads for each side of the battlefield =========================================================================================
 	
@@ -112,8 +112,8 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	m_enemyBattlfieldQuad = AABB2(enemyBattlefieldCenter, battlefieldDimensions.x * 0.5f, battlefieldDimensions.y * 0.5f);
 	m_playerBattlfieldQuad = AABB2(playerBattlefieldCenter, battlefieldDimensions.x * 0.5f, battlefieldDimensions.y * 0.5f);
 	
-	mb.CreateQuad2D(enemyBattlefieldCenter, battlefieldDimensions, Rgba::RED);
-	mb.CreateQuad2D(playerBattlefieldCenter, battlefieldDimensions, Rgba::RED);
+	mb.CreateQuad2D(enemyBattlefieldCenter, battlefieldDimensions, boardBaseColor);
+	mb.CreateQuad2D(playerBattlefieldCenter, battlefieldDimensions, boardBaseColor);
 
 	// create quads for hero portrait =========================================================================================
 	Vector2 enemyPortraitCenter = Vector2(clientWindowDimensions.x * 0.5f
@@ -125,7 +125,7 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	m_enemyHeroPortraitQuad = AABB2(enemyPortraitCenter, heroPortraitDimensions.x * 0.5f, heroPortraitDimensions.y * 0.5f);
 	m_playerHeroPortraitQuad = AABB2(playerPortraitCenter, heroPortraitDimensions.x * 0.5f, heroPortraitDimensions.y * 0.5f);
 
-	mb.CreateQuad2D(enemyPortraitCenter, heroPortraitDimensions, Rgba::ORANGE);
+	mb.CreateQuad2D(enemyPortraitCenter, heroPortraitDimensions, enemyPortraitColor);
 	mb.CreateQuad2D(playerPortraitCenter, heroPortraitDimensions, Rgba::ORANGE);
 
 	// create quads for hero ability =========================================================================================

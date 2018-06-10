@@ -10,58 +10,6 @@ Mouse::Mouse()
 {
 }
 
-TODO("Move lock region with window"); 
-
-void Mouse::ProcessInput(size_t wParam)
-{
-	TODO("Finish mouse input for buttons");
-	unsigned char asKey = (unsigned char) wParam;
-	switch(asKey)
-	{
-		case MK_CONTROL:
-		{
-			break;
-		}
-	}
-}
-//
-//void Mouse::UpdateKeyStateButtons()
-//{
-//	for(int i = 0; i < NUM_MOUSE_BUTTONS; i++)
-//	{
-//		m_buttonStates[i].m_wasJustPressed = false;
-//		m_buttonStates[i].m_wasJustReleased = false;
-//	}
-//
-//	UpdateButton(MOUSE_LEFT_BUTTON, VK_LBUTTON);
-//	UpdateButton(MOUSE_RIGHT_BUTTON, VK_RBUTTON);
-//	UpdateButton(MOUSE_MIDDLE_BUTTON, VK_MBUTTON);
-//	UpdateButton(MOUSE_EXTRA1_BUTTON, VK_XBUTTON1);
-//	UpdateButton(MOUSE_EXTRA2_BUTTON, VK_XBUTTON2);
-//
-//}	
-
-
-//void Mouse::UpdateButton(int mouseInputName, unsigned char moustInputValue)
-//{
-//	if((controllerState.Gamepad.wButtons) & (xInputValue))
-//	{
-//		if(!m_buttonStates[xboxInputName].m_isDown)
-//		{
-//			m_buttonStates[xboxInputName].m_wasJustPressed = true;
-//		}
-//		m_buttonStates[xboxInputName].m_isDown = true;		
-//	}
-//	else
-//	{
-//		if(m_buttonStates[xboxInputName].m_isDown)
-//		{
-//			m_buttonStates[xboxInputName].m_wasJustReleased = true;
-//		}
-//		m_buttonStates[xboxInputName].m_isDown = false;
-//	}
-//}
-
 
 Vector2 Mouse::GetMouseClientPosition()
 {
@@ -83,14 +31,14 @@ Vector2 Mouse::GetMouseDelta()
 	return m_mousePositionThisFrame - m_mousePositionLastFrame;
 }
 
-void Mouse::UpdateMouse()
+void Mouse::UpdateMousePosition()
 {
 	Window* theWindow = Window::GetInstance();
 
 	m_mousePositionLastFrame = m_mousePositionThisFrame; 
 	m_mousePositionThisFrame = GetMouseClientPosition();
 
-	if (m_isMouseLocked)
+	if (m_currentMouseMode == MOUSE_RELATIVE_MODE)
 	{
 		m_mousePositionLastFrame = theWindow->GetCenterOfClientWindow();
 		SetMousePosition(m_mousePositionLastFrame);
@@ -131,6 +79,8 @@ void Mouse::MouseLockToScreen( bool lock )
 		::ClipCursor( &clientRect ); 
 	}
 }
+
+TODO("Move lock region with window"); 
 
 void Mouse::SetMouseScreenPosition( IntVector2 desktopPosition )
 {

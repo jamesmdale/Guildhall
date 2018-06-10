@@ -16,11 +16,14 @@ public:
 	void EndFrame();
 	void ProcessKeyDown(unsigned char keyCode);
 	void ProcessKeyUp(unsigned char keyCode);
+
+	void ProcessMouseButtons(size_t wParam);
+
+	bool GetMouseDoubleClickLeft();
+	bool GetMouseDoubleClickRight();
 	bool IsKeyPressed(unsigned char keyCode) const;	
 	bool WasKeyJustPressed(unsigned char keycode) const;
 	bool WasKeyJustReleased(unsigned char keyCode) const;
-
-	void ProcessMouseInput(size_t wm);
 
 	XboxController& GetController(int controllerId){ return m_controllers[controllerId];}
 
@@ -168,6 +171,7 @@ public:
 
 	protected:
 		KeyButtonState m_keyStates[NUM_KEYS];
+		KeyButtonState m_buttonStates[NUM_MOUSE_BUTTONS];
 		XboxController m_controllers[NUM_CONTROLLERS];
 		Mouse* m_mouse = nullptr;
 };

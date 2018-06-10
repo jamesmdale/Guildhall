@@ -48,11 +48,10 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 		{
 			unsigned char asKey = (unsigned char) wParam;
 			InputSystem::GetInstance()->ProcessKeyUp(asKey);
-			return false;
 			break;
 		}
 		
-		//mouse info
+		// handle mouse movement =========================================================================================
 		case WM_ACTIVATE:
 		{
 			bool is_active = (WA_INACTIVE != LOWORD( wParam ));
@@ -69,39 +68,43 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 			}			
 		}
 
-		case WM_LBUTTONDBLCLK:
-		{
-			InputSystem::GetInstance()->ProcessMouseInput(wParam);
-			break;
-		}
-
+		// handle left mouse button =========================================================================================
 		case WM_LBUTTONDOWN:
 		{
-			InputSystem::GetInstance()->ProcessMouseInput(wParam);
+			InputSystem::GetInstance()->ProcessMouseButtons(wParam);
 			break;
 		}
 
 		case WM_LBUTTONUP:
 		{
-			InputSystem::GetInstance()->ProcessMouseInput(wParam);
+			InputSystem::GetInstance()->ProcessMouseButtons(wParam);
+			break;
+		}
+
+		// handle right mouse button =========================================================================================
+
+		case WM_RBUTTONDOWN:
+		{
+			InputSystem::GetInstance()->ProcessMouseButtons(wParam);
 			break;
 		}
 
 		case WM_RBUTTONUP:
 		{
-			InputSystem::GetInstance()->ProcessMouseInput(wParam);
+			InputSystem::GetInstance()->ProcessMouseButtons(wParam);
 			break;
 		}
 
-		case WM_RBUTTONDOWN:
+		// handle double clicks =========================================================================================
+		case WM_LBUTTONDBLCLK:
 		{
-			InputSystem::GetInstance()->ProcessMouseInput(wParam);
+			InputSystem::GetInstance()->GetMouse()->m_doubleClickLeft = true;
 			break;
 		}
 
 		case WM_RBUTTONDBLCLK:
 		{
-			InputSystem::GetInstance()->ProcessMouseInput(wParam);
+			InputSystem::GetInstance()->GetMouse()->m_doubleClickRight = true;
 			break;
 		}
 	}
@@ -137,9 +140,8 @@ void Initialize()
 	g_theApp->Initialize();
 }
 
-//-----------------------------------------------------------------------------------------------
-// One "frame" of the game.  Generally: Input, Update, Render.  We call this 60+ times per second.
-//
+//  One "frame" of the game.  Generally: Input, Update, Render.  We call this 60+ times per second.=========================================================================================
+
 void RunFrame()
 {
 	g_theApp->RunFrame();

@@ -2,6 +2,7 @@
 #include "engine\input\KeyButtonState.hpp"
 #include "Engine\Math\Vector2.hpp"
 #include "Engine\Math\IntVector2.hpp"
+#include "engine\input\KeyButtonState.hpp"
 
 
 enum MouseMode
@@ -11,27 +12,11 @@ enum MouseMode
 	NUM_MOUSE_MODES
 };
 
-enum MouseButtons
-{
-	MOUSE_LEFT_BUTTON,
-	MOUSE_RIGHT_BUTTON,
-	MOUSE_MIDDLE_BUTTON,
-	MOUSE_EXTRA1_BUTTON,
-	MOUSE_EXTRA2_BUTTON,
-	NUM_MOUSE_BUTTONS
-};
-
-//enum MouseMode
-//{
-//	RELATIVE_MOUSE_MODE
-//};
-
 class Mouse
 {
 public:
 	Mouse();
-	void ProcessInput(size_t wParam);
-	void UpdateMouse();
+	void UpdateMousePosition();
 	void MouseShowCursor(bool show);
 	void MouseLockToScreen(bool lock);
 	void SetMouseScreenPosition(IntVector2 desktopPosition);
@@ -42,11 +27,10 @@ public:
 
 	Vector2 GetMouseClientPosition();
 	Vector2 GetMouseDelta();
-	//void UpdateButton(int mouseInputName, unsigned char moustInputValue);
-	//void UpdateKeyStateButtons();
 
 public:
-	KeyButtonState m_buttonStates[5];
+	bool m_doubleClickLeft = false;
+	bool m_doubleClickRight = false;
 	//float m_frameWheelDelta = 0.f;
 	Vector2 m_mousePositionLastFrame;
 	Vector2 m_mousePositionThisFrame;

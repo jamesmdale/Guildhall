@@ -2,6 +2,7 @@
 #include "Game\GameStates\GameState.hpp"
 #include "Engine\Core\Terrain.hpp"
 #include "Game\Board.hpp"
+#include "Game\Entity\Player.hpp"
 
 class Tank;
 class PlayingState : public GameState
@@ -24,8 +25,12 @@ public:
 public:
 	Board* m_gameBoard = nullptr;
 
-	//Player* playerOne = nullptr;
-	//Player2* playerTwo = nullptr; //player contains hand, graveyard, their side of the battlefield, and their class
+	//player contains hand, graveyard, their side of the battlefield, and their class
+	Player* m_player = nullptr;
+	Player* m_enemyPlayer = nullptr; 
+	
+	int activePlayerID;
+	int turnCount;
 	//Battlefield* battlefield = nullptr;
 	//MatchLog
 
