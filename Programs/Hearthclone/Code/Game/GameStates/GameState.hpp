@@ -5,22 +5,22 @@
 #include "Game\Game.hpp"
 #include "Engine\Renderer\RenderScene2D.hpp"
 
-static enum eMenuState
+enum eGameState
 {
-	NONE_MENU_STATE,
-	LOADING_MENU_STATE,
-	MAIN_MENU_STATE,	
-	READY_UP_MENU_STATE,
-	PLAYING_MENU_STATE,
-	NUM_MENU_STATES
+	NONE_GAME_STATE,
+	LOADING_GAME_STATE,
+	MAIN_MENU_GAME_STATE,	
+	READY_UP_GAME_STATE,
+	PLAYING_GAME_STATE,
+	NUM_GAME_STATES
 };
 
-class MenuState
+class GameState
 {
 public:
-	MenuState(Camera* camera);
+	GameState(Camera* camera);
 
-	virtual ~MenuState();	
+	virtual ~GameState();	
 
 	virtual void Update(float deltaSeconds);
 	virtual void PreRender();
@@ -32,44 +32,49 @@ public:
 	virtual void TransitionIn(float secondsTransitioning);
 	virtual void TransitionOut(float secondsTransitioning);
 
+	virtual void ResetState();
+	virtual void Initialize();
+
+	bool IsInitialized(){return m_isInitialized;};
+
 	//static methods
-	static void UpdateGlobalMenuState(float deltaSeconds);
+	static void UpdateGlobalGameState(float deltaSeconds);
 
 	TODO("6/5 - Add logic for handling update,prerender,render, etc when transitioning");
-	static void TransitionMenuStates(MenuState* toState);
-	static void TransitionMenuStatesImmediate(MenuState* toState);
+	static void TransitionGameStates(GameState* toState);
+	static void TransitionGameStatesImmediate(GameState* toState);
 
-	static MenuState* GetCurrentMenuState();
-	static MenuState* GetTransitionMenuState();
+	static GameState* GetCurrentGameState();
+	static GameState* GetTransitionGameState();
 
 	//list managers
 	TODO("6/5 - Add better way of managing these. For now, we assume they only have one max of each possibel type");
-	static MenuState* GetMenuStateFromListByType(eMenuState menuStateType);
-	static void AddMenuState(MenuState* menuState);
+	static GameState* GetGameStateFromGlobalListByType(eGameState gameStateType);
+	static void AddGameState(GameState* gameState);
 
 	static float GetSecondsInCurrentState();
 
 private:
 	static void FinishTransition();
-
+	bool m_isInitialized = false;	
 
 public:
-	eMenuState m_type = NONE_MENU_STATE;
+	eGameState m_type = NONE_GAME_STATE;
 	Camera* m_camera = nullptr;
-	RenderScene2D* m_renderScene = nullptr;
+	RenderScene2D* m_renderScene2D = nullptr;
 
-	bool m_doesResetOnTransition = true;
+	bool m_doesResetOnTransition = true;	
 
 private:
 	static float s_secondsInState;
 	static float s_secondsTransitioning;
 	static bool s_isFinishedTransitioningOut;
 	static bool s_isFinishedTransitioningIn;
-	static std::vector<MenuState*> s_menuStates;
+	static std::vector<GameState*> s_gameStates;
 };
 
 //static variables
-extern MenuState* g_currentState;
-extern MenuState* g_transitionState;
+extern GameState* g_currentState;
+extern GameState* g_transitionState;
 
 

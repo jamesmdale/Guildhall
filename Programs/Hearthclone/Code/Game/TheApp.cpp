@@ -55,9 +55,9 @@ void TheApp::Initialize()
 	masterClock = nullptr;	
 
 	//init mouse input settings
-	InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(true);
-	InputSystem::GetInstance()->GetMouse()->MouseShowCursor(false);
-	InputSystem::GetInstance()->GetMouse()->SetMouseMode(MOUSE_RELATIVE_MODE);	
+	InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(false);
+	InputSystem::GetInstance()->GetMouse()->MouseShowCursor(true);
+	InputSystem::GetInstance()->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);	
 
 	std::vector<Vector3> vertices;
 	std::vector<Vector2> uvs;
@@ -67,7 +67,7 @@ void TheApp::Initialize()
 	Game::GetInstance()->Initialize();
 }
 
-void TheApp::Update()
+void TheApp::Update() 
 {
 	float deltaSeconds = GetMasterDeltaSeconds();
 	deltaSeconds = UpdateInput(deltaSeconds);

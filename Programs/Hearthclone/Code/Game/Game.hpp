@@ -31,6 +31,11 @@ public:
 	void PostRender();
 	void Initialize();
 	float UpdateInput(float deltaSeconds);
+
+	//data
+	//std::vector<Cards*> loadedCards;
+	//std::vector<Decks*> loadedDecks;
+	//std::vector<Classes*> loadedClasses;	
 };
 
 

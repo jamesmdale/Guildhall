@@ -132,6 +132,17 @@ const unsigned char InputSystem::MOUSE_5_BUTTON = VK_XBUTTON2;
 //	}
 //}
 
+InputSystem::InputSystem()
+{
+	m_mouse = new Mouse();
+}
+
+InputSystem::~InputSystem()
+{
+	delete(m_mouse);
+	m_mouse = nullptr;
+}
+
 InputSystem* InputSystem::CreateInstance()
 {
 	if(g_theInput == nullptr)

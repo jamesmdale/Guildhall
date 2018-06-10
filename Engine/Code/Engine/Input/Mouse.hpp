@@ -7,7 +7,7 @@
 enum MouseMode
 {
 	MOUSE_ABSOLUTE_MODE, // Absolute Mode - I get mouse position - and I can potentially lock to the screen
-	MOUSE_RELATIVE_MODE, // Relative mode -> I care about deltas - I reset to the center (meaning, mutually exclusive modes)
+	MOUSE_RELATIVE_MODE, // Relative mode - I care about deltas - I reset to the center (meaning, mutually exclusive modes)
 	NUM_MOUSE_MODES
 };
 
@@ -50,6 +50,7 @@ public:
 	//float m_frameWheelDelta = 0.f;
 	Vector2 m_mousePositionLastFrame;
 	Vector2 m_mousePositionThisFrame;
+	bool m_isMouseLocked = false;
 	MouseMode m_currentMouseMode = MOUSE_ABSOLUTE_MODE;
 };
 

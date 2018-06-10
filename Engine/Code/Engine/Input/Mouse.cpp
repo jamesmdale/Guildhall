@@ -90,17 +90,11 @@ void Mouse::UpdateMouse()
 	m_mousePositionLastFrame = m_mousePositionThisFrame; 
 	m_mousePositionThisFrame = GetMouseClientPosition();
 
-	switch(m_currentMouseMode)
+	if (m_isMouseLocked)
 	{
-	case MOUSE_ABSOLUTE_MODE:
-		//might want to do additional stuff later for the 'default' mode
-		break;
-
-	case MOUSE_RELATIVE_MODE:
 		m_mousePositionLastFrame = theWindow->GetCenterOfClientWindow();
-		SetMousePosition( m_mousePositionLastFrame ); 
-		break;
-	}	
+		SetMousePosition(m_mousePositionLastFrame);
+	}
 }
 
 void Mouse::MouseShowCursor( bool show ) 
@@ -114,12 +108,12 @@ void Mouse::MouseLockToScreen( bool lock )
 	if (lock == false) 
 	{
 		::ClipCursor( nullptr ); // this unlock the mouse
-		m_currentMouseMode = MOUSE_ABSOLUTE_MODE;
+		m_isMouseLocked = false;
 	} 
 	else 
 	{
 		HWND hwnd = (HWND)Window::GetInstance()->GetHandle();  // Get your windows HWND
-		m_currentMouseMode = MOUSE_RELATIVE_MODE;
+		m_isMouseLocked = true;
 
 		RECT clientRect; // window class RECDT
 		::GetClientRect( hwnd, &clientRect ); 

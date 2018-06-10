@@ -8,13 +8,17 @@ Widget::Widget()
 
 Widget::~Widget()
 {
-	m_renderScene->RemoveRenderable(m_renderable2D);
-
-	if(m_renderable2D != nullptr)
+	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
 	{
-		delete(m_renderable2D);
-		m_renderable2D = nullptr;
+		m_renderScene->RemoveRenderable(m_renderables[renderableIndex]);
+
+		if (m_renderables[renderableIndex] != nullptr)
+		{
+			delete(m_renderables[renderableIndex]);
+			m_renderables[renderableIndex] = nullptr;
+		}
 	}
+	m_renderables.clear();
 
 	delete(m_transform2D);
 	m_transform2D = nullptr;
@@ -25,15 +29,18 @@ Widget::~Widget()
 Widget::Widget(std::string name)
 {
 	m_name = name;
-	m_renderable2D = new Renderable2D();
 	m_transform2D = new Transform2D();
 }
 
 Widget::Widget(std::string name, Renderable2D* renderable2D)
 {
 	m_name = name;
-	m_renderable2D = renderable2D;
 	m_transform2D = new Transform2D();
+}
+
+void Widget::Initialize()
+{
+	//do initialization tasks here
 }
 
 void Widget::Update(float deltaSeconds)
@@ -51,7 +58,11 @@ void Widget::PreRender()
 
 void Widget::UpdateRenderable2DFromTransform()
 {
-	m_renderable2D->SetModelMatrix(m_transform2D->GetWorldMatrix());
+	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
+	{
+		m_renderables[renderableIndex]->SetModelMatrix(m_transform2D->GetWorldMatrix());
+	}
+	
 }
 
 

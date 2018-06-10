@@ -10,6 +10,7 @@ ForwardRenderingPath2D::ForwardRenderingPath2D()
 
 ForwardRenderingPath2D::~ForwardRenderingPath2D()
 {
+
 }
 
 void ForwardRenderingPath2D::Render(RenderScene2D * scene)
@@ -25,7 +26,10 @@ void ForwardRenderingPath2D::Render(RenderScene2D * scene)
 void ForwardRenderingPath2D::RenderSceneForCamera(Camera* camera, RenderScene2D* scene)
 {
 	Renderer* theRenderer = Renderer::GetInstance();
+
 	theRenderer->SetCamera(camera);
+	theRenderer->ClearDepth(1.f);
+	theRenderer->ClearColor(Rgba::BLACK);
 
 	std::vector<DrawCallData2D> drawCalls;
 
@@ -34,7 +38,12 @@ void ForwardRenderingPath2D::RenderSceneForCamera(Camera* camera, RenderScene2D*
 		DrawCallData2D drawCall;
 
 		drawCall.m_material = renderable->GetMaterial();
-		drawCall.m_mesh = renderable->GetMesh();
+
+		for (int meshIndex = 0; meshIndex < (int)renderable->m_meshes.size(); ++meshIndex)
+		{
+			drawCall.m_meshes.push_back(renderable->GetMesh(meshIndex));
+		}
+
 		drawCall.m_model = renderable->GetModelMatrix();
 		drawCall.m_sortingLayer = renderable->GetRender2DSortLayer();
 
@@ -45,19 +54,22 @@ void ForwardRenderingPath2D::RenderSceneForCamera(Camera* camera, RenderScene2D*
 
 	for (DrawCallData2D drawCall : drawCalls)
 	{	
-		if(drawCall.m_mesh != nullptr)
+		for (int meshIndex = 0; meshIndex < (int)drawCall.m_meshes.size(); ++meshIndex)
 		{
-			theRenderer->BindMaterial(drawCall.m_material);
-
-			int handle = drawCall.m_material->GetShaderProgramHandle();
-			if(handle > -1)
+			if (drawCall.m_meshes[meshIndex] != nullptr)
 			{
-				Vector3 cameraPosition = camera->m_transform->GetWorldPosition();
-				theRenderer->SetVector3Uniform(handle, "EYE_POSITION", cameraPosition);
-			}	
+				theRenderer->BindMaterial(drawCall.m_material);
 
-			theRenderer->DrawMesh(drawCall.m_mesh, drawCall.m_model);
-		}		
+				int handle = drawCall.m_material->GetShaderProgramHandle();
+				if (handle > -1)
+				{
+					Vector3 cameraPosition = camera->m_transform->GetWorldPosition();
+					theRenderer->SetVector3Uniform(handle, "EYE_POSITION", cameraPosition);
+				}
+
+				theRenderer->DrawMesh(drawCall.m_meshes[meshIndex], drawCall.m_model);
+			}
+		}
 	}
 
 	theRenderer = nullptr;

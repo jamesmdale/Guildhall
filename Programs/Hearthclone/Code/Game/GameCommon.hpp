@@ -7,10 +7,26 @@
 //following line will go here when any engine side globals are declared and need to be used
 //#include "Engine/Core/EngineCommon.hpp"
 
-const Vector2 g_bottomLeftOrtho = Vector2( -1.f, -1.f);
-const Vector2 g_topRightOrtho = Vector2(1.f, 1.f);
-const Vector2 g_center = Vector2((g_bottomLeftOrtho.x + g_topRightOrtho.x) * .5f, (g_bottomLeftOrtho.y + g_topRightOrtho.y) * .5f);
-const Rgba g_backgroundColor = Rgba(1.f, 1.f, 1.f, 1.f);
+//entity sizes
+
+//board sizes
+const float g_boardHandPercentageOfClientWindow = 0.15f; //hand uses fullwidth
+const float g_boardBattlefieldPercentageOfClientWindow = 0.345f; //battlefield uses fullwidth
+const float g_boardBattlefieldCenterLineThicknessHeight = 0.01f;
+
+//card sizes
+const float g_cardPercentageOfClientWindowHeight = 0.1f;
+const float g_cardAspectRatio = 0.722f;
+
+//hero sizes
+const Vector2 g_heroPortraitPercentageOfClientWindow = Vector2(0.1f, 0.1f);
+const Vector2 g_heroAbilityPercentageOfClientWindow = Vector2(0.075f, 0.075f);
+const Vector2 g_heroWeaponPercentageOfClientWindow = Vector2(0.075f, 0.075f);
+
+//other
+const Vector2 g_manaPercentageOfClientWindow = Vector2(0.1f, 0.1f);
+const Vector2 g_endTurnButtonPercentageOfClientWindow = Vector2(0.1f, 0.1f);
+
 
 //game related globals
 extern bool g_isDebug;

@@ -7,18 +7,23 @@ Renderable2D::Renderable2D()
 
 Renderable2D::~Renderable2D()
 {
-	delete(m_mesh);
-	m_mesh = nullptr;
+	for (int meshIndex = 0; meshIndex < (int)m_meshes.size(); ++meshIndex)
+	{
+		delete(m_meshes[meshIndex]);
+		m_meshes[meshIndex] = nullptr;
+	}	
+	m_meshes.clear();
+}
+	
+
+void Renderable2D::AddMesh(Mesh* mesh)
+{
+	m_meshes.push_back(mesh);
 }
 
-void Renderable2D::SetMesh(Mesh* mesh)
+Mesh* Renderable2D::GetMesh(int meshIndex) const
 {
-	m_mesh = mesh;
-}
-
-Mesh* Renderable2D::GetMesh() const
-{
-	return m_mesh;
+	return m_meshes[meshIndex];
 }
 
 void Renderable2D::SetMaterial(Material* material)

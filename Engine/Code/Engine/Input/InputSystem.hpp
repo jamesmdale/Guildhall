@@ -5,10 +5,10 @@
 class InputSystem
 {
 private:
-	InputSystem() { m_mouse = new Mouse();};
+	InputSystem();
 
 public:
-	~InputSystem() {}
+	~InputSystem();
 	static InputSystem* CreateInstance();
 	static InputSystem* GetInstance();
 	Mouse* GetMouse();
@@ -169,7 +169,7 @@ public:
 	protected:
 		KeyButtonState m_keyStates[NUM_KEYS];
 		XboxController m_controllers[NUM_CONTROLLERS];
-		Mouse* m_mouse;
+		Mouse* m_mouse = nullptr;
 };
 
 void RunMessagePump();

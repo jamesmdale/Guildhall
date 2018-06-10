@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include "Game\Game.hpp"
 #include "Game\GameCommon.hpp"
-#include "Game\Menu\MenuState.hpp"
-#include "Game\Menu\MainMenuState.hpp"
+#include "Game\GameStates\GameState.hpp"
+#include "Game\GameStates\MainMenuState.hpp"
+#include "Game\GameStates\LoadingState.hpp"
+#include "Game\GameStates\PlayingState.hpp"
 #include "Engine\Math\MathUtils.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Math\Matrix44.hpp"
@@ -80,13 +82,13 @@ void Game::Initialize()
 
 	//add menu states
 	TODO("Add other menu states");
-	MenuState::AddMenuState(new MainMenuState(m_gameCamera));
-	//loadingMenuState
-	//readyUp
-	//play/level
+	GameState::AddGameState(new MainMenuState(m_gameCamera));
+	GameState::AddGameState(new LoadingState(m_gameCamera));
+	GameState::AddGameState(new PlayingState(m_gameCamera));
 
 	//set to initial menu
-	MenuState::TransitionMenuStatesImmediate(MenuState::GetMenuStateFromListByType(MAIN_MENU_STATE));
+	GameState::TransitionGameStatesImmediate(GameState::GetGameStateFromGlobalListByType(MAIN_MENU_GAME_STATE));
+	GameState::UpdateGlobalGameState(0.f);
 
 	//cleanup
 	theRenderer = nullptr;
@@ -98,29 +100,29 @@ void Game::Update()
 	float deltaSeconds = m_gameClock->GetDeltaSeconds();
 
 	//update global menu data (handles transitions and timers)
-	MenuState::UpdateGlobalMenuState(deltaSeconds);
+	GameState::UpdateGlobalGameState(deltaSeconds);
 
-	MenuState::GetCurrentMenuState()->Update(deltaSeconds);
+	GameState::GetCurrentGameState()->Update(deltaSeconds);
 }
 
 void Game::PreRender()
 {
-	MenuState::GetCurrentMenuState()->PreRender();
+	GameState::GetCurrentGameState()->PreRender();
 }
 
 void Game::Render()
 {
-	MenuState::GetCurrentMenuState()->Render();
+	GameState::GetCurrentGameState()->Render();
 }
 
 void Game::PostRender()
 {
-	MenuState::GetCurrentMenuState()->PostRender();
+	GameState::GetCurrentGameState()->PostRender();
 }
 
 float Game::UpdateInput(float deltaSeconds)
 {
-	deltaSeconds = MenuState::GetCurrentMenuState()->UpdateFromInput(deltaSeconds);
+	deltaSeconds = GameState::GetCurrentGameState()->UpdateFromInput(deltaSeconds);
 
 	return deltaSeconds;
 }

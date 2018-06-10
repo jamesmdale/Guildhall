@@ -155,7 +155,6 @@ void MeshBuilder::CreatePoint(const Vector3& center, const Rgba& tint, float sca
 	SetUV(Vector2(0.f,0.f));
 	PushVertex(center + (Vector3::RIGHT * scale));
 
-	
 }
 
 
@@ -176,6 +175,8 @@ void MeshBuilder::CreateCube(const Vector3& center, const Vector3& dimensions, c
 
 	if(dimensions.z != 0.f)
 		zVal = dimensions.z/2.f;
+
+	int vertSize = GetVertexCount();
 
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); //begin is does use index buffer
 
@@ -203,8 +204,8 @@ void MeshBuilder::CreateCube(const Vector3& center, const Vector3& dimensions, c
 	SetNormal(Vector3(0.f, 0.f, -1.f));
 	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
 	PushVertex(Vector3(center.x - xVal, center.y + yVal, center.z - zVal));		
-
-	AddQuadIndices(0, 1, 2, 3);
+	
+	AddQuadIndices(vertSize, vertSize + 1, vertSize + 2, vertSize + 3);
 
 	//right face
 	SetColor(tint);
@@ -231,7 +232,7 @@ void MeshBuilder::CreateCube(const Vector3& center, const Vector3& dimensions, c
 	SetTangent(Vector4(0.f, 0.f, -1.f, 1.f));
 	PushVertex(Vector3(center.x + xVal, center.y + yVal, center.z - zVal));	
 
-	AddQuadIndices(4, 5, 6, 7);
+	AddQuadIndices(vertSize + 4, vertSize + 5, vertSize + 6, vertSize + 7);
 
 	//back face
 	SetColor(tint);
@@ -259,7 +260,7 @@ void MeshBuilder::CreateCube(const Vector3& center, const Vector3& dimensions, c
 	PushVertex(Vector3(center.x + xVal, center.y + yVal, center.z + zVal));
 	
 
-	AddQuadIndices(8, 9, 10, 11);
+	AddQuadIndices(vertSize + 8, vertSize + 9, vertSize + 10, vertSize + 11);
 
 	//left face
 	SetColor(tint);
@@ -287,7 +288,7 @@ void MeshBuilder::CreateCube(const Vector3& center, const Vector3& dimensions, c
 	PushVertex(Vector3(center.x - xVal, center.y + yVal, center.z + zVal));
 	
 
-	AddQuadIndices(12, 13, 14, 15);
+	AddQuadIndices(vertSize + 12, vertSize + 13, vertSize + 14, vertSize + 15);
 
 	//top face
 	SetColor(tint);
@@ -314,7 +315,7 @@ void MeshBuilder::CreateCube(const Vector3& center, const Vector3& dimensions, c
 	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
 	PushVertex(Vector3(center.x - xVal, center.y + yVal, center.z + zVal));
 
-	AddQuadIndices(16, 17, 18, 19);
+	AddQuadIndices(vertSize + 16, vertSize + 17, vertSize + 18, vertSize + 19);
 
 	//bottom face
 	SetColor(tint);
@@ -342,7 +343,7 @@ void MeshBuilder::CreateCube(const Vector3& center, const Vector3& dimensions, c
 	PushVertex(Vector3(center.x - xVal, center.y - yVal, center.z - zVal));
 	
 
-	AddQuadIndices(20, 21, 22, 23);
+	AddQuadIndices(vertSize + 20, vertSize + 21, vertSize + 22, vertSize + 23);
 
 }
 
@@ -351,6 +352,8 @@ void MeshBuilder::CreateUVSphere(const Vector3& position, float radius, int wedg
 {
 	//(0,0) to (1,1)
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); //begin is does use index buffer
+	
+	int vertSize = GetVertexCount();
 
 	for(int sliceIndex = 0; sliceIndex <= slices; ++sliceIndex)
 	{
@@ -395,7 +398,7 @@ void MeshBuilder::CreateUVSphere(const Vector3& position, float radius, int wedg
 			int br_idx = bl_idx + 1;
 			int tr_idx = br_idx + wedges;
 
-			AddQuadIndices(bl_idx, br_idx, tr_idx, tl_idx);
+			AddQuadIndices(vertSize + bl_idx, vertSize + br_idx, vertSize + tr_idx, vertSize + tl_idx);
 		}
 	}
 }
@@ -404,6 +407,8 @@ void MeshBuilder::CreateUVSphere(const Vector3& position, float radius, int wedg
 void MeshBuilder::CreateQuad3D(const Vector3& center, const Vector2& dimensions, const Rgba& tint)
 {
 	MeshBuilder mb;
+
+	int vertSize = GetVertexCount();
 
 	float xVal = 0.f;
 	float yVal = 0.f;
@@ -445,7 +450,7 @@ void MeshBuilder::CreateQuad3D(const Vector3& center, const Vector2& dimensions,
 	PushVertex(Vector3(center.x - xVal, center.y + yVal, 0.f));	
 	
 
-	AddQuadIndices(0, 1, 2, 3);
+	AddQuadIndices(vertSize + 0, vertSize + 1, vertSize + 2, vertSize + 3);
 }
 
 void MeshBuilder::CreateQuad2D(const Vector2& center, const Vector2& dimensions, const Rgba& tint)
@@ -461,6 +466,8 @@ void MeshBuilder::CreateQuad2D(const AABB2& drawBounds, const Rgba& tint)
 
 void MeshBuilder::CreateStarQuads3D(const Vector3& center, const Vector3& dimensions, const Rgba& tint)
 {
+	int vertSize = GetVertexCount();
+
 	float xVal = 0.f;
 	float yVal = 0.f;
 	float zVal = 0.f;
@@ -496,7 +503,7 @@ void MeshBuilder::CreateStarQuads3D(const Vector3& center, const Vector3& dimens
 	SetUV(Vector2(0.f,1.f));
 	PushVertex(Vector3(center.x, center.y + yVal, center.z + zVal));	
 
-	AddQuadIndices(0, 1, 2, 3);
+	AddQuadIndices(vertSize + 0, vertSize + 1, vertSize + 2, vertSize + 3);
 
 	//left angle face
 	SetColor(tint);
@@ -515,7 +522,7 @@ void MeshBuilder::CreateStarQuads3D(const Vector3& center, const Vector3& dimens
 	SetUV(Vector2(0.f,1.f));
 	PushVertex(Vector3(center.x + xVal, center.y + yVal, center.z + zVal));	
 
-	AddQuadIndices(4, 5, 6, 7);
+	AddQuadIndices(vertSize + 4, vertSize + 5, vertSize + 6, vertSize +  7);
 
 	//right angle face
 	SetColor(tint);
@@ -534,7 +541,7 @@ void MeshBuilder::CreateStarQuads3D(const Vector3& center, const Vector3& dimens
 	SetUV(Vector2(0.f,1.f));
 	PushVertex(Vector3(center.x - xVal, center.y + yVal, center.z + zVal));	
 
-	AddQuadIndices(8, 9, 10, 11);
+	AddQuadIndices(vertSize + 8, vertSize + 9,vertSize + 10, vertSize + 11);
 }
 
 void MeshBuilder::CreateLine(const Vector3& positionStart, const Vector3& positionEnd, const Rgba& color)
@@ -706,6 +713,8 @@ void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> Su
 {
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); 
 
+	int vertSize = GetVertexCount();
+
 	float stepAmountX = ((uvRangeMax.x  - uvRangeMin.x)/sampleFrequency.x) * cellUniformScale;
 	float stepAmountY = ((uvRangeMax.y - uvRangeMin.y)/sampleFrequency.y) * cellUniformScale;
 
@@ -742,7 +751,7 @@ void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> Su
 			int bottomRightIndex = bottomLeftIndex + 1;
 			int topRightIndex = topLeftIndex + 1;
 
-			AddQuadIndices(bottomLeftIndex, bottomRightIndex, topRightIndex, topLeftIndex);
+			AddQuadIndices(vertSize + bottomLeftIndex, vertSize + bottomRightIndex, vertSize + topRightIndex, vertSize + topLeftIndex);
 		}
 	}
 

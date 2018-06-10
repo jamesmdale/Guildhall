@@ -1,23 +1,22 @@
 #pragma once
-#include "Game\Menu\MenuState.hpp"
+#include "Game\GameStates\GameState.hpp"
 
-enum eMainMenuOptions
+enum eReadyStateOptions
 {
-	PLAY,
-	EXIT,
-	NUM_MAIN_MENU_OPTIONS
+	READY,
+	NUM_READY_STATE_OPTIONS
 };
 
-class MainMenuState : public MenuState
+class ReadyState : public GameState
 {
 public:
-	MainMenuState(Camera* camera) : MenuState(camera)
+	ReadyState(Camera* camera) : GameState(camera)
 	{
-		m_type = MAIN_MENU_STATE;
+		m_type = READY_UP_GAME_STATE;
 		m_backGroundTexture = Renderer::GetInstance()->CreateOrGetTexture("default");
 	}
 
-	virtual ~MainMenuState() override;
+	virtual ~ReadyState() override;
 
 	virtual void Update(float deltaSeconds) override;
 	virtual void PreRender() override;
@@ -27,6 +26,6 @@ public:
 
 public:
 	Texture* m_backGroundTexture;
-	eMainMenuOptions m_selectedMenuOption = PLAY;
+	eReadyStateOptions m_selectedMenuOption = READY;
 };
 

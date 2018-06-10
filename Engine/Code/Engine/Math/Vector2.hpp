@@ -18,6 +18,7 @@ public:
 															// Operators
 	const Vector2 operator+( const Vector2& vecToAdd ) const;		// vec2 + vec2
 	const Vector2 operator-( const Vector2& vecToSubtract ) const;	// vec2 - vec2
+	const Vector2 operator*( const Vector2& vecToMultiply ) const;			// vec2 * float
 	const Vector2 operator*( float uniformScale ) const;			// vec2 * float
 	const Vector2 operator/( float inverseScale ) const;			// vec2 / float
 	void operator+=( const Vector2& vecToAdd );						// vec2 += vec2

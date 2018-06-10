@@ -5,7 +5,7 @@
 struct DrawCallData2D
 {
 	Matrix44 m_model;
-	Mesh* m_mesh = nullptr;
+	std::vector<Mesh*> m_meshes;
 	Material* m_material = nullptr;
 
 	int m_sortingLayer;

@@ -32,6 +32,7 @@ AABB2::AABB2(const Vector2& center, float radiusX, float radiusY)
 	maxs.y = center.y + radiusY;
 }
 
+
 void AABB2::StretchToIncludePoint(float x, float y)  //expand radius if (x,y) is outside
 {
 	

@@ -56,14 +56,17 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 		case WM_ACTIVATE:
 		{
 			bool is_active = (WA_INACTIVE != LOWORD( wParam ));
-			if(Window::GetInstance()->GetHandle() == HWND(lParam))
+			if (InputSystem::GetInstance()->GetMouse()->GetMouseMode() == MOUSE_RELATIVE_MODE)
 			{
-				InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(!is_active);
-			}		
-			else
-			{
-				InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(is_active);
-			}
+				if (Window::GetInstance()->GetHandle() == HWND(lParam))
+				{
+					InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(!is_active);
+				}
+				else
+				{
+					InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(is_active);
+				}
+			}			
 		}
 
 		case WM_LBUTTONDBLCLK:
