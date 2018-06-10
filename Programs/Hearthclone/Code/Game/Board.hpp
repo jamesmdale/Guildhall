@@ -17,6 +17,7 @@ public:
 	virtual void Initialize() override;
 
 	void CreateBoardMeshesForRenderable(Renderable2D* renderable);
+	void CreateBoardTextMeshesForRenderable(Renderable2D* renderable);
 
 public:
 	

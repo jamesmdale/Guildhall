@@ -614,8 +614,7 @@ void MeshBuilder::CreateBasis(const Vector3& positionStart, float scale)
 	PushVertex(positionStart + (Vector3::RIGHT * scale));
 }
 
-TODO("Add text to a single mesh for drawing");
-void MeshBuilder::CreateText2D(const Vector2& center, float cellHeight, float aspectScale, const std::string& text)
+void MeshBuilder::CreateText2D(const Vector2& center, float cellHeight, float aspectScale, const std::string& text, const Rgba& tint)
 {
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); 
 
@@ -637,21 +636,68 @@ void MeshBuilder::CreateText2D(const Vector2& center, float cellHeight, float as
 		Vector2 texCoordsAtMaxs = uvs.maxs;
 		AABB2 bounds = AABB2(Vector2(drawMins.x + (cellWidth * charIndex), drawMins.y), Vector2(drawMins.x + (cellWidth * (charIndex + 1)), drawMins.y + cellHeight));
 		
-		SetColor(Rgba::WHITE);
+		SetColor(tint);
 		SetUV(Vector2(texCoordsAtMins.x, texCoordsAtMaxs.y));
 		PushVertex(Vector3(bounds.mins.x, bounds.mins.y, 0));
 
-		SetColor(Rgba::WHITE);
+		SetColor(tint);
 		SetUV(Vector2(texCoordsAtMaxs.x, texCoordsAtMaxs.y));
 		PushVertex(Vector3(bounds.maxs.x, bounds.mins.y, 0));	
 	
-		SetColor(Rgba::WHITE);
+		SetColor(tint);
 		SetUV(Vector2(texCoordsAtMaxs.x, texCoordsAtMins.y));
 		PushVertex(Vector3(bounds.maxs.x, bounds.maxs.y, 0));
 
-		SetColor(Rgba::WHITE);
+		SetColor(tint);
 		SetUV(Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
 		PushVertex(Vector3(bounds.mins.x, bounds.maxs.y, 0));		
+
+		AddQuadIndices(vertSize, vertSize + 1, vertSize + 2, vertSize + 3);
+	}
+}
+
+
+void MeshBuilder::CreateText2DInAABB2(const Vector2& center, const Vector2& dimensions, float aspectScale, const std::string& text, const Rgba& tint)
+{
+	Begin(TRIANGLES_DRAW_PRIMITIVE, true);
+
+	BitmapFont* font = Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont");
+
+	int textLength = (int)text.length();
+
+	float maxTextWidth = dimensions.x / (float)textLength;
+
+	float cellHeight = maxTextWidth * aspectScale;
+	float cellWidth = maxTextWidth;	
+
+	float offsetFromCenterX = (textLength * cellWidth) * .5f;
+	float offsetFromCenterY = cellHeight * .5f;
+
+	Vector2 drawMins = Vector2(center.x - offsetFromCenterX, center.y - offsetFromCenterY);
+
+	for (int charIndex = 0; charIndex < textLength; charIndex++)
+	{
+		int vertSize = (int)m_vertices.size();
+		AABB2 uvs = font->GetUVsForGlyph(text.at(charIndex));
+		Vector2 texCoordsAtMins = uvs.mins;
+		Vector2 texCoordsAtMaxs = uvs.maxs;
+		AABB2 bounds = AABB2(Vector2(drawMins.x + (cellWidth * charIndex), drawMins.y), Vector2(drawMins.x + (cellWidth * (charIndex + 1)), drawMins.y + cellHeight));
+
+		SetColor(tint);
+		SetUV(Vector2(texCoordsAtMins.x, texCoordsAtMaxs.y));
+		PushVertex(Vector3(bounds.mins.x, bounds.mins.y, 0));
+
+		SetColor(tint);
+		SetUV(Vector2(texCoordsAtMaxs.x, texCoordsAtMaxs.y));
+		PushVertex(Vector3(bounds.maxs.x, bounds.mins.y, 0));
+
+		SetColor(tint);
+		SetUV(Vector2(texCoordsAtMaxs.x, texCoordsAtMins.y));
+		PushVertex(Vector3(bounds.maxs.x, bounds.maxs.y, 0));
+
+		SetColor(tint);
+		SetUV(Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
+		PushVertex(Vector3(bounds.mins.x, bounds.maxs.y, 0));
 
 		AddQuadIndices(vertSize, vertSize + 1, vertSize + 2, vertSize + 3);
 	}

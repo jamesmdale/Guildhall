@@ -52,7 +52,9 @@ public:
 	void CreateQuad2D(const Vector2& center, const Vector2& dimensions, const Rgba& tint);
 	void CreateQuad2D(const AABB2& drawBounds, const Rgba& tint);
 	void CreateStarQuads3D(const Vector3& center, const Vector3& dimensions, const Rgba& tint);
-	void CreateText2D(const Vector2& center, float cellHeight, float aspectScale, const std::string& text);
+	void CreateText2D(const Vector2& center, float cellHeight, float aspectScale, const std::string& text, const Rgba& tint = Rgba::WHITE);
+	void CreateText2DInAABB2(const Vector2& center, const Vector2& dimensions, float aspectScale, const std::string& text, const Rgba& tint = Rgba::WHITE);
+
 	void CreateBillboardQuad3d(const Vector3& center, const Vector3& up, const Vector3& right, const Vector2& dimensions, const Rgba& tint);
 
 	//surface patch implementation

@@ -21,18 +21,28 @@ Board::Board()
 
 void Board::Initialize()
 {
-	Renderable2D* renderable = new Renderable2D();
+	Renderable2D* boardRenderable = new Renderable2D();
 
 	//create board layout
 	Renderer* theRenderer = Renderer::GetInstance();	
 
-	CreateBoardMeshesForRenderable(renderable);
-	renderable->SetMaterial(new Material());
-	renderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
-	renderable->GetMaterial()->SetTexture(renderable->GetMaterial()->GetNumTextures(), theRenderer->m_defaultTexture);
-	renderable->GetMaterial()->SetSampler(renderable->GetMaterial()->GetNumSamplers(), theRenderer->m_defaultSampler);
+	CreateBoardMeshesForRenderable(boardRenderable);
+	boardRenderable->SetMaterial(new Material());
+	boardRenderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
+	boardRenderable->GetMaterial()->SetTexture(boardRenderable->GetMaterial()->GetNumTextures(), theRenderer->m_defaultTexture);
+	boardRenderable->GetMaterial()->SetSampler(boardRenderable->GetMaterial()->GetNumSamplers(), theRenderer->m_defaultSampler);
+	boardRenderable->SetRender2DSortLayer(0);
+	m_renderables.push_back(boardRenderable);
+
+	//add text to board
+	Renderable2D* boardTextRenderable = new Renderable2D();
+	CreateBoardTextMeshesForRenderable(boardTextRenderable);
+
+	boardTextRenderable->SetMaterial(theRenderer->CreateOrGetMaterial("text"));
+	boardTextRenderable->GetMaterial()->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::BLACK));
 	
-	m_renderables.push_back(renderable);
+	boardRenderable->SetRender2DSortLayer(1);
+	m_renderables.push_back(boardTextRenderable);
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
 	{
@@ -80,9 +90,9 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
     
 	// create quads for each hand =========================================================================================
 	Vector2 enemyHandCenter = Vector2(clientWindowDimensions.x * 0.5f
-		, clientWindowDimensions.y - (handDimensions.y * 0.5));
+		, clientWindowDimensions.y - (handDimensions.y * 0.5f));
 	Vector2 playerHandCenter = Vector2(clientWindowDimensions.x * 0.5f
-		, handDimensions.y * 0.5);
+		, handDimensions.y * 0.5f);
 	
 	//store off hand quads
 	m_enemyHandQuad = AABB2(enemyHandCenter, handDimensions.x * 0.5f, handDimensions.y * 0.5f);
@@ -94,9 +104,9 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	// create quads for each side of the battlefield =========================================================================================
 	
 	Vector2 enemyBattlefieldCenter = Vector2(clientWindowDimensions.x * 0.5f
-		, clientWindowDimensions.y - ((battlefieldDimensions.y * 0.5) + handDimensions.y));
+		, clientWindowDimensions.y - ((battlefieldDimensions.y * 0.5f) + handDimensions.y));
 	Vector2 playerBattlefieldCenter = Vector2(clientWindowDimensions.x * 0.5f
-		, (battlefieldDimensions.y * 0.5) + handDimensions.y);
+		, (battlefieldDimensions.y * 0.5f) + handDimensions.y);
 
 	//store off battlefield quads
 	m_enemyBattlfieldQuad = AABB2(enemyBattlefieldCenter, battlefieldDimensions.x * 0.5f, battlefieldDimensions.y * 0.5f);
@@ -107,9 +117,9 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 
 	// create quads for hero portrait =========================================================================================
 	Vector2 enemyPortraitCenter = Vector2(clientWindowDimensions.x * 0.5f
-		, clientWindowDimensions.y - ((heroPortraitDimensions.y * 0.5) + handDimensions.y));
+		, clientWindowDimensions.y - ((heroPortraitDimensions.y * 0.5f) + handDimensions.y));
 	Vector2 playerPortraitCenter = Vector2(clientWindowDimensions.x * 0.5f
-		, (heroPortraitDimensions.y * 0.5) + handDimensions.y);
+		, (heroPortraitDimensions.y * 0.5f) + handDimensions.y);
 
 	//store off hero portrait quads
 	m_enemyHeroPortraitQuad = AABB2(enemyPortraitCenter, heroPortraitDimensions.x * 0.5f, heroPortraitDimensions.y * 0.5f);
@@ -120,9 +130,9 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 
 	// create quads for hero ability =========================================================================================
 	Vector2 enemyAbilityCenter = Vector2((clientWindowDimensions.x * 0.5f) + (heroPortraitDimensions.x * 0.5f) + (heroAbilityDimensions.x * 0.5f)
-		, clientWindowDimensions.y - ((heroAbilityDimensions.y * 0.5) + handDimensions.y));
+		, clientWindowDimensions.y - ((heroAbilityDimensions.y * 0.5f) + handDimensions.y));
 	Vector2 playerAbilityCenter = Vector2((clientWindowDimensions.x * 0.5f) + (heroPortraitDimensions.x * 0.5f) + (heroAbilityDimensions.x * 0.5f)
-		, (heroAbilityDimensions.y * 0.5) + handDimensions.y);
+		, (heroAbilityDimensions.y * 0.5f) + handDimensions.y);
 
 	//store off hero portrait quads
 	m_enemyHeroAbilityQuad = AABB2(enemyAbilityCenter, heroAbilityDimensions.x * 0.5f, heroAbilityDimensions.y * 0.5f);
@@ -133,9 +143,9 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 
 	// create quads for hero weapon =========================================================================================
 	Vector2 enemyWeaponCenter = Vector2((clientWindowDimensions.x * 0.5f) - (heroPortraitDimensions.x * 0.5f) - (heroWeaponDimensions.x * 0.5f)
-		, clientWindowDimensions.y - ((heroWeaponDimensions.y * 0.5) + handDimensions.y));
+		, clientWindowDimensions.y - ((heroWeaponDimensions.y * 0.5f) + handDimensions.y));
 	Vector2 playerWeaponCenter = Vector2((clientWindowDimensions.x * 0.5f) - (heroPortraitDimensions.x * 0.5f) - (heroWeaponDimensions.x * 0.5f)
-		, (heroAbilityDimensions.y * 0.5) + handDimensions.y);
+		, (heroAbilityDimensions.y * 0.5f) + handDimensions.y);
 
 	//store off hero portrait quads
 	m_enemyHeroWeaponQuad = AABB2(enemyWeaponCenter, heroWeaponDimensions.x * 0.5f, heroWeaponDimensions.y * 0.5f);
@@ -146,9 +156,9 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 
 	// create quad for battlefield divider =========================================================================================
 	Vector2 enemyManaCenter = Vector2(clientWindowDimensions.x - (manaDimensions.x * 0.5f)
-		, clientWindowDimensions.y - ((manaDimensions.y * 0.5) + handDimensions.y));
+		, clientWindowDimensions.y - ((manaDimensions.y * 0.5f) + handDimensions.y));
 	Vector2 playerManaCenter = Vector2(clientWindowDimensions.x  - (manaDimensions.x * 0.5f)
-		, (manaDimensions.y * 0.5) + handDimensions.y);
+		, (manaDimensions.y * 0.5f) + handDimensions.y);
 
 	//store off hero portrait quads
 	m_enemyManaQuad = AABB2(enemyManaCenter, manaDimensions.x * 0.5f, manaDimensions.y * 0.5f);
@@ -172,6 +182,20 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	// create mesh =========================================================================================
 	renderable->AddMesh(mb.CreateMesh<VertexPCU>());
 
+	clientWindow = nullptr;
+}
+
+void Board::CreateBoardTextMeshesForRenderable(Renderable2D * renderable)
+{
+	MeshBuilder mb;
+	mb.FlushBuilder();
+
+	Window* clientWindow = Window::GetInstance();
+
+	m_endTurnQuad.GetCenter();
+
+	mb.CreateText2DInAABB2(m_endTurnQuad.GetCenter(), m_endTurnQuad.GetDimensions(), 4.f / 3.f, "END TURN", Rgba::BLACK);
+	renderable->AddMesh(mb.CreateMesh<VertexPCU>());
 
 	clientWindow = nullptr;
 }

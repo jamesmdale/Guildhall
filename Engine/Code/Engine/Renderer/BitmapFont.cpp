@@ -18,4 +18,9 @@ float BitmapFont::GetStringWidth( const std::string& asciiText, float cellHeight
 	return (asciiText.length() * (cellHeight * (aspectScale * m_baseAspect)));	 
 }
 
+const Texture* BitmapFont::GetFontTexture()
+{
+	return m_spriteSheet.GetSpriteSheetTexture();
+}
+
 
