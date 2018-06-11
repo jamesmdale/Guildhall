@@ -1,0 +1,12 @@
+<CardDefinitions>
+
+    <CardDefinition name="Chillwind Yeti" type="minion" subtype="">
+        <Attributes cost="4" attack="4" health="5" />
+        <Class class="neutral" />
+        <Tags>
+            <Tag tag="thing" />
+        </Tags>
+        <Text text="" />
+    </CardDefinition>
+
+</CardDefinitions>

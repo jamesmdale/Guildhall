@@ -1,5 +1,5 @@
 #include "Game\Entity\Player.hpp"
-#include "Game\Board.hpp"
+#include "Game\GameStates\PlayingState.hpp"
 
 
 Player::Player()
@@ -9,8 +9,8 @@ Player::Player()
 
 Player::~Player()
 {
-	m_class = nullptr;
-	m_board = nullptr;
+	m_hero = nullptr;
+	m_gameState = nullptr;
 
 	
 	for (int cardIndex = 0; cardIndex < (int)m_deck.size(); ++cardIndex)

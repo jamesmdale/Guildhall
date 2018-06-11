@@ -16,6 +16,21 @@ Shader::~Shader()
 	m_program = nullptr;
 }
 
+Shader::Shader(const Shader * copyShader)
+{
+	m_program = new ShaderProgram(copyShader->m_program);
+	m_id = copyShader->m_id;
+	m_state = copyShader->m_state;
+	m_sortingLayer = copyShader->m_sortingLayer;
+	m_renderQueueType = copyShader->m_renderQueueType;
+	m_doesUseLighting = copyShader->m_doesUseLighting;
+	
+	for (int bindingIndex = 0; bindingIndex < (int)copyShader->m_bindings.size(); ++bindingIndex)
+	{
+		m_bindings.push_back(copyShader->m_bindings[bindingIndex]);
+	}
+}
+
 void Shader::SetProgram(ShaderProgram* program)
 {
 	m_program = program;

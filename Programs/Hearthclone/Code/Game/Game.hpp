@@ -4,6 +4,7 @@
 #include "Engine\Camera\Camera.hpp"
 #include <vector>
 #include "Engine\Renderer\ForwardRenderingPath2D.hpp"
+#include "Game\Definitions\CardDefinition.hpp"
 
 class Game
 {
@@ -33,7 +34,6 @@ public:
 	float UpdateInput(float deltaSeconds);
 
 	//data
-	//std::vector<Cards*> loadedCards;
 	//std::vector<Decks*> loadedDecks;
 	//std::vector<Classes*> loadedClasses;	
 };

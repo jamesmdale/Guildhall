@@ -14,6 +14,44 @@ Material::~Material()
 	//m_shader = nullptr;
 }
 
+Material::Material(const Material* copyMaterial)
+{
+	m_isInstance = copyMaterial->m_isInstance;
+	m_shader = new Shader(copyMaterial->m_shader);
+	
+	for (int samplerIndex = 0; samplerIndex < (int)copyMaterial->m_samplers.size(); ++samplerIndex)
+	{
+		m_samplers.push_back(copyMaterial->m_samplers[samplerIndex]); //copy sampler exaclty as is (all it contains is handle)
+	}
+
+	for (int textureIndex = 0; textureIndex < (int)copyMaterial->m_textures.size(); ++textureIndex)
+	{
+		m_textures.push_back(copyMaterial->m_textures[textureIndex]); //copy textures exactly as is. (for now)
+	}
+
+	for (int propIndex = 0; propIndex < (int)copyMaterial->m_properties.size(); ++propIndex)
+	{
+		switch (copyMaterial->m_properties[propIndex]->GetDataType())
+		{
+		case FLOAT_MATERIAL_PROPERTY:
+			m_properties.push_back(new MaterialPropertyFloat(copyMaterial->m_properties[propIndex]->m_name, *(float*)copyMaterial->m_properties[propIndex]->GetData()));
+			break;
+		case MATRIX44_MATERIAL_PROPERTY:
+			m_properties.push_back(new MaterialPropertyMatrix44(copyMaterial->m_properties[propIndex]->m_name, *(Matrix44*)copyMaterial->m_properties[propIndex]->GetData()));
+			break;
+		case VECTOR2_MATERIAL_PROPERTY:
+			m_properties.push_back(new MaterialPropertyVector2(copyMaterial->m_properties[propIndex]->m_name, *(Vector2*)copyMaterial->m_properties[propIndex]->GetData()));
+			break;
+		case VECTOR3_MATERIAL_PROPERTY:
+			m_properties.push_back(new MaterialPropertyVector3(copyMaterial->m_properties[propIndex]->m_name, *(Vector3*)copyMaterial->m_properties[propIndex]->GetData()));
+			break;
+		case VECTOR4_MATERIAL_PROPERTY:
+			m_properties.push_back(new MaterialPropertyVector4(copyMaterial->m_properties[propIndex]->m_name, *(Vector4*)copyMaterial->m_properties[propIndex]->GetData()));
+			break;
+		}
+	}
+}
+
 Material::Material(Shader* shader)
 {
 	m_shader = shader;
@@ -313,15 +351,15 @@ void Material::AddShaderBindingToPropertyList(const Binding& binding)
 	}*/
 }
 
-Material* Material::Clone(Material * materialToClone)
+Material* Material::Clone(Material* materialToClone)
 {
 	if(materialToClone == nullptr)
 	{
 		return nullptr;
 	}
 
-	Material* clonedMaterial = new Material();
-	memcpy(clonedMaterial, materialToClone, sizeof(Material));
+	Material* clonedMaterial = new Material(materialToClone);
 
+	clonedMaterial->m_isInstance = true;
 	return clonedMaterial;
 }

@@ -5,6 +5,11 @@
 #include "Engine\File\File.hpp"
 
 
+ShaderProgram::ShaderProgram(const ShaderProgram * copyShaderProgram)
+{
+	m_programHandle = copyShaderProgram->m_programHandle;
+}
+
 bool ShaderProgram::LoadFromFiles( const char* root )
 {
 	TODO("Remove file path addition...it doesn't make sense");

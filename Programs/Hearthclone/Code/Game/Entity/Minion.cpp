@@ -9,4 +9,5 @@ Minion::Minion()
 
 Minion::~Minion()
 {
+	m_cardReference = nullptr;
 }

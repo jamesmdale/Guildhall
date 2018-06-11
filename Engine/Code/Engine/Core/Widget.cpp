@@ -3,7 +3,7 @@
 
 Widget::Widget()
 {
-
+	m_transform2D = new Transform2D();
 }
 
 Widget::~Widget()
@@ -61,8 +61,7 @@ void Widget::UpdateRenderable2DFromTransform()
 	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
 	{
 		m_renderables[renderableIndex]->SetModelMatrix(m_transform2D->GetWorldMatrix());
-	}
-	
+	}	
 }
 
 

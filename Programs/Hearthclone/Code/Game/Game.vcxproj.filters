@@ -52,6 +52,24 @@
     <ClCompile Include="Entity\HeroClass.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Character.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Hero.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Definitions\CardDefinition.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Definitions\HeroDefinition.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Trigger.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Action.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -79,5 +97,11 @@
     <ClInclude Include="Entity\Card.hpp" />
     <ClInclude Include="Entity\Minion.hpp" />
     <ClInclude Include="Entity\HeroClass.hpp" />
+    <ClInclude Include="Entity\Character.hpp" />
+    <ClInclude Include="Entity\Hero.hpp" />
+    <ClInclude Include="Definitions\CardDefinition.hpp" />
+    <ClInclude Include="Definitions\HeroDefinition.hpp" />
+    <ClInclude Include="Trigger.hpp" />
+    <ClInclude Include="Action.hpp" />
   </ItemGroup>
 </Project>

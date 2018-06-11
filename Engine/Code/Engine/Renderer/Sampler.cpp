@@ -4,6 +4,11 @@ Sampler::Sampler()
 	: m_samplerHandle(NULL)
 {}
 
+Sampler::Sampler(const Sampler* copySampler)
+{
+	m_samplerHandle = copySampler->m_samplerHandle;
+}
+
 Sampler::~Sampler()
 {
 	Destroy();

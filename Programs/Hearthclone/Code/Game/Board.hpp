@@ -1,7 +1,6 @@
 #pragma once
 #include "Engine\Core\Widget.hpp"
 #include "Engine\Camera\Camera.hpp"
-#include "Engine\Renderer\Renderable2D.hpp"
 #include "Engine\Math\AABB2.hpp"
 
 class Board : public Widget
@@ -19,9 +18,11 @@ public:
 	void CreateBoardMeshesForRenderable(Renderable2D* renderable);
 	void CreateBoardTextMeshesForRenderable(Renderable2D* renderable);
 
+	void UpdateRenderables();
+
 public:
 	
-	//enemy board quads
+	// enemy board quads =========================================================================================
 	AABB2 m_enemyHandQuad;
 	AABB2 m_enemyBattlfieldQuad;
 	AABB2 m_enemyHeroPortraitQuad;
@@ -29,7 +30,7 @@ public:
 	AABB2 m_enemyHeroWeaponQuad;
 	AABB2 m_enemyManaQuad;
 
-	//player board quads
+	// player board quads =========================================================================================
 	AABB2 m_playerHandQuad;
 	AABB2 m_playerBattlfieldQuad;
 	AABB2 m_playerHeroPortraitQuad;
@@ -37,7 +38,8 @@ public:
 	AABB2 m_playerHeroWeaponQuad;
 	AABB2 m_playerManaQuad;
 
-	//shared board quads
+	// shared board quads =========================================================================================
 	AABB2 m_endTurnQuad;
 };
+
 

@@ -31,7 +31,7 @@ public:
 	
 	int activePlayerID;
 	int turnCount;
-	//Battlefield* battlefield = nullptr;
+
 	//MatchLog
 
 };

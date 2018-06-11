@@ -13,6 +13,12 @@ Renderable2D::~Renderable2D()
 		m_meshes[meshIndex] = nullptr;
 	}	
 	m_meshes.clear();
+
+	if (m_material->m_isInstance)
+	{
+		delete(m_material);
+		m_material = nullptr;
+	}
 }
 	
 

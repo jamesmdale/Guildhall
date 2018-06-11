@@ -4,6 +4,7 @@ class Sampler
 {
 public:
 	Sampler();
+	Sampler(const Sampler* copySampler);
 	~Sampler();
 	
 	bool Create();

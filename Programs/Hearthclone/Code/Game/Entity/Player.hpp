@@ -1,10 +1,10 @@
 #pragma once
 #include "Game\Entity\Card.hpp"
-#include "Game\Entity\HeroClass.hpp"
 #include "Game\Entity\Minion.hpp"
+#include "Game\Entity\Hero.hpp"
 #include <vector>
 
-class Board;
+class PlayingState;
 class Player
 {
 public:
@@ -16,16 +16,12 @@ public:
 	std::vector<Card*> m_graveyard;
 	std::vector<Card*> m_hand;
 	std::vector<Minion*> m_minions;
-	HeroClass* m_class = nullptr;
+	Hero* m_hero = nullptr;
 
-	Board* m_board = nullptr;
+	PlayingState* m_gameState = nullptr;
 
 	int m_playerId;
 	int m_deckCount;
-	int m_health;
-	int m_armor;
-	int m_mana;
-	int m_attackPower;
 	
 	std::string name;
 };

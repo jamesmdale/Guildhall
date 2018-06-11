@@ -4,6 +4,9 @@
 #include "Engine\Core\LightObject.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Debug\DebugRender.hpp"
+#include "Game\Entity\Card.hpp"
+
+Card* card = nullptr;
 
 enum ePlayState
 {
@@ -32,23 +35,35 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
-	Board* gameBoard = new Board("board");
-	gameBoard->m_renderScene = m_renderScene2D;
-	gameBoard->Initialize();
+	/*m_gameBoard = new Board("board");
+	m_gameBoard->m_renderScene = m_renderScene2D;
+	m_gameBoard->Initialize();*/
 
-	//Player*
+	//test a card
+	card = new Card(CardDefinition::GetDefinitionByName("Chillwind Yeti"));
+	card->m_renderScene = m_renderScene2D;
+	card->Initialize();
+	Vector2 clientCenter = Window::GetInstance()->GetCenterOfClientWindow();
+	card->m_transform2D->SetLocalPosition(clientCenter);
+
+	//m_player = new Player();
+	//m_player->m_deck.
+	
 
 	theRenderer = nullptr;	
 }
 
 void PlayingState::Update(float deltaSeconds)
 { 
+	//m_gameBoard->Update(deltaSeconds);
+	card->Update(deltaSeconds);
 	
 }
 
 void PlayingState::PreRender()
 {
-	
+	//m_gameBoard->PreRender();
+	card->PreRender();
 }
 
 void PlayingState::Render()

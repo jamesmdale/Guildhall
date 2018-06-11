@@ -15,12 +15,13 @@ public:
 	explicit Vector2( float initialX, float initialY );		// explicit constructor (from x, y)
 	explicit Vector2(const IntVector2& vector);
 	
-															// Operators
+	// Operators
 	const Vector2 operator+( const Vector2& vecToAdd ) const;		// vec2 + vec2
 	const Vector2 operator-( const Vector2& vecToSubtract ) const;	// vec2 - vec2
-	const Vector2 operator*( const Vector2& vecToMultiply ) const;			// vec2 * float
+	const Vector2 operator*( const Vector2& vecToMultiply ) const;	// vec2 * vec2
 	const Vector2 operator*( float uniformScale ) const;			// vec2 * float
 	const Vector2 operator/( float inverseScale ) const;			// vec2 / float
+	const Vector2 operator/(  const Vector2& vecToDivide ) const;	// vec2 / vec2
 	void operator+=( const Vector2& vecToAdd );						// vec2 += vec2
 	void operator-=( const Vector2& vecToSubtract );				// vec2 -= vec2
 	void operator*=( const float uniformScale );					// vec2 *= float

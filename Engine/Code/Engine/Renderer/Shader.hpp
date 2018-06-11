@@ -50,6 +50,7 @@ class Shader
 public:
 	Shader();
 	~Shader();
+	Shader(const Shader* copyShader);
 
 	/************************************************************************/
 	/* Setters                                                              */

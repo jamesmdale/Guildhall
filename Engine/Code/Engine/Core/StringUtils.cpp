@@ -74,6 +74,17 @@ void RemoveEmptyStrings(std::vector<std::string>& outStrings)
 	RemoveMatchingStrings(outStrings, "");
 }
 
+void ReplaceCharacterOccurances(std::string& outString, const char characterToReplace, const char replacementCharacter)
+{
+	for (int stringIndex = 0; stringIndex < (int)outString.size(); stringIndex++)
+	{
+		if (outString[stringIndex] == characterToReplace)
+		{
+			outString[stringIndex] = replacementCharacter;
+		}
+	}
+}
+
 void RemoveMatchingStrings(std::vector<std::string>& outStrings, const std::string& matchingString)
 {
 	for(int stringIndex = 0; stringIndex < (int)outStrings.size(); stringIndex++)

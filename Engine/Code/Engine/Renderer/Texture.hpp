@@ -25,8 +25,10 @@ public:
 	IntVector2 GetDimensions();
 private:
 	Texture();
+	Texture(const Texture* copyTexture);
 	Texture( const std::string& imageFilePath ); // Use renderer->CreateOrGetTexture() instead!
-	Texture::Texture( Image& image );
+	Texture ( Image& image );
+
 	void PopulateFromData( unsigned char* imageData, const IntVector2& texelSize, int numComponents );
 	bool CreateRenderTarget(int width, int height, TextureFormatType format);
 	unsigned int GetHandle();

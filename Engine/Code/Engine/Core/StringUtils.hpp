@@ -13,6 +13,7 @@ std::string SplitStringOnFirstWord(const std::string& inputString);
 
 //removal
 void RemoveEmptyStrings(std::vector<std::string>& outStrings);
+void ReplaceCharacterOccurances(std::string & outString, const char characterToReplace, const char replacementCharacter);
 void RemoveMatchingStrings(std::vector<std::string>& outStrings, const std::string& matchingString);
 void RemoveStringsStartingWithString(std::vector<std::string>& outStrings, const std::string& startingString );
 

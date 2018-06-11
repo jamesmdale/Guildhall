@@ -90,6 +90,9 @@ void Game::Initialize()
 	GameState::TransitionGameStatesImmediate(GameState::GetGameStateFromGlobalListByType(MAIN_MENU_GAME_STATE));
 	GameState::UpdateGlobalGameState(0.f);
 
+	//load card definitions
+	CardDefinition::Initialize("Data/Definitions/Cards/cards.xml");
+
 	//cleanup
 	theRenderer = nullptr;
 	theWindow = nullptr;

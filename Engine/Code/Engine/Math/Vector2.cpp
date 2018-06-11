@@ -61,6 +61,11 @@ const Vector2 Vector2::operator/( float inverseScale ) const
 	return Vector2( x/inverseScale, y/inverseScale ); // #MP1Fixme
 }
 
+const Vector2 Vector2::operator/(const Vector2 & vecToDivide) const
+{
+	return Vector2(x/vecToDivide.x, y/vecToDivide.y);
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void Vector2::operator+=( const Vector2& vecToAdd )

@@ -4,6 +4,7 @@
 #include "Engine\Camera\Camera.hpp"
 #include "Game\Game.hpp"
 #include "Engine\Renderer\RenderScene2D.hpp"
+#include "Engine\Renderer\Renderer.hpp"
 
 enum eGameState
 {

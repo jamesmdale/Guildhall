@@ -7,6 +7,7 @@ class ShaderProgram
 
    public:
 	   ShaderProgram(){};
+	   ShaderProgram(const ShaderProgram* copyShaderProgram);
 	   ~ShaderProgram(){};
 
       bool LoadFromFiles( const char* root ); // load a shader from file

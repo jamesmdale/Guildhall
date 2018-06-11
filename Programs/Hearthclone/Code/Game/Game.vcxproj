@@ -292,8 +292,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Action.cpp" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="Definitions\CardDefinition.cpp" />
+    <ClCompile Include="Entity\Character.cpp" />
     <ClCompile Include="Entity\Card.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCommon.cpp" />
@@ -303,10 +306,13 @@
     <ClCompile Include="GameStates\PlayingState.cpp" />
     <ClCompile Include="GameStates\ReadyState.cpp" />
     <ClCompile Include="Entity\HeroClass.cpp" />
+    <ClCompile Include="Entity\Hero.cpp" />
+    <ClCompile Include="Definitions\HeroDefinition.cpp" />
     <ClCompile Include="Main_Win32.cpp" />
     <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="Entity\Minion.cpp" />
     <ClCompile Include="TheApp.cpp" />
+    <ClCompile Include="Trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engine\Code\Engine\Engine.vcxproj">
@@ -314,8 +320,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Action.hpp" />
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="Board.hpp" />
+    <ClInclude Include="Definitions\CardDefinition.hpp" />
+    <ClInclude Include="Entity\Character.hpp" />
     <ClInclude Include="Entity\Card.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Game.hpp" />
@@ -328,7 +337,10 @@
     <ClInclude Include="Entity\Player.hpp" />
     <ClInclude Include="Entity\Minion.hpp" />
     <ClInclude Include="Entity\HeroClass.hpp" />
+    <ClInclude Include="Entity\Hero.hpp" />
+    <ClInclude Include="Definitions\HeroDefinition.hpp" />
     <ClInclude Include="TheApp.hpp" />
+    <ClInclude Include="Trigger.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,6 @@
 #include "Game\Board.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Window\Window.hpp"
-#include "Engine\Core\Rgba.hpp"
 #include "Game\GameCommon.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 
@@ -27,10 +26,7 @@ void Board::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();	
 
 	CreateBoardMeshesForRenderable(boardRenderable);
-	boardRenderable->SetMaterial(new Material());
-	boardRenderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
-	boardRenderable->GetMaterial()->SetTexture(boardRenderable->GetMaterial()->GetNumTextures(), theRenderer->m_defaultTexture);
-	boardRenderable->GetMaterial()->SetSampler(boardRenderable->GetMaterial()->GetNumSamplers(), theRenderer->m_defaultSampler);
+	boardRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("default")));
 	boardRenderable->SetRender2DSortLayer(0);
 	m_renderables.push_back(boardRenderable);
 
@@ -38,10 +34,10 @@ void Board::Initialize()
 	Renderable2D* boardTextRenderable = new Renderable2D();
 	CreateBoardTextMeshesForRenderable(boardTextRenderable);
 
-	boardTextRenderable->SetMaterial(theRenderer->CreateOrGetMaterial("text"));
+	boardTextRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("text")));
 	boardTextRenderable->GetMaterial()->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::BLACK));
 	
-	boardRenderable->SetRender2DSortLayer(1);
+	boardTextRenderable->SetRender2DSortLayer(1);
 	m_renderables.push_back(boardTextRenderable);
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
@@ -55,6 +51,23 @@ void Board::Initialize()
 
 Board::~Board()
 {
+}
+
+void Board::UpdateRenderables()
+{
+	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->RemoveRenderable(m_renderables[renderableIndex]);
+
+		if (m_renderables[renderableIndex] != nullptr)
+		{
+			delete(m_renderables[renderableIndex]);
+			m_renderables[renderableIndex] = nullptr;
+		}
+	}
+	m_renderables.clear();
+
+	Initialize();
 }
 
 void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)

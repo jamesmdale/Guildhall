@@ -15,6 +15,7 @@ class Material
 public:
 	Material();
 	~Material();
+	Material(const Material* copyMaterial);
 	Material(Shader* shader);
 
 	void SetTexture(int index, Texture* texture);
@@ -66,6 +67,7 @@ public:
 	std::vector<Texture*> m_textures;
 	std::vector<Sampler*> m_samplers;
 	std::vector<MaterialProperty*> m_properties;
+	bool m_isInstance = false;
 
 	//if you want to do instance data
 	//bool m_isResource; //false if this is an isntance

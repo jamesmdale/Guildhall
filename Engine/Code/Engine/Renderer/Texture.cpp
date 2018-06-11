@@ -14,6 +14,7 @@ Texture::Texture(): m_textureID( 0 )
 {
 
 }
+
 //-----------------------------------------------------------------------------------------------
 // Called only by the Renderer.  Use renderer->CreateOrGetTexture() to instantiate textures.
 //
