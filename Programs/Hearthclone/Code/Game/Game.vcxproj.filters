@@ -70,6 +70,9 @@
     <ClCompile Include="Action.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Definitions\DeckDefinition.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -103,5 +106,6 @@
     <ClInclude Include="Definitions\HeroDefinition.hpp" />
     <ClInclude Include="Trigger.hpp" />
     <ClInclude Include="Action.hpp" />
+    <ClInclude Include="Definitions\DeckDefinition.hpp" />
   </ItemGroup>
 </Project>

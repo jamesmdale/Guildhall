@@ -295,6 +295,7 @@
     <ClCompile Include="Action.cpp" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="Definitions\DeckDefinition.cpp" />
     <ClCompile Include="Definitions\CardDefinition.cpp" />
     <ClCompile Include="Entity\Character.cpp" />
     <ClCompile Include="Entity\Card.cpp" />
@@ -323,6 +324,7 @@
     <ClInclude Include="Action.hpp" />
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="Board.hpp" />
+    <ClInclude Include="Definitions\DeckDefinition.hpp" />
     <ClInclude Include="Definitions\CardDefinition.hpp" />
     <ClInclude Include="Entity\Character.hpp" />
     <ClInclude Include="Entity\Card.hpp" />

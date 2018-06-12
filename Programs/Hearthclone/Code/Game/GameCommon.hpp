@@ -56,7 +56,7 @@ const float g_cardAspectRatio = 0.722f;
 const Vector2 g_cardSize = Vector2(370.f, 512.f);
 
 const Vector2 g_cardManaCenterRatio = Vector2(60.f/g_cardSize.x, (g_cardSize.y - 50.f)/g_cardSize.y);
-const Vector2 g_cardManaDimensionsRatio = Vector2(Vector2(67.f, 58.f) / g_cardSize);
+const Vector2 g_cardManaDimensionsRatio = Vector2(Vector2(45.f, 35.f) / g_cardSize);
 
 const Vector2 g_cardNameCenterRatio = Vector2(220.f/g_cardSize.x, (g_cardSize.y - 50.f)/g_cardSize.y);
 const Vector2 g_cardNameDimensionsRatio = Vector2(Vector2(247.f, 58.f)/g_cardSize);
@@ -68,10 +68,10 @@ const Vector2 g_cardTextCenterRatio = Vector2(186.f/g_cardSize.x, (g_cardSize.y 
 const Vector2 g_cardTextDimensionsRatio = Vector2(Vector2(317.f, 165.f)/g_cardSize);
 
 const Vector2 g_cardAttackCenterRatio = Vector2(45.f/g_cardSize.x, (g_cardSize.y - 466.f)/g_cardSize.y);
-const Vector2 g_cardAttackDimensionsRatio = Vector2(Vector2(56.f, 55.f)/g_cardSize);
+const Vector2 g_cardAttackDimensionsRatio = Vector2(Vector2(50.f, 45.f)/g_cardSize);
 
 const Vector2 g_cardHealthCenterRatio = Vector2(324.f/g_cardSize.x, (g_cardSize.y - 466.f)/g_cardSize.y);
-const Vector2 g_cardHealthDimensionsRatio = Vector2(Vector2(56.f, 55.f)/g_cardSize);
+const Vector2 g_cardHealthDimensionsRatio = Vector2(Vector2(50.f, 45.f)/g_cardSize);
 
 //hero sizes
 const Vector2 g_heroPortraitPercentageOfClientWindow = Vector2(0.1f, 0.1f);

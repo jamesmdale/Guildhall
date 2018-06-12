@@ -11,6 +11,10 @@ public:
 	Player();
 	~Player();
 
+	void LoadDeckFromDefinitionName(const std::string& deckName);
+	void UpdateDeckCount();
+	void ShuffleDeck();
+
 public:
 	std::vector<Card*> m_deck;
 	std::vector<Card*> m_graveyard;
@@ -21,8 +25,7 @@ public:
 	PlayingState* m_gameState = nullptr;
 
 	int m_playerId;
-	int m_deckCount;
-	
-	std::string name;
+	int m_deckCount;	
+	std::string m_displayName;
 };
 

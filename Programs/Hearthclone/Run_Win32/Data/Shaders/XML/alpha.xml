@@ -1,8 +1,8 @@
 <shader name="alpha" cull="none" drawFace="front_and_back">
 
    <program define="">
-      <vertex file="Data/Shaders/alphaText" />
-      <fragment file="Data/Shaders/alphaText" />
+      <vertex file="Data/Shaders/additive" />
+      <fragment file="Data/Shaders/additive" />
    </program>
 
    <lighting lit="false"/>
