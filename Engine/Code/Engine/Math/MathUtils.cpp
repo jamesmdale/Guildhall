@@ -7,6 +7,7 @@
 #include "Engine\Math\Vector4.hpp"
 
 constexpr float PI = static_cast<float>(3.14159);
+constexpr float EPSILON = static_cast<float>(0.000001);
 
 float ConvertDegreesToRadians(float degrees)
 {
@@ -444,6 +445,7 @@ const float Interpolate(const float& start, const float& end, float fractionTowa
 	return (((end - start) * fractionTowardEnd) + start);
 }
 
+
 const int Interpolate(const int& start, const int& end, float fractionTowardEnd)
 {
 	return (RoundToNearestInt((end - start) * fractionTowardEnd) + start);
@@ -459,6 +461,11 @@ const unsigned char Interpolate(const unsigned char& start, const unsigned char&
 float GetPi()
 {
 	return PI;
+}
+
+float GetEpsilon()
+{
+	return EPSILON;
 }
 
 float GetMagnitude(float inputFloat)

@@ -340,6 +340,36 @@ const Vector3 Interpolate(const Vector3& start, const Vector3& end, float fracti
 	return Vector3(Interpolate(start.x, end.x, fractionTowardEnd), Interpolate(start.y, end.y, fractionTowardEnd), Interpolate(start.z, end.z, fractionTowardEnd));
 }
 
+const Vector3 SphericalInterpolate(const Vector3 & start, const Vector3 & end, float fractionTowardEnd)
+{
+	float startLength = start.GetLength();
+	float endLength = end.GetLength();
+
+	float length = Interpolate(startLength, endLength, fractionTowardEnd);
+	
+	Vector3 unit = SphericalInterpolateUnit(start/startLength, end/endLength, fractionTowardEnd);
+	return length * unit;
+}
+
+const Vector3 SphericalInterpolateUnit(const Vector3 & start, const Vector3 & end, float fractionTowardEnd)
+{
+	float cosAngle = ClampFloat(DotProduct(start, end), -1.0f, 1.0f);
+	float angle = acosf(cosAngle);
+	if (angle < GetEpsilon())
+	{
+		return Interpolate(start, end, fractionTowardEnd);
+	}
+	else
+	{
+		float positiveNum = sinf(fractionTowardEnd * angle);
+		float negativeNum = sinf((1.0f - fractionTowardEnd) * angle);
+		float denominator = sinf(angle);
+
+		return ((negativeNum / denominator) * start) + ((positiveNum/denominator) * end);
+	}
+
+}
+
 TODO("Projections, transformations, dots, decompositions, reflections, and interpolate")
 //
 //const Vector2 GetProjectedVector(const Vector3& vectorToProject, const Vector3& projectOnto)

@@ -73,4 +73,5 @@ int MoveRegularPolygonY(float centerY, Vector3 movementVector);
 //void DecomposeVectorIntoBasis( const Vector3& originalVector,	const Vector3& newBasisI, const Vector3& newBasisJ,	Vector3& out_vectorAlongI, Vector3& out_vectorAlongJ );
 //const Vector3 Reflect(const Vector3& originalVector2, const Vector3& bounceDirection);
 const Vector3 Interpolate(const Vector3& start, const Vector3& end, float fractionTowardEnd);
-
+const Vector3 SphericalInterpolate(const Vector3& start, const Vector3& end, float fractionTowardEnd);
+const Vector3 SphericalInterpolateUnit(const Vector3& start, const Vector3& end, float fractionTowardEnd);

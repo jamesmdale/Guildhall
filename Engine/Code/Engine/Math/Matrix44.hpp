@@ -43,7 +43,7 @@ public:
 	void ScaleUniform3D( float scaleXYZ );
 	void Scale3D( float scaleX, float scaleY, float scaleZ );
 
-	
+	//inversions and transposes
 	void InvertFast();
 	Matrix44 InvertFastToNew();
 	void TransposeRotation();
@@ -65,8 +65,7 @@ public:
 	static Matrix44 LookAt(const Vector3& position, const Vector3& target, const Vector3& up = Vector3::UP);
 
 	Matrix44 CloneTemporaryMatrix44(const Matrix44& matrixToClone);
-
-	//Conveniance funtions
+	Matrix44 LerpTransform(Matrix44& start, Matrix44& end, float fractionTowardEnd);
 
 	//getters
 	Vector4 GetXRow(){ return Vector4(Ix, Jx, Kx, Tx);}; 
@@ -90,7 +89,6 @@ public:
 	Vector2 GetTranslation2D(){return GetPosition2D(); };
 	Vector2 GetRight2D();
 	Vector2 GetUp2D();
-
 
 	//setters
 	void SetFromBasisVectors(Vector4 iBasis, Vector4 jBasis, Vector4 kBasis, Vector4 tBasis);	
