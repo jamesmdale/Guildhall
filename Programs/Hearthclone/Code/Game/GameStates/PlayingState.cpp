@@ -47,13 +47,16 @@ void PlayingState::Initialize()
 	card->m_renderScene = m_renderScene2D;
 	card->Initialize();
 	Vector2 clientCenter = Window::GetInstance()->GetCenterOfClientWindow();
-	card->m_transform2D->SetLocalPosition(clientCenter);
+ 	card->m_transform2D->SetLocalPosition(clientCenter);
 
+	//add players
 	m_player = new Player();
 	m_player->m_playerId = 0;
 	m_player->m_gameState = this;
 	m_player->LoadDeckFromDefinitionName("All Yetis");
 
+
+	//load their decks
 	m_enemyPlayer = new Player();
 	m_enemyPlayer->m_playerId = 1;
 	m_enemyPlayer->m_gameState = this;
@@ -64,15 +67,34 @@ void PlayingState::Initialize()
 
 void PlayingState::Update(float deltaSeconds)
 { 
-	//m_gameBoard->Update(deltaSeconds);
-	card->Update(deltaSeconds);
-	
+	// update enemy =============================================================================
+	for (int cardIndex = 0; cardIndex < (int)m_enemyPlayer->m_hand.size(); ++cardIndex)
+	{
+		m_enemyPlayer->m_hand[cardIndex]->Update(deltaSeconds);
+	}
+
+	// update self =============================================================================
+	for (int cardIndex = 0; cardIndex < (int)m_player->m_hand.size(); ++cardIndex)
+	{
+		m_player->m_hand[cardIndex]->Update(deltaSeconds);
+	}
 }
 
 void PlayingState::PreRender()
 {
 	//m_gameBoard->PreRender();
-	card->PreRender();
+
+	// update enemy =============================================================================
+	for (int cardIndex = 0; cardIndex < (int)m_enemyPlayer->m_hand.size(); ++cardIndex)
+	{
+		m_enemyPlayer->m_hand[cardIndex]->PreRender();
+	}
+
+	// update self =============================================================================
+	for (int cardIndex = 0; cardIndex < (int)m_player->m_hand.size(); ++cardIndex)
+	{
+		m_player->m_hand[cardIndex]->PreRender();
+	}
 }
 
 void PlayingState::Render()

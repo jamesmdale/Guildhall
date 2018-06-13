@@ -15,11 +15,16 @@ public:
 	void UpdateDeckCount();
 	void ShuffleDeck();
 
+	//card position update methods
+	void UpdateHandLockPositions();
+	void UpdateBoardLockPositions();
+
 public:
 	std::vector<Card*> m_deck;
 	std::vector<Card*> m_graveyard;
 	std::vector<Card*> m_hand;
 	std::vector<Minion*> m_minions;
+	int m_manaCount = 0;
 	Hero* m_hero = nullptr;
 
 	PlayingState* m_gameState = nullptr;

@@ -49,8 +49,9 @@ const float g_boardBattlefieldPercentageOfClientWindow = 0.345f; //battlefield u
 const float g_boardBattlefieldCenterLineThicknessHeight = 0.01f;
 
 //card sizes
-const float g_cardPercentageOfClientWindowHeight = 0.1f;
+const float g_cardPercentageOfClientWindowHeight = 0.075f;
 const float g_cardAspectRatio = 0.722f;
+const int g_maxHandSize = 10;
 
 //used to calculate center positions of all elements on a card
 const Vector2 g_cardSize = Vector2(370.f, 512.f);
@@ -81,6 +82,8 @@ const Vector2 g_heroWeaponPercentageOfClientWindow = Vector2(0.075f, 0.075f);
 //other
 const Vector2 g_manaPercentageOfClientWindow = Vector2(0.1f, 0.1f);
 const Vector2 g_endTurnButtonPercentageOfClientWindow = Vector2(0.1f, 0.1f);
+
+
 
 //game related globals
 extern bool g_isDebug;

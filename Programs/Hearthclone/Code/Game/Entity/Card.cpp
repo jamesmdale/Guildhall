@@ -6,6 +6,8 @@
 #include "Engine\Core\StringUtils.hpp"
 
 
+Vector2 cardDimensions = Vector2(0.f, 0.f);
+
 Card::Card()
 {
 }
@@ -49,6 +51,8 @@ Card::~Card()
 void Card::Initialize()
 {
 	RefreshCardRenderables();
+	
+	//other intialization data goes here.
 }
 
 void Card::RefreshCardRenderables()
@@ -73,7 +77,7 @@ void Card::RefreshCardRenderables()
 	float cardHeight = g_cardPercentageOfClientWindowHeight * clientWindow->GetClientHeight();
 	float cardWidth = cardHeight * g_cardAspectRatio;
 
-	Vector2 cardDimensions = Vector2(cardWidth, cardHeight);
+	cardDimensions = Vector2(cardWidth, cardHeight);
 	Vector2 cardBottomRight = Vector2(Vector2::ZERO.x - (cardWidth * 0.5f), Vector2::ZERO.y - (cardHeight * 0.5f));
 
 	// create background renderable =========================================================================================
@@ -132,8 +136,13 @@ void Card::RefreshCardRenderables()
 		m_renderScene->AddRenderable(m_renderables[renderableIndex]);
 	}
 
+	m_isRendering = true;
+
 	clientWindow = nullptr;
 	theRenderer = nullptr;
 }
 
-
+Vector2 Card::GetCardDimensions()
+{
+	return cardDimensions;
+}

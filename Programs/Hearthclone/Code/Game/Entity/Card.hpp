@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "Engine\Core\Widget.hpp"
+#include "Engine\Math\Vector2.hpp"
 
 class Card : public Widget
 {
@@ -16,8 +17,12 @@ public:
 	Card(const CardDefinition* definition);
 	virtual ~Card() override;
 
-	virtual void Initialize() override;
-	void RefreshCardRenderables();
+	virtual void Initialize() override;	
+	void RefreshCardRenderables();	
+
+	// static methodes =============================================================================
+
+	static Vector2 GetCardDimensions();
 
 public:
 	const CardDefinition* m_definition = nullptr;
@@ -31,7 +36,12 @@ public:
 	std::vector<std::string> m_tags;
 	std::string m_text;
 
-
+	
+	bool m_isPositionLocked = true;
+	bool m_isRendering = false;
+	Vector2 m_lockPosition;	//position in space the card should snap to if not being manipulated by user input
 };
+
+
 
 

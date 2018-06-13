@@ -93,3 +93,36 @@ void Player::ShuffleDeck()
 		tempCard = nullptr;
 	}	
 }
+
+void Player::UpdateHandLockPositions()
+{
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+	Board* board = gameState->m_gameBoard;
+
+	float handDockCenterHeight = board->m_playerHandQuad.maxs.y - ((board->m_enemyHandQuad.maxs.y - board->m_enemyHandQuad.mins.y) * 0.5f);
+	float handDockWidthPerCard = (board->m_playerHandQuad.maxs.x - board->m_enemyHandQuad.mins.x) / g_maxHandSize;
+
+	for (int cardIndex = 0; cardIndex < (int)m_hand.size(); ++cardIndex)
+	{	
+		if (m_hand[cardIndex]->m_isRendering == false)
+		{
+			m_hand[cardIndex]->m_renderScene = g_currentState->m_renderScene2D;
+			m_hand[cardIndex]->RefreshCardRenderables();
+		}
+		
+		m_hand[cardIndex]->m_lockPosition = Vector2(handDockWidthPerCard * (cardIndex + 1), handDockCenterHeight);
+
+		if (m_hand[cardIndex]->m_isPositionLocked)
+		{
+			m_hand[cardIndex]->m_transform2D->SetLocalPosition(m_hand[cardIndex]->m_lockPosition);		
+		}		
+	}
+
+	// cleanup =============================================================================
+	gameState = nullptr;
+	board = nullptr;
+}
+
+void Player::UpdateBoardLockPositions()
+{
+}

@@ -6,11 +6,12 @@
 
 std::map<std::string, ActionFunction> s_registeredActions;
 
-// genereal functios =============================================================================
+// genereal functions =============================================================================
 
 void RegisterAllActions()
 {
 	RegisterAction("draw", Draw);
+	RegisterAction("attack", Attack);
 }
 
 void RegisterAction(std::string name, ActionFunction action)
@@ -43,19 +44,17 @@ ActionFunction GetActionDataFromRegisteredListByName(const std::string & actionN
 /*	TEMPLATE
 	void DoStuff(const std::map<std::string, std::string>& parameters)
 	{
-		// get parameters =============================================================================
+		// Get Parameters =============================================================================
 		std::string thing1 = parameters.find("thing")->second;
 		int thing2 = atoi(parameters.find("thing2")->second.c_str());
 
-		// Do Stuff =============================================================================		
+		// Process Function =============================================================================		
 	}
 */
 
 void Draw(const std::map<std::string, std::string>& parameters)
 {
 	// get parameters =============================================================================
-	//std::map<std::string, std::string>::iterator player = parameters.find("player");
-
 	std::string player = parameters.find("target")->second;
 	int drawAmount = atoi(parameters.find("amount")->second.c_str());
 
@@ -81,5 +80,17 @@ void Draw(const std::map<std::string, std::string>& parameters)
 		targetPlayer->m_deck.pop_back();
 	}
 
+	targetPlayer->UpdateDeckCount();
+	targetPlayer->UpdateHandLockPositions();
+
 	targetPlayer = nullptr;
+}
+
+void Attack(const std::map<std::string, std::string>& parameters)
+{
+	// Get Parameters =============================================================================
+	std::string attackTarget = parameters.find("target")->second;
+
+	// Process Function =============================================================================		
+
 }

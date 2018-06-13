@@ -46,6 +46,8 @@ int thing2 = atoi(parameters.find("thing2")->second.c_str());
 
 void Draw(const std::map<std::string, std::string>& parameters);
 
+void Attack(const std::map<std::string, std::string>& parameters);
+
 
 
 

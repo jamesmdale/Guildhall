@@ -15,5 +15,6 @@ public:
 
 public:
 	int m_armor;
+	int m_attack;
 };
 
