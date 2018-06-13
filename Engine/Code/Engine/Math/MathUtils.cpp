@@ -7,6 +7,7 @@
 #include "Engine\Math\Vector4.hpp"
 
 constexpr float PI = static_cast<float>(3.14159);
+constexpr float EPSILON = static_cast<float>(0.0001);
 
 float ConvertDegreesToRadians(float degrees)
 {
@@ -97,6 +98,18 @@ float CalculateYPoint(float centerY, float radius, float radians)
 	float yPoint = centerY + (radius * sinf(radians));
 
 	return yPoint;
+}
+
+float GetMinFloat(float a, float b)
+{
+	if (a < b)
+	{
+		return a;
+	}
+	else
+	{
+		return b;
+	}
 }
 
 int RotateRegularPolygon(float currentDegrees, float rotationDegrees)
@@ -444,6 +457,7 @@ const float Interpolate(const float& start, const float& end, float fractionTowa
 	return (((end - start) * fractionTowardEnd) + start);
 }
 
+
 const int Interpolate(const int& start, const int& end, float fractionTowardEnd)
 {
 	return (RoundToNearestInt((end - start) * fractionTowardEnd) + start);
@@ -460,6 +474,33 @@ float GetPi()
 {
 	return PI;
 }
+
+float GetEpsilon()
+{
+	return EPSILON;
+}
+
+bool IsNearZero(float inValue)
+{
+	if (inValue < 0.0f)
+	{
+		if (inValue + GetEpsilon() > 0.0f)
+		{
+			return true;
+		}
+	}
+	if (inValue > 0.0f)
+	{
+		if (inValue - GetEpsilon() < 0.0f)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+//bool IsNear()
 
 float GetMagnitude(float inputFloat)
 {

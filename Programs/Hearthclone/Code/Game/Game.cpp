@@ -21,6 +21,7 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include <vector>
 #include <string>
+#include "Game\Definitions\DeckDefinition.hpp"
 
 //game instance
 static Game* g_theGame = nullptr;
@@ -34,11 +35,11 @@ Game::Game()
 
 Game::~Game()
 {
-	//delete render members
+	// delete render members =============================================================================
 	delete(m_forwardRenderingPath2D);
 	m_forwardRenderingPath2D = nullptr;
 
-	//delete camera members
+	// delete camera members =============================================================================
 	delete(m_gameCamera);
 	m_gameCamera = nullptr;
 
@@ -74,26 +75,27 @@ void Game::Initialize()
 
 	m_gameClock = new Clock(GetMasterClock());
 
-	//Add camera
+	// add cameras =============================================================================
 	m_gameCamera = new Camera();
 	m_gameCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
 	m_gameCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
 	m_gameCamera->SetView(Matrix44::IDENTITY);
 
-	//add menu states
+	// add menu states =============================================================================
 	TODO("Add other menu states");
 	GameState::AddGameState(new MainMenuState(m_gameCamera));
 	GameState::AddGameState(new LoadingState(m_gameCamera));
 	GameState::AddGameState(new PlayingState(m_gameCamera));
 
-	//set to initial menu
+	// set to initial menu =============================================================================
 	GameState::TransitionGameStatesImmediate(GameState::GetGameStateFromGlobalListByType(MAIN_MENU_GAME_STATE));
 	GameState::UpdateGlobalGameState(0.f);
 
-	//load card definitions
+	// load definitions =============================================================================
 	CardDefinition::Initialize("Data/Definitions/Cards/cards.xml");
+	DeckDefinition::Initialize("Data/Definitions/Decks/decks.xml");
 
-	//cleanup
+	// cleanup =============================================================================
 	theRenderer = nullptr;
 	theWindow = nullptr;
 }
@@ -102,7 +104,7 @@ void Game::Update()
 {
 	float deltaSeconds = m_gameClock->GetDeltaSeconds();
 
-	//update global menu data (handles transitions and timers)
+	// update global menu data (handles transitions and timers) =============================================================================
 	GameState::UpdateGlobalGameState(deltaSeconds);
 
 	GameState::GetCurrentGameState()->Update(deltaSeconds);

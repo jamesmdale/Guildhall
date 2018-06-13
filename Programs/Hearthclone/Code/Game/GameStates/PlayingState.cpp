@@ -35,9 +35,9 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
-	/*m_gameBoard = new Board("board");
+	m_gameBoard = new Board("board");
 	m_gameBoard->m_renderScene = m_renderScene2D;
-	m_gameBoard->Initialize();*/
+	m_gameBoard->Initialize();
 
 	//test a card
 	card = new Card(CardDefinition::GetDefinitionByName("Chillwind Yeti"));
@@ -46,9 +46,15 @@ void PlayingState::Initialize()
 	Vector2 clientCenter = Window::GetInstance()->GetCenterOfClientWindow();
 	card->m_transform2D->SetLocalPosition(clientCenter);
 
-	//m_player = new Player();
-	//m_player->m_deck.
-	
+	m_player = new Player();
+	m_player->m_playerId = 0;
+	m_player->m_gameState = this;
+	m_player->LoadDeckFromDefinitionName("All Yetis");
+
+	m_enemyPlayer = new Player();
+	m_enemyPlayer->m_playerId = 1;
+	m_enemyPlayer->m_gameState = this;
+	m_enemyPlayer->LoadDeckFromDefinitionName("All Yetis");	
 
 	theRenderer = nullptr;	
 }

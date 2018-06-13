@@ -316,6 +316,13 @@ float GetDistanceSquared(const Vector3& a, const Vector3& b)
 	return ((dx * dx) + (dy * dy) + (dz * dz));
 }
 
+Vector3 GetMin(const Vector3 & a, const Vector3 & b)
+{
+	return Vector3(GetMinFloat(a.x, b.x),
+		GetMinFloat(a.y, b.y),
+		GetMinFloat(a.z, b.z));
+}
+
 int MoveRegularPolygonX(float centerX, Vector3 movementVector)
 {
 	centerX += movementVector.x;
@@ -338,6 +345,36 @@ Vector3 GetMidpoint(const Vector3& a, const Vector3& b)
 const Vector3 Interpolate(const Vector3& start, const Vector3& end, float fractionTowardEnd)
 {
 	return Vector3(Interpolate(start.x, end.x, fractionTowardEnd), Interpolate(start.y, end.y, fractionTowardEnd), Interpolate(start.z, end.z, fractionTowardEnd));
+}
+
+const Vector3 SphericalInterpolate(const Vector3 & start, const Vector3 & end, float fractionTowardEnd)
+{
+	float startLength = start.GetLength();
+	float endLength = end.GetLength();
+
+	float length = Interpolate(startLength, endLength, fractionTowardEnd);
+	
+	Vector3 unit = SphericalInterpolateUnit(start/startLength, end/endLength, fractionTowardEnd);
+	return length * unit;
+}
+
+const Vector3 SphericalInterpolateUnit(const Vector3 & start, const Vector3 & end, float fractionTowardEnd)
+{
+	float cosAngle = ClampFloat(DotProduct(start, end), -1.0f, 1.0f);
+	float angle = acosf(cosAngle);
+	if (angle < GetEpsilon())
+	{
+		return Interpolate(start, end, fractionTowardEnd);
+	}
+	else
+	{
+		float positiveNum = sinf(fractionTowardEnd * angle);
+		float negativeNum = sinf((1.0f - fractionTowardEnd) * angle);
+		float denominator = sinf(angle);
+
+		return ((negativeNum / denominator) * start) + ((positiveNum/denominator) * end);
+	}
+
 }
 
 TODO("Projections, transformations, dots, decompositions, reflections, and interpolate")

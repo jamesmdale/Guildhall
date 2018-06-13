@@ -91,7 +91,6 @@ void Card::RefreshCardRenderables()
 
 	mb.CreateQuad2D(Vector2::ZERO, cardDimensions, Rgba::WHITE);
 	cardRenderableOverlay->AddMesh(mb.CreateMesh<VertexPCU>());
-	cardRenderableOverlay->AddMesh(mb.CreateMesh<VertexPCU>());
 
 	cardRenderableOverlay->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
 	cardRenderableOverlay->SetRender2DSortLayer(2);

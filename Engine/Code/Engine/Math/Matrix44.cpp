@@ -500,6 +500,28 @@ Matrix44 Matrix44::CloneTemporaryMatrix44(const Matrix44& matrixToClone)
 	return clonedMatrix44;
 }
 
+Matrix44 Matrix44::LerpTransform(Matrix44& start, Matrix44& end, float fractionTwoardEnd)
+{
+	Vector3 startRight = start.GetRight();
+	Vector3 endRight = end.GetRight();
+	
+	Vector3 startUp = start.GetUp();
+	Vector3 endUp = end.GetUp();
+
+	Vector3 startForward = start.GetForward();
+	Vector3 endForward = end.GetForward();
+	
+	Vector3 startTranslation = start.GetTranslation();
+	Vector3 endTranslation = end.GetTranslation();
+
+	Vector3 right = SphericalInterpolate(startRight, endRight, fractionTwoardEnd);
+	Vector3 up = SphericalInterpolate(startUp, endUp, fractionTwoardEnd);
+	Vector3 forward = SphericalInterpolate(startForward, endForward, fractionTwoardEnd);
+	Vector3 translation = Interpolate(startTranslation, endTranslation, fractionTwoardEnd);
+
+	return Matrix44(right, up, forward, translation);
+}
+
 Matrix44 Matrix44::LookAt(const Vector3& position, const Vector3& target, const Vector3& up)
 {
 	Vector3 zAxis = target - position;

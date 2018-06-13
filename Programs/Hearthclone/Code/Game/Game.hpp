@@ -32,10 +32,6 @@ public:
 	void PostRender();
 	void Initialize();
 	float UpdateInput(float deltaSeconds);
-
-	//data
-	//std::vector<Decks*> loadedDecks;
-	//std::vector<Classes*> loadedClasses;	
 };
 
 
