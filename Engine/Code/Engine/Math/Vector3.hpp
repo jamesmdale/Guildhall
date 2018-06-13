@@ -67,6 +67,7 @@ float GetDistanceSquared(const Vector3& a, const Vector3& b);
 Vector3 GetMin(const Vector3& a, const Vector3& b);
 int MoveRegularPolygonX(float centerX, Vector3 movementVector);
 int MoveRegularPolygonY(float centerY, Vector3 movementVector);
+Vector3 AbsoluteValue(const Vector3& initialValue);
 
 //const Vector3 GetProjectedVector(const Vector3& vectorToProject, const Vector3& projectOnto);
 //const Vector3 GetTransformedIntoBasis (const Vector3& originalVector, const Vector3& newBasisI, const Vector3& newBasisJ);

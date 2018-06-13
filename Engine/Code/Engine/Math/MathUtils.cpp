@@ -7,7 +7,7 @@
 #include "Engine\Math\Vector4.hpp"
 
 constexpr float PI = static_cast<float>(3.14159);
-constexpr float EPSILON = static_cast<float>(0.0001);
+constexpr float EPSILON = static_cast<float>(0.001);
 
 float ConvertDegreesToRadians(float degrees)
 {
@@ -484,14 +484,14 @@ bool IsNearZero(float inValue)
 {
 	if (inValue < 0.0f)
 	{
-		if (inValue + GetEpsilon() > 0.0f)
+		if (inValue + GetEpsilon() >= 0.0f)
 		{
 			return true;
 		}
 	}
 	if (inValue > 0.0f)
 	{
-		if (inValue - GetEpsilon() < 0.0f)
+		if (inValue - GetEpsilon() <= 0.0f)
 		{
 			return true;
 		}
@@ -500,7 +500,32 @@ bool IsNearZero(float inValue)
 	return false;
 }
 
-//bool IsNear()
+bool IsNear(const float a, const float b)
+{
+	if ((a > 0.0f && b > 0.0f) || (a < 0.0f && b < 0.0f))
+	{
+		if (IsNearZero(AbsoluteValue(a - b)))
+			return true;
+		else
+			return false;		
+	}
+	else
+	{
+		if(IsNearZero(AbsoluteValue(a + b)))
+			return true;
+		else
+			return false;
+	}
+}
+
+float AbsoluteValue(float value)
+{
+	if (value < 0.0f)
+	{
+		return (value * -1.0f);
+	}
+	return value;
+}
 
 float GetMagnitude(float inputFloat)
 {

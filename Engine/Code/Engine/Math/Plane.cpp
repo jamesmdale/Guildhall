@@ -1,5 +1,6 @@
 #include "Engine\Math\Plane.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Math\MathUtils.hpp"
 
 
 Plane::Plane()
@@ -54,6 +55,26 @@ void Plane::FlipNormal()
 RayCastHit3 RayCheckPlane(const Ray3 & ray, const Plane & plane)
 {
 	Vector3 firstPoint = ray.Evaluate(0.0f);
+	Vector3 secondPoint = ray.Evaluate(1.0f);
+
+	//ifnear just checks if they are really close
+	if(IsNear(plane.GetDistanceFromPlane(firstPoint), plane.GetDistanceFromPlane(secondPoint)))
+	{
+		return RayCastHit3();	//i didn't hit. a default constructor says I didn't hit.
+	}
+
+	float direction = DotProduct(plane.normal, ray.direction);
+	float distance = plane.GetDistanceFromPlane(ray.start);
+
+	if ((direction * distance) > 0.0f)
+	{
+		return RayCastHit3();	//i didn't hit. a default constructor says I didn't hit.
+	}
+
+	float velocity = DotProduct(ray.direction, plane.normal);
+	float time = (-1.f * distance) / velocity;
+
+	return RayCastHit3(true, ray.Evaluate(time), plane.normal);
 }
 
 bool DoesSegmentIntersectPlane(const Segment3& segment, const Plane& plane)

@@ -292,7 +292,7 @@ TODO("SETFROMTEXT")
 //	return;	
 //}
 
-float GetDistance(const Vector3& a, const Vector3& b)
+float GetDistance(const Vector3 & a, const Vector3 & b)
 {
 	float dx = a.x - b.x;
 	float dy = a.y - b.y;
@@ -334,6 +334,11 @@ int MoveRegularPolygonY(float centerY, Vector3 movementVector)
 	centerY += movementVector.y;
 
 	return (int)centerY;
+}
+
+Vector3 AbsoluteValue(const Vector3& initialValue)
+{
+	return Vector3(AbsoluteValue(initialValue.x), AbsoluteValue(initialValue.y), AbsoluteValue(initialValue.z));
 }
 
 

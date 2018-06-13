@@ -14,6 +14,14 @@ struct Ray3
 
 struct RayCastHit3
 {
+	RayCastHit3(){};
+	RayCastHit3(bool didHit, const Vector3& hitPosition, const Vector3& normalAtHit)
+	{
+		hit = didHit;
+		position = hitPosition;
+		normal = normalAtHit;
+	}
+
 	bool hit;
 	Vector3 position;
 	Vector3 normal;
