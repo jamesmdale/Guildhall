@@ -42,6 +42,7 @@
     <ClCompile Include="Debug\DebugRenderObject.cpp" />
     <ClCompile Include="Debug\DebugRender.cpp" />
     <ClCompile Include="Core\GameObject.cpp" />
+    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Renderer\ForwardRenderingPath2D.cpp" />
     <ClCompile Include="ParticleSystem\ParticleEmitter.cpp" />
     <ClCompile Include="Renderer\Renderable2D.cpp" />
@@ -120,11 +121,13 @@
     <ClInclude Include="Core\Image.hpp" />
     <ClInclude Include="Core\Light.hpp" />
     <ClInclude Include="Core\LightObject.hpp" />
+    <ClInclude Include="Core\Raycast.hpp" />
     <ClInclude Include="Core\Rgba.hpp" />
     <ClInclude Include="Core\StringUtils.hpp" />
     <ClInclude Include="Debug\DebugRenderObject.hpp" />
     <ClInclude Include="Debug\DebugRender.hpp" />
     <ClInclude Include="Core\GameObject.hpp" />
+    <ClInclude Include="Math\Plane.hpp" />
     <ClInclude Include="Renderer\ForwardRenderingPath2D.hpp" />
     <ClInclude Include="ParticleSystem\ParticleEmitter.hpp" />
     <ClInclude Include="Renderer\Renderable2D.hpp" />

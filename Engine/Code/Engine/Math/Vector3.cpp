@@ -316,6 +316,13 @@ float GetDistanceSquared(const Vector3& a, const Vector3& b)
 	return ((dx * dx) + (dy * dy) + (dz * dz));
 }
 
+Vector3 GetMin(const Vector3 & a, const Vector3 & b)
+{
+	return Vector3(GetMinFloat(a.x, b.x),
+		GetMinFloat(a.y, b.y),
+		GetMinFloat(a.z, b.z));
+}
+
 int MoveRegularPolygonX(float centerX, Vector3 movementVector)
 {
 	centerX += movementVector.x;

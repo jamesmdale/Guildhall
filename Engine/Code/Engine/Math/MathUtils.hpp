@@ -8,9 +8,11 @@ class Vector4;
 int RoundToNearestInt( float inValue );
 float CalculateXPoint(float centerX, float radius, float radians);
 float CalculateYPoint(float centerY, float radius, float radians);
+float GetMinFloat(float a, float b);
 int RotateRegularPolygon(float currentDegrees, float rotationDegrees);
 float GetPi();
 float GetEpsilon();
+bool IsNearZero(float inValue);
 float GetMagnitude(float inputFloat);
 float GetAbsoluteValue(float inputFloat);
 bool SolveQuadratic(Vector2* out, float a, float b, float c); //Returns true if roots were found, false otherwise
