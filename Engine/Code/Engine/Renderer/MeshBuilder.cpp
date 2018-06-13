@@ -775,7 +775,7 @@ void MeshBuilder::CreateFromSurfacePatch(std::function<Vector3(float, float)> Su
 			Vector3 directionTowardU = vertexPos - stepTowardNextU;
 			Vector3 directionTowardV = vertexPos - stepTowardNextV;
 
-			Vector3 normal = CrossProduct(directionTowardU, directionTowardV);
+			Vector3 normal = CrossProduct(directionTowardV, directionTowardU);
 
 			SetUV(Vector2(vertexPos.x, vertexPos.y));
 			SetColor(tint);

@@ -1,6 +1,6 @@
 <material name="terrain">
-	<shader name="lit" />
+	<shader name="litVertNormals" />
 	<textures>
-		<texture bind="0" file="Data\asteroid\.png" />
+		<texture bind="0" file="Data\Images\asteroid\.png" />
 	</textures>
 </material>

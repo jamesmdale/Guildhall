@@ -42,7 +42,7 @@
     <ClCompile Include="Debug\DebugRenderObject.cpp" />
     <ClCompile Include="Debug\DebugRender.cpp" />
     <ClCompile Include="Core\GameObject.cpp" />
-    <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Math\Plane.cpp" />
     <ClCompile Include="Renderer\ForwardRenderingPath2D.cpp" />
     <ClCompile Include="ParticleSystem\ParticleEmitter.cpp" />
     <ClCompile Include="Renderer\Renderable2D.cpp" />
@@ -64,6 +64,7 @@
     <ClCompile Include="Camera\Skybox.cpp" />
     <ClCompile Include="Renderer\RenderScene2D.cpp" />
     <ClCompile Include="Core\Terrain.cpp" />
+    <ClCompile Include="Math\Segment3.cpp" />
     <ClCompile Include="Time\Stopwatch.cpp" />
     <ClCompile Include="Time\Clock.cpp" />
     <ClCompile Include="Time\Time.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Camera\Skybox.hpp" />
     <ClInclude Include="Renderer\RenderScene2D.hpp" />
     <ClInclude Include="Core\Terrain.hpp" />
+    <ClInclude Include="Math\Segment3.hpp" />
     <ClInclude Include="Time\Stopwatch.hpp" />
     <ClInclude Include="Time\Clock.hpp" />
     <ClInclude Include="Time\Time.hpp" />

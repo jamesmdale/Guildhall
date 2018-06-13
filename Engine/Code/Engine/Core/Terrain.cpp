@@ -1,6 +1,7 @@
 #include "Engine\Core\Terrain.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Core\Rgba.hpp"
+#include "Engine\Renderer\Renderer.hpp"
 
 Terrain::Terrain()
 {
@@ -8,15 +9,22 @@ Terrain::Terrain()
 
 void Terrain::GenerateMeshFromHeightMap()
 {
-	//delete all renderables
-	DeleteRenderables();
-
 	Renderable* renderable = new Renderable();
+	Renderer* theRenderer = Renderer::GetInstance();
 
 	MeshBuilder mb;	
+
+	//delete all renderables
+	DeleteRenderables();
+	
 	mb.CreateFromSurfacePatch([this](float u, float v){ return this->GetTerrainVertexPositionAtUV(u,v); }, m_uvBounds.mins, m_uvBounds.maxs, m_heightMap->GetDimensions(), m_cellScale, Rgba::GRAY);
 	
 	renderable->AddMesh(mb.CreateMesh<VertexLit>());
+
+	renderable->SetMaterial(theRenderer->CreateOrGetMaterial("terrain"));
+	//renderable->GetMaterial()->SetTexture(renderable->GetMaterial()->GetNumTextures(), theRenderer->CreateOrGetTexture("Data/Images/checkers.png"));
+	AddRenderable(renderable);
+
 	m_renderables.push_back(renderable);
 
 	//cleanup

@@ -292,7 +292,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Action.cpp" />
+    <ClCompile Include="Actions\Action.cpp" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Definitions\DeckDefinition.cpp" />
@@ -321,7 +321,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Action.hpp" />
+    <ClInclude Include="Actions\Action.hpp" />
     <ClInclude Include="Actor.hpp" />
     <ClInclude Include="Board.hpp" />
     <ClInclude Include="Definitions\DeckDefinition.hpp" />

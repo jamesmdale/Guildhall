@@ -253,7 +253,10 @@
     <ClCompile Include="Core\Terrain.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Plane.cpp">
+    <ClCompile Include="Math\Plane.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Segment3.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
@@ -360,6 +363,7 @@
     <ClInclude Include="Core\Terrain.hpp" />
     <ClInclude Include="Core\Raycast.hpp" />
     <ClInclude Include="Math\Plane.hpp" />
+    <ClInclude Include="Math\Segment3.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

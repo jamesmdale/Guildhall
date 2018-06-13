@@ -5,6 +5,9 @@
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Game\Entity\Card.hpp"
+#include "Game\Actions\Action.hpp"
+#include <map>
+#include <string>
 
 Card* card = nullptr;
 
@@ -132,6 +135,12 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	if (theInput->GetMouseDoubleClickRight())
 	{
 		mouseText = "double clicked right";
+	}
+
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_1))
+	{
+		std::map<std::string, std::string> parameters = {{"target", "player"}, {"amount", "2"}};
+		Draw(parameters);
 	}
 
 	DebugRender::GetInstance()->CreateDebugText2D(Vector2(Window::GetInstance()->m_clientWidth - 300, Window::GetInstance()->m_clientHeight - 20), 20.f, 1.f, mouseText, Rgba::WHITE, Rgba::WHITE, 0.f, ALWAYS_DEPTH_TYPE);

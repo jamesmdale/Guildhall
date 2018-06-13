@@ -80,14 +80,6 @@ void PlayingState::Initialize()
 	// add terrain =========================================================================================
 	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 1.f, 10.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
-
-	Renderable* terrainRenderable = new Renderable();
-	terrainRenderable->SetMaterial(new Material());
-	terrainRenderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
-	terrainRenderable->GetMaterial()->SetTexture(terrainRenderable->GetMaterial()->GetNumTextures(), theRenderer->CreateOrGetTexture("Data/Images/checkers.png"));
-	terrainRenderable->GetMaterial()->SetSampler(terrainRenderable->GetMaterial()->GetNumSamplers(), theRenderer->m_defaultSampler);
-	m_terrain->AddRenderable(terrainRenderable);
-
 	m_terrain->m_transform->TranslatePosition(Vector3(0.0f, -10.0f, 0.0f));
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_terrain->m_renderables.size(); ++renderableIndex)

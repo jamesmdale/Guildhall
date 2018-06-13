@@ -67,10 +67,10 @@
     <ClCompile Include="Trigger.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Action.cpp">
+    <ClCompile Include="Definitions\DeckDefinition.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Definitions\DeckDefinition.cpp">
+    <ClCompile Include="Actions\Action.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
@@ -105,7 +105,7 @@
     <ClInclude Include="Definitions\CardDefinition.hpp" />
     <ClInclude Include="Definitions\HeroDefinition.hpp" />
     <ClInclude Include="Trigger.hpp" />
-    <ClInclude Include="Action.hpp" />
     <ClInclude Include="Definitions\DeckDefinition.hpp" />
+    <ClInclude Include="Actions\Action.hpp" />
   </ItemGroup>
 </Project>
