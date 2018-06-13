@@ -8,10 +8,19 @@ Terrain::Terrain()
 
 void Terrain::GenerateMeshFromHeightMap()
 {
-	MeshBuilder mb;
-	
+	//delete all renderables
+	DeleteRenderables();
+
+	Renderable* renderable = new Renderable();
+
+	MeshBuilder mb;	
 	mb.CreateFromSurfacePatch([this](float u, float v){ return this->GetTerrainVertexPositionAtUV(u,v); }, m_uvBounds.mins, m_uvBounds.maxs, m_heightMap->GetDimensions(), m_cellScale, Rgba::GRAY);
-	m_renderable->SetMesh(mb.CreateMesh<VertexLit>());
+	
+	renderable->AddMesh(mb.CreateMesh<VertexLit>());
+	m_renderables.push_back(renderable);
+
+	//cleanup
+	renderable = nullptr;
 }
 
 Terrain::~Terrain()
@@ -22,8 +31,8 @@ Terrain::~Terrain()
 
 Vector3 Terrain::GetTerrainVertexPositionAtUV(float u, float v)
 {
-	int texelIndexX = (int)RangeMapFloat(u, m_uvBounds.mins.x * m_cellScale, m_uvBounds.maxs.x * m_cellScale, 0.f, m_heightMap->GetWidth() - 1);
-	int texelIndexY = (int)RangeMapFloat(v, m_uvBounds.mins.y * m_cellScale, m_uvBounds.maxs.y * m_cellScale, 0.f, m_heightMap->GetHeight() - 1);
+	int texelIndexX = (int)RangeMapFloat(u, m_uvBounds.mins.x * m_cellScale, m_uvBounds.maxs.x * m_cellScale, 0.f, (float)m_heightMap->GetWidth() - 1.f);
+	int texelIndexY = (int)RangeMapFloat(v, m_uvBounds.mins.y * m_cellScale, m_uvBounds.maxs.y * m_cellScale, 0.f, (float)m_heightMap->GetHeight() - 1.f);
 
 	TODO("Could use linear height map to round off terrain.");
 	//

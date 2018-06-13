@@ -42,7 +42,10 @@ void ForwardRenderingPath::RenderSceneForCamera(Camera* camera, RenderScene* sce
 		DrawCallData drawCall;
 
 		drawCall.m_material = renderable->GetMaterial();
-		drawCall.m_mesh = renderable->GetMesh();
+		for (int meshIndex = 0; meshIndex < (int)renderable->m_meshes.size(); ++meshIndex)
+		{
+			drawCall.m_meshes.push_back(renderable->GetMesh(meshIndex));
+		}
 		drawCall.m_model = renderable->GetModelMatrix();
 		drawCall.m_sortingLayer = renderable->GetRenderSortLayer();
 		drawCall.m_renderType = renderable->GetMaterial()->GetRenderQueueType();
@@ -61,20 +64,23 @@ void ForwardRenderingPath::RenderSceneForCamera(Camera* camera, RenderScene* sce
 
 	for (DrawCallData drawCall : drawCalls)
 	{	
-		if(drawCall.m_mesh != nullptr)
+		for (int meshIndex = 0; meshIndex < (int)drawCall.m_meshes.size(); ++meshIndex)
 		{
-			theRenderer->SetLightBufferFromArray(drawCall.m_contributingLights);		
-			theRenderer->BindMaterial(drawCall.m_material);
-
-			int handle = drawCall.m_material->GetShaderProgramHandle();
-			if(handle > -1)
+			if(drawCall.m_meshes[meshIndex] != nullptr)
 			{
-				Vector3 cameraPosition = camera->m_transform->GetWorldPosition();
-				theRenderer->SetVector3Uniform(handle, "EYE_POSITION", cameraPosition);
-			}	
+				theRenderer->SetLightBufferFromArray(drawCall.m_contributingLights);		
+				theRenderer->BindMaterial(drawCall.m_material);
 
-			theRenderer->DrawMesh(drawCall.m_mesh, drawCall.m_model);
-		}		
+				int handle = drawCall.m_material->GetShaderProgramHandle();
+				if(handle > -1)
+				{
+					Vector3 cameraPosition = camera->m_transform->GetWorldPosition();
+					theRenderer->SetVector3Uniform(handle, "EYE_POSITION", cameraPosition);
+				}	
+
+				theRenderer->DrawMesh(drawCall.m_meshes[meshIndex], drawCall.m_model);
+			}	
+		}
 	}
 
 	theRenderer = nullptr;

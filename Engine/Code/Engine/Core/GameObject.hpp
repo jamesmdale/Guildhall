@@ -4,6 +4,7 @@
 #include <string>
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Renderer\RenderScene.hpp"
+#include <vector>
 
 class GameObject
 {
@@ -20,10 +21,12 @@ public:
 	virtual void PreRender();	
 
 	void UpdateRenderableFromTransform();
+	void AddRenderable(Renderable* renderable){m_renderables.push_back(renderable);}
+	void DeleteRenderables();
 	
 public:
 	std::string m_name = "";
-	Renderable* m_renderable = nullptr;
+	std::vector<Renderable*> m_renderables;
 	Transform* m_transform = nullptr;
 
 	RenderScene* m_renderScene = nullptr;

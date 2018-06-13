@@ -10,8 +10,8 @@ public:
 	Renderable();
 	~Renderable();
 
-	void SetMesh(Mesh* mesh);
-	Mesh* GetMesh() const;
+	void AddMesh(Mesh* mesh);
+	Mesh* GetMesh(int meshIndex) const;
 
 	void SetMaterial(Material* material);
 	Material* GetMaterial() const;
@@ -25,7 +25,7 @@ public:
 
 public:
 	Matrix44 m_modelMatrix;
-	Mesh* m_mesh = nullptr;
+	std::vector<Mesh*> m_meshes;
 	Material* m_material = nullptr;
 	Transform* m_watch = nullptr;
 };

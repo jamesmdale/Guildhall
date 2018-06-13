@@ -64,4 +64,19 @@ void Widget::UpdateRenderable2DFromTransform()
 	}	
 }
 
+void Widget::DeleteRenderables()
+{
+	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->RemoveRenderable(m_renderables[renderableIndex]);
+
+		if (m_renderables[renderableIndex] != nullptr)
+		{
+			delete(m_renderables[renderableIndex]);
+			m_renderables[renderableIndex] = nullptr;
+		}
+	}
+	m_renderables.clear();
+}
+
 

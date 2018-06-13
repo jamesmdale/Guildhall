@@ -25,20 +25,22 @@ void PlayingState::Initialize()
 
 	m_renderScene->AddCamera(m_camera);
 
-	//create directional light
+	// add light =========================================================================================
 	Rgba lightColor = Rgba::WHITE;
 	LightObject* directionalLight = new LightObject("directionalLight", LIGHT_TYPE_DIRECTIONAL_LIGHT, lightColor, 0.8f, Vector3(1.f, 0.f, 0.f), 1.f, 360.f, 360.f);
 
 	directionalLight->m_transform->TranslatePosition(Vector3(500.f, 50.f, 0.f));
 	directionalLight->m_renderScene = m_renderScene;
 
-	meshBuilder.CreateUVSphere( Vector3::ZERO, 20.f, 15, 15, Rgba::WHITE);
-	directionalLight->m_renderable->SetMesh(meshBuilder.CreateMesh<VertexPCU>());
-	directionalLight->m_renderable->SetMaterial(new Material());
-	directionalLight->m_renderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
-	directionalLight->m_renderable->GetMaterial()->SetTexture(directionalLight->m_renderable->GetMaterial()->GetNumTextures(), theRenderer->m_defaultTexture);
-	directionalLight->m_renderable->GetMaterial()->SetSampler(directionalLight->m_renderable->GetMaterial()->GetNumSamplers(), theRenderer->m_defaultSampler);
+	Renderable* lightRenderable = new Renderable();
+	meshBuilder.CreateUVSphere( Vector3::ZERO, 20.f, 15, 15, Rgba::WHITE);	
+	lightRenderable->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
+	lightRenderable->SetMaterial(new Material());
+	lightRenderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
+	lightRenderable->GetMaterial()->SetTexture(lightRenderable->GetMaterial()->GetNumTextures(), theRenderer->m_defaultTexture);
+	lightRenderable->GetMaterial()->SetSampler(lightRenderable->GetMaterial()->GetNumSamplers(), theRenderer->m_defaultSampler);
 
+	directionalLight->AddRenderable(lightRenderable);
 	directionalLight->m_transform->SetLocalRotation(Vector3(30.f, -90.f, 0.f));
 	directionalLight->UpdateRenderableFromTransform();
 	directionalLight->UpdateLightFromWorldTransform();
@@ -47,34 +49,51 @@ void PlayingState::Initialize()
 
 	//add light to lists
 	m_renderScene->AddLight(directionalLight->m_light);
-	m_renderScene->AddRenderable(directionalLight->m_renderable);
 
-	//add player tank renderable
+	for (int renderableIndex = 0; renderableIndex < (int)directionalLight->m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->AddRenderable(directionalLight->m_renderables[renderableIndex]);
+	}
+	
+
+	// add tank =========================================================================================
 	m_playerTank = new Tank();
 	m_playerTank->SetCamera(m_camera);
 	m_playerTank->m_playingState = (PlayingState*)g_currentState;
 
-	//create ship game object
+	Renderable* tankRenderable = new Renderable();
 	meshBuilder.CreateUVSphere( Vector3::ZERO, 1.f, 15, 15, Rgba::WHITE);
-	m_playerTank->m_renderable->SetMesh(meshBuilder.CreateMesh<VertexLit>());	
-	m_playerTank->m_renderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("tank"));
+	tankRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
+	tankRenderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("tank"));
+
+	m_playerTank->AddRenderable(tankRenderable);
 	m_playerTank->m_transform->TranslatePosition(Vector3(0.f, 10.f, 0.f));
 	m_playerTank->m_breadCrumbTimer = new Stopwatch(Game::GetInstance()->m_gameClock);
 	m_playerTank->m_breadCrumbTimer->SetTimer(0.5f);
 
 	//add tank to lists
-	m_renderScene->AddRenderable(m_playerTank->m_renderable);	
+	for (int renderableIndex = 0; renderableIndex < (int)m_playerTank->m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->AddRenderable(m_playerTank->m_renderables[renderableIndex]);
+	}
 
-	//add terrain
+	// add terrain =========================================================================================
 	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 1.f, 10.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
-	m_terrain->m_renderable->SetMaterial(new Material());
-	m_terrain->m_renderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
-	m_terrain->m_renderable->GetMaterial()->SetTexture(m_terrain->m_renderable->GetMaterial()->GetNumTextures(), theRenderer->CreateOrGetTexture("Data/Images/checkers.png"));
-	m_terrain->m_renderable->GetMaterial()->SetSampler(m_terrain->m_renderable->GetMaterial()->GetNumSamplers(), theRenderer->m_defaultSampler);
+
+	Renderable* terrainRenderable = new Renderable();
+	terrainRenderable->SetMaterial(new Material());
+	terrainRenderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
+	terrainRenderable->GetMaterial()->SetTexture(terrainRenderable->GetMaterial()->GetNumTextures(), theRenderer->CreateOrGetTexture("Data/Images/checkers.png"));
+	terrainRenderable->GetMaterial()->SetSampler(terrainRenderable->GetMaterial()->GetNumSamplers(), theRenderer->m_defaultSampler);
+	m_terrain->AddRenderable(terrainRenderable);
+
 	m_terrain->m_transform->TranslatePosition(Vector3(0.0f, -10.0f, 0.0f));
 
-	m_renderScene->AddRenderable(m_terrain->m_renderable);
+	for (int renderableIndex = 0; renderableIndex < (int)m_terrain->m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->AddRenderable(m_terrain->m_renderables[renderableIndex]);
+	}
 
 	theRenderer = nullptr;	
 }

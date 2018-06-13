@@ -19,6 +19,7 @@ public:
 	virtual void PreRender();
 
 	void UpdateRenderable2DFromTransform();
+	void DeleteRenderables();
 
 public:
 	std::string m_name = "";

@@ -7,26 +7,28 @@ Renderable::Renderable()
 
 Renderable::~Renderable()
 {
-	delete(m_mesh);
-	m_mesh = nullptr;
-
-	/*delete(m_material);
-	m_material = nullptr;*/
-}
-
-void Renderable::SetMesh(Mesh* mesh)
-{
-	if(m_mesh != nullptr)
+	for (int meshIndex = 0; meshIndex < (int)m_meshes.size(); ++meshIndex)
 	{
-		delete(m_mesh);
-		m_mesh = nullptr;		
+		delete(m_meshes[meshIndex]);
+		m_meshes[meshIndex] = nullptr;
 	}
-	m_mesh = mesh;
+	m_meshes.clear();
+
+	if (m_material->m_isInstance)
+	{
+		delete(m_material);
+		m_material = nullptr;
+	}
 }
 
-Mesh* Renderable::GetMesh() const
+void Renderable::AddMesh(Mesh* mesh)
 {
-	return m_mesh;
+	m_meshes.push_back(mesh);
+}
+
+Mesh* Renderable::GetMesh(int meshIndex) const
+{
+	return m_meshes[meshIndex];
 }
 
 void Renderable::SetMaterial(Material* material)

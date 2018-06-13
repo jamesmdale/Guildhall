@@ -8,7 +8,7 @@
 struct DrawCallData
 {
 	Matrix44 m_model;
-	Mesh* m_mesh = nullptr;
+	std::vector<Mesh*> m_meshes;
 	Material* m_material = nullptr;
 
 	std::vector<Light*> m_contributingLights;
