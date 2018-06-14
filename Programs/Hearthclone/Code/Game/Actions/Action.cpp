@@ -2,21 +2,22 @@
 #include "Game\Game.hpp"
 #include "Game\GameStates\GameState.hpp"
 #include "Game\GameStates\PlayingState.hpp"
+#include "Game\Effects\Effect.hpp"
 #include <stdlib.h>
 #include <queue>
 
-std::map<std::string, ActionFunction> s_registeredActions;
+std::map<std::string, ActionCallback> s_registeredActions;
 std::queue<ActionData> Referee;
 
 // genereal functions =============================================================================
 
 void RegisterAllActions()
 {
-	RegisterAction("draw", Draw);
-	RegisterAction("attack", Attack);
+	RegisterAction("draw", DrawAction);
+	RegisterAction("attack", AttackAction);
 }
 
-void RegisterAction(std::string name, ActionFunction action)
+void RegisterAction(std::string name, ActionCallback action)
 {
 	s_registeredActions.emplace(name, action);
 }
@@ -25,7 +26,7 @@ std::vector<std::string> GetRegisteredActionList()
 {
 	std::vector<std::string> registeredActionNames;
 
-	for (std::map<std::string, ActionFunction>::iterator iterator = s_registeredActions.begin(); iterator != s_registeredActions.end(); ++iterator)
+	for (std::map<std::string, ActionCallback>::iterator iterator = s_registeredActions.begin(); iterator != s_registeredActions.end(); ++iterator)
 	{
 		registeredActionNames.push_back(iterator->first);
 	}
@@ -33,9 +34,9 @@ std::vector<std::string> GetRegisteredActionList()
 	return registeredActionNames;
 }
 
-ActionFunction GetActionDataFromRegisteredListByName(const std::string & actionName)
+ActionCallback GetActionDataFromRegisteredListByName(const std::string & actionName)
 {
-	std::map<std::string, ActionFunction>::iterator iterator = s_registeredActions.find(actionName);
+	std::map<std::string, ActionCallback>::iterator iterator = s_registeredActions.find(actionName);
 
 	return iterator->second;
 }
@@ -43,13 +44,18 @@ ActionFunction GetActionDataFromRegisteredListByName(const std::string & actionN
 // referee methods =========================================================================================
 
 void ProcessReferee()
-{
-	//process everything on the referee before allowing new user actions
-	while (Referee.size() > 0)
+{	
+	//if effects are still running, don't add anything new to the referee queue
+	if (GetEffectQueueCount() == 0)
 	{
-		ActionData action = Referee.front();
-
-	}
+		//process everything on the referee before allowing new user actions
+		while (Referee.size() > 0)
+		{
+			ActionData action = Referee.front();
+			action.callback(action.parameters);
+			Referee.pop();
+		}
+	}	
 }
 
 int GetRefereeCount()
@@ -59,10 +65,17 @@ int GetRefereeCount()
 
 void AddActionToReferee(ActionData action)
 {
+	Referee.push(action);
 }
 
-void AddActionToReferee(ActionFunction function, std::map<std::string, std::string> parameters)
+void AddActionToReferee(const std::string& callbackName, const std::map<std::string, std::string> parameters)
 {
+	AddActionToReferee(ActionData(callbackName, parameters));
+}
+
+void AddActionToReferee(ActionCallback callback, std::map<std::string, std::string> parameters)
+{
+	AddActionToReferee(ActionData(callback, parameters));
 }
 
 // actions =============================================================================
@@ -79,7 +92,7 @@ void AddActionToReferee(ActionFunction function, std::map<std::string, std::stri
 	}
 */
 
-void Draw(const std::map<std::string, std::string>& parameters)
+void DrawAction(const std::map<std::string, std::string>& parameters)
 {
 	// get parameters =============================================================================
 	std::string player = parameters.find("target")->second;
@@ -113,7 +126,7 @@ void Draw(const std::map<std::string, std::string>& parameters)
 	targetPlayer = nullptr;
 }
 
-void Attack(const std::map<std::string, std::string>& parameters)
+void AttackAction(const std::map<std::string, std::string>& parameters)
 {
 	// Get Parameters =============================================================================
 	std::string attackTarget = parameters.find("target")->second;

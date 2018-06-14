@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-typedef void (*ActionFunction)(const std::map<std::string, std::string>& parameters);
+typedef void (*ActionCallback)(const std::map<std::string, std::string>& parameters);
 
 /*	EXAMPLE : action function layout
 	
@@ -12,30 +12,35 @@ typedef void (*ActionFunction)(const std::map<std::string, std::string>& paramet
 
 // convenience functions =============================================================================
 void RegisterAllActions();
-void RegisterAction(std::string name, ActionFunction action);
+void RegisterAction(std::string name, ActionCallback action);
 std::vector<std::string> GetRegisteredActionList();
-ActionFunction GetActionDataFromRegisteredListByName(const std::string& actionName);
+ActionCallback GetActionDataFromRegisteredListByName(const std::string& actionName);
 
 struct ActionData
 {
 	ActionData() {};
-	ActionData(const std::string& functionName, const std::map<std::string, std::string> functionParameters)
+	ActionData(const ActionCallback callbackFunction, const std::map<std::string, std::string> functionParameters)
 	{
-		name = functionName;
 		parameters = functionParameters;
-		functionPointer = GetActionDataFromRegisteredListByName(functionName);
+		callback = callbackFunction;
 	}
 
-	std::string name;
+	ActionData(const std::string& callbackFunction, const std::map<std::string, std::string> functionParameters)
+	{
+		parameters = functionParameters;
+		callback = GetActionDataFromRegisteredListByName(callbackFunction);
+	}
+
 	std::map<std::string, std::string> parameters;
-	ActionFunction functionPointer;
+	ActionCallback callback;
 };
 
 // referee functions =========================================================================================
 void ProcessReferee();
 int GetRefereeCount();
 void AddActionToReferee(ActionData action);
-void AddActionToReferee(ActionFunction function, std::map<std::string, std::string> parameters);
+void AddActionToReferee(const std::string& callbackName, const std::map<std::string, std::string> parameters);
+void AddActionToReferee(ActionCallback callback, std::map<std::string, std::string> parameters);
 
 // action list =============================================================================
 
@@ -51,9 +56,9 @@ int thing2 = atoi(parameters.find("thing2")->second.c_str());
 }
 */
 
-void Draw(const std::map<std::string, std::string>& parameters);
+void DrawAction(const std::map<std::string, std::string>& parameters);
 
-void Attack(const std::map<std::string, std::string>& parameters);
+void AttackAction(const std::map<std::string, std::string>& parameters);
 
 
 

@@ -6,6 +6,7 @@
 #include "Engine\Debug\DebugRender.hpp"
 #include "Game\Entity\Card.hpp"
 #include "Game\Actions\Action.hpp"
+#include "Game\Effects\Effect.hpp"
 #include <map>
 #include <string>
 
@@ -64,6 +65,10 @@ void PlayingState::Initialize()
 
 void PlayingState::Update(float deltaSeconds)
 { 
+	// process queues =========================================================================================
+	ProcessEffectQueue();
+	ProcessReferee();
+
 	// update enemy =============================================================================
 	for (int cardIndex = 0; cardIndex < (int)m_enemyPlayer->m_hand.size(); ++cardIndex)
 	{
@@ -159,8 +164,7 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_1))
 	{
 		std::map<std::string, std::string> parameters = {{"target", "player"}, {"amount", "2"}};
-		ActionFunction function = GetActionDataFromRegisteredListByName("draw");
-		function(parameters);
+		AddActionToReferee("draw", parameters);
 	}
 
 	DebugRender::GetInstance()->CreateDebugText2D(Vector2(Window::GetInstance()->m_clientWidth - 300, Window::GetInstance()->m_clientHeight - 20), 20.f, 1.f, mouseText, Rgba::WHITE, Rgba::WHITE, 0.f, ALWAYS_DEPTH_TYPE);
