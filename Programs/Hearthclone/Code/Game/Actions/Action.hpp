@@ -10,13 +10,20 @@ typedef void (*ActionFunction)(const std::map<std::string, std::string>& paramet
 	void Func(const std::map<std::string, std::string>& pararmeters);
 */
 
+// convenience functions =============================================================================
+void RegisterAllActions();
+void RegisterAction(std::string name, ActionFunction action);
+std::vector<std::string> GetRegisteredActionList();
+ActionFunction GetActionDataFromRegisteredListByName(const std::string& actionName);
 
 struct ActionData
 {
+	ActionData() {};
 	ActionData(const std::string& functionName, const std::map<std::string, std::string> functionParameters)
 	{
 		name = functionName;
 		parameters = functionParameters;
+		functionPointer = GetActionDataFromRegisteredListByName(functionName);
 	}
 
 	std::string name;
@@ -24,11 +31,11 @@ struct ActionData
 	ActionFunction functionPointer;
 };
 
-// convenience funcitons =============================================================================
-void RegisterAllActions();
-void RegisterAction(std::string name, ActionFunction action);
-std::vector<std::string> GetRegisteredActionList();
-ActionFunction GetActionDataFromRegisteredListByName(const std::string& actionName);
+// referee functions =========================================================================================
+void ProcessReferee();
+int GetRefereeCount();
+void AddActionToReferee(ActionData action);
+void AddActionToReferee(ActionFunction function, std::map<std::string, std::string> parameters);
 
 // action list =============================================================================
 

@@ -3,6 +3,7 @@
 #include "Engine\Core\Terrain.hpp"
 #include "Game\Board.hpp"
 #include "Game\Entity\Player.hpp"
+#include "Engine\Time\Stopwatch.hpp"
 
 class Tank;
 class PlayingState : public GameState
@@ -24,6 +25,7 @@ public:
 
 public:
 	Board* m_gameBoard = nullptr;
+	Stopwatch* m_gameTime = nullptr;
 
 	//player contains hand, graveyard, their side of the battlefield, and their class
 	Player* m_player = nullptr;

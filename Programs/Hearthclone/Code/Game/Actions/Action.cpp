@@ -3,8 +3,10 @@
 #include "Game\GameStates\GameState.hpp"
 #include "Game\GameStates\PlayingState.hpp"
 #include <stdlib.h>
+#include <queue>
 
 std::map<std::string, ActionFunction> s_registeredActions;
+std::queue<ActionData> Referee;
 
 // genereal functions =============================================================================
 
@@ -36,6 +38,31 @@ ActionFunction GetActionDataFromRegisteredListByName(const std::string & actionN
 	std::map<std::string, ActionFunction>::iterator iterator = s_registeredActions.find(actionName);
 
 	return iterator->second;
+}
+
+// referee methods =========================================================================================
+
+void ProcessReferee()
+{
+	//process everything on the referee before allowing new user actions
+	while (Referee.size() > 0)
+	{
+		ActionData action = Referee.front();
+
+	}
+}
+
+int GetRefereeCount()
+{
+	return (int)Referee.size();
+}
+
+void AddActionToReferee(ActionData action)
+{
+}
+
+void AddActionToReferee(ActionFunction function, std::map<std::string, std::string> parameters)
+{
 }
 
 // actions =============================================================================

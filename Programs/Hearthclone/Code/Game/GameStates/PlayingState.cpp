@@ -42,25 +42,22 @@ void PlayingState::Initialize()
 	m_gameBoard->m_renderScene = m_renderScene2D;
 	m_gameBoard->Initialize();
 
-	//test a card
-	card = new Card(CardDefinition::GetDefinitionByName("Chillwind Yeti"));
-	card->m_renderScene = m_renderScene2D;
-	card->Initialize();
-	Vector2 clientCenter = Window::GetInstance()->GetCenterOfClientWindow();
- 	card->m_transform2D->SetLocalPosition(clientCenter);
-
 	//add players
 	m_player = new Player();
-	m_player->m_playerId = 0;
+	m_player->m_playerId = SELF_PLAYER_TYPE;
 	m_player->m_gameState = this;
 	m_player->LoadDeckFromDefinitionName("All Yetis");
 
 
 	//load their decks
 	m_enemyPlayer = new Player();
-	m_enemyPlayer->m_playerId = 1;
+	m_enemyPlayer->m_playerId = ENEMY_PLAYER_TYPE;
 	m_enemyPlayer->m_gameState = this;
 	m_enemyPlayer->LoadDeckFromDefinitionName("All Yetis");	
+
+	//start game time
+	m_gameTime = new Stopwatch();
+	m_gameTime->SetClock(GetMasterClock());
 
 	theRenderer = nullptr;	
 }
@@ -162,7 +159,8 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_1))
 	{
 		std::map<std::string, std::string> parameters = {{"target", "player"}, {"amount", "2"}};
-		Draw(parameters);
+		ActionFunction function = GetActionDataFromRegisteredListByName("draw");
+		function(parameters);
 	}
 
 	DebugRender::GetInstance()->CreateDebugText2D(Vector2(Window::GetInstance()->m_clientWidth - 300, Window::GetInstance()->m_clientHeight - 20), 20.f, 1.f, mouseText, Rgba::WHITE, Rgba::WHITE, 0.f, ALWAYS_DEPTH_TYPE);

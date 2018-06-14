@@ -17,6 +17,7 @@ public:
 
 	void CreateBoardMeshesForRenderable(Renderable2D* renderable);
 	void CreateBoardTextMeshesForRenderable(Renderable2D* renderable);
+	void CreateBoardTexturedMeshesForRenderable(Renderable2D* renderable);
 
 	void UpdateRenderables();
 
@@ -29,6 +30,7 @@ public:
 	AABB2 m_enemyHeroAbilityQuad;
 	AABB2 m_enemyHeroWeaponQuad;
 	AABB2 m_enemyManaQuad;
+	AABB2 m_enemyDeckQuad;
 
 	// player board quads =========================================================================================
 	AABB2 m_playerHandQuad;
@@ -37,9 +39,11 @@ public:
 	AABB2 m_playerHeroAbilityQuad;
 	AABB2 m_playerHeroWeaponQuad;
 	AABB2 m_playerManaQuad;
+	AABB2 m_playerDeckQuad;
 
 	// shared board quads =========================================================================================
 	AABB2 m_endTurnQuad;
+	
 };
 
 
