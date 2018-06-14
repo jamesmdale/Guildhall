@@ -40,11 +40,11 @@ EffectCallback GetEffectCallbackFromRegisteredListByName(const std::string & act
 	return iterator->second;
 }
 
-// referee methods =========================================================================================
+// RefereeQueue methods =========================================================================================
 
 void ProcessEffectQueue()
 {
-	//process everything on the referee before allowing new user actions
+	//process everything on the RefereeQueue before allowing new user actions
 	if(GetEffectQueueCount() != 0)
 	{
 		EffectData effect = EffectQueue.front();

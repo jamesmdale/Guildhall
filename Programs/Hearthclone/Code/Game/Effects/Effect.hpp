@@ -34,7 +34,7 @@ struct EffectData
 	EffectCallback callback;
 };
 
-// referee functions =========================================================================================
+// RefereeQueue functions =========================================================================================
 void ProcessEffectQueue();
 int GetEffectQueueCount();
 void AddEffectToEffectQueue(const EffectData& action);

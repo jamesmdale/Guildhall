@@ -7,7 +7,7 @@
 #include <queue>
 
 std::map<std::string, ActionCallback> s_registeredActions;
-std::queue<ActionData> Referee;
+std::queue<ActionData> RefereeQueue;
 
 // genereal functions =============================================================================
 
@@ -41,41 +41,41 @@ ActionCallback GetActionDataFromRegisteredListByName(const std::string & actionN
 	return iterator->second;
 }
 
-// referee methods =========================================================================================
+// RefereeQueue methods =========================================================================================
 
-void ProcessReferee()
+void ProcessRefereeQueue()
 {	
-	//if effects are still running, don't add anything new to the referee queue
+	//if effects are still running, don't add anything new to the RefereeQueue queue
 	if (GetEffectQueueCount() == 0)
 	{
-		//process everything on the referee before allowing new user actions
-		while (Referee.size() > 0)
+		//process everything on the RefereeQueue before allowing new user actions
+		while (RefereeQueue.size() > 0)
 		{
-			ActionData action = Referee.front();
+			ActionData action = RefereeQueue.front();
 			action.callback(action.parameters);
-			Referee.pop();
+			RefereeQueue.pop();
 		}
 	}	
 }
 
-int GetRefereeCount()
+int GetRefereeQueueCount()
 {
-	return (int)Referee.size();
+	return (int)RefereeQueue.size();
 }
 
-void AddActionToReferee(ActionData action)
+void AddActionToRefereeQueue(ActionData action)
 {
-	Referee.push(action);
+	RefereeQueue.push(action);
 }
 
-void AddActionToReferee(const std::string& callbackName, const std::map<std::string, std::string> parameters)
+void AddActionToRefereeQueue(const std::string& callbackName, const std::map<std::string, std::string> parameters)
 {
-	AddActionToReferee(ActionData(callbackName, parameters));
+	AddActionToRefereeQueue(ActionData(callbackName, parameters));
 }
 
-void AddActionToReferee(ActionCallback callback, std::map<std::string, std::string> parameters)
+void AddActionToRefereeQueue(ActionCallback callback, std::map<std::string, std::string> parameters)
 {
-	AddActionToReferee(ActionData(callback, parameters));
+	AddActionToRefereeQueue(ActionData(callback, parameters));
 }
 
 // actions =============================================================================
@@ -121,6 +121,8 @@ void DrawAction(const std::map<std::string, std::string>& parameters)
 	}
 
 	targetPlayer->UpdateDeckCount();
+
+
 	targetPlayer->UpdateHandLockPositions();
 
 	targetPlayer = nullptr;

@@ -35,12 +35,12 @@ struct ActionData
 	ActionCallback callback;
 };
 
-// referee functions =========================================================================================
-void ProcessReferee();
-int GetRefereeCount();
-void AddActionToReferee(ActionData action);
-void AddActionToReferee(const std::string& callbackName, const std::map<std::string, std::string> parameters);
-void AddActionToReferee(ActionCallback callback, std::map<std::string, std::string> parameters);
+// RefereeQueue functions =========================================================================================
+void ProcessRefereeQueue();
+int GetRefereeQueueCount();
+void AddActionToRefereeQueue(ActionData action);
+void AddActionToRefereeQueue(const std::string& callbackName, const std::map<std::string, std::string> parameters);
+void AddActionToRefereeQueue(ActionCallback callback, std::map<std::string, std::string> parameters);
 
 // action list =============================================================================
 
