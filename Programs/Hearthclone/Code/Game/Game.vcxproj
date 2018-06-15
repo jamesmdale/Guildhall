@@ -293,10 +293,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actions\Action.cpp" />
-    <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Definitions\DeckDefinition.cpp" />
     <ClCompile Include="Definitions\CardDefinition.cpp" />
+    <ClCompile Include="Effects\Effect.cpp" />
     <ClCompile Include="Entity\Character.cpp" />
     <ClCompile Include="Entity\Card.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -322,10 +322,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actions\Action.hpp" />
-    <ClInclude Include="Actor.hpp" />
     <ClInclude Include="Board.hpp" />
     <ClInclude Include="Definitions\DeckDefinition.hpp" />
     <ClInclude Include="Definitions\CardDefinition.hpp" />
+    <ClInclude Include="Effects\Effect.hpp" />
     <ClInclude Include="Entity\Character.hpp" />
     <ClInclude Include="Entity\Card.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />

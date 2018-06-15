@@ -22,6 +22,7 @@
 #include <vector>
 #include <string>
 #include "Game\Definitions\DeckDefinition.hpp"
+#include "Game\Actions\Action.hpp"
 
 //game instance
 static Game* g_theGame = nullptr;
@@ -94,6 +95,9 @@ void Game::Initialize()
 	// load definitions =============================================================================
 	CardDefinition::Initialize("Data/Definitions/Cards/cards.xml");
 	DeckDefinition::Initialize("Data/Definitions/Decks/decks.xml");
+
+	//register actions ==============================================================================
+	RegisterAllActions();
 
 	// cleanup =============================================================================
 	theRenderer = nullptr;

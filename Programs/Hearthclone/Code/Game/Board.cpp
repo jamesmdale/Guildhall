@@ -20,15 +20,24 @@ Board::Board()
 
 void Board::Initialize()
 {
-	Renderable2D* boardRenderable = new Renderable2D();
-
-	//create board layout
 	Renderer* theRenderer = Renderer::GetInstance();	
 
+	//create board layout
+	Renderable2D* boardRenderable = new Renderable2D();
 	CreateBoardMeshesForRenderable(boardRenderable);
 	boardRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("default")));
 	boardRenderable->SetRender2DSortLayer(0);
 	m_renderables.push_back(boardRenderable);
+
+	//add textured elements to board
+	Renderable2D* boardTexturedRenderable = new Renderable2D();
+	CreateBoardTexturedMeshesForRenderable(boardTexturedRenderable);
+
+	boardTexturedRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("default")));
+	boardTexturedRenderable->GetMaterial()->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+	boardTexturedRenderable->GetMaterial()->SetTexture(0, theRenderer->CreateOrGetTexture("Data/Images/Cards/card_back.png"));
+	boardTexturedRenderable->SetRender2DSortLayer(2);
+	m_renderables.push_back(boardTexturedRenderable);
 
 	//add text to board
 	Renderable2D* boardTextRenderable = new Renderable2D();
@@ -37,14 +46,20 @@ void Board::Initialize()
 	boardTextRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("text")));
 	boardTextRenderable->GetMaterial()->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::BLACK));
 	
-	boardTextRenderable->SetRender2DSortLayer(1);
+	boardTextRenderable->SetRender2DSortLayer(2);
 	m_renderables.push_back(boardTextRenderable);
+
+
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
 	{
 		m_renderScene->AddRenderable(m_renderables[renderableIndex]);
 	}
 
+
+	boardTextRenderable = nullptr;
+	boardTexturedRenderable = nullptr;
+	boardRenderable = nullptr;
 	theRenderer = nullptr;
 
 }
@@ -193,6 +208,45 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	mb.CreateQuad2D(endTurnCenter, endTurnDimensions, Rgba::GREEN);
 
 	// create mesh =========================================================================================
+	renderable->AddMesh(mb.CreateMesh<VertexPCU>());
+
+	clientWindow = nullptr;
+}
+
+void Board::CreateBoardTexturedMeshesForRenderable(Renderable2D * renderable)
+{
+	if ((int)renderable->m_meshes.size() != 0)
+	{
+		for (int meshIndex = 0; meshIndex < (int)renderable->m_meshes.size(); ++meshIndex)
+		{
+			delete(renderable->m_meshes[meshIndex]);
+			renderable->m_meshes[meshIndex] = nullptr;
+		}
+
+		renderable->m_meshes.clear();
+	}
+
+	Window* clientWindow = Window::GetInstance();
+	MeshBuilder mb;
+
+	// create quads for decks =========================================================================================
+	float playerDeckQuadHeight = m_playerHandQuad.maxs.y - (m_playerHandQuad.maxs.y - m_playerHandQuad.mins.y) * 0.5f;
+	float playerDeckQuadWidth = (m_playerHandQuad.maxs.x - m_playerHandQuad.mins.x) / (float)(g_maxHandSize + 1); // + 1 because we include deck image
+
+	float enemyDeckQuadHeight = m_enemyHandQuad.maxs.y - (m_enemyHandQuad.maxs.y - m_enemyHandQuad.mins.y) * 0.5f;
+	float enemyDeckQuadWidth = (m_enemyHandQuad.maxs.x - m_enemyHandQuad.mins.x) / (float)(g_maxHandSize + 1); // + 1 because we include deck image
+
+	float cardHeight = g_cardPercentageOfClientWindowHeight * clientWindow->GetClientHeight();
+	float cardWidth = cardHeight * g_cardAspectRatio;
+
+	Vector2 playerDeckCenter = Vector2(playerDeckQuadWidth * (g_maxHandSize), playerDeckQuadHeight);
+	Vector2 enemyDeckCenter = Vector2(enemyDeckQuadWidth * (g_maxHandSize), enemyDeckQuadHeight);
+
+	m_playerDeckQuad = AABB2(playerDeckCenter, cardWidth * 0.5f, cardHeight * 0.5f);
+	m_enemyDeckQuad = AABB2(enemyDeckCenter, cardWidth * 0.5f, cardHeight * 0.5f);
+	mb.CreateQuad2D(m_playerDeckQuad, Rgba::WHITE);
+	mb.CreateQuad2D(m_enemyDeckQuad, Rgba::WHITE);
+
 	renderable->AddMesh(mb.CreateMesh<VertexPCU>());
 
 	clientWindow = nullptr;

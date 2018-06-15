@@ -11,6 +11,7 @@ public:
 	void SetClock(Clock* referenceClock);
 	void SetTimer(float seconds);
 	double GetElapsedTimeInSeconds();
+	void GetElapsedTimeMinutesAndSecondsOut(float& outMinutes, float& outSeconds);
 	double GetNormalizedElapsedTimeInSeconds();
 	uint64_t GetElapsedTimeInHPC();
 	bool HasElapsed();

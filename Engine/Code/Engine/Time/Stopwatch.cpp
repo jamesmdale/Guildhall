@@ -45,6 +45,14 @@ double Stopwatch::GetElapsedTimeInSeconds()
 	return PerformanceCounterToSeconds(elapsedHPC);
 }
 
+void Stopwatch::GetElapsedTimeMinutesAndSecondsOut(float& outMinutes, float& outSeconds)
+{
+	double seconds = GetElapsedTimeInSeconds();
+
+	outMinutes = std::floor((float)seconds/60.f);
+	outSeconds = Modulus((float)seconds, 60.f);
+}
+
 uint64_t Stopwatch::GetElapsedTimeInHPC()
 {
 	uint64_t elapsedHPC = m_referenceClock->m_total.hpc - m_startHPC;

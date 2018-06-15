@@ -99,8 +99,18 @@ void Player::UpdateHandLockPositions()
 	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
 	Board* board = gameState->m_gameBoard;
 
-	float handDockCenterHeight = board->m_playerHandQuad.maxs.y - ((board->m_enemyHandQuad.maxs.y - board->m_enemyHandQuad.mins.y) * 0.5f);
-	float handDockWidthPerCard = (board->m_playerHandQuad.maxs.x - board->m_enemyHandQuad.mins.x) / g_maxHandSize;
+	AABB2 handQuad;
+	if (m_playerId == 0) //if player is self
+	{
+		handQuad = board->m_playerHandQuad;
+	}
+	if (m_playerId == 1) //if player is enemy
+	{
+		handQuad = board->m_enemyHandQuad;
+	}
+
+	float handDockCenterHeight = handQuad.maxs.y - ((handQuad.maxs.y - handQuad.mins.y) * 0.5f);
+	float handDockWidthPerCard = (handQuad.maxs.x - handQuad.mins.x) / (float)(g_maxHandSize + 1); // + 1 because we include deck image
 
 	for (int cardIndex = 0; cardIndex < (int)m_hand.size(); ++cardIndex)
 	{	

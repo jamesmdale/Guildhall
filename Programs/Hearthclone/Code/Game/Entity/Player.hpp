@@ -4,6 +4,13 @@
 #include "Game\Entity\Hero.hpp"
 #include <vector>
 
+enum ePlayerType
+{
+	SELF_PLAYER_TYPE,
+	ENEMY_PLAYER_TYPE,
+	NUM_PLAYER_TYPES
+};
+
 class PlayingState;
 class Player
 {
@@ -29,7 +36,7 @@ public:
 
 	PlayingState* m_gameState = nullptr;
 
-	int m_playerId;
+	ePlayerType m_playerId = NUM_PLAYER_TYPES;
 	int m_deckCount;	
 	std::string m_displayName;
 };
