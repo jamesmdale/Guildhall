@@ -50,6 +50,13 @@ void Transform::SetLocalScale(Vector3 scale)
 	}	
 }
 
+void Transform::SetMatrix(const Matrix44& matrix)
+{
+	m_transformMatrix = matrix;
+
+	SetTransformHiearchyDirty();
+}
+
 void Transform::AddRotation(Vector3 rotation)
 {
 	if(rotation != Vector3::ZERO)
@@ -103,25 +110,25 @@ Matrix44 Transform::GetWorldMatrix()
 {
 	if(m_isDirty == true)
 	{
-		m_transform = Matrix44::IDENTITY;
+		m_transformMatrix = Matrix44::IDENTITY;
 
 		if(m_parentTransform != nullptr)
 		{
-			m_transform.Append(m_parentTransform->GetWorldMatrix());
+			m_transformMatrix.Append(m_parentTransform->GetWorldMatrix());
 		}
 
 		//translate
-		m_transform.Append(GetLocalTranslationMatrix());
+		m_transformMatrix.Append(GetLocalTranslationMatrix());
 
 		//rotate
-		m_transform.Append(Matrix44::MakeRotationMatrix(m_localRotation));		
+		m_transformMatrix.Append(Matrix44::MakeRotationMatrix(m_localRotation));		
 
 		//scale
-		m_transform.Append(GetLocalScaleMatrix());		
+		m_transformMatrix.Append(GetLocalScaleMatrix());		
 	}	
 
 	m_isDirty = false;
-	return m_transform;
+	return m_transformMatrix;
 }
 
 Vector3 Transform::GetWorldPosition()
@@ -222,7 +229,7 @@ void Transform::ResetPositionData()
 	SetLocalRotation(Vector3::ZERO);
 	SetLocalScale(Vector3::ONE);
 
-	m_transform = Matrix44::IDENTITY;
+	m_transformMatrix = Matrix44::IDENTITY;
 }
 
 //Vector3 Transform::GetUp()

@@ -614,6 +614,38 @@ void MeshBuilder::CreateBasis(const Vector3& positionStart, float scale)
 	PushVertex(positionStart + (Vector3::RIGHT * scale));
 }
 
+void MeshBuilder::CreateBasis(const Matrix44& basis, const Vector3& position, float scale)
+{
+	Begin(LINES_DRAW_PRIMITIVE, false); 
+
+	//y axis
+	SetColor(Rgba::GREEN);
+	SetUV(Vector2(0.f,0.f));
+	PushVertex(position);
+
+	SetColor(Rgba::GREEN);
+	SetUV(Vector2(0.f,0.f));
+	PushVertex(position + (basis.GetUp() * scale));
+
+	//z axis
+	SetColor(Rgba::BLUE);
+	SetUV(Vector2(0.f,0.f));
+	PushVertex(position);
+
+	SetColor(Rgba::BLUE);
+	SetUV(Vector2(0.f,0.f));
+	PushVertex(position + (basis.GetForward() * scale));
+
+	//x axis
+	SetColor(Rgba::RED);
+	SetUV(Vector2(0.f,0.f));
+	PushVertex(position);
+
+	SetColor(Rgba::RED);
+	SetUV(Vector2(0.f,0.f));
+	PushVertex(position + (basis.GetRight()* scale));
+}
+
 void MeshBuilder::CreateText2D(const Vector2& center, float cellHeight, float aspectScale, const std::string& text, const Rgba& tint)
 {
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); 

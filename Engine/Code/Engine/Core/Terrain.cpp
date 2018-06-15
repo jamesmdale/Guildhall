@@ -37,6 +37,8 @@ Terrain::~Terrain()
 	m_heightMap = nullptr;
 }
 
+// getters =============================================================================
+
 Vector3 Terrain::GetTerrainVertexPositionAtUV(float u, float v)
 {
 	int texelIndexX = (int)RangeMapFloat(u, m_uvBounds.mins.x * m_cellScale, m_uvBounds.maxs.x * m_cellScale, 0.f, (float)m_heightMap->GetWidth() - 1.f);
@@ -44,6 +46,9 @@ Vector3 Terrain::GetTerrainVertexPositionAtUV(float u, float v)
 
 	TODO("Could use linear height map to round off terrain.");
 	//
+	//texelIndexX = ClampFloat(texelIndexX, 0.f, m_heightMap->GetDimensions().x);
+	//texelIndexY = ClampFloat(texelIndexY, 0.f, m_heightMap->GetDimensions().y);
+
 	Rgba texel = m_heightMap->GetTexel(texelIndexX, texelIndexY);
 	float texelVal0To1 = texel.GetRedAsFloat();
 
@@ -53,12 +58,12 @@ Vector3 Terrain::GetTerrainVertexPositionAtUV(float u, float v)
 	return vertexPosition;
 }
 
-float Terrain::GetHeightAtPositionXZ(Vector2 positionXZ)
+Vector3 Terrain::GetWorldCoorindateAtPositionXZ(Vector2 positionXZ)
 {
 	//get position in world space.
 	Vector3 terrainPosition = m_transform->GetWorldPosition();
 	Vector2 terrainPositionXZ = Vector2(terrainPosition.x, terrainPosition.z);
-	
+
 	Vector2 terrainWorldMin = Vector2(terrainPositionXZ.x + (m_uvBounds.mins.x * m_cellScale), terrainPositionXZ.y + (m_uvBounds.mins.y * m_cellScale));
 	Vector2 terrainWorldMax = Vector2(terrainPositionXZ.x + (m_uvBounds.maxs.x * m_cellScale), terrainPositionXZ.y + (m_uvBounds.maxs.y * m_cellScale));
 
@@ -68,28 +73,52 @@ float Terrain::GetHeightAtPositionXZ(Vector2 positionXZ)
 	//get closest whole values
 	float scaledU = floorf(positionXZ.x);
 	float scaledV = floorf(positionXZ.y);
-	 
+
 	//get the decimal part of the position (acts as percentage value that we will use for lerp late)
 	float percentageXIntoCell = positionXZ.x - scaledU; 
 	float percentageZIntoCell = positionXZ.y - scaledV;
 
 	Vector2 closestUV = Vector2(scaledU, scaledV);
-	
+
 	Vector2 cellBottomLeftUV = closestUV;
 	Vector2 cellBottomRightUV = closestUV + Vector2(1, 0);
 	Vector2 cellTopRightUV = closestUV + Vector2(1, 1);
 	Vector2 cellTopLeftUV = closestUV + Vector2(0, 1);
 
- 	Vector3 vertexPositionBottomLeft = GetTerrainVertexPositionAtUV(cellBottomLeftUV.x, cellBottomLeftUV.y);
+	Vector3 vertexPositionBottomLeft = GetTerrainVertexPositionAtUV(cellBottomLeftUV.x, cellBottomLeftUV.y);
 	Vector3 vertexPositionBottomRight = GetTerrainVertexPositionAtUV(cellBottomRightUV.x, cellBottomRightUV.y);
 	Vector3 vertexPositionTopRight = GetTerrainVertexPositionAtUV(cellTopRightUV.x, cellTopRightUV.y);
 	Vector3 vertexPositionTopLeft = GetTerrainVertexPositionAtUV(cellTopLeftUV.x, cellTopLeftUV.y);
 
 	float lerpBottom = Interpolate(vertexPositionBottomLeft.y, vertexPositionBottomRight.y, percentageXIntoCell);
 	float lerpTop = Interpolate(vertexPositionTopLeft.y, vertexPositionTopRight.y, percentageXIntoCell);
-	float outHeight = Interpolate(lerpBottom, lerpTop, percentageZIntoCell);
+	float height = Interpolate(lerpBottom, lerpTop, percentageZIntoCell);
 
-	return outHeight;	
+	return Vector3(positionXZ.x, height, positionXZ.y);
 }
+
+float Terrain::GetHeightAtPositionXZ(Vector2 positionXZ)
+{
+	return GetWorldCoorindateAtPositionXZ(positionXZ).y;
+}
+
+void Terrain::GetNewBasisAtPositionXZ(const Vector2& positionXZ, Vector3& outIBasis, Vector3& outJBasis, Vector3& outKBasis)
+{
+	Vector3 position = GetWorldCoorindateAtPositionXZ(positionXZ);
+
+	Vector3 positionRight = GetWorldCoorindateAtPositionXZ(Vector2(positionXZ.x + 1.f, positionXZ.y));
+	Vector3 positionUp = GetWorldCoorindateAtPositionXZ(Vector2(positionXZ.x, positionXZ.y + 1.f));
+
+	Vector3 dv = positionRight - position;
+	Vector3 du = positionUp - position;
+
+	Vector3 normal = CrossProduct(dv, du);
+
+	outIBasis = du;
+	outJBasis = normal;
+	outKBasis = dv;
+}
+
+
 
 

@@ -7,6 +7,7 @@
 #include "Engine\Core\Vertex.hpp"
 #include "Engine\Math\AABB2.hpp"
 #include <functional>
+#include "Engine\Math\Matrix44.hpp"
 
 class MeshBuilder
 {
@@ -49,6 +50,7 @@ public:
 	void CreateLine(const Vector3& positionStart, const Vector3& positionEnd, const Rgba& color);
 	void CreateLine2D(const Vector2& positionStart, const Vector2& positionEnd, const Rgba& color);
 	void CreateBasis(const Vector3& positionStart, float scale);
+	void CreateBasis(const Matrix44& basis, const Vector3& position, float scale);
 	void CreateQuad2D(const Vector2& center, const Vector2& dimensions, const Rgba& tint);
 	void CreateQuad2D(const AABB2& drawBounds, const Rgba& tint);
 	void CreateStarQuads3D(const Vector3& center, const Vector3& dimensions, const Rgba& tint);

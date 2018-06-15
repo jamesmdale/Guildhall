@@ -1137,15 +1137,14 @@ void Renderer::PostStartup()
 	m_defaultSampler->Create();
 
 	//load default texture
-	Image* defaultImage = new Image(IntVector2(1,1), Rgba::WHITE, "default");
+	Image defaultImage = Image(IntVector2(1,1), Rgba::WHITE, "default");
+	Image normalImage = Image(IntVector2(1,1), Rgba::NORMAL_MAP_FLAT, "normal");
 
-	m_defaultTexture = CreateOrGetTexture(*defaultImage);
+	m_defaultTexture = CreateOrGetTexture(defaultImage);
+	m_defaultTexture = CreateOrGetTexture(normalImage);
 	m_currentTexture = new Texture();
 	
 	SetTexture(*m_defaultTexture);
-
-	delete(defaultImage);
-	defaultImage = nullptr;
 	
 	//load fonts
 	CreateOrGetBitmapFont("SquirrelFixedFont");

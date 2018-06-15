@@ -8,6 +8,7 @@
 #include "Engine\Camera\Camera.hpp"
 #include "Engine\Core\Command.hpp"
 #include "Engine\Renderer\Shader.hpp"
+#include "Engine\Math\Matrix44.hpp"
 
 class DebugRender
 {
@@ -53,6 +54,13 @@ public:
 	void CreateDebugBasis(const Vector3& positionStart,
 		float scale = 1.f,
 		float timeToLive = 0.f,		
+		int depthType = 1,
+		Camera* camera = nullptr);
+
+	void CreateDebugBasis(const Matrix44& basis,
+		const Vector3& position,
+		float scale = 1.f,
+		float timeToLive = 0.f,
 		int depthType = 1,
 		Camera* camera = nullptr);
 

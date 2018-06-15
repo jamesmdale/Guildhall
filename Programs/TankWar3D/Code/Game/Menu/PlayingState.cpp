@@ -20,7 +20,7 @@ void PlayingState::Initialize()
 	MeshBuilder meshBuilder;
 
 	//position camera behind player
-	m_camera->Translate(Vector3(0.f, 2.f, -10.f));
+	m_camera->Translate(Vector3(0.f, 5.f, -15.f));
 	m_camera->m_skybox = new Skybox("Data/Images/galaxy2.png");
 
 	m_renderScene->AddCamera(m_camera);
@@ -61,8 +61,10 @@ void PlayingState::Initialize()
 	m_playerTank->SetCamera(m_camera);
 	m_playerTank->m_playingState = (PlayingState*)g_currentState;
 
+	m_playerTank->m_baseDimensions = Vector3(1.0f, 0.5f, 2.0f);
+
 	Renderable* tankRenderable = new Renderable();
-	meshBuilder.CreateUVSphere( Vector3::ZERO, 1.f, 15, 15, Rgba::WHITE);
+	meshBuilder.CreateCube( Vector3::ZERO, Vector3(1.0f, 0.5f, 2.0f), Rgba::WHITE);
 	tankRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
 	tankRenderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("tank"));
 
@@ -78,7 +80,7 @@ void PlayingState::Initialize()
 	}
 
 	// add terrain =========================================================================================
-	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 1.f, 10.f, "Data/Images/terrain.jpg");
+	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 2.5f, 10.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
 	m_terrain->m_transform->TranslatePosition(Vector3(0.0f, -10.0f, 0.0f));
 

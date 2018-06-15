@@ -114,6 +114,39 @@ void DebugRender::CreateDebugBasis(const Vector3& positionStart, float scale, fl
 	theRenderer = nullptr;
 }
 
+void DebugRender::CreateDebugBasis(const Matrix44& basis, const Vector3& position, float scale, float timeToLive, int depthType, Camera* camera)
+{
+	DebugRenderObject* renderObject = new DebugRenderObject();
+	Renderer* theRenderer = Renderer::GetInstance();
+
+	if(camera == nullptr)
+	{
+		renderObject->m_camera = theRenderer->m_defaultCamera;
+	}
+	else
+	{
+		renderObject->m_camera = camera;
+	}	
+
+	//setting data
+	renderObject->m_type = BASIS_RENDER_TYPE;
+	renderObject->m_depthType = depthType;
+	renderObject->m_totalTimeToLive = timeToLive;
+	renderObject->m_remainingTimeToLive = timeToLive;
+	//colors are predetermined by basis
+
+	//mesh creation logic
+	MeshBuilder meshBuilder;
+
+	meshBuilder.CreateBasis(basis, Vector3::ZERO, scale);
+	renderObject->m_mesh = meshBuilder.CreateMesh<VertexPCU>();
+
+	renderObject->m_transform.SetLocalPosition(position);
+
+	m_debugObjects.push_back(renderObject);
+	theRenderer = nullptr;
+}
+
 void DebugRender::CreateDebugSphere(const Vector3& center, float radius, const Rgba& startColor, const Rgba& endColor, float timeToLive, int depthType,  Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();

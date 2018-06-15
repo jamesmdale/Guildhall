@@ -754,35 +754,61 @@ void Matrix44::SetTranslation(const Vector3& translation)
 }
 
 
-Vector3 Matrix44::GetRight()
+Vector3 Matrix44::GetRotation() const
+{
+	float xDegrees;
+	float yDegrees;
+	float zDegrees;
+
+	float sx = -1.f * Ky;
+	sx = AsinfAsDegrees(sx, 1.f);
+	sx = ClampFloat(sx, -90.f, 90.f);
+	xDegrees = sx;
+
+	float cx = CosDegrees(sx);
+	if(cx != 0.0f)
+	{
+		yDegrees = AtanfAsDegrees(Kx, Kz);
+		zDegrees = AtanfAsDegrees(Iy, Jy);
+	}
+	else
+	{
+		yDegrees = AtanfAsDegrees((-1.f * Iz), Ix);
+		zDegrees = 0.0f;
+	}
+
+	return Vector3(xDegrees, yDegrees, zDegrees);
+}
+
+Vector3 Matrix44::GetRight() const
 {
 	Vector3 rightVector = Vector3(GetIBasis());
 	rightVector.Normalize();
 	return rightVector;
 }
 
-Vector3 Matrix44::GetUp()
+Vector3 Matrix44::GetUp() const
 {
 	Vector3 upVector = Vector3(GetJBasis());
 	upVector.Normalize();
 	return upVector;
 }
 
-Vector3 Matrix44::GetForward()
+Vector3 Matrix44::GetForward() const
 {
 	Vector3 forwardVector = Vector3(GetKBasis());
 	forwardVector.Normalize();
 	return forwardVector;
 }
 
-Vector2 Matrix44::GetRight2D()
+Vector2 Matrix44::GetRight2D() const
 {
 	Vector3 forwardVector = Vector3(GetIBasis());
 	forwardVector.Normalize();
 	return Vector2(forwardVector.x, forwardVector.y);
 }
 
-Vector2 Matrix44::GetUp2D()
+Vector2 Matrix44::GetUp2D() const
 {
 	Vector3 forwardVector = Vector3(GetKBasis());
 	forwardVector.Normalize();

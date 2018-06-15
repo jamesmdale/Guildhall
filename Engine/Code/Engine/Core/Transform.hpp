@@ -14,6 +14,7 @@ public:
 	void SetLocalPosition(Vector3 position);
 	void SetLocalRotation(Vector3 rotation);
 	void SetLocalScale(Vector3 scale);
+	void SetMatrix(const Matrix44& matrix);
 
 	//local modifiers
 	void AddRotation(Vector3 rotation);
@@ -65,7 +66,7 @@ public:
 	void ResetPositionData();
 
 public:
-	Matrix44 m_transform;
+	Matrix44 m_transformMatrix;
 
 private:
 

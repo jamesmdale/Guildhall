@@ -48,9 +48,9 @@ void Camera::LookAt(Vector3 position, Vector3 target, Vector3 up)
 	
 	Vector4 positionDisplacement = Vector4(xAxisDot, yAxisDot, zAxisDot, 1.f);
 
-	m_transform->m_transform = Matrix44(Vector4(xAxis, 0.f), Vector4(yAxis, 0.f), Vector4(zAxis, 0.f), positionDisplacement);
+	m_transform->m_transformMatrix = Matrix44(Vector4(xAxis, 0.f), Vector4(yAxis, 0.f), Vector4(zAxis, 0.f), positionDisplacement);
 	
-	m_viewMatrix = m_transform->m_transform.InvertFastToNew();
+	m_viewMatrix = m_transform->m_transformMatrix.InvertFastToNew();
 	//inverse of m_cameraMatrix = view
 }
 

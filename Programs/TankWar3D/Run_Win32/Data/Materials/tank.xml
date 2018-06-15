@@ -2,6 +2,6 @@
 	<shader name="litVertNormals" />
 	<textures>
 		<texture bind="0" file="Data\Images\brick.png" />
-		<texture bind="1" file="Data\Images\brick_normal.png" />
+		<texture bind="1" file="normal" />	
 	</textures>
 </material>

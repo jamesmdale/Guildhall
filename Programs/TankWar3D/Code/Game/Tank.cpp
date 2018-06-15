@@ -6,6 +6,7 @@
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Debug\DebugRenderObject.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Engine\Debug\DebugRender.cpp"
 
 Tank::Tank()
 {
@@ -28,10 +29,31 @@ void Tank::Update(float timeDelta)
 	}
 	
 	Vector3 currentPosition = m_transform->GetWorldPosition();
-	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
+	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z)) + m_baseDimensions.y;
+
+	Vector3 newIBasis;
+	Vector3 newJBasis;
+	Vector3 newKBasis;
+
+	
+
+	m_playingState->m_terrain->GetNewBasisAtPositionXZ(Vector2(currentPosition.x, currentPosition.z), newIBasis, newJBasis, newKBasis);
+
+	Matrix44 newMatrix;
+	newMatrix.SetIBasis(Vector4(newIBasis, 1.f));
+	newMatrix.SetJBasis(Vector4(newJBasis, 1.f));
+	newMatrix.SetKBasis(Vector4(newKBasis, 1.f));
+	newMatrix.SetTranslation(currentPosition);
+	Vector3 rotation = newMatrix.GetRotation();
+
+	/*m_transform->SetLocalRotation(rotation);*/
+	m_transform->SetLocalPosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));	
 
 	/*m_transform->TranslatePosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));*/
-	m_transform->SetLocalPosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));
+
+	//DebugRender::GetInstance()->CreateDebugBasis(m_transform->m_transformMatrix, pos, 1.f, 0.f, 1.f, m_playingState->m_camera);
+	DebugRender::GetInstance()->CreateDebugBasis(newMatrix, Vector3(currentPosition.x, currentPosition.y + 2.f, currentPosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
+
 }
 
 void Tank::PreRender()

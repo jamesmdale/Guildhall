@@ -68,27 +68,28 @@ public:
 	Matrix44 LerpTransform(Matrix44& start, Matrix44& end, float fractionTowardEnd);
 
 	//getters
-	Vector4 GetXRow(){ return Vector4(Ix, Jx, Kx, Tx);}; 
-	Vector4 GetYRow(){ return Vector4(Iy, Jy, Ky, Ty);};
-	Vector4 GetZRow(){ return Vector4(Iz, Jz, Kz, Tz);};
-	Vector4 GetWRow(){ return Vector4(Iw, Jw, Kw, Tw);};
+	Vector4 GetXRow() const{ return Vector4(Ix, Jx, Kx, Tx);}; 
+	Vector4 GetYRow() const{ return Vector4(Iy, Jy, Ky, Ty);};
+	Vector4 GetZRow() const{ return Vector4(Iz, Jz, Kz, Tz);};
+	Vector4 GetWRow() const{ return Vector4(Iw, Jw, Kw, Tw);};
 
-	Vector4 GetIBasis(){ return Vector4(Ix, Iy, Iz, Iw);};
-	Vector4 GetJBasis(){ return Vector4(Jx, Jy, Jz, Jw);};
-	Vector4 GetKBasis(){ return Vector4(Kx, Ky, Kz, Kw);};
-	Vector4 GetTBasis(){ return Vector4(Tx, Ty, Tz, Tw);};
+	Vector4 GetIBasis() const { return Vector4(Ix, Iy, Iz, Iw);};
+	Vector4 GetJBasis() const { return Vector4(Jx, Jy, Jz, Jw);};
+	Vector4 GetKBasis() const { return Vector4(Kx, Ky, Kz, Kw);};
+	Vector4 GetTBasis() const { return Vector4(Tx, Ty, Tz, Tw);};
 
-	Vector3 GetPosition(){return Vector3(Tx, Ty, Tz);};
-	Vector3 GetTranslation(){return GetPosition();};
+	Vector3 GetPosition() const {return Vector3(Tx, Ty, Tz);};
+	Vector3 GetTranslation() const {return GetPosition();};
+	Vector3 GetRotation() const;
 
-	Vector3 GetRight();
-	Vector3 GetUp();
-	Vector3 GetForward();
+	Vector3 GetRight() const;
+	Vector3 GetUp() const;
+	Vector3 GetForward() const;
 
-	Vector2 GetPosition2D(){return Vector2(Tx, Ty); };
-	Vector2 GetTranslation2D(){return GetPosition2D(); };
-	Vector2 GetRight2D();
-	Vector2 GetUp2D();
+	Vector2 GetPosition2D() const{return Vector2(Tx, Ty); };
+	Vector2 GetTranslation2D() const{return GetPosition2D(); };
+	Vector2 GetRight2D() const;
+	Vector2 GetUp2D() const;
 
 	//setters
 	void SetFromBasisVectors(Vector4 iBasis, Vector4 jBasis, Vector4 kBasis, Vector4 tBasis);	

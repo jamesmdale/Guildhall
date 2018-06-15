@@ -35,5 +35,7 @@ public:
 	Camera* m_camera = nullptr;
 	Stopwatch* m_breadCrumbTimer = nullptr;
 	PlayingState* m_playingState = nullptr;
+	
+	Vector3 m_baseDimensions;
 };
 

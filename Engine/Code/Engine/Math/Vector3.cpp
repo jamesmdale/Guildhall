@@ -292,7 +292,7 @@ TODO("SETFROMTEXT")
 //	return;	
 //}
 
-float GetDistance(const Vector3 & a, const Vector3 & b)
+float GetDistance(const Vector3& a, const Vector3& b)
 {
 	float dx = a.x - b.x;
 	float dy = a.y - b.y;
