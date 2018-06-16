@@ -35,24 +35,33 @@ void Tank::Update(float timeDelta)
 	Vector3 newJBasis;
 	Vector3 newKBasis;
 
-	
-
 	m_playingState->m_terrain->GetNewBasisAtPositionXZ(Vector2(currentPosition.x, currentPosition.z), newIBasis, newJBasis, newKBasis);
 
-	Matrix44 newMatrix;
-	newMatrix.SetIBasis(Vector4(newIBasis, 1.f));
-	newMatrix.SetJBasis(Vector4(newJBasis, 1.f));
-	newMatrix.SetKBasis(Vector4(newKBasis, 1.f));
-	newMatrix.SetTranslation(currentPosition);
-	Vector3 rotation = newMatrix.GetRotation();
+	Vector3 newRight = CrossProduct(newJBasis, m_transform->GetWorldForward());
+	Vector3 newForward = CrossProduct(newRight, newJBasis);
 
-	/*m_transform->SetLocalRotation(rotation);*/
-	m_transform->SetLocalPosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));	
+	/*Matrix44 newMatrix;
+	newMatrix.SetIBasis(Vector4(newRight.GetNormalized(), 0.f));
+	newMatrix.SetJBasis(Vector4(newJBasis.GetNormalized(), 0.f));
+	newMatrix.SetKBasis(Vector4(newForward.GetNormalized(), 0.f));
+	newMatrix.SetTranslation(currentPosition);*/
+
+	//m_transform->SetIBasis(Vector4(newIBasis, 0.f));
+	//m_transform->SetJBasis(Vector4(newJBasis, 0.f));
+	//m_transform->SetKBasis(Vector4(newKBasis, 0.f));
+
+	m_transform->m_transformMatrix.SetIBasis(Vector4(newRight.GetNormalized(), 0.f));
+	m_transform->m_transformMatrix.SetJBasis(Vector4(newJBasis.GetNormalized(), 0.f));
+	m_transform->m_transformMatrix.SetKBasis(Vector4(newForward.GetNormalized(), 0.f));
+	m_transform->m_transformMatrix.SetTranslation(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));
+
+	//m_transform->SetLocalPosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));
+	//m_transform->SetLocalRotation(rotation);	
 
 	/*m_transform->TranslatePosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));*/
 
 	//DebugRender::GetInstance()->CreateDebugBasis(m_transform->m_transformMatrix, pos, 1.f, 0.f, 1.f, m_playingState->m_camera);
-	DebugRender::GetInstance()->CreateDebugBasis(newMatrix, Vector3(currentPosition.x, currentPosition.y + 2.f, currentPosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
+	DebugRender::GetInstance()->CreateDebugBasis(m_transform->m_transformMatrix, Vector3(currentPosition.x, currentPosition.y + 2.f, currentPosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
 
 }
 
@@ -88,14 +97,14 @@ void Tank::UpdateFromInput(float timeDelta)
 	mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
 
 	//calculate rotation for camera and use same rotation for tank
-	m_transform->AddRotation(Vector3(0.f, mouseDelta.x, 0.f) * timeDelta * 10.f);
+	//m_transform->AddRotation(Vector3(0.f, mouseDelta.x, 0.f) * timeDelta * 10.f);
 
 	float clampedX = ClampFloat(m_transform->GetLocalRotationAroundX(), -90.f, 90.f);
 	float clampedY = Modulus(m_transform->GetLocalRotationAroundY(), 360.f);
 
-	Vector3 rotation = Vector3(clampedX, clampedY, 0.f);
+	//Vector3 rotation = Vector3(clampedX, clampedY, 0.f);
 
-	m_transform->SetLocalRotation(Vector3(rotation));
+	//m_transform->SetLocalRotation(Vector3(rotation));
 
 	Vector3 positionToAdd = Vector3::ZERO;
 	Vector3 positionAtStartOfFrame = positionToAdd;

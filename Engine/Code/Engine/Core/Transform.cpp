@@ -57,6 +57,24 @@ void Transform::SetMatrix(const Matrix44& matrix)
 	SetTransformHiearchyDirty();
 }
 
+void Transform::SetIBasis(const Vector4& iBasis)
+{
+	m_transformMatrix.SetIBasis(iBasis);
+	SetTransformHiearchyDirty();
+}
+
+void Transform::SetJBasis(const Vector4& jBasis)
+{
+	m_transformMatrix.SetJBasis(jBasis);
+	SetTransformHiearchyDirty();
+}
+
+void Transform::SetKBasis(const Vector4& kBasis)
+{
+	m_transformMatrix.SetKBasis(kBasis);
+	SetTransformHiearchyDirty();
+}
+
 void Transform::AddRotation(Vector3 rotation)
 {
 	if(rotation != Vector3::ZERO)

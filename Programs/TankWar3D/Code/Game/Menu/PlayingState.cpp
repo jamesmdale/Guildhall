@@ -64,11 +64,12 @@ void PlayingState::Initialize()
 	m_playerTank->m_baseDimensions = Vector3(1.0f, 0.5f, 2.0f);
 
 	Renderable* tankRenderable = new Renderable();
-	meshBuilder.CreateCube( Vector3::ZERO, Vector3(1.0f, 0.5f, 2.0f), Rgba::WHITE);
+	meshBuilder.CreateCube( Vector3::ZERO, Vector3(1.0f, 0.5f, 1.5f), Rgba::WHITE);
 	tankRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
 	tankRenderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("tank"));
 
 	m_playerTank->AddRenderable(tankRenderable);
+	tankRenderable->m_watch = m_playerTank->m_transform;
 	m_playerTank->m_transform->TranslatePosition(Vector3(0.f, 10.f, 0.f));
 	m_playerTank->m_breadCrumbTimer = new Stopwatch(Game::GetInstance()->m_gameClock);
 	m_playerTank->m_breadCrumbTimer->SetTimer(0.5f);
@@ -80,7 +81,7 @@ void PlayingState::Initialize()
 	}
 
 	// add terrain =========================================================================================
-	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 2.5f, 10.f, "Data/Images/terrain.jpg");
+	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 1.f, 10.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
 	m_terrain->m_transform->TranslatePosition(Vector3(0.0f, -10.0f, 0.0f));
 

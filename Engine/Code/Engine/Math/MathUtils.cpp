@@ -352,6 +352,7 @@ float DotProduct(const Vector4& a, const Vector4& b)
 
 Vector3 CrossProduct(const Vector3& a, const Vector3& b)
 {
+	//UP X FORWARD = RIGHT
 	Vector3 c = Vector3((a.y * b.z) - (b.y * a.z), (a.z * b.x) - (b.z * a.x), (a.x * b.y) - (b.x * a.y)); 
 	
 	return c;

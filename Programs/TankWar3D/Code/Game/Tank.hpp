@@ -29,8 +29,6 @@ public:
 	void SetCamera(Camera* camera);
 	void UpdateFromInput(float timeDelta);
 
-
-
 public:
 	Camera* m_camera = nullptr;
 	Stopwatch* m_breadCrumbTimer = nullptr;

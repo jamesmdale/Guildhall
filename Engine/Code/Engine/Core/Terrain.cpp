@@ -112,11 +112,11 @@ void Terrain::GetNewBasisAtPositionXZ(const Vector2& positionXZ, Vector3& outIBa
 	Vector3 dv = positionRight - position;
 	Vector3 du = positionUp - position;
 
-	Vector3 normal = CrossProduct(dv, du);
+	Vector3 normal = CrossProduct(du, dv);
 
-	outIBasis = du;
+	outIBasis = dv;
 	outJBasis = normal;
-	outKBasis = dv;
+	outKBasis = du;
 }
 
 

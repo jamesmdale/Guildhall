@@ -1,5 +1,5 @@
 <material name="tank">
-	<shader name="litVertNormals" />
+	<shader name="lit" />
 	<textures>
 		<texture bind="0" file="Data\Images\brick.png" />
 		<texture bind="1" file="normal" />	

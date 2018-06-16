@@ -3,6 +3,7 @@
 #include "Engine\Math\Matrix44.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include <vector>
+#include "Engine\Math\Vector4.hpp"
 
 class Transform
 {
@@ -14,7 +15,12 @@ public:
 	void SetLocalPosition(Vector3 position);
 	void SetLocalRotation(Vector3 rotation);
 	void SetLocalScale(Vector3 scale);
+
+	//matrix setters
 	void SetMatrix(const Matrix44& matrix);
+	void SetIBasis(const Vector4& iBasis);
+	void SetJBasis(const Vector4& jBasis);
+	void SetKBasis(const Vector4& kBasis);
 
 	//local modifiers
 	void AddRotation(Vector3 rotation);
