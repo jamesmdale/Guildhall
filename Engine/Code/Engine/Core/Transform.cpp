@@ -23,6 +23,16 @@ Transform::Transform(const Vector3& position, const Vector3& rotation, const Vec
 	SetTransformHiearchyDirty();
 }
 
+Transform::~Transform()
+{
+	m_parentTransform = nullptr;
+	
+	for (int childIndex = 0; childIndex < (int)m_childrenTransforms.size(); ++childIndex)
+	{
+		RemoveChildTransform(m_childrenTransforms[childIndex]);
+	}
+}
+
 void Transform::SetLocalPosition(Vector3 position)
 {
 	if(position != m_localPosition)

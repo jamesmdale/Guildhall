@@ -9,8 +9,6 @@ public:
 	void SetSphericalCoordinate(Vector3 sphericalCoordinate);
 	Vector3 GetSphericalCoordinate();
 
-	//UpdateViewMatrix
-
 public:
 	Vector3 m_target;
 

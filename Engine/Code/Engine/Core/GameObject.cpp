@@ -40,7 +40,6 @@ void GameObject::Update(float deltaSeconds)
 void GameObject::AddRenderable(Renderable * renderable)
 {
 	m_renderables.push_back(renderable);
-	m_transform->AddChildTransform(renderable->m_transform);
 }
 
 void GameObject::DeleteRenderables()

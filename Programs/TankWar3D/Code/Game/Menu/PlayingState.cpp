@@ -4,6 +4,7 @@
 #include "Engine\Core\LightObject.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Game\Tank.hpp"
+#include "Engine\Camera\OrbitCamera.hpp"
 
 PlayingState::~PlayingState()
 {
@@ -19,13 +20,14 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
-	//position camera behind player
-	m_camera->Translate(Vector3(0.f, 5.f, -15.f));
-	m_camera->m_skybox = new Skybox("Data/Images/galaxy2.png");
+	Camera* camera = GetCamera();
+	camera->m_transform->TranslatePosition(Vector3(0.f, 2.5f, -10.f));
 
+	//position camera behind player	
+	camera->m_skybox = new Skybox("Data/Images/galaxy2.png");
 	m_renderScene->AddCamera(m_camera);
 
-	// add light =========================================================================================
+	// add directional light =========================================================================================
 	Rgba lightColor = Rgba::WHITE;
 	LightObject* directionalLight = new LightObject("directionalLight", LIGHT_TYPE_DIRECTIONAL_LIGHT, lightColor, 0.8f, Vector3(1.f, 0.f, 0.f), 1.f, 360.f, 360.f);
 
@@ -33,6 +35,8 @@ void PlayingState::Initialize()
 	directionalLight->m_renderScene = m_renderScene;
 
 	Renderable* lightRenderable = new Renderable();
+	directionalLight->m_transform->AddChildTransform(lightRenderable->m_transform);
+
 	meshBuilder.CreateUVSphere( Vector3::ZERO, 20.f, 15, 15, Rgba::WHITE);	
 	lightRenderable->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
 	lightRenderable->SetMaterial(new Material());
@@ -50,8 +54,7 @@ void PlayingState::Initialize()
 	for (int renderableIndex = 0; renderableIndex < (int)directionalLight->m_renderables.size(); ++renderableIndex)
 	{
 		m_renderScene->AddRenderable(directionalLight->m_renderables[renderableIndex]);
-	}
-	
+	}	
 
 	// add tank =========================================================================================
 	m_playerTank = new Tank();
@@ -66,7 +69,7 @@ void PlayingState::Initialize()
 	tankRenderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("tank"));
 
 	m_playerTank->AddRenderable(tankRenderable);
-	//m_playerTank->m_transform->TranslatePosition(Vector3(0.f, 0.f, 0.f));
+	m_playerTank->m_tankBodyTransform->AddChildTransform(tankRenderable->m_transform);
 	m_playerTank->m_breadCrumbTimer = new Stopwatch(Game::GetInstance()->m_gameClock);
 	m_playerTank->m_breadCrumbTimer->SetTimer(0.5f);
 
@@ -79,19 +82,23 @@ void PlayingState::Initialize()
 	// add terrain =========================================================================================
 	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 1.f, 10.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
-	//m_terrain->m_transform->TranslatePosition(Vector3(0.0f, 0.0f, 0.0f));
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_terrain->m_renderables.size(); ++renderableIndex)
 	{
 		m_renderScene->AddRenderable(m_terrain->m_renderables[renderableIndex]);
 	}
 
+	camera = nullptr;
 	theRenderer = nullptr;	
 }
 
 void PlayingState::Update(float deltaSeconds)
 { 
+	// tank update =============================================================================
 	m_playerTank->Update(deltaSeconds);
+
+	// camera update =============================================================================
+	//UpdateGameCamera(deltaSeconds);
 }
 
 void PlayingState::PreRender()
@@ -123,9 +130,48 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	m_playerTank->UpdateFromInput(deltaSeconds);
 
+	//UpdateCameraFromInput(deltaSeconds);
+
 	//cleanup
 	theInput = nullptr;
 
 	return deltaSeconds; //new deltaSeconds
 }
 
+Camera* PlayingState::GetCamera()
+{
+	return m_camera;
+}
+
+void PlayingState::UpdateCameraFromInput(float deltaSeconds)
+{
+	/*Vector2 mouseDelta = Vector2::ZERO;		
+
+	mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
+
+	m_camera->m_rotation += mouseDelta.x * 3.f;
+	m_camera->m_azimuth = ClampFloat(camera->m_azimuth + (mouseDelta.y * 2), 15.f, 50.f);
+
+	camera->m_rotation = Modulus(camera->m_rotation, 360.f);
+	if (camera->m_rotation < 0.f)
+	{
+		camera->m_rotation += 360.f;
+	}
+
+	camera = nullptr;*/
+}
+
+void PlayingState::UpdateGameCamera(float deltaSeconds)
+{
+	/*OrbitCamera* camera = GetCamera();
+
+	camera->SetSphericalCoordinate(10.f, camera->m_rotation, camera->m_azimuth);
+
+	Vector3 tankPosition = m_playerTank->m_transform->GetWorldPosition();
+	Vector3 target = Vector3(tankPosition.x, tankPosition.y + 1.f, tankPosition.z);
+
+	camera->LookAt(target + camera->GetSphericalCoordinate(), target);
+	camera->SetView(camera->m_transform->GetWorldMatrix().InvertFastToNew());
+		
+	camera = nullptr;*/
+}

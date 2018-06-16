@@ -11,6 +11,8 @@ public:
 	Transform(Transform* parent = nullptr);
 	Transform(const Vector3& newPosition, const Vector3& newRotation, const Vector3& newScale);
 
+	~Transform();
+
 	//local setters
 	void SetLocalPosition(Vector3 position);
 	void SetLocalRotation(Vector3 rotation);

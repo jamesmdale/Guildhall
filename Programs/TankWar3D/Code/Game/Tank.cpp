@@ -10,11 +10,23 @@
 
 Tank::Tank()
 {
+	// create transforms =============================================================================
+	m_cameraPivotTransform  = new Transform();
+	m_tankBodyTransform  = new Transform();
 
+	//add children to base transform
+	m_transform->AddChildTransform(m_cameraPivotTransform);
+	m_transform->AddChildTransform(m_tankBodyTransform);
 }
 
 Tank::~Tank()
 {
+	delete(m_cameraPivotTransform);
+	m_cameraPivotTransform = nullptr;
+
+	delete(m_tankBodyTransform);
+	m_tankBodyTransform = nullptr;	
+
 	m_camera = nullptr;
 	m_playingState = nullptr;
 }
@@ -28,14 +40,15 @@ void Tank::Update(float timeDelta)
 		DebugRender::GetInstance()->CreateDebugPoint(m_transform->GetWorldPosition() + m_transform->GetWorldForward(), .25f, Rgba::GREEN, Rgba::RED, 4.f, LESS_DEPTH_TYPE, m_camera);
 	}
 	
-	Vector3 currentPosition = m_transform->GetWorldPosition();
+	Vector3 basePosition = m_transform->GetWorldPosition();
+	//Vector3 bodyRotation = m_tankBodyTransform->GetLocalRotation();
 
 	//get height and normal from terrain
-	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z)) + m_baseDimensions.y;	
-	Vector3 terrainNormal = m_playingState->m_terrain->GetNormalAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
+	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(basePosition.x, basePosition.z)) + m_baseDimensions.y;	
+	Vector3 terrainNormal = m_playingState->m_terrain->GetNormalAtPositionXZ(Vector2(basePosition.x, basePosition.z));
 
 	//calculate new basis from normal (new up)
-	Vector3 newRight = CrossProduct(terrainNormal, m_transform->GetWorldForward());
+	Vector3 newRight = CrossProduct(terrainNormal, m_tankBodyTransform->GetWorldForward());
 	Vector3 newForward = CrossProduct(newRight, terrainNormal);
 
 	//create a matrix using the new basis that we can extract the rotation from
@@ -45,27 +58,23 @@ void Tank::Update(float timeDelta)
 	newMatrix.SetKBasis(Vector4(newForward.GetNormalized(), 0.f));
 	Vector3 rotation = newMatrix.GetRotation();
 
-	//update the tank transform with it's new position and rotation
-	m_transform->SetLocalPosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));
-	m_transform->SetLocalRotation(rotation);	
+	//update the tank transform's position
+	m_transform->SetLocalPosition(Vector3(basePosition.x, heightFromTerrain, basePosition.z));
+	m_transform->SetLocalRotation(Vector3(0.f, rotation.y, 0.f));
+
+	//update the tank body's rotation
+	m_tankBodyTransform->SetLocalRotation(Vector3(rotation.x, 0.f, rotation.z));
+	//m_tankBodyTransform->AddRotation(bodyRotation);
 
 	//debug
-	DebugRender::GetInstance()->CreateDebugBasis(m_transform->GetWorldMatrix(), Vector3(currentPosition.x, currentPosition.y + 2.f, currentPosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
+	DebugRender::GetInstance()->CreateDebugBasis(m_transform->GetWorldMatrix(), Vector3(basePosition.x, basePosition.y + 2.f, basePosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
 }
 
 void Tank::SetCamera(Camera* camera)
 {
-	if(camera != nullptr)
-	{
-		if(m_camera != nullptr)
-		{
-			m_transform->RemoveChildTransform(m_camera->m_transform);	
-			m_camera = nullptr;
-		}
+	m_camera = camera;
 
-		m_camera = camera;
-		m_transform->AddChildTransform(m_camera->m_transform);
-	}
+	m_cameraPivotTransform->AddChildTransform(m_camera->m_transform);
 }
 
 void Tank::UpdateFromInput(float timeDelta)
@@ -74,24 +83,24 @@ void Tank::UpdateFromInput(float timeDelta)
 	InputSystem* theInput = InputSystem::GetInstance();
 
 	//upate from mouse
-	Vector2 mouseDelta = Vector2::ZERO;		
+	//Vector2 mouseDelta = Vector2::ZERO;		
 
-	mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
+	//mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
 
-	//calculate rotation for camera and use same rotation for tank
-	//m_transform->AddRotation(Vector3(0.f, mouseDelta.x, 0.f) * timeDelta * 10.f);
+	//// calculate rotation for camera and use same rotation for tank =============================================================================
+	//m_transform->AddRotation(Vector3(mouseDelta.y, mouseDelta.x, 0.f) * (timeDelta * 100.f));
 
-	float clampedX = ClampFloat(m_transform->GetLocalRotationAroundX(), -90.f, 90.f);
-	float clampedY = Modulus(m_transform->GetLocalRotationAroundY(), 360.f);
+	//float clampedRotationX = ClampFloat(m_transform->GetLocalRotationAroundX(), -90.f, 90.f);
+	//float clampedRotationY = Modulus(m_transform->GetLocalRotationAroundY(), 360.f);
 
-	//Vector3 rotation = Vector3(clampedX, clampedY, 0.f);
+	//Vector3 rotation = Vector3(clampedRotationX, clampedRotationY, 0.f);
 
 	//m_transform->SetLocalRotation(Vector3(rotation));
 
+	// update movement =============================================================================
 	Vector3 positionToAdd = Vector3::ZERO;
 	Vector3 positionAtStartOfFrame = positionToAdd;
 
-	//update movement
 	if(theInput->IsKeyPressed(theInput->KEYBOARD_W))
 	{
 		//calculate movement for camera and use same movement for Tank and light
