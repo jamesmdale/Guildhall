@@ -26,16 +26,6 @@ void LightObject::Update(float deltaSeconds)
 	return;
 }
 
-void LightObject::PreRender()
-{
-	//update renderable model matrix.
-	if (m_transform->IsTransformDirty())
-	{
-		UpdateRenderableFromTransform();
-		UpdateLightFromWorldTransform();
-	}
-}
-
 void LightObject::UpdateLightFromWorldTransform()
 {
 	m_light->m_lightForward = m_transform->GetWorldForward();

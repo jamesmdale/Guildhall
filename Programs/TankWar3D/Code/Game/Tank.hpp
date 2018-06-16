@@ -24,7 +24,6 @@ public:
 	virtual ~Tank() override;
 
 	virtual void Update(float deltaTime) override;
-	virtual void PreRender() override;
 
 	void SetCamera(Camera* camera);
 	void UpdateFromInput(float timeDelta);

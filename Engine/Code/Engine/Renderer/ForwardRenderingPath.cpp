@@ -46,13 +46,13 @@ void ForwardRenderingPath::RenderSceneForCamera(Camera* camera, RenderScene* sce
 		{
 			drawCall.m_meshes.push_back(renderable->GetMesh(meshIndex));
 		}
-		drawCall.m_model = renderable->GetModelMatrix();
+		drawCall.m_model = renderable->m_transform->GetWorldMatrix();
 		drawCall.m_sortingLayer = renderable->GetRenderSortLayer();
 		drawCall.m_renderType = renderable->GetMaterial()->GetRenderQueueType();
 
 		if(renderable->m_material->GetDoesUseLighting())
 		{
-			drawCall.m_contributingLights = scene->GetMostContributingLights(renderable->m_modelMatrix.GetPosition());
+			drawCall.m_contributingLights = scene->GetMostContributingLights(renderable->m_transform->GetWorldMatrix().GetPosition());
 		}	
 
 		drawCalls.push_back(drawCall);

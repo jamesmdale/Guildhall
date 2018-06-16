@@ -37,21 +37,10 @@ void GameObject::Update(float deltaSeconds)
 	return;
 }
 
-void GameObject::PreRender()
+void GameObject::AddRenderable(Renderable * renderable)
 {
-	//update renderable model matrix.
-	if(m_transform->IsTransformDirty())
-	{
-		UpdateRenderableFromTransform();
-	}	
-}
-
-void GameObject::UpdateRenderableFromTransform()
-{
-	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
-	{
-		m_renderables[renderableIndex]->SetModelMatrix(m_transform->GetWorldMatrix());
-	}
+	m_renderables.push_back(renderable);
+	m_transform->AddChildTransform(renderable->m_transform);
 }
 
 void GameObject::DeleteRenderables()

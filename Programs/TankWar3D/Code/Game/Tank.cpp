@@ -29,47 +29,29 @@ void Tank::Update(float timeDelta)
 	}
 	
 	Vector3 currentPosition = m_transform->GetWorldPosition();
-	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z)) + m_baseDimensions.y;
 
-	Vector3 newIBasis;
-	Vector3 newJBasis;
-	Vector3 newKBasis;
+	//get height and normal from terrain
+	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z)) + m_baseDimensions.y;	
+	Vector3 terrainNormal = m_playingState->m_terrain->GetNormalAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
 
-	m_playingState->m_terrain->GetNewBasisAtPositionXZ(Vector2(currentPosition.x, currentPosition.z), newIBasis, newJBasis, newKBasis);
+	//calculate new basis from normal (new up)
+	Vector3 newRight = CrossProduct(terrainNormal, m_transform->GetWorldForward());
+	Vector3 newForward = CrossProduct(newRight, terrainNormal);
 
-	Vector3 newRight = CrossProduct(newJBasis, m_transform->GetWorldForward());
-	Vector3 newForward = CrossProduct(newRight, newJBasis);
-
-	/*Matrix44 newMatrix;
+	//create a matrix using the new basis that we can extract the rotation from
+	Matrix44 newMatrix;
 	newMatrix.SetIBasis(Vector4(newRight.GetNormalized(), 0.f));
-	newMatrix.SetJBasis(Vector4(newJBasis.GetNormalized(), 0.f));
+	newMatrix.SetJBasis(Vector4(terrainNormal.GetNormalized(), 0.f));
 	newMatrix.SetKBasis(Vector4(newForward.GetNormalized(), 0.f));
-	newMatrix.SetTranslation(currentPosition);*/
+	Vector3 rotation = newMatrix.GetRotation();
 
-	//m_transform->SetIBasis(Vector4(newIBasis, 0.f));
-	//m_transform->SetJBasis(Vector4(newJBasis, 0.f));
-	//m_transform->SetKBasis(Vector4(newKBasis, 0.f));
+	//update the tank transform with it's new position and rotation
+	m_transform->SetLocalPosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));
+	m_transform->SetLocalRotation(rotation);	
 
-	m_transform->m_transformMatrix.SetIBasis(Vector4(newRight.GetNormalized(), 0.f));
-	m_transform->m_transformMatrix.SetJBasis(Vector4(newJBasis.GetNormalized(), 0.f));
-	m_transform->m_transformMatrix.SetKBasis(Vector4(newForward.GetNormalized(), 0.f));
-	m_transform->m_transformMatrix.SetTranslation(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));
-
-	//m_transform->SetLocalPosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));
-	//m_transform->SetLocalRotation(rotation);	
-
-	/*m_transform->TranslatePosition(Vector3(currentPosition.x, heightFromTerrain, currentPosition.z));*/
-
-	//DebugRender::GetInstance()->CreateDebugBasis(m_transform->m_transformMatrix, pos, 1.f, 0.f, 1.f, m_playingState->m_camera);
-	DebugRender::GetInstance()->CreateDebugBasis(m_transform->m_transformMatrix, Vector3(currentPosition.x, currentPosition.y + 2.f, currentPosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
-
+	//debug
+	DebugRender::GetInstance()->CreateDebugBasis(m_transform->GetWorldMatrix(), Vector3(currentPosition.x, currentPosition.y + 2.f, currentPosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
 }
-
-void Tank::PreRender()
-{
-	UpdateRenderableFromTransform();
-}
-
 
 void Tank::SetCamera(Camera* camera)
 {

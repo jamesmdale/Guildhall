@@ -102,7 +102,7 @@ float Terrain::GetHeightAtPositionXZ(Vector2 positionXZ)
 	return GetWorldCoorindateAtPositionXZ(positionXZ).y;
 }
 
-void Terrain::GetNewBasisAtPositionXZ(const Vector2& positionXZ, Vector3& outIBasis, Vector3& outJBasis, Vector3& outKBasis)
+Vector3 Terrain::GetNormalAtPositionXZ(const Vector2& positionXZ)
 {
 	Vector3 position = GetWorldCoorindateAtPositionXZ(positionXZ);
 
@@ -114,9 +114,7 @@ void Terrain::GetNewBasisAtPositionXZ(const Vector2& positionXZ, Vector3& outIBa
 
 	Vector3 normal = CrossProduct(du, dv);
 
-	outIBasis = dv;
-	outJBasis = normal;
-	outKBasis = du;
+	return normal;
 }
 
 

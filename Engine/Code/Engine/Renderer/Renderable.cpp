@@ -3,6 +3,7 @@
 
 Renderable::Renderable()
 {
+	m_transform = new Transform();
 }
 
 Renderable::~Renderable()
@@ -19,6 +20,9 @@ Renderable::~Renderable()
 		delete(m_material);
 		m_material = nullptr;
 	}
+
+	delete(m_transform);
+	m_transform = nullptr;
 }
 
 void Renderable::AddMesh(Mesh* mesh)
@@ -39,23 +43,6 @@ void Renderable::SetMaterial(Material* material)
 Material* Renderable::GetMaterial() const
 {
 	return m_material;
-}
-
-void Renderable::SetModelMatrix(const Matrix44& model)
-{
-	m_modelMatrix = model;
-}
-
-Matrix44 Renderable::GetModelMatrix()
-{
-	if(m_watch == nullptr)
-	{
-		return m_modelMatrix;
-	}
-
-	m_modelMatrix = m_watch->GetWorldMatrix();
-
-	return m_modelMatrix;
 }
 
 Shader* Renderable::GetShader() const

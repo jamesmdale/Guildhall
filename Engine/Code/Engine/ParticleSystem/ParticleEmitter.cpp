@@ -84,20 +84,6 @@ void ParticleEmitter::Update(float deltaSeconds)
 	m_renderable->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
 }
 
-void ParticleEmitter::PreRender()
-{
-	//update renderable model matrix.
-	if(m_transform->IsTransformDirty())
-	{
-		//UpdateRenderableFromTransform();
-	}	
-}
-
-void ParticleEmitter::UpdateRenderableFromTransform()
-{
-	m_renderable->SetModelMatrix(m_transform->GetWorldMatrix());
-}
-
 void ParticleEmitter::SpawnParticle()
 {
 	TODO("Data drive more of this later on.  Too many hardcoded things for now");

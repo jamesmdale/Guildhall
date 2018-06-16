@@ -42,10 +42,7 @@ void PlayingState::Initialize()
 
 	directionalLight->AddRenderable(lightRenderable);
 	directionalLight->m_transform->SetLocalRotation(Vector3(30.f, -90.f, 0.f));
-	directionalLight->UpdateRenderableFromTransform();
 	directionalLight->UpdateLightFromWorldTransform();
-
-	directionalLight->PreRender();
 
 	//add light to lists
 	m_renderScene->AddLight(directionalLight->m_light);
@@ -69,8 +66,7 @@ void PlayingState::Initialize()
 	tankRenderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("tank"));
 
 	m_playerTank->AddRenderable(tankRenderable);
-	tankRenderable->m_watch = m_playerTank->m_transform;
-	m_playerTank->m_transform->TranslatePosition(Vector3(0.f, 10.f, 0.f));
+	//m_playerTank->m_transform->TranslatePosition(Vector3(0.f, 0.f, 0.f));
 	m_playerTank->m_breadCrumbTimer = new Stopwatch(Game::GetInstance()->m_gameClock);
 	m_playerTank->m_breadCrumbTimer->SetTimer(0.5f);
 
@@ -83,7 +79,7 @@ void PlayingState::Initialize()
 	// add terrain =========================================================================================
 	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 1.f, 10.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
-	m_terrain->m_transform->TranslatePosition(Vector3(0.0f, -10.0f, 0.0f));
+	//m_terrain->m_transform->TranslatePosition(Vector3(0.0f, 0.0f, 0.0f));
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_terrain->m_renderables.size(); ++renderableIndex)
 	{
@@ -100,7 +96,7 @@ void PlayingState::Update(float deltaSeconds)
 
 void PlayingState::PreRender()
 {
-	m_playerTank->PreRender();
+
 }
 
 void PlayingState::Render()

@@ -62,12 +62,9 @@ public:
 
 	void Burst();
 	void Update(float deltaSeconds);
-	void PreRender();
 
 	inline int GetParticleCount() const {return (int)m_particles.size();}
 	float GetTimePerParticleSpawn();
-
-	void UpdateRenderableFromTransform();
 
 	void SpawnParticle();
 	void SpawnParticles(int count);

@@ -16,17 +16,13 @@ public:
 	void SetMaterial(Material* material);
 	Material* GetMaterial() const;
 
-	void SetModelMatrix(const Matrix44& model);
-	Matrix44 GetModelMatrix();
-
 	//convenience methods
 	Shader* GetShader() const;
 	int GetRenderSortLayer() const;
 
 public:
-	Matrix44 m_modelMatrix;
 	std::vector<Mesh*> m_meshes;
 	Material* m_material = nullptr;
-	Transform* m_watch = nullptr;
+	Transform* m_transform = nullptr; //always a child
 };
 

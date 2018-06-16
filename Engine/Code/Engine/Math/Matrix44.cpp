@@ -655,28 +655,7 @@ Matrix44 Matrix44::MakeRotationMatrix(Vector3 rotation)
 
 Vector3 Matrix44::GetRotationFromMatrix(const Matrix44& matrix)
 {
-	float xDegrees;
-	float yDegrees;
-	float zDegrees;
-
-	float sx = -1.f * matrix.Ky;
-	sx = AsinfAsDegrees(sx, 1.f);
-	sx = ClampFloat(sx, -90.f, 90.f);
-	xDegrees = sx;
-
-	float cx = CosDegrees(sx);
-	if(cx != 0.0f)
-	{
-		yDegrees = AtanfAsDegrees(matrix.Kx, matrix.Kz);
-		zDegrees = AtanfAsDegrees(matrix.Iy, matrix.Jy);
-	}
-	else
-	{
-		yDegrees = AtanfAsDegrees((-1.f * matrix.Iz), matrix.Ix);
-		zDegrees = 0.0f;
-	}
-
-	return Vector3(xDegrees, yDegrees, zDegrees);
+	return matrix.GetRotation();
 }
 
 //xyz rows

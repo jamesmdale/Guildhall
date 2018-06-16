@@ -75,7 +75,6 @@ public:
 	Matrix44 m_transformMatrix;
 
 private:
-
 	TODO("Switch to quaternions. Currently it is handled as Euler Coords");
 	Vector3 m_localPosition; //positiion x, y, z	
 	Vector3 m_localRotation; //rotation around x, y, z 

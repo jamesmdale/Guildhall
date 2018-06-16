@@ -24,9 +24,7 @@ public:
 	Vector3 GetTerrainVertexPositionAtUV(float u, float v);
 	Vector3 GetWorldCoorindateAtPositionXZ(Vector2 positionXZ);
 	float GetHeightAtPositionXZ(Vector2 positionXZ);
-	void GetNewBasisAtPositionXZ(const Vector2& positionXZ, Vector3& outIBasis, Vector3& outJBasis, Vector3& outKBasis);	
-
-	
+	Vector3 GetNormalAtPositionXZ(const Vector2& positionXZ);		
 
 public:
 	AABB2 m_uvBounds;
