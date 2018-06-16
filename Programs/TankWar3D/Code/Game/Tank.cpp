@@ -82,20 +82,22 @@ void Tank::UpdateFromInput(float timeDelta)
 	Renderer* theRenderer = Renderer::GetInstance();
 	InputSystem* theInput = InputSystem::GetInstance();
 
-	//upate from mouse
-	//Vector2 mouseDelta = Vector2::ZERO;		
+	// update mouse input =============================================================================
+	Vector2 mouseDelta = Vector2::ZERO;		
 
-	//mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
+	mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
 
-	//// calculate rotation for camera and use same rotation for tank =============================================================================
-	//m_transform->AddRotation(Vector3(mouseDelta.y, mouseDelta.x, 0.f) * (timeDelta * 100.f));
+	// calculate rotation for camera and use same rotation for tank ============================================================================
 
-	//float clampedRotationX = ClampFloat(m_transform->GetLocalRotationAroundX(), -90.f, 90.f);
-	//float clampedRotationY = Modulus(m_transform->GetLocalRotationAroundY(), 360.f);
+	m_transform->AddRotation(Vector3(0.f, mouseDelta.x, 0.f) * (timeDelta * 10.f));
+	m_cameraPivotTransform->AddRotation(Vector3(mouseDelta.y, 0.f, 0.f) * (timeDelta * 10.f));	
 
-	//Vector3 rotation = Vector3(clampedRotationX, clampedRotationY, 0.f);
+	TODO("Restrict rotation stuff");
+	/*float clampedRotationX = ClampFloat(m_cameraPivotTransform->GetLocalRotationAroundX(), -90.f, 90.f);
+	float clampedRotationY = Modulus(m_transform->GetLocalRotationAroundY(), 360.f);
 
-	//m_transform->SetLocalRotation(Vector3(rotation));
+	m_transform->SetLocalRotation(Vector3(m_transform->GetLocalRotationAroundX(), clampedRotationY, m_transform->GetLocalRotationAroundZ()));
+	m_cameraPivotTransform->SetLocalRotation(Vector3(clampedRotationX, m_transform->GetLocalRotationAroundY(), m_transform->GetLocalRotationAroundZ()));*/
 
 	// update movement =============================================================================
 	Vector3 positionToAdd = Vector3::ZERO;

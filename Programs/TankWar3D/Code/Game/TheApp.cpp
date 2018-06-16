@@ -58,7 +58,7 @@ void TheApp::Initialize()
 	//init mouse input settings
 	InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(true);
 	InputSystem::GetInstance()->GetMouse()->MouseShowCursor(false);
-	InputSystem::GetInstance()->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);	
+	InputSystem::GetInstance()->GetMouse()->SetMouseMode(MOUSE_RELATIVE_MODE);	
 
 	std::vector<Vector3> vertices;
 	std::vector<Vector2> uvs;
