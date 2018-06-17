@@ -15,7 +15,7 @@ void Terrain::GenerateMeshFromHeightMap()
 	MeshBuilder mb;	
 
 	//delete all renderables
-	DeleteRenderables();
+	DeleteRenderables();	
 	
 	mb.CreateFromSurfacePatch([this](float u, float v){ return this->GetTerrainVertexPositionAtUV(u,v); }, m_uvBounds.mins, m_uvBounds.maxs, m_heightMap->GetDimensions(), m_cellScale, Rgba::GRAY);
 	

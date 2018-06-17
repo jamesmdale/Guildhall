@@ -65,9 +65,10 @@ void PlayingState::Initialize()
 	m_playerTank->m_baseDimensions = Vector3(1.0f, 0.5f, 2.0f);
 
 	Renderable* tankRenderable = new Renderable();
-	meshBuilder.CreateCube( Vector3::ZERO, Vector3(1.0f, 0.5f, 1.5f), Rgba::WHITE);
+	meshBuilder.LoadObjectFromFile("Data/Model/claire_car/RallyFighter.obj");
 	tankRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
-	tankRenderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("tank"));
+	tankRenderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("rallyfighter"));
+	tankRenderable->m_transform->SetLocalScale(tankRenderable->m_transform->GetLocalScale() * 0.01);
 
 	m_playerTank->AddRenderable(tankRenderable);
 	m_playerTank->m_tankBodyTransform->AddChildTransform(tankRenderable->m_transform);

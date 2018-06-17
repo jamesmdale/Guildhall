@@ -59,13 +59,22 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 		{
 			if (Window::GetInstance()->GetHandle() == HWND(lParam))
 			{
-				InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(!is_active);
+				InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(!is_active);			
 			}
 			else
 			{
-				InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(is_active);
+				InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(is_active);			
 			}
-		}			
+		}	
+
+		if (is_active)
+		{
+			InputSystem::GetInstance()->m_isActiveWindow = true;
+		}
+		else
+		{
+			InputSystem::GetInstance()->m_isActiveWindow = false;
+		}
 	}
 
 	// handle left mouse button =========================================================================================

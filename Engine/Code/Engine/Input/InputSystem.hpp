@@ -27,6 +27,8 @@ public:
 
 	XboxController& GetController(int controllerId){ return m_controllers[controllerId];}
 
+public:
+	bool m_isActiveWindow = true;
 
 public:
 	static const int NUM_KEYS = 256;

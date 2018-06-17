@@ -40,8 +40,8 @@ void Mouse::UpdateMousePosition()
 
 	if (m_currentMouseMode == MOUSE_RELATIVE_MODE)
 	{
-		m_mousePositionLastFrame = theWindow->GetCenterOfClientWindow();
-		SetMousePosition(m_mousePositionLastFrame);
+		m_mousePositionLastFrame = theWindow->GetCenterOfClientWindow();		
+		SetMousePosition(m_mousePositionLastFrame);				
 	}
 }
 

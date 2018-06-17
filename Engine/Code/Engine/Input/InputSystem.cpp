@@ -165,9 +165,12 @@ Mouse* InputSystem::InputSystem::GetMouse()
 
 void InputSystem::BeginFrame()	
 {
-	UpdateKeyboard();
-	UpdateControllers();
-	UpdateMouse();
+	if (m_isActiveWindow)
+	{
+		UpdateKeyboard();
+		UpdateControllers();
+		UpdateMouse();		
+	}
 	RunMessagePump();
 }							
 
