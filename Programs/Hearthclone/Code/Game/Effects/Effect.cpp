@@ -4,9 +4,11 @@
 #include "Game\GameStates\PlayingState.hpp"
 #include <stdlib.h>
 #include <queue>
+#include "Engine\Time\Clock.hpp"
 
 std::map<std::string, EffectCallback> s_registeredEffects;
 std::queue<EffectData> EffectQueue;
+Stopwatch* currentEffectStopwatch = nullptr;
 
 // genereal functions =============================================================================
 
@@ -33,9 +35,9 @@ std::vector<std::string> GetRegisteredEffectList()
 	return registeredEffectNames;
 }
 
-EffectCallback GetEffectCallbackFromRegisteredListByName(const std::string & actionName)
+EffectCallback GetEffectCallbackFromRegisteredListByName(const std::string & effectName)
 {
-	std::map<std::string, EffectCallback>::iterator iterator = s_registeredEffects.find(actionName);
+	std::map<std::string, EffectCallback>::iterator iterator = s_registeredEffects.find(effectName);
 
 	return iterator->second;
 }
@@ -48,7 +50,7 @@ void ProcessEffectQueue()
 	if(GetEffectQueueCount() != 0)
 	{
 		EffectData effect = EffectQueue.front();
-		bool success = effect.callback(effect.parameters, GetMasterDeltaSeconds());
+		bool success = effect.callback(effect.targetWidget, effect.parameters, GetMasterDeltaSeconds());
 		if (success == true)
 		{
 			EffectQueue.pop(); //fifo
@@ -66,46 +68,37 @@ void AddEffectToEffectQueue(const EffectData& action)
 	EffectQueue.push(action);
 }
 
-void AddEffectToEffectQueue(EffectCallback callback, const std::map<std::string, std::string>& parameters)
+void AddEffectToEffectQueue(const std::string & callbackName, Widget * targetWidget, const std::map<std::string, std::string> parameters)
+{
+	EffectData data = EffectData(callbackName, targetWidget, parameters);
+	EffectQueue.push(data);
+}
+
+void AddEffectToEffectQueue(EffectCallback callback, Widget* targetWidget, const std::map<std::string, std::string>& parameters)
 {
 	EffectData data;
+	
 	data.callback = callback;
+	data.targetWidget = targetWidget;
 	data.parameters = parameters;
 
 	EffectQueue.push(data);
 }
 
-// effects =============================================================================
-
-//template
-/*	TEMPLATE
-void DoStuff(const std::map<std::string, std::string>& parameters, float deltaSeconds)
+Stopwatch* SetNewStopwatch(float timer)
 {
-// Get Parameters =============================================================================
-std::string thing1 = parameters.find("thing")->second;
-int thing2 = atoi(parameters.find("thing2")->second.c_str());
+	currentEffectStopwatch = new Stopwatch(GetMasterClock());
+	currentEffectStopwatch->SetTimer(timer);
 
-// Process Function =============================================================================		
-}
-*/
-
-bool DrawEffect(const std::map<std::string, std::string>& parameters, float deltaSeconds)
-{
-	static bool isComplete = false;
-	
-	//do something over time
-
-	isComplete = true;
-
-	return isComplete;
+	return currentEffectStopwatch;
 }
 
-bool AttackEffect(const std::map<std::string, std::string>& parameters, float deltaSeconds)
+void ClearStopwatch()
 {
-	// Get Parameters =============================================================================
-	std::string attackTarget = parameters.find("target")->second;
+	currentEffectStopwatch = nullptr;
+}
 
-	// Process Function =============================================================================		
-
-	return true;
+Stopwatch* GetStopwatch()
+{
+	return currentEffectStopwatch;
 }

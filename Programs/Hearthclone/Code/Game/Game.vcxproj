@@ -293,10 +293,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actions\Action.cpp" />
+    <ClCompile Include="Actions\ActionList.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Definitions\DeckDefinition.cpp" />
     <ClCompile Include="Definitions\CardDefinition.cpp" />
     <ClCompile Include="Effects\Effect.cpp" />
+    <ClCompile Include="Effects\EffectList.cpp" />
     <ClCompile Include="Entity\Character.cpp" />
     <ClCompile Include="Entity\Card.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -313,7 +315,7 @@
     <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="Entity\Minion.cpp" />
     <ClCompile Include="TheApp.cpp" />
-    <ClCompile Include="Trigger.cpp" />
+    <ClCompile Include="Triggers\Trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engine\Code\Engine\Engine.vcxproj">
@@ -342,7 +344,7 @@
     <ClInclude Include="Entity\Hero.hpp" />
     <ClInclude Include="Definitions\HeroDefinition.hpp" />
     <ClInclude Include="TheApp.hpp" />
-    <ClInclude Include="Trigger.hpp" />
+    <ClInclude Include="Triggers\Trigger.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

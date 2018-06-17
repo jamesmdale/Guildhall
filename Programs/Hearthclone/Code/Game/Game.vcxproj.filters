@@ -61,9 +61,6 @@
     <ClCompile Include="Definitions\HeroDefinition.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Trigger.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="Definitions\DeckDefinition.cpp">
       <Filter>General</Filter>
     </ClCompile>
@@ -71,6 +68,15 @@
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Effects\Effect.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Triggers\Trigger.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions\ActionList.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Effects\EffectList.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,9 +107,9 @@
     <ClInclude Include="Entity\Hero.hpp" />
     <ClInclude Include="Definitions\CardDefinition.hpp" />
     <ClInclude Include="Definitions\HeroDefinition.hpp" />
-    <ClInclude Include="Trigger.hpp" />
     <ClInclude Include="Definitions\DeckDefinition.hpp" />
     <ClInclude Include="Actions\Action.hpp" />
     <ClInclude Include="Effects\Effect.hpp" />
+    <ClInclude Include="Triggers\Trigger.hpp" />
   </ItemGroup>
 </Project>

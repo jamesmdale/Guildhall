@@ -297,14 +297,14 @@ void Material::AddShaderBindingToPropertyList(const Binding& binding)
 
 	if(binding.m_dataType == "int")
 	{
-		int val = atoi(binding.m_value.c_str());
+		int val = ConvertStringToInt(binding.m_value);
 		SetProperty(binding.m_bindingName, val);
 		return;
 	}
 
 	if(binding.m_dataType == "float")
 	{
-		float val = atof(binding.m_value.c_str());
+		float val = ConvertStringToFloat(binding.m_value);
 		SetProperty(binding.m_bindingName, val);
 		return;
 	}

@@ -23,6 +23,7 @@
 #include <string>
 #include "Game\Definitions\DeckDefinition.hpp"
 #include "Game\Actions\Action.hpp"
+#include "Game\Effects\Effect.hpp"
 
 //game instance
 static Game* g_theGame = nullptr;
@@ -98,6 +99,9 @@ void Game::Initialize()
 
 	//register actions ==============================================================================
 	RegisterAllActions();
+
+	// register effects =========================================================================================
+	RegisterAllEffects();
 
 	// cleanup =============================================================================
 	theRenderer = nullptr;

@@ -4,9 +4,11 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "Engine\Core\Widget.hpp"
+#include "Engine\Time\Stopwatch.hpp"
 
 
-typedef bool (*EffectCallback)(const std::map<std::string, std::string>& parameters, float deltaSeconds);
+typedef bool (*EffectCallback)(Widget* targetWidget, const std::map<std::string, std::string>& parameters, float deltaSeconds);
 
 /*	EXAMPLE : Effect layout
 
@@ -15,30 +17,42 @@ bool Func(const std::map<std::string, std::string>& pararmeters);
 
 // convenience functions =============================================================================
 void RegisterAllEffects();
-void RegisterEffect(std::string name, EffectCallback action);
+void RegisterEffect(std::string name, EffectCallback effect);
 std::vector<std::string> GetRegisteredEffectList();
-EffectCallback GetEffectCallbackFromRegisteredListByName(const std::string& actionName);
+EffectCallback GetEffectCallbackFromRegisteredListByName(const std::string& effectName);
 
 struct EffectData
 {
 	EffectData() {};
-	EffectData(const std::string& functionName, const std::map<std::string, std::string> functionParameters)
+	EffectData(const EffectCallback callbackFunction, Widget* widget, const std::map<std::string, std::string> functionParameters)
 	{
-		name = functionName;
+		callback = callbackFunction;
+		parameters = functionParameters;
+		targetWidget = widget;		
+	}
+
+	EffectData( const std::string& functionName, Widget* widget, const std::map<std::string, std::string> functionParameters)
+	{		
+		targetWidget = widget;
 		parameters = functionParameters;
 		callback = GetEffectCallbackFromRegisteredListByName(functionName);
 	}
 
-	std::string name;
+	Widget* targetWidget;
 	std::map<std::string, std::string> parameters;
 	EffectCallback callback;
 };
 
-// RefereeQueue functions =========================================================================================
+// EffectQueue functions =========================================================================================
 void ProcessEffectQueue();
 int GetEffectQueueCount();
-void AddEffectToEffectQueue(const EffectData& action);
-void AddEffectToEffectQueue(EffectCallback function, const std::map<std::string, std::string>&);
+void AddEffectToEffectQueue(const EffectData& effect);
+void AddEffectToEffectQueue(const std::string& callbackName, Widget* targetWidget, const std::map<std::string, std::string> parameters);
+void AddEffectToEffectQueue(EffectCallback function, Widget* targetWidget, const std::map<std::string, std::string>& params);
+
+Stopwatch* SetNewStopwatch(float timer);
+void ClearStopwatch();
+Stopwatch* GetStopwatch();
 
 // action list =============================================================================
 
@@ -56,9 +70,9 @@ return complete
 }
 */
 
-bool DrawEffect(const std::map<std::string, std::string>& parameters, float deltaSeconds);
+bool DrawEffect(Widget* targetWidget, const std::map<std::string, std::string>& parameters, float deltaSeconds);
 
-bool AttackEffect(const std::map<std::string, std::string>& parameters, float deltaSeconds);
+bool AttackEffect(Widget* targetWidget, const std::map<std::string, std::string>& parameters, float deltaSeconds);
 
 
 

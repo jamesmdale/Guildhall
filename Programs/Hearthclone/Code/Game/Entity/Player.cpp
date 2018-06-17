@@ -59,6 +59,7 @@ void Player::LoadDeckFromDefinitionName(const std::string& deckName)
 	for (int cardIndex = 0; cardIndex < (int)deck->m_cardNames.size(); ++cardIndex)
 	{
 		Card* cardToAdd = new Card(CardDefinition::GetDefinitionByName(deck->m_cardNames[cardIndex]));
+		cardToAdd->m_renderScene = m_gameState->m_renderScene2D;
 		m_deck.push_back(cardToAdd);
 		cardToAdd = nullptr;
 	}
@@ -121,11 +122,7 @@ void Player::UpdateHandLockPositions()
 		}
 		
 		m_hand[cardIndex]->m_lockPosition = Vector2(handDockWidthPerCard * (cardIndex + 1), handDockCenterHeight);
-
-		if (m_hand[cardIndex]->m_isPositionLocked)
-		{
-			m_hand[cardIndex]->m_transform2D->SetLocalPosition(m_hand[cardIndex]->m_lockPosition);		
-		}		
+		m_hand[cardIndex]->m_isPositionLocked = true;		
 	}
 
 	// cleanup =============================================================================

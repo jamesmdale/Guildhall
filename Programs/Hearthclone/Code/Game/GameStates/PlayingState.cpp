@@ -68,18 +68,19 @@ void PlayingState::Update(float deltaSeconds)
 	// process queues =========================================================================================
 	ProcessEffectQueue();
 	ProcessRefereeQueue();
+		
 
 	// update enemy =============================================================================
-	for (int cardIndex = 0; cardIndex < (int)m_enemyPlayer->m_hand.size(); ++cardIndex)
-	{
-		m_enemyPlayer->m_hand[cardIndex]->Update(deltaSeconds);
-	}
+	//for (int cardIndex = 0; cardIndex < (int)m_enemyPlayer->m_hand.size(); ++cardIndex)
+	//{
+	//	m_enemyPlayer->m_hand[cardIndex]->Update(deltaSeconds);
+	//}
 
-	// update self =============================================================================
-	for (int cardIndex = 0; cardIndex < (int)m_player->m_hand.size(); ++cardIndex)
-	{
-		m_player->m_hand[cardIndex]->Update(deltaSeconds);
-	}
+	//// update self =============================================================================
+	//for (int cardIndex = 0; cardIndex < (int)m_player->m_hand.size(); ++cardIndex)
+	//{
+	//	m_player->m_hand[cardIndex]->Update(deltaSeconds);
+	//}
 }
 
 void PlayingState::PreRender()

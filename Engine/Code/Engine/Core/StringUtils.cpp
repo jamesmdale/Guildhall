@@ -112,7 +112,10 @@ void RemoveStringsStartingWithString(std::vector<std::string>& outStrings, const
 	}
 }
 
-int ConvertStringToInt(std::string convertString)
+
+// conversions =========================================================================================
+
+int ConvertStringToInt(const std::string& convertString)
 {
 	int returnVal = stoi(convertString);
 	if(returnVal != NULL)
@@ -123,7 +126,7 @@ int ConvertStringToInt(std::string convertString)
 	return NULL;
 }
 
-float ConvertStringToFloat(std::string convertString)
+float ConvertStringToFloat(const std::string& convertString)
 {
 	float returnVal = stof(convertString);
 	if(returnVal != NULL)
@@ -134,7 +137,7 @@ float ConvertStringToFloat(std::string convertString)
 	return NULL;
 }
 
-bool ConvertStringToBool(std::string convertString)
+bool ConvertStringToBool(const std::string& convertString)
 {
 	if(convertString != "")
 	{
@@ -152,7 +155,19 @@ bool ConvertStringToBool(std::string convertString)
 	return NULL;
 }
 
-Rgba ConvertStringToRGBA(std::string convertString)
+Vector2 ConvertStringToVector2(const std::string & convertString)
+{
+	std::vector<std::string> floats = SplitStringOnCharacter(convertString, ',');
+	
+	GUARANTEE_OR_DIE((int)floats.size() == 2, "IMPROPER CONVERSION OF STRING TO VECTOR2");
+
+	float x = ConvertStringToFloat(floats[0]);
+	float y = ConvertStringToFloat(floats[1]);
+
+	return Vector2(x, y);
+}
+
+Rgba ConvertStringToRGBA(const std::string& convertString)
 {
 	std::string str(convertString);	
 	int delimiterIndexFirst = (int)str.find(',');

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Engine\Core\Rgba.hpp"
+#include "Engine\Math\Vector2.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -17,11 +18,12 @@ void ReplaceCharacterOccurances(std::string & outString, const char characterToR
 void RemoveMatchingStrings(std::vector<std::string>& outStrings, const std::string& matchingString);
 void RemoveStringsStartingWithString(std::vector<std::string>& outStrings, const std::string& startingString );
 
-//conversions
-int ConvertStringToInt(std::string convertString);
-float ConvertStringToFloat(std::string convertString);
-Rgba ConvertStringToRGBA(std::string convertString);
-bool ConvertStringToBool(std::string convertString);
+//conversions from string
+int ConvertStringToInt(const std::string& convertString);
+float ConvertStringToFloat(const std::string& convertString);
+Rgba ConvertStringToRGBA(const std::string& convertString);
+bool ConvertStringToBool(const std::string&convertString);
+Vector2 ConvertStringToVector2(const std::string& convertString);
 void ToLower(std::string& convertString);
 std::string ToLowerAsNew(const std::string & converString);
 
