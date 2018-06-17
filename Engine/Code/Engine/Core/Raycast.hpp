@@ -3,13 +3,21 @@
 
 struct Ray3
 {
-	Vector3 start;
-	Vector3 direction;
+	Ray3(){};
+	Ray3(const Vector3& startPosition, const Vector3& rayDirection)
+	{
+		start = startPosition;
+		direction = rayDirection;
+	}
 
 	Vector3 Evaluate(float t) const
 	{
 		return start + (direction * t);
 	}
+
+	// members 
+	Vector3 start;
+	Vector3 direction;
 };
 
 struct RayCastHit3
@@ -22,7 +30,8 @@ struct RayCastHit3
 		normal = normalAtHit;
 	}
 
-	bool hit;
+	// members 
+	bool hit = false;
 	Vector3 position;
 	Vector3 normal;
 };

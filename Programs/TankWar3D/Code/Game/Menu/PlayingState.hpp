@@ -1,7 +1,7 @@
 #pragma once
 #include "Game\Menu\MenuState.hpp"
 #include "Engine\Core\Terrain.hpp"
-#include "Engine\Camera\OrbitCamera.hpp"
+#include "Engine\Core\Raycast.hpp"
 
 class Tank;
 class PlayingState : public GameState
@@ -22,11 +22,9 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
-	void UpdateGameCamera(float deltaSeconds);
+	void UpdateTarget(float deltaSeconds);
 
-	Camera* GetCamera();
-
-	void UpdateCameraFromInput(float deltaSeconds);
+	RayCastHit3 RaycastFromCamera(float deltaSeconds);
 
 public:
 	Tank* m_playerTank = nullptr;

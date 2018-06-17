@@ -52,5 +52,6 @@ public:
 	PlayingState* m_playingState = nullptr;
 	
 	Vector3 m_baseDimensions;
+	Vector3 m_currentTarget;
 };
 

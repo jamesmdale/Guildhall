@@ -7,7 +7,7 @@
 #include "Engine\Debug\DebugRenderObject.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Debug\DebugRender.cpp"
-
+#include "Engine\Window\Window.hpp"
 Tank::Tank()
 {
 	// create transforms =============================================================================
@@ -67,7 +67,9 @@ void Tank::Update(float timeDelta)
 	//m_tankBodyTransform->AddRotation(bodyRotation);
 
 	//debug
-	DebugRender::GetInstance()->CreateDebugBasis(m_transform->GetWorldMatrix(), Vector3(basePosition.x, basePosition.y + 2.f, basePosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
+	DebugRender::GetInstance()->CreateDebugBasis(m_transform->GetWorldMatrix(), Vector3(basePosition.x, basePosition.y + 0.5f, basePosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
+
+	DebugRender::GetInstance()->CreateDebugCrosshair2D(Window::GetInstance()->GetCenterOfClientWindow(), Rgba::GREEN, Rgba::GREEN, 0.0f, 1);
 }
 
 void Tank::SetCamera(Camera* camera)

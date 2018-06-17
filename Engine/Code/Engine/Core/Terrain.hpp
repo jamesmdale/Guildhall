@@ -2,6 +2,7 @@
 #include "Engine\Math\AABB2.hpp"
 #include "Engine\Math\Vector3.hpp"
 #include "Engine\Math\Vector2.hpp"
+#include "Engine\Math\AABB3.hpp"
 
 class Terrain : public GameObject
 {
@@ -31,6 +32,8 @@ public:
 	float m_heightScale;
 	float m_cellScale;
 	Image* m_heightMap = nullptr;
+
+	AABB3 m_worldBounds;
 };
 
 

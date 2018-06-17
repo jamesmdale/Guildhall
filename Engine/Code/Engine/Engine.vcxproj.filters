@@ -259,6 +259,9 @@
     <ClCompile Include="Math\Segment3.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Math\AABB3.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -364,6 +367,7 @@
     <ClInclude Include="Core\Raycast.hpp" />
     <ClInclude Include="Math\Plane.hpp" />
     <ClInclude Include="Math\Segment3.hpp" />
+    <ClInclude Include="Math\AABB3.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

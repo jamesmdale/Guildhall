@@ -5,6 +5,8 @@
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Game\Tank.hpp"
 #include "Engine\Camera\OrbitCamera.hpp"
+#include "Engine\Core\StringUtils.hpp"
+
 
 PlayingState::~PlayingState()
 {
@@ -20,11 +22,10 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
-	Camera* camera = GetCamera();
-	camera->m_transform->TranslatePosition(Vector3(0.f, 2.5f, -10.f));
+	m_camera->m_transform->TranslatePosition(Vector3(0.f, 2.5f, -10.f));
 
 	//position camera behind player	
-	camera->m_skybox = new Skybox("Data/Images/galaxy2.png");
+	m_camera->m_skybox = new Skybox("Data/Images/galaxy2.png");
 	m_renderScene->AddCamera(m_camera);
 
 	// add directional light =========================================================================================
@@ -80,7 +81,7 @@ void PlayingState::Initialize()
 	}
 
 	// add terrain =========================================================================================
-	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 1.f, 10.f, "Data/Images/terrain.jpg");
+	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 2.f, 10.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_terrain->m_renderables.size(); ++renderableIndex)
@@ -88,7 +89,6 @@ void PlayingState::Initialize()
 		m_renderScene->AddRenderable(m_terrain->m_renderables[renderableIndex]);
 	}
 
-	camera = nullptr;
 	theRenderer = nullptr;	
 }
 
@@ -97,8 +97,7 @@ void PlayingState::Update(float deltaSeconds)
 	// tank update =============================================================================
 	m_playerTank->Update(deltaSeconds);
 
-	// camera update =============================================================================
-	//UpdateGameCamera(deltaSeconds);
+	UpdateTarget(deltaSeconds);
 }
 
 void PlayingState::PreRender()
@@ -130,7 +129,6 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	m_playerTank->UpdateFromInput(deltaSeconds);
 
-	//UpdateCameraFromInput(deltaSeconds);
 
 	//cleanup
 	theInput = nullptr;
@@ -138,40 +136,50 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	return deltaSeconds; //new deltaSeconds
 }
 
-Camera* PlayingState::GetCamera()
+void PlayingState::UpdateTarget(float deltaSeconds)
 {
-	return m_camera;
+	RayCastHit3 raycastResult = RaycastFromCamera(deltaSeconds);
+
+	Vector3 raycastRenderStartPosition = m_playerTank->m_transform->GetLocalPosition() + (m_playerTank->m_transform->GetWorldUp());
+
+	DebugRender::GetInstance()->CreateDebugLine(m_playerTank->m_transform->GetWorldPosition(), raycastResult.position, Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
+	DebugRender::GetInstance()->CreateDebugCube(raycastResult.position, Vector3(1.f, 1.f, 1.f), Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
 }
 
-void PlayingState::UpdateCameraFromInput(float deltaSeconds)
+RayCastHit3 PlayingState::RaycastFromCamera(float deltaSeconds)
 {
-	/*Vector2 mouseDelta = Vector2::ZERO;		
+	RayCastHit3 raycast;
 
-	mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
+	Vector3 cameraForward = m_camera->m_transform->GetWorldForward();
+//	DebugRender::GetInstance()->CreateDebugCube(m_camera->m_transform->GetWorldPosition() + (10.f *  m_camera->m_transform->GetWorldForward()), Vector3::ONE, Rgba::BLUE, Rgba::BLUE, 0.f, 1, m_camera);
 
-	m_camera->m_rotation += mouseDelta.x * 3.f;
-	m_camera->m_azimuth = ClampFloat(camera->m_azimuth + (mouseDelta.y * 2), 15.f, 50.f);
+	Vector3 position = m_camera->m_transform->GetWorldPosition();
+	Ray3 ray = Ray3(m_camera->m_transform->GetWorldPosition() + cameraForward * 5.f, cameraForward);
 
-	camera->m_rotation = Modulus(camera->m_rotation, 360.f);
-	if (camera->m_rotation < 0.f)
+	float currentDistance = 0.f;
+	float maxDistance = 50.f;
+
+	Vector3 currentPosition = ray.start;
+
+	while (currentDistance < maxDistance)
 	{
-		camera->m_rotation += 360.f;
+		currentDistance += deltaSeconds;
+
+		currentPosition = ray.Evaluate(currentDistance);
+
+		float heightAtPosition = m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
+		if (currentPosition.y <= heightAtPosition)
+		{
+			raycast.hit = true;
+			raycast.position = Vector3(currentPosition.x, heightAtPosition, currentPosition.z);
+			return raycast;
+		}
 	}
 
-	camera = nullptr;*/
-}
+	if (raycast.hit == false)
+	{
+		raycast.position = currentPosition;
+	}
 
-void PlayingState::UpdateGameCamera(float deltaSeconds)
-{
-	/*OrbitCamera* camera = GetCamera();
-
-	camera->SetSphericalCoordinate(10.f, camera->m_rotation, camera->m_azimuth);
-
-	Vector3 tankPosition = m_playerTank->m_transform->GetWorldPosition();
-	Vector3 target = Vector3(tankPosition.x, tankPosition.y + 1.f, tankPosition.z);
-
-	camera->LookAt(target + camera->GetSphericalCoordinate(), target);
-	camera->SetView(camera->m_transform->GetWorldMatrix().InvertFastToNew());
-		
-	camera = nullptr;*/
+	return raycast;
 }
