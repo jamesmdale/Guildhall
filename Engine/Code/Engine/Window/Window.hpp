@@ -19,8 +19,8 @@ public:
 	static Window* GetInstance();
 	AABB2 GetClientWindow();
 	Vector2 GetCenterOfClientWindow();	
-	float GetClientWidth() { return m_clientHeight;};
-	float GetClientHeight() { return m_clientWidth;};
+	float GetClientWidth() { return m_clientWidth;};
+	float GetClientHeight() { return m_clientHeight;};
 	Vector2 GetClientDimensions(){return Vector2(m_clientWidth, m_clientHeight);};
 	float GetClientAspectRatio() { return m_clientHeight;};
 

@@ -75,6 +75,9 @@ void Card::RefreshCardRenderables()
 	Window* clientWindow = Window::GetInstance();
 	MeshBuilder mb;
 
+	/*float cardHeight = g_cardPercentageOfClientWindowHeight * clientWindow->GetClientHeight();
+	float cardWidth = cardHeight * g_cardAspectRatio;*/
+
 	float cardHeight = g_cardPercentageOfClientWindowHeight * clientWindow->GetClientHeight();
 	float cardWidth = cardHeight * g_cardAspectRatio;
 

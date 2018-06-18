@@ -9,6 +9,7 @@
 #include "Game\Effects\Effect.hpp"
 #include <map>
 #include <string>
+#include "Engine\Core\StringUtils.hpp"
 
 Widget* currentSelectedWidget = nullptr;
 
@@ -124,7 +125,6 @@ void PlayingState::PostRender()
 
 float PlayingState::UpdateFromInput(float deltaSeconds)
 {
-	return deltaSeconds;
 	InputSystem* theInput = InputSystem::GetInstance();
 	std::string mouseText = "NONE";
 
@@ -201,7 +201,7 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 		AddActionToRefereeQueue("draw", parameters);
 	}
 
-	DebugRender::GetInstance()->CreateDebugText2D(Vector2(Window::GetInstance()->m_clientWidth - 300, Window::GetInstance()->m_clientHeight - 20), 20.f, 1.f, mouseText, Rgba::WHITE, Rgba::WHITE, 0.f, ALWAYS_DEPTH_TYPE);
+	DebugRender::GetInstance()->CreateDebugText2D(Vector2(Window::GetInstance()->m_clientWidth - 300, Window::GetInstance()->m_clientHeight - 20), 20.f, 1.f, Stringf("%f, %f", mouseCoordinates.x, mouseCoordinates.y).c_str(), Rgba::WHITE, Rgba::WHITE, 0.f, ALWAYS_DEPTH_TYPE);
 
 	// cleanup =========================================================================================
 	for (int widgetIndex = 0; widgetIndex < (int)interactableWidgets.size(); ++widgetIndex)
@@ -275,17 +275,17 @@ Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactable
 	{
 		Widget* widget = interactableWidgets[widgetIndex];
 		Vector2 position = widget->m_transform2D->GetWorldPosition();
-		AABB2 widgetBounds = AABB2(position, widget->m_dimensionsInPixels.x * 0.5f, widget->m_dimensionsInPixels.y * 0.5f);
-		
+		AABB2 widgetBounds = AABB2(position, widget->m_dimensionsInPixels.x, widget->m_dimensionsInPixels.y);
+
 		if (widgetBounds.IsPointInside(mousePosition) == true)
 		{
-			if (selectedWidget == nullptr)
+			if (selectedWidget == nullptr )
 			{
 				selectedWidget = widget;
 			}
-			else
+			else if (widget->m_sortLayer > selectedWidget->m_sortLayer)
 			{
-				//if(widget->)
+				selectedWidget = widget;
 			}
 		}
 
