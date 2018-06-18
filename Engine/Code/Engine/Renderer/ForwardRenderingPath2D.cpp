@@ -37,38 +37,32 @@ void ForwardRenderingPath2D::RenderSceneForCamera(Camera* camera, RenderScene2D*
 	{
 		DrawCallData2D drawCall;
 
-		drawCall.m_material = renderable->GetMaterial();
+		for (int dataIndex = 0; dataIndex < (int)renderable->m_renderableData.size(); ++dataIndex)
+		{		
+			drawCall.m_renderableData.push_back(renderable->m_renderableData[dataIndex]);
+			drawCall.m_model = renderable->GetModelMatrix();
+			drawCall.m_sortingLayer = renderable->m_widgetSortLayer;
 
-		for (int meshIndex = 0; meshIndex < (int)renderable->m_meshes.size(); ++meshIndex)
-		{
-			drawCall.m_meshes.push_back(renderable->GetMesh(meshIndex));
-		}
-
-		drawCall.m_model = renderable->GetModelMatrix();
-		drawCall.m_sortingLayer = renderable->GetRender2DSortLayer();
-
-		drawCalls.push_back(drawCall);
+			drawCalls.push_back(drawCall);
+		}	
 	}
 
 	SortDrawsBySortOrder(drawCalls);
 
 	for (DrawCallData2D drawCall : drawCalls)
 	{	
-		for (int meshIndex = 0; meshIndex < (int)drawCall.m_meshes.size(); ++meshIndex)
+		for (int dataIndex = 0; dataIndex < (int)drawCall.m_renderableData.size(); ++dataIndex)
 		{
-			if (drawCall.m_meshes[meshIndex] != nullptr)
+			theRenderer->BindMaterial(drawCall.m_renderableData[dataIndex]->m_material);
+
+			int handle = drawCall.m_renderableData[dataIndex]->m_material->GetShaderProgramHandle();
+			if (handle > -1)
 			{
-				theRenderer->BindMaterial(drawCall.m_material);
-
-				int handle = drawCall.m_material->GetShaderProgramHandle();
-				if (handle > -1)
-				{
-					Vector3 cameraPosition = camera->m_transform->GetWorldPosition();
-					theRenderer->SetVector3Uniform(handle, "EYE_POSITION", cameraPosition);
-				}
-
-				theRenderer->DrawMesh(drawCall.m_meshes[meshIndex], drawCall.m_model);
+				Vector3 cameraPosition = camera->m_transform->GetWorldPosition();
+				theRenderer->SetVector3Uniform(handle, "EYE_POSITION", cameraPosition);
 			}
+
+			theRenderer->DrawMesh(drawCall.m_renderableData[dataIndex]->m_mesh, drawCall.m_model);			
 		}
 	}
 

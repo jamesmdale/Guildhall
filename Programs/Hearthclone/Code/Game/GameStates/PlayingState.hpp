@@ -23,6 +23,9 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
+	std::vector<Widget*> GetInteractableWidgets();
+	Widget* GetSelectedWidget(const std::vector<Widget*>& interactableWidgets);
+
 public:
 	Board* m_gameBoard = nullptr;
 	Stopwatch* m_gameTime = nullptr;
@@ -30,6 +33,8 @@ public:
 	//player contains hand, graveyard, their side of the battlefield, and their class
 	Player* m_player = nullptr;
 	Player* m_enemyPlayer = nullptr; 
+
+	Widget* m_currentSelectedWidget = nullptr;
 	
 	int activePlayerID;
 	int turnCount;

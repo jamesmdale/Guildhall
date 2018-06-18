@@ -7,39 +7,37 @@ Renderable2D::Renderable2D()
 
 Renderable2D::~Renderable2D()
 {
-	for (int meshIndex = 0; meshIndex < (int)m_meshes.size(); ++meshIndex)
+	for (int dataIndex = 0; dataIndex < (int)m_renderableData.size(); ++dataIndex)
 	{
-		delete(m_meshes[meshIndex]);
-		m_meshes[meshIndex] = nullptr;
+		delete(m_renderableData[dataIndex]);
+		m_renderableData[dataIndex] = nullptr;
 	}	
-	m_meshes.clear();
+	m_renderableData.clear();
+}
 
-	if (m_material->m_isInstance)
-	{
-		delete(m_material);
-		m_material = nullptr;
-	}
+void Renderable2D::AddRenderableData(int sortLayer, Mesh* mesh, Material* material)
+{
+	RenderableData* data = new RenderableData(sortLayer, mesh, material);
+	m_renderableData.push_back(data);
+
+	//cleanup
+	data = nullptr;
+}
+
+void Renderable2D::AddRenderableData(RenderableData* data)
+{
+	m_renderableData.push_back(data);
 }
 	
 
-void Renderable2D::AddMesh(Mesh* mesh)
+Mesh* Renderable2D::GetMesh(int index) const
 {
-	m_meshes.push_back(mesh);
+	return m_renderableData[index]->m_mesh;
 }
 
-Mesh* Renderable2D::GetMesh(int meshIndex) const
+Material* Renderable2D::GetMaterial(int index) const
 {
-	return m_meshes[meshIndex];
-}
-
-void Renderable2D::SetMaterial(Material* material)
-{
-	m_material = material;
-}
-
-Material* Renderable2D::GetMaterial() const
-{
-	return m_material;
+	return m_renderableData[index]->m_material;
 }
 
 void Renderable2D::SetModelMatrix(const Matrix44& model)
@@ -49,29 +47,16 @@ void Renderable2D::SetModelMatrix(const Matrix44& model)
 
 Matrix44 Renderable2D::GetModelMatrix()
 {
-	if(m_watch == nullptr)
-	{
-		return m_modelMatrix;
-	}
-
-	m_modelMatrix = m_watch->GetWorldMatrix();
-
 	return m_modelMatrix;
 }
 
-Shader* Renderable2D::GetShader() const
+Shader* Renderable2D::GetShader(int index) const
 {
-	return m_material->GetShader();
+	return m_renderableData[index]->m_material->m_shader;
 }
 
-void Renderable2D::SetRender2DSortLayer(const int sortLayer)
+void Renderable2D::SetWidgetSortLayer(int sortLayer)
 {
-	m_sortLayer = sortLayer;
+	m_widgetSortLayer = sortLayer;
 }
-
-int Renderable2D::GetRender2DSortLayer() const
-{
-	return m_sortLayer;
-}
-
 

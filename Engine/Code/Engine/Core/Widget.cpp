@@ -4,6 +4,7 @@
 Widget::Widget()
 {
 	m_transform2D = new Transform2D();
+	m_sortLayer = 0;
 }
 
 Widget::~Widget()
@@ -30,12 +31,14 @@ Widget::Widget(std::string name)
 {
 	m_name = name;
 	m_transform2D = new Transform2D();
+	m_sortLayer = 0;
 }
 
 Widget::Widget(std::string name, Renderable2D* renderable2D)
 {
 	m_name = name;
 	m_transform2D = new Transform2D();
+	m_sortLayer = 0;
 }
 
 void Widget::Initialize()
@@ -79,4 +82,16 @@ void Widget::DeleteRenderables()
 	m_renderables.clear();
 }
 
+//handle mouse input
+void Widget::OnLeftReleased(){}
+void Widget::OnRightReleased(){}
+
+void Widget::OnLeftClicked(){}
+void Widget::OnRightClicked(){}
+
+void Widget::OnDoubleClickedLeft(){}
+void Widget::OnDoubleClickedRight(){}
+
+void Widget::OnLeftDragged(){}
+void Widget::OnRightDragged(){}
 

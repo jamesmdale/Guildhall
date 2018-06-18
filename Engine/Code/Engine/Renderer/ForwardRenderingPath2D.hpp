@@ -4,10 +4,16 @@
 
 struct DrawCallData2D
 {
-	Matrix44 m_model;
-	std::vector<Mesh*> m_meshes;
-	Material* m_material = nullptr;
+	~DrawCallData2D()
+	{
+		for (int dataIndex = 0; dataIndex < (int)m_renderableData.size(); ++dataIndex)
+		{
+			m_renderableData[dataIndex] = nullptr;
+		}
+	}
 
+	Matrix44 m_model;
+	std::vector<RenderableData*> m_renderableData;
 	int m_sortingLayer;
 };
 

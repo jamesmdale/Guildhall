@@ -21,10 +21,27 @@ public:
 	void UpdateRenderable2DFromTransform();
 	void DeleteRenderables();
 
+	//input udpates
+	virtual void OnLeftReleased();
+	virtual void OnRightReleased();
+
+	virtual void OnLeftClicked();
+	virtual void OnRightClicked();
+
+	virtual void OnDoubleClickedLeft();
+	virtual void OnDoubleClickedRight();
+
+	virtual void OnLeftDragged();
+	virtual void OnRightDragged();
+
 public:
 	std::string m_name = "";
 	std::vector<Renderable2D*> m_renderables;
 	Transform2D* m_transform2D = nullptr;
+
+	Vector2 m_dimensionsInPixels;
+
+	int m_sortLayer = 0;
 
 	RenderScene2D* m_renderScene = nullptr;
 };

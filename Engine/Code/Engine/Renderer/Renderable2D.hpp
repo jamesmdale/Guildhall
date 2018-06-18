@@ -7,31 +7,53 @@
 #include "Engine\Math\Vector3.hpp"
 #include <vector>
 
+struct RenderableData
+{
+	RenderableData(int renderableLayer, Mesh* renderableMesh, Material* renderableMaterial)
+	{
+		m_meshDrawOrder = renderableLayer;
+		m_mesh = renderableMesh;
+		m_material = renderableMaterial;		
+	}
+
+	~RenderableData()
+	{
+		delete(m_mesh);
+		m_mesh = nullptr;
+
+		if (m_material->m_isInstance)
+		{
+			delete(m_material);
+		}
+		m_material = nullptr;
+	}
+
+	int m_meshDrawOrder = 0; // a sort layer within the renderable itself
+	Mesh*  m_mesh = nullptr;
+	Material*  m_material = nullptr;;
+};
+
 class Renderable2D
 {
 public:
 	Renderable2D();
 	~Renderable2D();
 
-	void AddMesh(Mesh* mesh);
-	Mesh* GetMesh(int meshIndex) const;
+	void AddRenderableData(int sortLayer, Mesh* mesh, Material* material);
+	void AddRenderableData(RenderableData* data);
 
-	void SetMaterial(Material* material);
-	Material* GetMaterial() const;
-
-	void SetModelMatrix(const Matrix44& model);
+	//getters
+	Mesh* GetMesh(int index) const;
+	Material* GetMaterial(int index) const;
+	Shader* GetShader(int index) const;
 	Matrix44 GetModelMatrix();
 
-	//convenience methods
-	Shader* GetShader() const;
-
-	void SetRender2DSortLayer(int sortLayer);
-	int GetRender2DSortLayer() const;
+	//setters
+	void SetWidgetSortLayer(int sortLayer);
+	void SetModelMatrix(const Matrix44& model);	
 
 public:
+	int m_widgetSortLayer = 0;
 	Matrix44 m_modelMatrix;
-	std::vector<Mesh*> m_meshes;
-	Material* m_material = nullptr;
-	Transform2D* m_watch = nullptr;
-	int m_sortLayer = 0;
+	std::vector<RenderableData*> m_renderableData;
 };

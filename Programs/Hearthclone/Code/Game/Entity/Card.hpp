@@ -18,11 +18,8 @@ public:
 	virtual ~Card() override;
 
 	virtual void Initialize() override;	
-	void RefreshCardRenderables();	
-
-	// static methodes =============================================================================
-
-	static Vector2 GetCardDimensions();
+	void RefreshCardRenderables();
+	Vector2 GetCardDimensions();
 
 public:
 	const CardDefinition* m_definition = nullptr;
@@ -35,7 +32,6 @@ public:
 
 	std::vector<std::string> m_tags;
 	std::string m_text;
-
 	
 	bool m_isPositionLocked = true;
 	bool m_isRendering = false;

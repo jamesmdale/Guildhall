@@ -10,7 +10,7 @@
 #include <map>
 #include <string>
 
-Card* card = nullptr;
+Widget* currentSelectedWidget = nullptr;
 
 enum ePlayState
 {
@@ -27,11 +27,18 @@ PlayingState::~PlayingState()
 	delete(m_gameBoard);
 	m_gameBoard = nullptr;
 
+	delete(m_player);
+	m_player = nullptr;
+
+	delete(m_enemyPlayer);
+	m_enemyPlayer = nullptr;
+
+	delete(m_currentSelectedWidget);
+	m_enemyPlayer = nullptr;
+
 	//delete scene last
 	delete(m_renderScene2D);
-	m_renderScene2D = nullptr;	
-
-	m_player;
+	m_renderScene2D = nullptr;		
 }
 
 void PlayingState::Initialize()
@@ -117,49 +124,75 @@ void PlayingState::PostRender()
 
 float PlayingState::UpdateFromInput(float deltaSeconds)
 {
+	return deltaSeconds;
 	InputSystem* theInput = InputSystem::GetInstance();
 	std::string mouseText = "NONE";
+
+	Vector2 mouseCoordinates = theInput->GetMouse()->GetMouseClientPosition();
+	std::vector<Widget*> interactableWidgets = GetInteractableWidgets();
+
+	if (theInput->WasKeyJustReleased(theInput->MOUSE_LEFT_CLICK))
+	{
+		if (m_currentSelectedWidget != nullptr)
+		{
+			m_currentSelectedWidget->OnLeftReleased();
+			m_currentSelectedWidget = nullptr;
+		}	
+	}
+	if (theInput->WasKeyJustReleased(theInput->MOUSE_RIGHT_CLICK))
+	{
+		if (m_currentSelectedWidget != nullptr)
+		{
+			m_currentSelectedWidget->OnRightReleased();
+			m_currentSelectedWidget = nullptr;
+		}
+	}	
 
 	if (theInput->IsKeyPressed(theInput->MOUSE_LEFT_CLICK))
 	{
 		if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 		{
-			mouseText = "Just pressed left click";
+			m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+
+			if(m_currentSelectedWidget != nullptr)
+				m_currentSelectedWidget->OnLeftClicked();
 		}
 		else
 		{
-			mouseText = "Is currently pressed left click";
-		}
-		
+			if(m_currentSelectedWidget != nullptr)
+				m_currentSelectedWidget->OnLeftDragged();
+		}		
 	}
 	if (theInput->IsKeyPressed(theInput->MOUSE_RIGHT_CLICK))
 	{
 		if (theInput->WasKeyJustPressed(theInput->MOUSE_RIGHT_CLICK))
 		{
-			mouseText = "Just pressed right click";
+			m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+
+			if(m_currentSelectedWidget != nullptr)
+				m_currentSelectedWidget->OnRightClicked();
 		}
 		else
 		{
-			mouseText = "Is currently pressed right click"; 
+			if(m_currentSelectedWidget != nullptr)
+				m_currentSelectedWidget->OnRightDragged();
 		}		
 	}	
-	
-	if (theInput->WasKeyJustReleased(theInput->MOUSE_LEFT_CLICK))
-	{
-		mouseText = "Just released left click";
-	}
-	if (theInput->WasKeyJustReleased(theInput->MOUSE_RIGHT_CLICK))
-	{
-		mouseText = "Just released right click";
-	}
 
 	if (theInput->GetMouseDoubleClickLeft())
 	{
-		mouseText = "double clicked left";
+		m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+
+		if(m_currentSelectedWidget != nullptr)
+			m_currentSelectedWidget->OnDoubleClickedLeft();
 	}
+
 	if (theInput->GetMouseDoubleClickRight())
 	{
-		mouseText = "double clicked right";
+		m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+
+		if (m_currentSelectedWidget != nullptr)
+			m_currentSelectedWidget->OnDoubleClickedRight();
 	}
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_1))
@@ -170,9 +203,97 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	DebugRender::GetInstance()->CreateDebugText2D(Vector2(Window::GetInstance()->m_clientWidth - 300, Window::GetInstance()->m_clientHeight - 20), 20.f, 1.f, mouseText, Rgba::WHITE, Rgba::WHITE, 0.f, ALWAYS_DEPTH_TYPE);
 
+	// cleanup =========================================================================================
+	for (int widgetIndex = 0; widgetIndex < (int)interactableWidgets.size(); ++widgetIndex)
+	{
+		interactableWidgets[widgetIndex] = nullptr;
+	}
+	interactableWidgets.clear();
+
 	theInput = nullptr;
 
+	// return =========================================================================================
+
 	return deltaSeconds; //new deltaSeconds
+}
+
+std::vector<Widget*> PlayingState::GetInteractableWidgets()
+{
+	std::vector<Widget*> interactableWidgets;
+
+	// player =========================================================================================
+	//add widgets from player's hand
+	for (int widgetIndex = 0; widgetIndex < (int)m_player->m_hand.size(); ++widgetIndex)
+	{
+		interactableWidgets.push_back(m_player->m_hand[widgetIndex]);
+	}
+
+	//add widgets from player's minions
+	for (int widgetIndex = 0; widgetIndex < (int)m_player->m_minions.size(); ++widgetIndex)
+	{
+		interactableWidgets.push_back(m_player->m_minions[widgetIndex]);
+	}
+	
+	TODO("Add hero input update");
+	//add hero widget
+	//interactableWidgets.push_back(m_player->m_hero);
+
+
+	// enemy player =========================================================================================
+	//add widgets from enemy player's hand
+	for (int widgetIndex = 0; widgetIndex < (int)m_enemyPlayer->m_hand.size(); ++widgetIndex)
+	{
+		interactableWidgets.push_back(m_enemyPlayer->m_hand[widgetIndex]);
+	}
+
+	//add widgets from enemy player's battlefield
+	for (int widgetIndex = 0; widgetIndex < (int)m_enemyPlayer->m_minions.size(); ++widgetIndex)
+	{
+		interactableWidgets.push_back(m_enemyPlayer->m_minions[widgetIndex]);
+	}
+
+	TODO("Add hero input update");
+	//add hero widget
+	//interactableWidgets.push_back(m_enemyPlayer->m_hero);
+
+	TODO("Add gameboard update");
+	// game board =========================================================================================
+
+	//return
+	return interactableWidgets;
+}
+
+Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactableWidgets)
+{
+	Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition();
+
+	//create a vector of widgets that are under the mouse position.  We will sort according to layer to find selected widget
+	Widget* selectedWidget = nullptr;
+
+	//add each widget at the mouse cursor to 
+	for (int widgetIndex = 0; widgetIndex < (int)interactableWidgets.size(); ++widgetIndex)
+	{
+		Widget* widget = interactableWidgets[widgetIndex];
+		Vector2 position = widget->m_transform2D->GetWorldPosition();
+		AABB2 widgetBounds = AABB2(position, widget->m_dimensionsInPixels.x * 0.5f, widget->m_dimensionsInPixels.y * 0.5f);
+		
+		if (widgetBounds.IsPointInside(mousePosition) == true)
+		{
+			if (selectedWidget == nullptr)
+			{
+				selectedWidget = widget;
+			}
+			else
+			{
+				//if(widget->)
+			}
+		}
+
+		widget = nullptr;
+	}
+
+	// return =========================================================================================
+	return selectedWidget;
 }
 
 void UpdateStartGame()

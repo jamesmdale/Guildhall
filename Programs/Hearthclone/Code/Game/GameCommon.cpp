@@ -17,6 +17,10 @@ Rgba g_warlockClassColor = Rgba(132, 39, 190, 255);
 Rgba g_warriorClassColor = Rgba(152, 41, 41, 255);
 Rgba g_neutralClassColor = Rgba(106, 97, 97, 255);
 
+//sort layers
+int g_defaultBoardSortLayer = 0;
+int g_defaultCardSortLayer = 1;
+
 Rgba GetCardColorByClass(eCardClass cardClass)
 {
 	Rgba color;

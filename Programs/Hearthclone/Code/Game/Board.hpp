@@ -18,7 +18,7 @@ public:
 	void CreateBoardMeshesForRenderable(Renderable2D* renderable);
 	void CreateBoardTextMeshesForRenderable(Renderable2D* renderable);
 	void CreateBoardTexturedMeshesForRenderable(Renderable2D* renderable);
-
+	
 	void UpdateRenderables();
 
 public:

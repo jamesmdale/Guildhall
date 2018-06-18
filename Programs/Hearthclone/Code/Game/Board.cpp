@@ -16,60 +16,20 @@ Rgba heroWeaponColor = Rgba(75, 75, 75, 255);
 
 Board::Board()
 {
+	m_sortLayer = g_defaultBoardSortLayer;
 }
 
-void Board::Initialize()
-{
-	Renderer* theRenderer = Renderer::GetInstance();	
-
-	//create board layout
-	Renderable2D* boardRenderable = new Renderable2D();
-	CreateBoardMeshesForRenderable(boardRenderable);
-	boardRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("default")));
-	boardRenderable->SetRender2DSortLayer(0);
-	m_renderables.push_back(boardRenderable);
-
-	//add textured elements to board
-	Renderable2D* boardTexturedRenderable = new Renderable2D();
-	CreateBoardTexturedMeshesForRenderable(boardTexturedRenderable);
-
-	boardTexturedRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("default")));
-	boardTexturedRenderable->GetMaterial()->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
-	boardTexturedRenderable->GetMaterial()->SetTexture(0, theRenderer->CreateOrGetTexture("Data/Images/Cards/card_back.png"));
-	boardTexturedRenderable->SetRender2DSortLayer(2);
-	m_renderables.push_back(boardTexturedRenderable);
-
-	//add text to board
-	Renderable2D* boardTextRenderable = new Renderable2D();
-	CreateBoardTextMeshesForRenderable(boardTextRenderable);
-
-	boardTextRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("text")));
-	boardTextRenderable->GetMaterial()->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::BLACK));
-	
-	boardTextRenderable->SetRender2DSortLayer(2);
-	m_renderables.push_back(boardTextRenderable);
-
-
-
-	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
-	{
-		m_renderScene->AddRenderable(m_renderables[renderableIndex]);
-	}
-
-
-	boardTextRenderable = nullptr;
-	boardTexturedRenderable = nullptr;
-	boardRenderable = nullptr;
-	theRenderer = nullptr;
-
-}
 
 Board::~Board()
 {
 }
 
-void Board::UpdateRenderables()
+void Board::Initialize()
 {
+	Renderer* theRenderer = Renderer::GetInstance();	
+	m_dimensionsInPixels = Window::GetInstance()->GetClientDimensions();
+
+	//clear renderbale list if we've already initialized once.
 	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
 	{
 		m_renderScene->RemoveRenderable(m_renderables[renderableIndex]);
@@ -82,21 +42,34 @@ void Board::UpdateRenderables()
 	}
 	m_renderables.clear();
 
-	Initialize();
+	Renderable2D* boardRenderable = new Renderable2D();
+
+	//create board layout
+	CreateBoardMeshesForRenderable(boardRenderable);
+
+	//add textured elements to board
+	CreateBoardTexturedMeshesForRenderable(boardRenderable);
+
+	//add text to board
+	CreateBoardTextMeshesForRenderable(boardRenderable);
+
+	//add renderable to scene
+	m_renderables.push_back(boardRenderable);
+
+
+	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->AddRenderable(m_renderables[renderableIndex]);
+	}
+
+	boardRenderable = nullptr;
+	theRenderer = nullptr;
 }
+
 
 void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 {
-	if ((int)renderable->m_meshes.size() != 0)
-	{
-		for (int meshIndex = 0; meshIndex < (int)renderable->m_meshes.size(); ++meshIndex)
-		{
-			delete(renderable->m_meshes[meshIndex]);
-			renderable->m_meshes[meshIndex] = nullptr;
-		}
-
-		renderable->m_meshes.clear();
-	}
+	Renderer* theRenderer = Renderer::GetInstance();
 
 	MeshBuilder mb;
 	mb.FlushBuilder();
@@ -114,7 +87,10 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	Vector2 endTurnDimensions = clientWindowDimensions * g_endTurnButtonPercentageOfClientWindow;
 
 	mb.CreateQuad2D(AABB2(clientWindow->GetClientWindow().mins, clientWindow->GetClientWindow().maxs), boardBaseColor); //whole board
-	renderable->AddMesh(mb.CreateMesh<VertexPCU>());
+
+	Material* material = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
+
+	renderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
     
 	// create quads for each hand =========================================================================================
 	Vector2 enemyHandCenter = Vector2(clientWindowDimensions.x * 0.5f
@@ -207,25 +183,18 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 
 	mb.CreateQuad2D(endTurnCenter, endTurnDimensions, Rgba::GREEN);
 
-	// create mesh =========================================================================================
-	renderable->AddMesh(mb.CreateMesh<VertexPCU>());
+	// add mesh and material to renderable =========================================================================================
+	renderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
 
+
+	// cleanup =========================================================================================
 	clientWindow = nullptr;
+	theRenderer = nullptr;
 }
 
 void Board::CreateBoardTexturedMeshesForRenderable(Renderable2D * renderable)
 {
-	if ((int)renderable->m_meshes.size() != 0)
-	{
-		for (int meshIndex = 0; meshIndex < (int)renderable->m_meshes.size(); ++meshIndex)
-		{
-			delete(renderable->m_meshes[meshIndex]);
-			renderable->m_meshes[meshIndex] = nullptr;
-		}
-
-		renderable->m_meshes.clear();
-	}
-
+	Renderer* theRenderer = Renderer::GetInstance();
 	Window* clientWindow = Window::GetInstance();
 	MeshBuilder mb;
 
@@ -247,13 +216,22 @@ void Board::CreateBoardTexturedMeshesForRenderable(Renderable2D * renderable)
 	mb.CreateQuad2D(m_playerDeckQuad, Rgba::WHITE);
 	mb.CreateQuad2D(m_enemyDeckQuad, Rgba::WHITE);
 
-	renderable->AddMesh(mb.CreateMesh<VertexPCU>());
+	// add mesh and material to renderable =========================================================================================
+	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
+	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+	materialInstance->SetTexture(0, theRenderer->CreateOrGetTexture("Data/Images/Cards/card_back.png"));
 
+	renderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
+	
+	// cleanup =========================================================================================
+	materialInstance = nullptr;
 	clientWindow = nullptr;
+	theRenderer = nullptr;
 }
 
 void Board::CreateBoardTextMeshesForRenderable(Renderable2D * renderable)
 {
+	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder mb;
 	mb.FlushBuilder();
 
@@ -262,7 +240,14 @@ void Board::CreateBoardTextMeshesForRenderable(Renderable2D * renderable)
 	m_endTurnQuad.GetCenter();
 
 	mb.CreateText2DInAABB2(m_endTurnQuad.GetCenter(), m_endTurnQuad.GetDimensions(), 4.f / 3.f, "END TURN", Rgba::BLACK);
-	renderable->AddMesh(mb.CreateMesh<VertexPCU>());
 
+	// add mesh and material to renderable =========================================================================================
+	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::BLACK));
+
+	renderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);
+
+	// cleanup =========================================================================================
 	clientWindow = nullptr;
+	theRenderer = nullptr;
 }

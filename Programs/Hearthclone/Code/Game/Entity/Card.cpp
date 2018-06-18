@@ -5,15 +5,15 @@
 #include "Engine\Core\Rgba.hpp"
 #include "Engine\Core\StringUtils.hpp"
 
-
-Vector2 cardDimensions = Vector2(0.f, 0.f);
-
 Card::Card()
 {
+	m_sortLayer = g_defaultCardSortLayer;
 }
 
 Card::Card(const CardDefinition* definition)
 {
+	m_sortLayer = g_defaultCardSortLayer;
+
 	m_definition = definition;
 	m_cost = definition->m_cost;
 	m_cardImage = Renderer::GetInstance()->CreateOrGetTexture(definition->m_imagePath);
@@ -50,6 +50,7 @@ Card::~Card()
 
 void Card::Initialize()
 {
+	m_sortLayer = g_defaultCardSortLayer;
 	RefreshCardRenderables();
 	
 	//other intialization data goes here.
@@ -77,58 +78,44 @@ void Card::RefreshCardRenderables()
 	float cardHeight = g_cardPercentageOfClientWindowHeight * clientWindow->GetClientHeight();
 	float cardWidth = cardHeight * g_cardAspectRatio;
 
-	cardDimensions = Vector2(cardWidth, cardHeight);
+	m_dimensionsInPixels = Vector2(cardWidth, cardHeight);
 	Vector2 cardBottomRight = Vector2(Vector2::ZERO.x - (cardWidth * 0.5f), Vector2::ZERO.y - (cardHeight * 0.5f));
 
-	// create background renderable =========================================================================================
-	Renderable2D* cardRenderableBackground = new Renderable2D();
+	// create background =========================================================================================
+	Renderable2D* cardRenderable = new Renderable2D();
 
-	mb.CreateQuad2D(Vector2::ZERO, cardDimensions * 0.99, GetCardColorByClass(m_definition->m_class)); //make it slightly smaller
-	cardRenderableBackground->AddMesh(mb.CreateMesh<VertexPCU>());
-
-	cardRenderableBackground->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("default")));
-	cardRenderableBackground->SetRender2DSortLayer(2);
-	m_renderables.push_back(cardRenderableBackground);
+	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels * 0.99, GetCardColorByClass(m_definition->m_class)); //make it slightly smaller
+	cardRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
 
 	// create card template overlay renderable =========================================================================================
-	Renderable2D* cardRenderableOverlay = new Renderable2D();
 
-	mb.CreateQuad2D(Vector2::ZERO, cardDimensions, Rgba::WHITE);
-	cardRenderableOverlay->AddMesh(mb.CreateMesh<VertexPCU>());
+	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels, Rgba::WHITE);
+	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
+	materialInstance->SetTexture(0, m_cardLayoutImage);
 
-	cardRenderableOverlay->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
-	cardRenderableOverlay->SetRender2DSortLayer(2);
-	cardRenderableOverlay->GetMaterial()->SetTexture(0, m_cardLayoutImage);
-	m_renderables.push_back(cardRenderableOverlay);
-
+	cardRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), materialInstance);
 
 	// create card image renderable =========================================================================================
 
-	Renderable2D* cardRenderableImage = new Renderable2D();
+	mb.CreateQuad2D(cardBottomRight + (m_dimensionsInPixels * g_cardImageCenterRatio), m_dimensionsInPixels * g_cardImageDimensionsRatio, Rgba::WHITE);
+	materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
+	materialInstance->SetTexture(0, m_cardImage);
 
-	mb.CreateQuad2D(cardBottomRight + (cardDimensions * g_cardImageCenterRatio), cardDimensions * g_cardImageDimensionsRatio, Rgba::WHITE);
-	cardRenderableImage->AddMesh(mb.CreateMesh<VertexPCU>());
-
-	cardRenderableImage->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("default")));
-	cardRenderableImage->SetRender2DSortLayer(2);
-	cardRenderableImage->GetMaterial()->SetTexture(0, m_cardImage);
-	m_renderables.push_back(cardRenderableImage);
+	cardRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), materialInstance);
 
 	// create card image renderable =========================================================================================
-	Renderable2D* cardTextRenderable = new Renderable2D();
 
-	mb.CreateText2DInAABB2(cardBottomRight + (cardDimensions * g_cardNameCenterRatio), cardDimensions * g_cardNameDimensionsRatio, 4.f / 3.f, m_name, Rgba::WHITE); //name
-	mb.CreateText2DInAABB2(cardBottomRight + (cardDimensions * g_cardManaCenterRatio), cardDimensions * g_cardManaDimensionsRatio, 1.f, Stringf("%i", m_cost), Rgba::WHITE); //mana
-	mb.CreateText2DInAABB2(cardBottomRight + (cardDimensions * g_cardAttackCenterRatio), cardDimensions * g_cardAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
-	mb.CreateText2DInAABB2(cardBottomRight + (cardDimensions * g_cardHealthCenterRatio), cardDimensions * g_cardHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
-	mb.CreateText2DInAABB2(cardBottomRight + (cardDimensions * g_cardTextCenterRatio), cardDimensions * g_cardTextDimensionsRatio, 4.f / 3.f, m_text, Rgba::WHITE); //Text
-	cardTextRenderable->AddMesh(mb.CreateMesh<VertexPCU>());	
+	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardNameCenterRatio), m_dimensionsInPixels * g_cardNameDimensionsRatio, 4.f / 3.f, m_name, Rgba::WHITE); //name
+	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardManaCenterRatio), m_dimensionsInPixels * g_cardManaDimensionsRatio, 1.f, Stringf("%i", m_cost), Rgba::WHITE); //mana
+	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardAttackCenterRatio), m_dimensionsInPixels * g_cardAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
+	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardHealthCenterRatio), m_dimensionsInPixels * g_cardHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
+	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardTextCenterRatio), m_dimensionsInPixels * g_cardTextDimensionsRatio, 4.f / 3.f, m_text, Rgba::WHITE); //Text
+	
+	materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+	cardRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);	
 
-	cardTextRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("text")));
-	cardTextRenderable->GetMaterial()->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
-
-	cardTextRenderable->SetRender2DSortLayer(3);
-	m_renderables.push_back(cardTextRenderable);
+	m_renderables.push_back(cardRenderable);
 
 	// add renderables to scene =========================================================================================
 	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
@@ -144,5 +131,5 @@ void Card::RefreshCardRenderables()
 
 Vector2 Card::GetCardDimensions()
 {
-	return cardDimensions;
+	return m_dimensionsInPixels;
 }

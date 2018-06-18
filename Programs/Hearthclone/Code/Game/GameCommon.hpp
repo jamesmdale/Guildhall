@@ -27,7 +27,7 @@ enum eCardType
 	NUM_CARD_TYPES
 };
 
-//class colors
+// class colors =========================================================================================
 extern Rgba g_druidClassColor;
 extern Rgba g_hunterClassColor;
 extern Rgba g_mageClassColor;
@@ -39,9 +39,7 @@ extern Rgba g_warlockClassColor;
 extern Rgba g_warriorClassColor;
 extern Rgba g_neutralClassColor;
 
-// members =========================================================================================
-
-//entity sizes
+// entity sizes =========================================================================================
 
 //board sizes
 const float g_boardHandPercentageOfClientWindow = 0.15f; //hand uses fullwidth
@@ -84,10 +82,14 @@ const Vector2 g_manaPercentageOfClientWindow = Vector2(0.1f, 0.1f);
 const Vector2 g_endTurnButtonPercentageOfClientWindow = Vector2(0.1f, 0.1f);
 
 
-
-//game related globals
+// game related globals =========================================================================================
 extern bool g_isDebug;
 extern bool g_isQuitting;
+
+// default sorting layers =========================================================================================
+
+extern int g_defaultBoardSortLayer;
+extern int g_defaultCardSortLayer;
 
 // methods =========================================================================================
 Rgba GetCardColorByClass(eCardClass cardClass);
