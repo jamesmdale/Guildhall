@@ -173,12 +173,33 @@ void Card::OnLeftClicked()
 		m_isInputPriority = false;
 		m_isPositionLocked = true;
 		UpdateSortLayer(g_defaultCardSortLayer);
+
+		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition();
+
+		//player is playing card.
+		if (mousePosition.y > gameState->m_gameBoard->m_playerHandQuad.maxs.y)
+		{
+			//queue play card action
+			Vector2 battlefieldLocation = gameState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
+			m_transform2D->SetLocalPosition(battlefieldLocation);
+			m_lockPosition = battlefieldLocation;
+		}
+		else //return card to hand
+		{
+			m_transform2D->SetLocalPosition(m_lockPosition);
+		}
 	}
 }
 
 void Card::OnRightClicked()
 {
 	m_isInputPriority = true;
-}
 
+	if (m_isInputPriority == true)
+	{
+		m_isInputPriority = false;
+		m_isPositionLocked = true;
+		UpdateSortLayer(g_defaultCardSortLayer);
+	}
+}
 

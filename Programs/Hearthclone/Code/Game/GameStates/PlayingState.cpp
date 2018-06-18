@@ -157,11 +157,6 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 			if(m_currentSelectedWidget != nullptr)
 				m_currentSelectedWidget->OnLeftClicked();
 		}
-		/*else
-		{
-			if(m_currentSelectedWidget != nullptr)
-				m_currentSelectedWidget->OnLeftDragged();
-		}	*/	
 	}
 	if (theInput->IsKeyPressed(theInput->MOUSE_RIGHT_CLICK))
 	{
@@ -172,28 +167,7 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 			if(m_currentSelectedWidget != nullptr)
 				m_currentSelectedWidget->OnRightClicked();
 		}
-		/*else
-		{
-			if(m_currentSelectedWidget != nullptr)
-				m_currentSelectedWidget->OnRightDragged();
-		}		*/
 	}	
-
-	//if (theInput->GetMouseDoubleClickLeft())
-	//{
-	//	m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
-
-	//	if(m_currentSelectedWidget != nullptr)
-	//		m_currentSelectedWidget->OnDoubleClickedLeft();
-	//}
-
-	//if (theInput->GetMouseDoubleClickRight())
-	//{
-	//	m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
-
-	//	if (m_currentSelectedWidget != nullptr)
-	//		m_currentSelectedWidget->OnDoubleClickedRight();
-	//}
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_1))
 	{
