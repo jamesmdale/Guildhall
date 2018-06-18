@@ -64,6 +64,8 @@ bool DrawEffect(Widget* targetWidget, const std::map<std::string, std::string>& 
 			gameState->m_player->UpdateDeckCount();
 		}			
 
+		Card* card = (Card*)targetWidget;
+
 		ClearStopwatch();
 		isEffectComplete = true;
 	}

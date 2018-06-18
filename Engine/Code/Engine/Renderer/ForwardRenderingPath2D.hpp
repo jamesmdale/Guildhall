@@ -25,6 +25,6 @@ public:
 
 	void Render(RenderScene2D* scene);
 	void RenderSceneForCamera(Camera* camera, RenderScene2D* scene);
-	void SortDrawsBySortOrder(std::vector<DrawCallData2D> outDrawCalls);
+	void SortDrawsBySortOrder(std::vector<DrawCallData2D>& outDrawCalls);
 };
 

@@ -78,17 +78,17 @@ void PlayingState::Update(float deltaSeconds)
 	ProcessRefereeQueue();
 		
 
-	// update enemy =============================================================================
-	//for (int cardIndex = 0; cardIndex < (int)m_enemyPlayer->m_hand.size(); ++cardIndex)
-	//{
-	//	m_enemyPlayer->m_hand[cardIndex]->Update(deltaSeconds);
-	//}
+	//update enemy =============================================================================
+	for (int cardIndex = 0; cardIndex < (int)m_enemyPlayer->m_hand.size(); ++cardIndex)
+	{
+		m_enemyPlayer->m_hand[cardIndex]->Update(deltaSeconds);
+	}
 
-	//// update self =============================================================================
-	//for (int cardIndex = 0; cardIndex < (int)m_player->m_hand.size(); ++cardIndex)
-	//{
-	//	m_player->m_hand[cardIndex]->Update(deltaSeconds);
-	//}
+	// update self =============================================================================
+	for (int cardIndex = 0; cardIndex < (int)m_player->m_hand.size(); ++cardIndex)
+	{
+		m_player->m_hand[cardIndex]->Update(deltaSeconds);
+	}
 }
 
 void PlayingState::PreRender()
@@ -131,20 +131,20 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	Vector2 mouseCoordinates = theInput->GetMouse()->GetMouseClientPosition();
 	std::vector<Widget*> interactableWidgets = GetInteractableWidgets();
 
+	//basically does nothing
 	if (theInput->WasKeyJustReleased(theInput->MOUSE_LEFT_CLICK))
 	{
 		if (m_currentSelectedWidget != nullptr)
 		{
 			m_currentSelectedWidget->OnLeftReleased();
-			m_currentSelectedWidget = nullptr;
 		}	
 	}
+	//basically does nothing
 	if (theInput->WasKeyJustReleased(theInput->MOUSE_RIGHT_CLICK))
 	{
 		if (m_currentSelectedWidget != nullptr)
 		{
 			m_currentSelectedWidget->OnRightReleased();
-			m_currentSelectedWidget = nullptr;
 		}
 	}	
 
@@ -157,11 +157,11 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 			if(m_currentSelectedWidget != nullptr)
 				m_currentSelectedWidget->OnLeftClicked();
 		}
-		else
+		/*else
 		{
 			if(m_currentSelectedWidget != nullptr)
 				m_currentSelectedWidget->OnLeftDragged();
-		}		
+		}	*/	
 	}
 	if (theInput->IsKeyPressed(theInput->MOUSE_RIGHT_CLICK))
 	{
@@ -172,28 +172,28 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 			if(m_currentSelectedWidget != nullptr)
 				m_currentSelectedWidget->OnRightClicked();
 		}
-		else
+		/*else
 		{
 			if(m_currentSelectedWidget != nullptr)
 				m_currentSelectedWidget->OnRightDragged();
-		}		
+		}		*/
 	}	
 
-	if (theInput->GetMouseDoubleClickLeft())
-	{
-		m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+	//if (theInput->GetMouseDoubleClickLeft())
+	//{
+	//	m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
 
-		if(m_currentSelectedWidget != nullptr)
-			m_currentSelectedWidget->OnDoubleClickedLeft();
-	}
+	//	if(m_currentSelectedWidget != nullptr)
+	//		m_currentSelectedWidget->OnDoubleClickedLeft();
+	//}
 
-	if (theInput->GetMouseDoubleClickRight())
-	{
-		m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+	//if (theInput->GetMouseDoubleClickRight())
+	//{
+	//	m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
 
-		if (m_currentSelectedWidget != nullptr)
-			m_currentSelectedWidget->OnDoubleClickedRight();
-	}
+	//	if (m_currentSelectedWidget != nullptr)
+	//		m_currentSelectedWidget->OnDoubleClickedRight();
+	//}
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_1))
 	{
@@ -283,7 +283,7 @@ Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactable
 			{
 				selectedWidget = widget;
 			}
-			else if (widget->m_sortLayer > selectedWidget->m_sortLayer)
+			else if (widget->GetSortLayer() > selectedWidget->GetSortLayer())
 			{
 				selectedWidget = widget;
 			}

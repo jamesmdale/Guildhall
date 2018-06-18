@@ -16,7 +16,7 @@ Rgba heroWeaponColor = Rgba(75, 75, 75, 255);
 
 Board::Board()
 {
-	m_sortLayer = g_defaultBoardSortLayer;
+	UpdateSortLayer(g_defaultBoardSortLayer);
 }
 
 

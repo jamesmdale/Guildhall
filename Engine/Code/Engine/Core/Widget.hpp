@@ -21,6 +21,9 @@ public:
 	void UpdateRenderable2DFromTransform();
 	void DeleteRenderables();
 
+	void UpdateSortLayer(int sortLayer);
+	int GetSortLayer(){return m_sortLayer;}
+
 	//input udpates
 	virtual void OnLeftReleased();
 	virtual void OnRightReleased();
@@ -41,8 +44,13 @@ public:
 
 	Vector2 m_dimensionsInPixels;
 
-	int m_sortLayer = 0;
+	bool m_isInputPriority = false;
+	bool m_isPositionLocked = false;
+	Vector2 m_lockPosition;
 
 	RenderScene2D* m_renderScene = nullptr;
+
+private:
+	int m_sortLayer = 0;
 };
 

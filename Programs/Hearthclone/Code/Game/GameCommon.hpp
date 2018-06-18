@@ -90,6 +90,7 @@ extern bool g_isQuitting;
 
 extern int g_defaultBoardSortLayer;
 extern int g_defaultCardSortLayer;
+extern int g_sortLayerMax;
 
 // methods =========================================================================================
 Rgba GetCardColorByClass(eCardClass cardClass);

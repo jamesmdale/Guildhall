@@ -18,8 +18,12 @@ public:
 	virtual ~Card() override;
 
 	virtual void Initialize() override;	
+	virtual void Update(float deltaSeconds) override;
 	void RefreshCardRenderables();
 	Vector2 GetCardDimensions();
+
+	virtual void OnLeftClicked() override;
+	virtual void OnRightClicked() override;
 
 public:
 	const CardDefinition* m_definition = nullptr;
@@ -31,11 +35,9 @@ public:
 	int m_health;
 
 	std::vector<std::string> m_tags;
-	std::string m_text;
-	
-	bool m_isPositionLocked = true;
-	bool m_isRendering = false;
-	Vector2 m_lockPosition;	//position in space the card should snap to if not being manipulated by user input
+	std::string m_text;	
+
+	bool m_isRendering = false;	
 };
 
 

@@ -48,6 +48,7 @@ void ForwardRenderingPath2D::RenderSceneForCamera(Camera* camera, RenderScene2D*
 	}
 
 	SortDrawsBySortOrder(drawCalls);
+	//SortDrawsByMeshSortOrder(drawCalls);
 
 	for (DrawCallData2D drawCall : drawCalls)
 	{	
@@ -69,13 +70,13 @@ void ForwardRenderingPath2D::RenderSceneForCamera(Camera* camera, RenderScene2D*
 	theRenderer = nullptr;
 }
 
-void ForwardRenderingPath2D::SortDrawsBySortOrder(std::vector<DrawCallData2D> outDrawCalls)
+void ForwardRenderingPath2D::SortDrawsBySortOrder(std::vector<DrawCallData2D>& outDrawCalls)
 {
 	for(int i = 0; i < (int)outDrawCalls.size(); i++)
 	{
 		for(int j = i + 1; j < (int)outDrawCalls.size(); j++)
 		{
-			if(outDrawCalls[j].m_sortingLayer > outDrawCalls[i].m_sortingLayer)
+			if(outDrawCalls[j].m_sortingLayer < outDrawCalls[i].m_sortingLayer)
 			{				
 				std::swap(outDrawCalls[j], outDrawCalls[i]);
 			}

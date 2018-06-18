@@ -20,6 +20,7 @@ Rgba g_neutralClassColor = Rgba(106, 97, 97, 255);
 //sort layers
 int g_defaultBoardSortLayer = 0;
 int g_defaultCardSortLayer = 1;
+int g_sortLayerMax = 999;
 
 Rgba GetCardColorByClass(eCardClass cardClass)
 {

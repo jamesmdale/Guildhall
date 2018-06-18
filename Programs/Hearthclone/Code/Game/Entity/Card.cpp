@@ -4,15 +4,20 @@
 #include "Engine\Renderer\Meshbuilder.hpp"
 #include "Engine\Core\Rgba.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Game\GameStates\GameState.hpp"
+#include "Game\GameStates\PlayingState.hpp"
+#include "Engine\Input\InputSystem.hpp"
+
+bool isPreviewing = false;
 
 Card::Card()
 {
-	m_sortLayer = g_defaultCardSortLayer;
+	UpdateSortLayer(g_defaultCardSortLayer);
 }
 
 Card::Card(const CardDefinition* definition)
 {
-	m_sortLayer = g_defaultCardSortLayer;
+	UpdateSortLayer(g_defaultCardSortLayer);
 
 	m_definition = definition;
 	m_cost = definition->m_cost;
@@ -50,10 +55,27 @@ Card::~Card()
 
 void Card::Initialize()
 {
-	m_sortLayer = g_defaultCardSortLayer;
+	UpdateSortLayer(g_defaultCardSortLayer);
 	RefreshCardRenderables();
 	
 	//other intialization data goes here.
+}
+
+void Card::Update(float deltaSeconds)
+{
+	if (m_isPositionLocked == false)
+	{
+		if (m_isInputPriority)
+		{
+			Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition();
+			mousePosition = Vector2(ClampFloat(mousePosition.x, 0.f, Window::GetInstance()->GetClientWidth()), ClampFloat(mousePosition.y, 0.f, Window::GetInstance()->GetClientHeight()));
+			m_transform2D->SetLocalPosition(mousePosition);
+		}		
+	}
+	else
+	{
+		m_transform2D->SetLocalPosition(m_lockPosition);
+	}
 }
 
 void Card::RefreshCardRenderables()
@@ -136,3 +158,27 @@ Vector2 Card::GetCardDimensions()
 {
 	return m_dimensionsInPixels;
 }
+
+void Card::OnLeftClicked()
+{
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+	if (m_isInputPriority == false)
+	{
+		m_isInputPriority = true;
+		m_isPositionLocked = false;
+		UpdateSortLayer(g_sortLayerMax);
+	}
+	else
+	{
+		m_isInputPriority = false;
+		m_isPositionLocked = true;
+		UpdateSortLayer(g_defaultCardSortLayer);
+	}
+}
+
+void Card::OnRightClicked()
+{
+	m_isInputPriority = true;
+}
+
+

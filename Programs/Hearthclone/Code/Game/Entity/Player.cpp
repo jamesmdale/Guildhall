@@ -111,7 +111,7 @@ void Player::UpdateHandLockPositions()
 	}
 
 	float handDockCenterHeight = handQuad.maxs.y - ((handQuad.maxs.y - handQuad.mins.y) * 0.5f);
-	float handDockWidthPerCard = (handQuad.maxs.x - handQuad.mins.x) / (float)(g_maxHandSize + 1); // + 1 because we include deck image
+	float handDockWidthPerCard = (handQuad.maxs.x - handQuad.mins.x) / (float)(	g_maxHandSize + 1); // + 1 because we include deck image
 
 	for (int cardIndex = 0; cardIndex < (int)m_hand.size(); ++cardIndex)
 	{	
@@ -121,8 +121,7 @@ void Player::UpdateHandLockPositions()
 			m_hand[cardIndex]->RefreshCardRenderables();
 		}
 		
-		m_hand[cardIndex]->m_lockPosition = Vector2(handDockWidthPerCard * (cardIndex + 1), handDockCenterHeight);
-		m_hand[cardIndex]->m_isPositionLocked = true;		
+		m_hand[cardIndex]->m_lockPosition = Vector2(handDockWidthPerCard * (cardIndex + 1), handDockCenterHeight);	
 	}
 
 	// cleanup =============================================================================
