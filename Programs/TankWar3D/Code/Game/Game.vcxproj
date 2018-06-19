@@ -302,6 +302,7 @@
     <ClCompile Include="Menu\ReadyState.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="TheApp.cpp" />
+    <ClCompile Include="Turret.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engine\Code\Engine\Engine.vcxproj">
@@ -319,6 +320,7 @@
     <ClInclude Include="Menu\ReadyState.hpp" />
     <ClInclude Include="Tank.hpp" />
     <ClInclude Include="TheApp.hpp" />
+    <ClInclude Include="Turret.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

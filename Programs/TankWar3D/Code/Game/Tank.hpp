@@ -4,6 +4,7 @@
 #include "Engine\Camera\Camera.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Game\Menu\PlayingState.hpp"
+#include "Game\Turret.hpp"
 
 class Tank : public GameObject
 {
@@ -46,6 +47,8 @@ public:
 	// transforms
 	Transform* m_cameraPivotTransform  = nullptr;
 	Transform* m_tankBodyTransform  = nullptr;
+
+	Turret* m_turret = nullptr;
 
 	Camera* m_camera = nullptr;
 	Stopwatch* m_breadCrumbTimer = nullptr;

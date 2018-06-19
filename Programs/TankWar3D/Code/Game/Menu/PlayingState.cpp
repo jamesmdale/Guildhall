@@ -75,10 +75,36 @@ void PlayingState::Initialize()
 	m_playerTank->m_breadCrumbTimer = new Stopwatch(Game::GetInstance()->m_gameClock);
 	m_playerTank->m_breadCrumbTimer->SetTimer(0.5f);
 
+	//add turret to player tank
+	Turret* tankTurret = new Turret();
+	Renderable* turretRenderable = new Renderable();
+
+	meshBuilder.CreateUVSphere(Vector3::ZERO, 0.25f, 20, 20, Rgba::WHITE);
+	meshBuilder.CreateCube(Vector3(0.f, 0.f, 0.5f), Vector3(0.25f, 0.25f, 1.f), Rgba::WHITE);
+	turretRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
+	turretRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("rallyfighter")));
+	tankTurret->AddRenderable(turretRenderable);
+	tankTurret->m_transform->AddChildTransform(turretRenderable->m_transform);
+	tankTurret->m_transform->SetLocalPosition(Vector3(-0.15f, 1.75f, -0.5f));
+	m_playerTank->m_turret = tankTurret;
+	
+	//cleanup tank turret and renderable
+	turretRenderable = nullptr;
+	tankTurret = nullptr; 
+	
+
+	m_playerTank->m_tankBodyTransform->AddChildTransform(m_playerTank->m_turret->m_transform);
+
+
 	//add tank to lists
 	for (int renderableIndex = 0; renderableIndex < (int)m_playerTank->m_renderables.size(); ++renderableIndex)
 	{
 		m_renderScene->AddRenderable(m_playerTank->m_renderables[renderableIndex]);
+	}
+
+	for (int renderableIndex = 0; renderableIndex < (int)m_playerTank->m_turret->m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->AddRenderable(m_playerTank->m_turret->m_renderables[renderableIndex]);
 	}
 
 	// add terrain =========================================================================================

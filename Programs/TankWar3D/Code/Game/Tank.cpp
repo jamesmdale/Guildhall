@@ -41,7 +41,6 @@ void Tank::Update(float timeDelta)
 	}
 	
 	Vector3 basePosition = m_transform->GetWorldPosition();
-	//Vector3 bodyRotation = m_tankBodyTransform->GetLocalRotation();
 
 	//get height and normal from terrain
 	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(basePosition.x, basePosition.z)) + m_baseDimensions.y;	
@@ -64,7 +63,6 @@ void Tank::Update(float timeDelta)
 
 	//update the tank body's rotation
 	m_tankBodyTransform->SetLocalRotation(Vector3(rotation.x, 0.f, rotation.z));
-	//m_tankBodyTransform->AddRotation(bodyRotation);
 
 	//debug
 	DebugRender::GetInstance()->CreateDebugBasis(m_transform->GetWorldMatrix(), Vector3(basePosition.x, basePosition.y + 0.5f, basePosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);

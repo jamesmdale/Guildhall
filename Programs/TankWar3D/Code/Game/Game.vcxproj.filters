@@ -37,6 +37,9 @@
     <ClCompile Include="Tank.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Turret.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -57,5 +60,6 @@
     <ClInclude Include="Menu\PlayingState.hpp" />
     <ClInclude Include="Menu\ReadyState.hpp" />
     <ClInclude Include="Tank.hpp" />
+    <ClInclude Include="Turret.hpp" />
   </ItemGroup>
 </Project>
