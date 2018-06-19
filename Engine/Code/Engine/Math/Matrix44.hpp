@@ -26,6 +26,7 @@ public:
 	// Mutators
 	void SetEmpty();
 	void SetIdentity();
+	void SetInvalid();
 	void SetValues( const float* sixteenValuesBasisMajor ); // float[16] array in order Ix, Iy...
 	void SetValueAtIndex(int index, float value);
 	void Append( const Matrix44& matrixToAppend ); // a.k.a. Concatenate (right-multiply)
@@ -94,6 +95,8 @@ public:
 	Vector2 GetTranslation2D() const{return GetPosition2D(); };
 	Vector2 GetRight2D() const;
 	Vector2 GetUp2D() const;
+
+	Matrix44 GetInverse();
 
 	//setters
 	void SetFromBasisVectors(Vector4 iBasis, Vector4 jBasis, Vector4 kBasis, Vector4 tBasis);	

@@ -146,6 +146,26 @@ void Matrix44::SetIdentity()
 	Tw = 1.0f;
 }
 
+void Matrix44::SetInvalid()
+{
+	Ix = 9999.0f;
+	Iy = 9999.0f;
+	Iz = 9999.0f;
+	Iw = 9999.0f;
+	Jx = 9999.0f;
+	Jy = 9999.0f;
+	Jz = 9999.0f;
+	Jw = 9999.0f;
+	Kx = 9999.0f;
+	Ky = 9999.0f;
+	Kz = 9999.0f;
+	Kw = 9999.0f;
+	Tx = 9999.0f;
+	Ty = 9999.0f;
+	Tz = 9999.0f;
+	Tw = 9999.0f;
+}
+
 void Matrix44::SetEmpty()
 {
 	Ix = 0.0f;
@@ -210,6 +230,7 @@ void Matrix44::Append( const Matrix44& matrixToAppend ) // a.k.a. Concatenate (r
 	Tz = (tempMatrix.Iz * matrixToAppend.Tx) + (tempMatrix.Jz * matrixToAppend.Ty) + (tempMatrix.Kz * matrixToAppend.Tz) + (tempMatrix.Tz * matrixToAppend.Tw);
 	Tw = (tempMatrix.Iw * matrixToAppend.Tx) + (tempMatrix.Jw * matrixToAppend.Ty) + (tempMatrix.Kw * matrixToAppend.Tz) + (tempMatrix.Tw * matrixToAppend.Tw);
 }
+
 
 void Matrix44::RotateDegrees2D( float rotationDegreesAboutZ ) //
 {
@@ -794,6 +815,8 @@ Vector2 Matrix44::GetUp2D() const
 	return Vector2(forwardVector.x, forwardVector.y);
 }
 
+
+
 void Matrix44::SetFromBasisVectors(Vector4 iBasis, Vector4 jBasis, Vector4 kBasis, Vector4 tBasis)
 {
 	SetIBasis(iBasis);
@@ -1115,4 +1138,19 @@ bool Matrix44::Invert()
 	}
 
 	return true;
+}
+
+
+
+Matrix44 Matrix44::GetInverse()
+{
+	Matrix44 inverseMatrix = *this;
+	bool success = inverseMatrix.Invert();
+
+	if (success == false)
+	{
+		inverseMatrix.SetInvalid();
+	}
+
+	return inverseMatrix;
 }

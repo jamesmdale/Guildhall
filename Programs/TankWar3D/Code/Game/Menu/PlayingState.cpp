@@ -22,7 +22,7 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
-	m_camera->m_transform->TranslatePosition(Vector3(0.f, 2.5f, -10.f));
+	m_camera->m_transform->TranslatePosition(Vector3(0.f, 3.f, -10.f));
 
 	//position camera behind player	
 	m_camera->m_skybox = new Skybox("Data/Images/galaxy2.png");
@@ -168,15 +168,15 @@ void PlayingState::UpdateTarget(float deltaSeconds)
 	RayCastHit3 raycastResult = RaycastFromCamera(deltaSeconds);
 
 	// update tank turret to look at to result location =========================================================================================
+	Matrix44 turretWorld = m_playerTank->m_turret->m_transform->GetWorldMatrix();
+	Vector3 turretWorldUp = turretWorld.GetUp();
+	Matrix44 turretLookAt = turretWorld.LookAt(turretWorld.GetPosition(), raycastResult.position, turretWorldUp);
 
-	Matrix44 turret = m_playerTank->m_turret->m_transform->GetWorldMatrix();
-	Vector3 turretWorldUp = turret.GetUp();
-	Matrix44 turretLookAt = turret.LookAt(turret.GetPosition(), raycastResult.position, turretWorldUp);
+	Matrix44 worldToTank = m_playerTank->m_transform->GetWorldMatrix().GetInverse();
+	worldToTank.Append(turretLookAt);
 
-	Matrix44 worldToTank = m_playerTank->m_transform->GetWorldMatrix();
-	bool success = worldToTank.Invert();
-	//Matrix44 
-
+	Vector3 rotation = Vector3(worldToTank.GetRotation().x, worldToTank.GetRotation().y, 0.f);
+	m_playerTank->m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
 
 	// render debug position =========================================================================================
 	Vector3 raycastRenderStartPosition = m_playerTank->m_transform->GetLocalPosition() + (m_playerTank->m_transform->GetWorldUp());

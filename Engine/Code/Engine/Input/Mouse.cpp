@@ -23,7 +23,7 @@ Vector2 Mouse::GetMouseClientPosition()
 
 	Vector2 dimensions = Window::GetInstance()->GetClientDimensions();
 
-	return Vector2( (float)client_pos.x, dimensions.y - (float)client_pos.y ); 
+	return Vector2( (float)client_pos.x, (float)client_pos.y ); 
 };
 
 Vector2 Mouse::GetMouseDelta()

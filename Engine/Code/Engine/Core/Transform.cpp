@@ -60,11 +60,10 @@ void Transform::SetLocalScale(Vector3 scale)
 	}	
 }
 
-void Transform::SetMatrix(const Matrix44& matrix)
+void Transform::SetFromMatrix(const Matrix44& matrix)
 {
-	m_transformMatrix = matrix;
-
-	SetTransformHiearchyDirty();
+	//SetLocalPosition(matrix.GetPosition());
+	SetLocalRotation(matrix.GetRotation());
 }
 
 void Transform::SetIBasis(const Vector4& iBasis)
