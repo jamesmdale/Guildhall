@@ -350,6 +350,32 @@ void Matrix44::Scale3D( float scaleX, float scaleY, float scaleZ )
 	this->Append(scaleMatrix);
 }
 
+Matrix44 Matrix44::TurnToward(Matrix44& target, float maxTurnAngle)
+{
+	//store off position to stick back in matrix after we've rotated
+	Matrix44 inverse = this->GetInverse();
+	inverse.Append(target);
+	Matrix44 rotation = inverse;
+
+	// trace is 1 + 2 cos(theta) == sum of diagonal
+	float trace = rotation.GetTrace();
+
+	// trace = 1 + 2.f * cos(theta)
+	// theta = acos( (trace - 1) *.5f ); 
+	float inner = (trace - 1.0f) * .5f; 
+	inner = ClampFloat( inner, -1.0f, 1.0f ); 
+	float theta = AcosfAsDegrees( trace - 1.0f, 1.0f); 
+
+	float t = GetMinFloat( theta / maxTurnAngle, 1.0f );
+
+	Matrix44 finalMatrix = SphericalInterpolateMatrix( *this, target, t ); 
+	finalMatrix.SetTranslation(this->GetPosition());
+
+	return finalMatrix;
+
+	
+}
+
 // Producers
 Matrix44 Matrix44::MakeRotationDegrees2D( float rotationDegreesAboutZ )
 {
@@ -521,7 +547,7 @@ Matrix44 Matrix44::CloneTemporaryMatrix44(const Matrix44& matrixToClone)
 	return clonedMatrix44;
 }
 
-Matrix44 Matrix44::LerpTransform(Matrix44& start, Matrix44& end, float fractionTwoardEnd)
+Matrix44 Matrix44::SphericalInterpolateMatrix(Matrix44& start, Matrix44& end, float fractionTwoardEnd)
 {
 	Vector3 startRight = start.GetRight();
 	Vector3 endRight = end.GetRight();
@@ -535,6 +561,7 @@ Matrix44 Matrix44::LerpTransform(Matrix44& start, Matrix44& end, float fractionT
 	Vector3 startTranslation = start.GetTranslation();
 	Vector3 endTranslation = end.GetTranslation();
 
+	//interpolate
 	Vector3 right = SphericalInterpolate(startRight, endRight, fractionTwoardEnd);
 	Vector3 up = SphericalInterpolate(startUp, endUp, fractionTwoardEnd);
 	Vector3 forward = SphericalInterpolate(startForward, endForward, fractionTwoardEnd);
@@ -915,6 +942,27 @@ float Matrix44::GetValueAtIndex(int index)
 	}
 
 	return value;
+}
+
+float Matrix44::GetValueAtIndex(int indexI, int indexJ)
+{
+	//insure indexes are inside matrix bounds
+	indexI = ClampInt(indexI, 0, 3);
+	indexJ = ClampInt(indexJ, 0, 3);
+
+	return GetValueAtIndex((indexI * 4) + indexJ);
+}
+
+float Matrix44::GetTrace()
+{
+	float sum = 0.0f;
+
+	for (int matrixIndex = 0.0f; matrixIndex < 3; ++matrixIndex)
+	{
+		sum += GetValueAtIndex(matrixIndex, matrixIndex); //go along the diagonal and sum the values
+	}
+
+	return sum;
 }
 
 /*

@@ -44,6 +44,7 @@ public:
 	void RotateDegreesAroundZ3D(float rotationDegreesAroundZ);
 	void ScaleUniform3D( float scaleXYZ );
 	void Scale3D( float scaleX, float scaleY, float scaleZ );
+	Matrix44 TurnToward(Matrix44& target, float maxTurnAngle);
 
 	//inversions and transposes
 	void InvertFast();
@@ -68,10 +69,12 @@ public:
 	static Matrix44 LookAt(const Vector3& position, const Vector3& target, const Vector3& up = Vector3::UP);
 
 	Matrix44 CloneTemporaryMatrix44(const Matrix44& matrixToClone);
-	Matrix44 LerpTransform(Matrix44& start, Matrix44& end, float fractionTowardEnd);
+	Matrix44 SphericalInterpolateMatrix(Matrix44& start, Matrix44& end, float fractionTowardEnd);
 
 	//getters
 	float GetValueAtIndex(int index);
+	float GetValueAtIndex(int indexI, int indexJ);
+	float GetTrace(); //get axis angle
 
 	Vector4 GetXRow() const{ return Vector4(Ix, Jx, Kx, Tx);}; 
 	Vector4 GetYRow() const{ return Vector4(Iy, Jy, Ky, Ty);};

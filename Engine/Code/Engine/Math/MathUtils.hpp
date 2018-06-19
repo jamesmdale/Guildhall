@@ -3,6 +3,7 @@ class Vector2;
 class IntVector2;
 class Vector3;
 class Vector4;
+class Matrix44;
 
 //misc
 int RoundToNearestInt( float inValue );
@@ -52,7 +53,6 @@ float ClampFloatNegativeOneToOne( float inValue );
 int ClampInt(int inValue, int minInclusiveValue, int maxInclusiveValue);
 float RangeMapFloat(float inValue, float inStart, float inEnd, float outStart, float outEnd);
 float GetFractionInRange( float inValue, float rangeStart, float rangeEnd );
-
 
 float TurnToward( float currentDegrees, float goalDegrees, float maxTurnDegrees );
 float GetAngularDisplacement( float startDegrees, float endDegrees );

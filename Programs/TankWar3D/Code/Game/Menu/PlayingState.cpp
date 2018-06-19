@@ -80,7 +80,7 @@ void PlayingState::Initialize()
 	Renderable* turretRenderable = new Renderable();
 
 	meshBuilder.CreateUVSphere(Vector3::ZERO, 0.25f, 20, 20, Rgba::WHITE);
-	meshBuilder.CreateCube(Vector3(0.f, 0.f, 0.5f), Vector3(0.25f, 0.25f, 1.f), Rgba::WHITE);
+	meshBuilder.CreateCube(Vector3(0.f, 0.f, 0.5f), Vector3(0.5f, 0.5f, 1.5f), Rgba::WHITE);
 	turretRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
 	turretRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("rallyfighter")));
 	tankTurret->AddRenderable(turretRenderable);
@@ -169,18 +169,26 @@ void PlayingState::UpdateTarget(float deltaSeconds)
 
 	// update tank turret to look at to result location =========================================================================================
 	Matrix44 turretWorld = m_playerTank->m_turret->m_transform->GetWorldMatrix();
-	Vector3 turretWorldUp = turretWorld.GetUp();
+	Vector3 turretWorldUp = turretWorld.GetUp();	
+
 	Matrix44 turretLookAt = turretWorld.LookAt(turretWorld.GetPosition(), raycastResult.position, turretWorldUp);
 
+	Matrix44 lerpLookAt = turretWorld.TurnToward(turretLookAt, 1.f);
+
 	Matrix44 worldToTank = m_playerTank->m_transform->GetWorldMatrix().GetInverse();
-	worldToTank.Append(turretLookAt);
+	worldToTank.Append(lerpLookAt);
 
 	Vector3 rotation = Vector3(worldToTank.GetRotation().x, worldToTank.GetRotation().y, 0.f);
 	m_playerTank->m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
 
+
 	// render debug position =========================================================================================
 	Vector3 raycastRenderStartPosition = m_playerTank->m_transform->GetLocalPosition() + (m_playerTank->m_transform->GetWorldUp());
 
+	//turret forward debug line
+	DebugRender::GetInstance()->CreateDebugLine(m_playerTank->m_turret->m_transform->GetWorldPosition(), raycastResult.position, Rgba::ORANGE, Rgba::ORANGE, 0.f, 1, m_camera);
+	
+	//tank forward debug line
 	DebugRender::GetInstance()->CreateDebugLine(m_playerTank->m_transform->GetWorldPosition(), raycastResult.position, Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
 	DebugRender::GetInstance()->CreateDebugCube(raycastResult.position, Vector3(1.f, 1.f, 1.f), Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
 }

@@ -5,6 +5,7 @@
 #include "Engine\Math\IntVector2.hpp"
 #include "Engine\Math\Vector3.hpp"
 #include "Engine\Math\Vector4.hpp"
+#include "Engine\Math\Matrix44.hpp"
 
 constexpr float PI = static_cast<float>(3.14159);
 constexpr float EPSILON = static_cast<float>(0.001);

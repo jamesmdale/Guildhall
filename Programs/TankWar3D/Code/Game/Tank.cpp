@@ -89,8 +89,8 @@ void Tank::UpdateFromInput(float timeDelta)
 
 	// calculate rotation for camera and use same rotation for tank ============================================================================
 
-	m_transform->AddRotation(Vector3(0.f, mouseDelta.x, 0.f) * (timeDelta * 10.f));
-	m_cameraPivotTransform->AddRotation(Vector3(mouseDelta.y, 0.f, 0.f) * (timeDelta * 10.f));	
+	m_cameraPivotTransform->AddRotation(Vector3(mouseDelta.y, mouseDelta.x, 0.f) * (timeDelta * 10.f));
+	//m_cameraPivotTransform->AddRotation(Vector3(, 0.f, 0.f) * (timeDelta * 10.f));	
 
 	TODO("Restrict rotation stuff");
 	/*float clampedRotationX = ClampFloat(m_cameraPivotTransform->GetLocalRotationAroundX(), -90.f, 90.f);
@@ -113,19 +113,41 @@ void Tank::UpdateFromInput(float timeDelta)
 	if(theInput->IsKeyPressed(theInput->KEYBOARD_S))
 	{	
 		positionToAdd = (-1.f * m_transform->GetWorldForward()) * timeDelta * 10.f;
-		m_transform->TranslatePosition(positionToAdd);
+		m_transform->TranslatePosition(positionToAdd);		
 	}
 
 	if(theInput->IsKeyPressed(theInput->KEYBOARD_A))
 	{
-		positionToAdd = (-1.f * m_transform->GetWorldRight()) * timeDelta * 10.f;
-		m_transform->TranslatePosition(positionToAdd);
+		if(theInput->IsKeyPressed(theInput->KEYBOARD_W) || theInput->IsKeyPressed(theInput->KEYBOARD_S))
+		{	
+			float multiplyValue = 10.f;
+
+			if (theInput->IsKeyPressed(theInput->KEYBOARD_SHIFT))
+			{
+				multiplyValue *= 3.f;
+			}
+
+			Vector3 rotation = Vector3(0.f, -10.f, 0.f) * timeDelta * multiplyValue;
+			m_transform->AddRotation(rotation);
+		}
 	}
 
 	if(theInput->IsKeyPressed(theInput->KEYBOARD_D))
 	{
-		positionToAdd = m_transform->GetWorldRight() * timeDelta * 10.f;
-		m_transform->TranslatePosition(positionToAdd);
+		if(theInput->IsKeyPressed(theInput->KEYBOARD_W) || theInput->IsKeyPressed(theInput->KEYBOARD_S))
+		{	
+			float multiplyValue = 10.f;
+
+			if (theInput->IsKeyPressed(theInput->KEYBOARD_SHIFT))
+			{
+				multiplyValue *= 3.f;
+			}
+
+			Vector3 rotation = Vector3(0.f, 10.f, 0.f) * timeDelta * multiplyValue;
+			m_transform->AddRotation(rotation);
+		}
+
+		
 	}
 
 	theRenderer = nullptr;
