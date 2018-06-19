@@ -124,6 +124,13 @@ void PlayingState::Update(float deltaSeconds)
 	// tank update =============================================================================
 	m_playerTank->Update(deltaSeconds);
 
+	//matrix invert test
+	Matrix44 matrix = m_playerTank->m_transform->GetWorldMatrix();
+	Matrix44 invertedMatrix = matrix;
+	bool success = invertedMatrix.Invert();
+
+	matrix.Append(invertedMatrix);
+
 	UpdateTarget(deltaSeconds);
 }
 

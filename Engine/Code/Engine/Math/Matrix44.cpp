@@ -816,3 +816,303 @@ void Matrix44::PerspectiveProjection(float fovDegrees, float aspect, float nearZ
 
 	SetFromBasisVectors( iBasis, jBasis, kBasis, tBasis );
 }
+
+/*
+===============
+|ix	jx	kx	tx|
+|iy	jy	ky	ty|
+|iz	jz	kz	tz|
+|iw	jw	kw	tw|
+===============
+	EQUALS
+===============
+|0	4	8	12|
+|1	5	9	13|
+|2	6	10	14|
+|3	7	11	15|
+===============
+
+*/
+
+float Matrix44::GetValueAtIndex(int index)
+{
+	index = ClampInt(index, 0, 15);
+
+	float value = 0.0f;
+	switch (index)
+	{
+		case 0:
+			value = Ix;
+			break;
+		case 1:
+			value = Iy;
+			break;
+		case 2:
+			value = Iz;
+			break;
+		case 3:
+			value = Iw;
+			break;
+		case 4:
+			value = Jx;
+			break;
+		case 5:
+			value = Jy;
+			break;
+		case 6:
+			value = Jz;
+			break;
+		case 7:
+			value = Jw;
+			break;
+		case 8:
+			value = Kx;
+			break;
+		case 9:
+			value = Ky;
+			break;
+		case 10:
+			value = Kz;
+			break;
+		case 11:
+			value = Kw;
+			break;
+		case 12:
+			value = Tx;
+			break;
+		case 13:
+			value = Ty;
+			break;
+		case 14:
+			value = Tz;
+			break;
+		case 15:
+			value = Tw;
+			break;			
+	}
+
+	return value;
+}
+
+/*
+===============
+|ix	jx	kx	tx|
+|iy	jy	ky	ty|
+|iz	jz	kz	tz|
+|iw	jw	kw	tw|
+===============
+EQUALS
+===============
+|0	4	8	12|
+|1	5	9	13|
+|2	6	10	14|
+|3	7	11	15|
+===============
+
+*/
+
+void Matrix44::SetValueAtIndex(int index, float value)
+{
+	switch (index)
+	{
+	case 0:
+		Ix = value;
+		break;
+	case 1:
+		Iy = value;
+		break;
+	case 2:
+		Iz = value;
+		break;
+	case 3:
+		Iw = value;
+		break;
+	case 4:
+		Jx = value;
+		break;
+	case 5:
+		Jy = value;
+		break;
+	case 6:
+		Jz = value;
+		break;
+	case 7:
+		Jw = value;
+		break;
+	case 8:
+		Kx = value;
+		break;
+	case 9:
+		Ky = value;
+		break;
+	case 10:
+		Kz = value;
+		break;
+	case 11:
+		Kw = value;
+		break;
+	case 12:
+		Tx = value;
+		break;
+	case 13:
+		Ty = value;
+		break;
+	case 14:
+		Tz = value;
+		break;
+	case 15:
+		Tw = value;
+		break;
+	}
+}
+
+bool Matrix44::Invert()
+{
+	Matrix44 inverse;
+	float determinant = 0.0f;
+	float value = 0.0f;
+
+	value = GetValueAtIndex(5) * GetValueAtIndex(10) * GetValueAtIndex(15) -
+		GetValueAtIndex(5) * GetValueAtIndex(11) * GetValueAtIndex(14) -
+		GetValueAtIndex(9) * GetValueAtIndex(6) * GetValueAtIndex(15) +
+		GetValueAtIndex(9) * GetValueAtIndex(7) * GetValueAtIndex(14) +
+		GetValueAtIndex(13) * GetValueAtIndex(6) * GetValueAtIndex(11) -
+		GetValueAtIndex(13) * GetValueAtIndex(7) * GetValueAtIndex(10);
+	inverse.SetValueAtIndex(0, value);
+
+	value = -GetValueAtIndex(4) * GetValueAtIndex(10) * GetValueAtIndex(15) +
+		GetValueAtIndex(4) * GetValueAtIndex(11) * GetValueAtIndex(14) +
+		GetValueAtIndex(8) * GetValueAtIndex(6) * GetValueAtIndex(15) -
+		GetValueAtIndex(8) * GetValueAtIndex(7) * GetValueAtIndex(14) -
+		GetValueAtIndex(12) * GetValueAtIndex(6) * GetValueAtIndex(11) +
+		GetValueAtIndex(12) * GetValueAtIndex(7) * GetValueAtIndex(10);
+	inverse.SetValueAtIndex(4, value);
+
+	value = GetValueAtIndex(4) * GetValueAtIndex(9) * GetValueAtIndex(15) -
+		GetValueAtIndex(4) * GetValueAtIndex(11) * GetValueAtIndex(13) -
+		GetValueAtIndex(8) * GetValueAtIndex(5) * GetValueAtIndex(15) +
+		GetValueAtIndex(8) * GetValueAtIndex(7) * GetValueAtIndex(13) +
+		GetValueAtIndex(12) * GetValueAtIndex(5) * GetValueAtIndex(11) -
+		GetValueAtIndex(12) * GetValueAtIndex(7) * GetValueAtIndex(9);
+	inverse.SetValueAtIndex(8, value);
+
+	value = -GetValueAtIndex(4) * GetValueAtIndex(9) * GetValueAtIndex(14) +
+		GetValueAtIndex(4) * GetValueAtIndex(10) * GetValueAtIndex(13) +
+		GetValueAtIndex(8) * GetValueAtIndex(5) * GetValueAtIndex(14) -
+		GetValueAtIndex(8) * GetValueAtIndex(6) * GetValueAtIndex(13) -
+		GetValueAtIndex(12) * GetValueAtIndex(5) * GetValueAtIndex(10) +
+		GetValueAtIndex(12) * GetValueAtIndex(6) * GetValueAtIndex(9);
+	inverse.SetValueAtIndex(12, value);
+
+	value = -GetValueAtIndex(1) * GetValueAtIndex(10) * GetValueAtIndex(15) +
+		GetValueAtIndex(1) * GetValueAtIndex(11) * GetValueAtIndex(14) +
+		GetValueAtIndex(9) * GetValueAtIndex(2) * GetValueAtIndex(15) -
+		GetValueAtIndex(9) * GetValueAtIndex(3) * GetValueAtIndex(14) -
+		GetValueAtIndex(13) * GetValueAtIndex(2) * GetValueAtIndex(11) +
+		GetValueAtIndex(13) * GetValueAtIndex(3) * GetValueAtIndex(10);
+	inverse.SetValueAtIndex(1, value);
+
+	value = GetValueAtIndex(0) * GetValueAtIndex(10) * GetValueAtIndex(15) -
+		GetValueAtIndex(0) * GetValueAtIndex(11) * GetValueAtIndex(14) -
+		GetValueAtIndex(8) * GetValueAtIndex(2) * GetValueAtIndex(15) +
+		GetValueAtIndex(8) * GetValueAtIndex(3) * GetValueAtIndex(14) +
+		GetValueAtIndex(12) * GetValueAtIndex(2) * GetValueAtIndex(11) -
+		GetValueAtIndex(12) * GetValueAtIndex(3) * GetValueAtIndex(10);
+	inverse.SetValueAtIndex(5, value);
+
+	value = -GetValueAtIndex(0) * GetValueAtIndex(9) * GetValueAtIndex(15) +
+		GetValueAtIndex(0) * GetValueAtIndex(11) * GetValueAtIndex(13) +
+		GetValueAtIndex(8) * GetValueAtIndex(1) * GetValueAtIndex(15) -
+		GetValueAtIndex(8) * GetValueAtIndex(3) * GetValueAtIndex(13) -
+		GetValueAtIndex(12) * GetValueAtIndex(1) * GetValueAtIndex(11) +
+		GetValueAtIndex(12) * GetValueAtIndex(3) * GetValueAtIndex(9);
+	inverse.SetValueAtIndex(9, value);
+
+	value = GetValueAtIndex(0) * GetValueAtIndex(9) * GetValueAtIndex(14) -
+		GetValueAtIndex(0) * GetValueAtIndex(10) * GetValueAtIndex(13) -
+		GetValueAtIndex(8) * GetValueAtIndex(1) * GetValueAtIndex(14) +
+		GetValueAtIndex(8) * GetValueAtIndex(2) * GetValueAtIndex(13) +
+		GetValueAtIndex(12) * GetValueAtIndex(1) * GetValueAtIndex(10) -
+		GetValueAtIndex(12) * GetValueAtIndex(2) * GetValueAtIndex(9);
+	inverse.SetValueAtIndex(13, value);
+
+	value = GetValueAtIndex(1) * GetValueAtIndex(6) * GetValueAtIndex(15) -
+		GetValueAtIndex(1) * GetValueAtIndex(7) * GetValueAtIndex(14) -
+		GetValueAtIndex(5) * GetValueAtIndex(2) * GetValueAtIndex(15) +
+		GetValueAtIndex(5) * GetValueAtIndex(3) * GetValueAtIndex(14) +
+		GetValueAtIndex(13) * GetValueAtIndex(2) * GetValueAtIndex(7) -
+		GetValueAtIndex(13) * GetValueAtIndex(3) * GetValueAtIndex(6);
+	inverse.SetValueAtIndex(2, value);
+
+	value = -GetValueAtIndex(0) * GetValueAtIndex(6) * GetValueAtIndex(15) +
+		GetValueAtIndex(0) * GetValueAtIndex(7) * GetValueAtIndex(14) +
+		GetValueAtIndex(4) * GetValueAtIndex(2) * GetValueAtIndex(15) -
+		GetValueAtIndex(4) * GetValueAtIndex(3) * GetValueAtIndex(14) -
+		GetValueAtIndex(12) * GetValueAtIndex(2) * GetValueAtIndex(7) +
+		GetValueAtIndex(12) * GetValueAtIndex(3) * GetValueAtIndex(6);
+	inverse.SetValueAtIndex(6, value);
+
+	value = GetValueAtIndex(0) * GetValueAtIndex(5) * GetValueAtIndex(15) -
+		GetValueAtIndex(0) * GetValueAtIndex(7) * GetValueAtIndex(13) -
+		GetValueAtIndex(4) * GetValueAtIndex(1) * GetValueAtIndex(15) +
+		GetValueAtIndex(4) * GetValueAtIndex(3) * GetValueAtIndex(13) +
+		GetValueAtIndex(12) * GetValueAtIndex(1) * GetValueAtIndex(7) -
+		GetValueAtIndex(12) * GetValueAtIndex(3) * GetValueAtIndex(5);
+	inverse.SetValueAtIndex(10, value);
+
+	value = -GetValueAtIndex(0) * GetValueAtIndex(5) * GetValueAtIndex(14) +
+		GetValueAtIndex(0) * GetValueAtIndex(6) * GetValueAtIndex(13) +
+		GetValueAtIndex(4) * GetValueAtIndex(1) * GetValueAtIndex(14) -
+		GetValueAtIndex(4) * GetValueAtIndex(2) * GetValueAtIndex(13) -
+		GetValueAtIndex(12) * GetValueAtIndex(1) * GetValueAtIndex(6) +
+		GetValueAtIndex(12) * GetValueAtIndex(2) * GetValueAtIndex(5);
+	inverse.SetValueAtIndex(14, value);
+
+	value = -GetValueAtIndex(1) * GetValueAtIndex(6) * GetValueAtIndex(11) +
+		GetValueAtIndex(1) * GetValueAtIndex(7) * GetValueAtIndex(10) +
+		GetValueAtIndex(5) * GetValueAtIndex(2) * GetValueAtIndex(11) -
+		GetValueAtIndex(5) * GetValueAtIndex(3) * GetValueAtIndex(10) -
+		GetValueAtIndex(9) * GetValueAtIndex(2) * GetValueAtIndex(7) +
+		GetValueAtIndex(9) * GetValueAtIndex(3) * GetValueAtIndex(6);
+	inverse.SetValueAtIndex(3, value);
+
+	value = GetValueAtIndex(0) * GetValueAtIndex(6) * GetValueAtIndex(11) -
+		GetValueAtIndex(0) * GetValueAtIndex(7) * GetValueAtIndex(10) -
+		GetValueAtIndex(4) * GetValueAtIndex(2) * GetValueAtIndex(11) +
+		GetValueAtIndex(4) * GetValueAtIndex(3) * GetValueAtIndex(10) +
+		GetValueAtIndex(8) * GetValueAtIndex(2) * GetValueAtIndex(7) -
+		GetValueAtIndex(8) * GetValueAtIndex(3) * GetValueAtIndex(6);
+	inverse.SetValueAtIndex(7, value);
+
+	value = -GetValueAtIndex(0) * GetValueAtIndex(5) * GetValueAtIndex(11) +
+		GetValueAtIndex(0) * GetValueAtIndex(7) * GetValueAtIndex(9) +
+		GetValueAtIndex(4) * GetValueAtIndex(1) * GetValueAtIndex(11) -
+		GetValueAtIndex(4) * GetValueAtIndex(3) * GetValueAtIndex(9) -
+		GetValueAtIndex(8) * GetValueAtIndex(1) * GetValueAtIndex(7) +
+		GetValueAtIndex(8) * GetValueAtIndex(3) * GetValueAtIndex(5);
+	inverse.SetValueAtIndex(11, value);
+
+	value = GetValueAtIndex(0) * GetValueAtIndex(5) * GetValueAtIndex(10) -
+		GetValueAtIndex(0) * GetValueAtIndex(6) * GetValueAtIndex(9) -
+		GetValueAtIndex(4) * GetValueAtIndex(1) * GetValueAtIndex(10) +
+		GetValueAtIndex(4) * GetValueAtIndex(2) * GetValueAtIndex(9) +
+		GetValueAtIndex(8) * GetValueAtIndex(1) * GetValueAtIndex(6) -
+		GetValueAtIndex(8) * GetValueAtIndex(2) * GetValueAtIndex(5);
+	inverse.SetValueAtIndex(15, value);
+
+	determinant = GetValueAtIndex(0) * inverse.GetValueAtIndex(0) + GetValueAtIndex(1) * inverse.GetValueAtIndex(4) + GetValueAtIndex(2) * inverse.GetValueAtIndex(8) + GetValueAtIndex(3) * inverse.GetValueAtIndex(12);
+
+	if (determinant == 0.0f)
+	{
+		return false;
+	}
+
+	determinant = 1.f / determinant;
+
+	for (int matrixIndex = 0; matrixIndex < 16; ++matrixIndex)
+	{
+		SetValueAtIndex(matrixIndex, inverse.GetValueAtIndex(matrixIndex) * determinant);
+	}
+
+	return true;
+}

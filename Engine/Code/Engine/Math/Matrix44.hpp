@@ -27,6 +27,7 @@ public:
 	void SetEmpty();
 	void SetIdentity();
 	void SetValues( const float* sixteenValuesBasisMajor ); // float[16] array in order Ix, Iy...
+	void SetValueAtIndex(int index, float value);
 	void Append( const Matrix44& matrixToAppend ); // a.k.a. Concatenate (right-multiply)
 
 	//2D transformations
@@ -46,6 +47,7 @@ public:
 	//inversions and transposes
 	void InvertFast();
 	Matrix44 InvertFastToNew();
+	bool Invert();
 	void TransposeRotation();
 	void Transpose();
 
@@ -68,6 +70,8 @@ public:
 	Matrix44 LerpTransform(Matrix44& start, Matrix44& end, float fractionTowardEnd);
 
 	//getters
+	float GetValueAtIndex(int index);
+
 	Vector4 GetXRow() const{ return Vector4(Ix, Jx, Kx, Tx);}; 
 	Vector4 GetYRow() const{ return Vector4(Iy, Jy, Ky, Ty);};
 	Vector4 GetZRow() const{ return Vector4(Iz, Jz, Kz, Tz);};
