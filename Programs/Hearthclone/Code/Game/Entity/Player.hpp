@@ -1,8 +1,11 @@
 #pragma once
-#include "Game\Entity\Card.hpp"
-#include "Game\Entity\Minion.hpp"
-#include "Game\Entity\Hero.hpp"
+#include "Game\GameStates\PlayingState.hpp"
+#include <string>
 #include <vector>
+
+class Card;
+class Minion;
+class Hero;
 
 enum ePlayerType
 {

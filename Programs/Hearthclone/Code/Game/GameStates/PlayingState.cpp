@@ -10,6 +10,8 @@
 #include <map>
 #include <string>
 #include "Engine\Core\StringUtils.hpp"
+#include "Game\Entity\Player.hpp"
+#include "Game\Entity\Minion.hpp"
 
 Widget* currentSelectedWidget = nullptr;
 
@@ -67,6 +69,12 @@ void PlayingState::Initialize()
 	//start game time
 	m_gameTime = new Stopwatch();
 	m_gameTime->SetClock(GetMasterClock());
+
+	m_activePlayerID = SELF_PLAYER_TYPE;
+	
+	TODO("Randomize which player plays first at game start");
+	//m_activePlayerID = (ePlayerType)GetRandomIntZeroOrOne();
+	
 
 	theRenderer = nullptr;	
 }
@@ -148,7 +156,8 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 		}
 	}	
 
-	if (theInput->IsKeyPressed(theInput->MOUSE_LEFT_CLICK))
+	//left click input is only available to the current player
+	if (theInput->IsKeyPressed(theInput->MOUSE_LEFT_CLICK) && m_activePlayerID == SELF_PLAYER_TYPE)
 	{
 		if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 		{

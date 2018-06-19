@@ -2,9 +2,9 @@
 #include "Game\GameStates\GameState.hpp"
 #include "Engine\Core\Terrain.hpp"
 #include "Game\Board.hpp"
-#include "Game\Entity\Player.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 
+class Player;
 class Tank;
 class PlayingState : public GameState
 {
@@ -36,8 +36,8 @@ public:
 
 	Widget* m_currentSelectedWidget = nullptr;
 	
-	int activePlayerID;
-	int turnCount;
+	int m_activePlayerID;
+	int m_turnCount;
 
 	//MatchLog
 

@@ -2,6 +2,9 @@
 #include "Game\GameStates\PlayingState.hpp"
 #include "Game\Definitions\CardDefinition.hpp"
 #include "Game\Definitions\DeckDefinition.hpp"
+#include "Game\Entity\Card.hpp"
+#include "Game\Entity\Minion.hpp"
+#include "Game\Entity\Hero.hpp"
 
 
 Player::Player()
@@ -59,6 +62,7 @@ void Player::LoadDeckFromDefinitionName(const std::string& deckName)
 	for (int cardIndex = 0; cardIndex < (int)deck->m_cardNames.size(); ++cardIndex)
 	{
 		Card* cardToAdd = new Card(CardDefinition::GetDefinitionByName(deck->m_cardNames[cardIndex]));
+		cardToAdd->m_controller = m_playerId;
 		cardToAdd->m_renderScene = m_gameState->m_renderScene2D;
 		m_deck.push_back(cardToAdd);
 		cardToAdd = nullptr;

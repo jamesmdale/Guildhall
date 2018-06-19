@@ -72,6 +72,12 @@ const Vector2 g_cardAttackDimensionsRatio = Vector2(Vector2(50.f, 45.f)/g_cardSi
 const Vector2 g_cardHealthCenterRatio = Vector2(324.f/g_cardSize.x, (g_cardSize.y - 466.f)/g_cardSize.y);
 const Vector2 g_cardHealthDimensionsRatio = Vector2(Vector2(50.f, 45.f)/g_cardSize);
 
+//used to calculate center positions of all elements on a minion
+const Vector2 g_minionSize = Vector2(316.f, 206.f);
+
+const Vector2 g_minionImageCenterRatio = Vector2(186.f/g_cardSize.x, (g_cardSize.y - 194.f)/g_cardSize.y);
+const Vector2 g_minionImageDimensionsRatio = Vector2(Vector2(317.f, 206.f)/g_cardSize);
+
 //hero sizes
 const Vector2 g_heroPortraitPercentageOfClientWindow = Vector2(0.1f, 0.1f);
 const Vector2 g_heroAbilityPercentageOfClientWindow = Vector2(0.075f, 0.075f);

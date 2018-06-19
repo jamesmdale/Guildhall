@@ -92,7 +92,7 @@ void Card::RefreshCardRenderables()
 	}
 	m_renderables.clear();
 
-	//create board layout
+	// create card layout =============================================================================
 	Renderer* theRenderer = Renderer::GetInstance();
 	Window* clientWindow = Window::GetInstance();
 	MeshBuilder mb;
@@ -183,6 +183,24 @@ void Card::OnLeftClicked()
 			Vector2 battlefieldLocation = gameState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
 			m_transform2D->SetLocalPosition(battlefieldLocation);
 			m_lockPosition = battlefieldLocation;
+
+			int cardIndexInPlayerHand = 0;
+			ePlayerType player;
+			if (gameState->m_activePlayerID == SELF_PLAYER_TYPE)
+			{
+				player = SELF_PLAYER_TYPE;
+				Player* self = gameState->m_player;
+				for (int cardIndex = 0; cardIndex < (int)self->m_hand.size(); ++cardIndex)
+				{
+					if (self->m_hand[cardIndex] == this)
+					{
+						cardIndexInPlayerHand = cardIndex;
+						break; 
+					}
+				}
+
+				self = nullptr;
+			}
 		}
 		else //return card to hand
 		{

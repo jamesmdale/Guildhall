@@ -5,6 +5,7 @@
 #include <string>
 #include "Engine\Core\Widget.hpp"
 #include "Engine\Math\Vector2.hpp"
+#include "Game\Entity\Player.hpp"
 
 class Card : public Widget
 {
@@ -33,6 +34,8 @@ public:
 	int m_cost;
 	int m_attack;
 	int m_health;
+
+	ePlayerType m_controller;
 
 	std::vector<std::string> m_tags;
 	std::string m_text;	

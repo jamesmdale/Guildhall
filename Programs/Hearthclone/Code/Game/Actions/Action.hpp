@@ -60,6 +60,8 @@ void DrawAction(const std::map<std::string, std::string>& parameters);
 
 void AttackAction(const std::map<std::string, std::string>& parameters);
 
+void CastFromHandAction(const std::map<std::string, std::string>& parameters);
+
 
 
 

@@ -74,6 +74,8 @@ bool DrawEffect(Widget* targetWidget, const std::map<std::string, std::string>& 
 
 bool AttackEffect(Widget* targetWidget, const std::map<std::string, std::string>& parameters, float deltaSeconds);
 
+bool TargetFromInputEffect(Widget* targetWidget, const std::map<std::string, std::string>& parameters, float DeltaSeconds);
+
 
 
 

@@ -4,7 +4,7 @@
         <Attributes cost="4" attack="4" health="5" />
         <Class class="neutral" />
         <Tags>
-            <Tag tag="battlecry" />
+           <!--> <Tag tag="battlecry" /><-->
         </Tags>
         <Text text="" />
      <!-->Text as html tag. Good for markup<-->
