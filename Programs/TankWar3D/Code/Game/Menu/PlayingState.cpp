@@ -69,52 +69,7 @@ void PlayingState::Initialize()
 	m_playerTank = new Tank();
 	m_playerTank->SetCamera(m_camera);
 	m_playerTank->m_playingState = (PlayingState*)g_currentState;
-
-	m_playerTank->m_baseDimensions = Vector3(1.0f, 0.5f, 2.0f);
-
-	Renderable* tankRenderable = new Renderable();
-	meshBuilder.LoadObjectFromFile("Data/Model/claire_car/RallyFighter.obj");
-	tankRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
-	tankRenderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("rallyfighter"));
-	tankRenderable->m_transform->SetLocalScale(tankRenderable->m_transform->GetLocalScale() * 0.01);
-
-	m_playerTank->AddRenderable(tankRenderable);
-	m_playerTank->m_tankBodyTransform->AddChildTransform(tankRenderable->m_transform);
-	m_playerTank->m_breadCrumbTimer = new Stopwatch(Game::GetInstance()->m_gameClock);
-	m_playerTank->m_breadCrumbTimer->SetTimer(0.5f);
-
-	//add turret to player tank
-	Turret* tankTurret = new Turret();
-	Renderable* turretRenderable = new Renderable();
-
-	meshBuilder.CreateUVSphere(Vector3::ZERO, 0.25f, 20, 20, Rgba::WHITE);
-	meshBuilder.CreateCube(Vector3(0.f, 0.f, 0.5f), Vector3(0.5f, 0.5f, 1.5f), Rgba::WHITE);
-	turretRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
-	turretRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("rallyfighter")));
-	tankTurret->AddRenderable(turretRenderable);
-	tankTurret->m_transform->AddChildTransform(turretRenderable->m_transform);
-	tankTurret->m_transform->SetLocalPosition(Vector3(-0.15f, 1.75f, -0.5f));
-	m_playerTank->m_turret = tankTurret;
-	
-	//cleanup tank turret and renderable
-	turretRenderable = nullptr;
-	tankTurret = nullptr; 	
-
-	m_playerTank->m_tankBodyTransform->AddChildTransform(m_playerTank->m_turret->m_transform);
-	m_playerTank->m_tankInformation->m_renderScene = m_renderScene2D;
-	m_playerTank->m_tankInformation->Initialize();
-
-
-	//add tank to lists
-	for (int renderableIndex = 0; renderableIndex < (int)m_playerTank->m_renderables.size(); ++renderableIndex)
-	{
-		m_renderScene->AddRenderable(m_playerTank->m_renderables[renderableIndex]);
-	}
-
-	for (int renderableIndex = 0; renderableIndex < (int)m_playerTank->m_turret->m_renderables.size(); ++renderableIndex)
-	{
-		m_renderScene->AddRenderable(m_playerTank->m_turret->m_renderables[renderableIndex]);
-	}
+	m_playerTank->Initialize();
 
 	// add terrain =========================================================================================
 	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 2.f, 10.f, "Data/Images/terrain.jpg");
@@ -126,10 +81,6 @@ void PlayingState::Initialize()
 	}
 
 
-	
-
-
-
 	theRenderer = nullptr;	
 }
 
@@ -137,8 +88,6 @@ void PlayingState::Update(float deltaSeconds)
 { 
 	// tank update =============================================================================
 	m_playerTank->Update(deltaSeconds);
-
-	UpdateTarget(deltaSeconds);
 }
 
 void PlayingState::PreRender()
@@ -176,72 +125,4 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	theInput = nullptr;
 
 	return deltaSeconds; //new deltaSeconds
-}
-
-void PlayingState::UpdateTarget(float deltaSeconds)
-{
-	RayCastHit3 raycastResult = RaycastFromCamera(deltaSeconds);
-
-	// update tank turret to look at to result location =========================================================================================
-	Matrix44 turretWorld = m_playerTank->m_turret->m_transform->GetWorldMatrix();
-	Vector3 turretWorldUp = turretWorld.GetUp();	
-
-	Matrix44 turretLookAt = turretWorld.LookAt(turretWorld.GetPosition(), raycastResult.position, turretWorldUp);
-
-	Matrix44 lerpLookAt = turretWorld.TurnToward(turretLookAt, 1.f);
-
-	Matrix44 worldToTank = m_playerTank->m_transform->GetWorldMatrix().GetInverse();
-	worldToTank.Append(lerpLookAt);
-
-	Vector3 rotation = Vector3(worldToTank.GetRotation().x, worldToTank.GetRotation().y, 0.f);
-	m_playerTank->m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
-
-
-	// render debug position =========================================================================================
-	Vector3 raycastRenderStartPosition = m_playerTank->m_transform->GetLocalPosition() + (m_playerTank->m_transform->GetWorldUp());
-
-	//turret forward debug line
-	DebugRender::GetInstance()->CreateDebugLine(m_playerTank->m_turret->m_transform->GetWorldPosition(), raycastResult.position, Rgba::ORANGE, Rgba::ORANGE, 0.f, 1, m_camera);
-	
-	//tank forward debug line
-	DebugRender::GetInstance()->CreateDebugLine(m_playerTank->m_transform->GetWorldPosition(), raycastResult.position, Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
-	DebugRender::GetInstance()->CreateDebugCube(raycastResult.position, Vector3(1.f, 1.f, 1.f), Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
-}
-
-RayCastHit3 PlayingState::RaycastFromCamera(float deltaSeconds)
-{
-	RayCastHit3 raycast;
-
-	Vector3 cameraForward = m_camera->m_transform->GetWorldForward();
-//	DebugRender::GetInstance()->CreateDebugCube(m_camera->m_transform->GetWorldPosition() + (10.f *  m_camera->m_transform->GetWorldForward()), Vector3::ONE, Rgba::BLUE, Rgba::BLUE, 0.f, 1, m_camera);
-
-	Vector3 position = m_camera->m_transform->GetWorldPosition();
-	Ray3 ray = Ray3(m_camera->m_transform->GetWorldPosition() + cameraForward * 5.f, cameraForward);
-
-	float currentDistance = 0.f;
-	float maxDistance = 50.f;
-
-	Vector3 currentPosition = ray.start;
-
-	while (currentDistance < maxDistance)
-	{
-		currentDistance += deltaSeconds;
-
-		currentPosition = ray.Evaluate(currentDistance);
-
-		float heightAtPosition = m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
-		if (currentPosition.y <= heightAtPosition)
-		{
-			raycast.hit = true;
-			raycast.position = Vector3(currentPosition.x, heightAtPosition, currentPosition.z);
-			return raycast;
-		}
-	}
-
-	if (raycast.hit == false)
-	{
-		raycast.position = currentPosition;
-	}
-
-	return raycast;
 }

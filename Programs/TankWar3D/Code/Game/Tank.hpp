@@ -6,6 +6,7 @@
 #include "Game\Menu\PlayingState.hpp"
 #include "Game\Turret.hpp"
 #include "Game\TankUI.hpp"
+#include "Engine\Renderer\Renderable.hpp"
 
 class Tank : public GameObject
 {
@@ -39,12 +40,18 @@ public:
 	//overrides
 	virtual ~Tank() override;
 
+	void Initialize();
 	virtual void Update(float deltaTime) override;
 
 	void SetCamera(Camera* camera);
 	void UpdateFromInput(float timeDelta);
 
 	void RefreshTankUI();
+
+	Vector3 UpdateTarget(float deltaSeconds);
+	RayCastHit3 RaycastFromCamera(float deltaSeconds);
+
+	void UpdateTrajectoryRenderable(const Vector3& target);
 
 public:
 	// transforms
@@ -61,6 +68,8 @@ public:
 	Vector3 m_currentTarget;
 
 	TankUI* m_tankInformation = nullptr;
+
+	Renderable* m_trajectory = nullptr;
 
 	int m_currentHealth = 100;
 };

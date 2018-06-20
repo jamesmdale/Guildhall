@@ -8,6 +8,10 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Debug\DebugRender.cpp"
 #include "Engine\Window\Window.hpp"
+#include "Engine\Renderer\Renderer.hpp"
+#include "Engine\Core\Raycast.hpp"
+
+
 Tank::Tank()
 {
 	// create transforms =============================================================================
@@ -15,7 +19,7 @@ Tank::Tank()
 	m_tankBodyTransform  = new Transform();
 	m_tankInformation = new TankUI();
 
-	//add children to base transform
+	// add children to base transform =========================================================================================
 	m_transform->AddChildTransform(m_cameraPivotTransform);
 	m_transform->AddChildTransform(m_tankBodyTransform);
 }
@@ -30,6 +34,72 @@ Tank::~Tank()
 
 	m_camera = nullptr;
 	m_playingState = nullptr;
+}
+
+void Tank::Initialize()
+{
+	MeshBuilder meshBuilder;	
+
+	m_renderScene = m_playingState->m_renderScene;
+
+	// create tank renderable =========================================================================================
+	m_baseDimensions = Vector3(1.0f, 0.5f, 2.0f);
+
+	Renderable* tankRenderable = new Renderable();
+	meshBuilder.LoadObjectFromFile("Data/Model/claire_car/RallyFighter.obj");
+	tankRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
+	tankRenderable->SetMaterial(Renderer::GetInstance()->CreateOrGetMaterial("rallyfighter"));
+	tankRenderable->m_transform->SetLocalScale(tankRenderable->m_transform->GetLocalScale() * 0.01);
+	AddRenderable(tankRenderable);
+
+	// initialize tank transforms =========================================================================================
+	m_tankBodyTransform->AddChildTransform(tankRenderable->m_transform);
+
+	// setup bread crumb timer =========================================================================================
+	m_breadCrumbTimer = new Stopwatch(Game::GetInstance()->m_gameClock);
+	m_breadCrumbTimer->SetTimer(0.5f);
+
+	// add turret to tank =========================================================================================
+	Turret* tankTurret = new Turret();
+	Renderable* turretRenderable = new Renderable();
+
+	meshBuilder.CreateUVSphere(Vector3::ZERO, 0.25f, 20, 20, Rgba::WHITE);
+	meshBuilder.CreateCube(Vector3(0.f, 0.f, 0.5f), Vector3(0.5f, 0.5f, 1.5f), Rgba::WHITE);
+	turretRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
+	turretRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("rallyfighter")));
+	tankTurret->AddRenderable(turretRenderable);
+	tankTurret->m_transform->AddChildTransform(turretRenderable->m_transform);
+	tankTurret->m_transform->SetLocalPosition(Vector3(-0.15f, 1.75f, -0.5f));
+	m_turret = tankTurret;
+
+	m_tankBodyTransform->AddChildTransform(m_turret->m_transform);
+
+	// setup tank ui =========================================================================================
+	m_tankInformation->m_renderScene = m_playingState->m_renderScene2D;
+	m_tankInformation->Initialize();
+
+	// setup tank target trajectory =========================================================================================
+	m_trajectory = new Renderable();
+
+	meshBuilder.CreateLine(m_turret->m_muzzleTransform->GetWorldPosition(), m_turret->m_muzzleTransform->GetWorldPosition(), Rgba::RED);
+	m_trajectory->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
+	m_trajectory->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("default"))); 
+	m_renderScene->AddRenderable(m_trajectory);
+
+	// add tank renderables to scene =========================================================================================
+	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->AddRenderable(m_renderables[renderableIndex]);
+	}
+
+	for (int renderableIndex = 0; renderableIndex < (int)m_turret->m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->AddRenderable(m_turret->m_renderables[renderableIndex]);
+	}
+
+	// cleanup tank turret and renderable =========================================================================================
+	turretRenderable = nullptr;
+	tankTurret = nullptr;
 }
 
 void Tank::Update(float timeDelta)
@@ -70,6 +140,12 @@ void Tank::Update(float timeDelta)
 
 	DebugRender::GetInstance()->CreateDebugCrosshair2D(Window::GetInstance()->GetCenterOfClientWindow(), Rgba::GREEN, Rgba::GREEN, 0.0f, 1);
 
+	//raycast for targetting
+	Vector3 targetLocation = UpdateTarget(timeDelta);
+	
+	//update trajectory renderable
+	UpdateTrajectoryRenderable(targetLocation);
+
 	//copy new tank information to tank ui
 	RefreshTankUI();
 
@@ -95,16 +171,7 @@ void Tank::UpdateFromInput(float timeDelta)
 	mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
 
 	// calculate rotation for camera and use same rotation for tank ============================================================================
-
 	m_cameraPivotTransform->AddRotation(Vector3(mouseDelta.y, mouseDelta.x, 0.f) * (timeDelta * 10.f));
-	//m_cameraPivotTransform->AddRotation(Vector3(, 0.f, 0.f) * (timeDelta * 10.f));	
-
-	TODO("Restrict rotation stuff");
-	/*float clampedRotationX = ClampFloat(m_cameraPivotTransform->GetLocalRotationAroundX(), -90.f, 90.f);
-	float clampedRotationY = Modulus(m_transform->GetLocalRotationAroundY(), 360.f);
-
-	m_transform->SetLocalRotation(Vector3(m_transform->GetLocalRotationAroundX(), clampedRotationY, m_transform->GetLocalRotationAroundZ()));
-	m_cameraPivotTransform->SetLocalRotation(Vector3(clampedRotationX, m_transform->GetLocalRotationAroundY(), m_transform->GetLocalRotationAroundZ()));*/
 
 	// update movement =============================================================================
 	Vector3 positionToAdd = Vector3::ZERO;
@@ -168,4 +235,94 @@ void Tank::UpdateFromInput(float timeDelta)
 void Tank::RefreshTankUI()
 {
 	m_tankInformation->m_tankHealthThisFrame = m_currentHealth;
+}
+
+Vector3 Tank::UpdateTarget(float deltaSeconds)
+{
+	RayCastHit3 raycastResult = RaycastFromCamera(deltaSeconds);
+
+	// update tank turret to look at to result location =========================================================================================
+	Matrix44 turretWorld = m_turret->m_transform->GetWorldMatrix();
+	Vector3 turretWorldUp = turretWorld.GetUp();
+
+	Matrix44 turretLookAt = turretWorld.LookAt(turretWorld.GetPosition(), raycastResult.position, turretWorldUp);
+
+	Matrix44 lerpLookAt = turretWorld.TurnToward(turretLookAt, 1.f);
+
+	Matrix44 worldToTank = m_transform->GetWorldMatrix().GetInverse();
+	worldToTank.Append(lerpLookAt);
+
+	Vector3 rotation = Vector3(worldToTank.GetRotation().x, worldToTank.GetRotation().y, 0.f);
+	m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
+
+
+	// render debug position =========================================================================================
+	Vector3 raycastRenderStartPosition = m_transform->GetLocalPosition() + (m_transform->GetWorldUp());
+
+	//turret forward debug line
+	//DebugRender::GetInstance()->CreateDebugLine(m_turret->m_transform->GetWorldPosition(), raycastResult.position, Rgba::ORANGE, Rgba::ORANGE, 0.f, 1, m_camera);
+
+	////tank forward debug line
+	//DebugRender::GetInstance()->CreateDebugLine(m_transform->GetWorldPosition(), raycastResult.position, Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
+	//DebugRender::GetInstance()->CreateDebugCube(raycastResult.position, Vector3(1.f, 1.f, 1.f), Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
+
+	return raycastResult.position;
+}
+
+RayCastHit3 Tank::RaycastFromCamera(float deltaSeconds)
+{
+	RayCastHit3 raycast;
+
+	Vector3 cameraForward = m_camera->m_transform->GetWorldForward();
+	//	DebugRender::GetInstance()->CreateDebugCube(m_camera->m_transform->GetWorldPosition() + (10.f *  m_camera->m_transform->GetWorldForward()), Vector3::ONE, Rgba::BLUE, Rgba::BLUE, 0.f, 1, m_camera);
+
+	Vector3 position = m_camera->m_transform->GetWorldPosition();
+	Ray3 ray = Ray3(m_camera->m_transform->GetWorldPosition() + cameraForward * 5.f, cameraForward);
+
+	float currentDistance = 0.f;
+	float maxDistance = 50.f;
+
+	Vector3 currentPosition = ray.start;
+
+	while (currentDistance < maxDistance)
+	{
+		currentDistance += deltaSeconds;
+
+		currentPosition = ray.Evaluate(currentDistance);
+
+		float heightAtPosition = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
+		if (currentPosition.y <= heightAtPosition)
+		{
+			raycast.hit = true;
+			raycast.position = Vector3(currentPosition.x, heightAtPosition, currentPosition.z);
+			return raycast;
+		}
+	}
+
+	if (raycast.hit == false)
+	{
+		raycast.position = currentPosition;
+	}
+
+	return raycast;
+}
+
+void Tank::UpdateTrajectoryRenderable(const Vector3& target)
+{
+	m_renderScene->RemoveRenderable(m_trajectory);
+	
+	for (int meshIndex = 0; meshIndex < (int)m_trajectory->m_meshes.size(); ++meshIndex)
+	{
+		delete(m_trajectory->m_meshes[meshIndex]);
+		m_trajectory->m_meshes[meshIndex] = nullptr;
+	}
+	m_trajectory->m_meshes.clear();
+
+	MeshBuilder meshBuilder;
+
+	meshBuilder.CreateLine(m_turret->m_transform->GetWorldPosition(), target, Rgba::RED);
+	meshBuilder.CreateCube(target, Vector3::ONE, Rgba::RED);
+	m_trajectory->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
+
+	m_renderScene->AddRenderable(m_trajectory);
 }

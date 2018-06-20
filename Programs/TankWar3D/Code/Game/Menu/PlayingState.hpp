@@ -25,10 +25,6 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
-	void UpdateTarget(float deltaSeconds);
-
-	RayCastHit3 RaycastFromCamera(float deltaSeconds);
-
 public:
 	Tank* m_playerTank = nullptr;
 	RenderScene* m_renderScene = nullptr;
