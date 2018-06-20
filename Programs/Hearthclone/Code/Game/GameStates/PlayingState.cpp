@@ -85,35 +85,22 @@ void PlayingState::Update(float deltaSeconds)
 	ProcessEffectQueue();
 	ProcessRefereeQueue();
 		
+	//update enemy
+	m_enemyPlayer->Update(deltaSeconds);
 
-	//update enemy =============================================================================
-	for (int cardIndex = 0; cardIndex < (int)m_enemyPlayer->m_hand.size(); ++cardIndex)
-	{
-		m_enemyPlayer->m_hand[cardIndex]->Update(deltaSeconds);
-	}
+	//update self
+	m_player->Update(deltaSeconds);
 
-	// update self =============================================================================
-	for (int cardIndex = 0; cardIndex < (int)m_player->m_hand.size(); ++cardIndex)
-	{
-		m_player->m_hand[cardIndex]->Update(deltaSeconds);
-	}
 }
 
 void PlayingState::PreRender()
 {
-	//m_gameBoard->PreRender();
+	//run prerender for enemy player
+	m_enemyPlayer->PreRender();
 
-	// update enemy =============================================================================
-	for (int cardIndex = 0; cardIndex < (int)m_enemyPlayer->m_hand.size(); ++cardIndex)
-	{
-		m_enemyPlayer->m_hand[cardIndex]->PreRender();
-	}
-
-	// update self =============================================================================
-	for (int cardIndex = 0; cardIndex < (int)m_player->m_hand.size(); ++cardIndex)
-	{
-		m_player->m_hand[cardIndex]->PreRender();
-	}
+	//run prerender for player
+	m_player->PreRender();
+	
 }
 
 void PlayingState::Render()
@@ -161,7 +148,20 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	{
 		if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 		{
-			m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+
+			if (m_currentSelectedWidget == nullptr)
+			{
+				m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+			}
+			//if the previously selected widget isn't holding input priority, we can select a new widget
+			else
+			{
+				if (!m_currentSelectedWidget->m_isInputPriority)
+				{
+					m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+				}
+			}
+		
 
 			if(m_currentSelectedWidget != nullptr)
 				m_currentSelectedWidget->OnLeftClicked();
@@ -170,8 +170,19 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	if (theInput->IsKeyPressed(theInput->MOUSE_RIGHT_CLICK))
 	{
 		if (theInput->WasKeyJustPressed(theInput->MOUSE_RIGHT_CLICK))
-		{
-			m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+		{			
+			if (m_currentSelectedWidget == nullptr)
+			{
+				m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+			}
+			else
+			{
+				//if the previously selected widget isn't holding input priority, we can select a new widget
+				if (!m_currentSelectedWidget->m_isInputPriority)
+				{
+					m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
+				}
+			}		
 
 			if(m_currentSelectedWidget != nullptr)
 				m_currentSelectedWidget->OnRightClicked();

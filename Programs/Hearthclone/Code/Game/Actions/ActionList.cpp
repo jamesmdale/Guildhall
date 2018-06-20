@@ -100,8 +100,8 @@ void AttackAction(const std::map<std::string, std::string>& parameters)
 void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 {
 	// Get Parameters =============================================================================
-	ePlayerType playerType = (ePlayerType)ConvertStringToInt(parameters.find("player")->second);
-	int cardIndex = ConvertStringToInt(parameters.find("cardIndex")->second);
+	ePlayerType playerType = (ePlayerType)ConvertStringToInt(parameters.find("target")->second);
+	int cardIndex = ConvertStringToInt(parameters.find("handIndex")->second);
 
 	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
 	Player* player = nullptr;
@@ -127,7 +127,7 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 		
 		int castPosition = 0;
 
-		//determine minion by reording array position (minions on battlefield are ordered left to right)
+		//determine minion spawn location by reording array position (minions on battlefield are ordered left to right)
 		for (int minionIndex = 0; minionIndex < (int)player->m_minions.size(); ++minionIndex)
 		{
 			Vector2 minionPosition = player->m_minions[minionIndex]->m_transform2D->GetLocalPosition();
@@ -140,22 +140,30 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 
 		//create minion from card
 		Minion* newMinion = new Minion(cardToCast);
+		newMinion->m_renderScene = g_currentState->m_renderScene2D;
 		
 		//add minon to battlefield
 		std::vector<Minion*>::iterator minionIterator = player->m_minions.begin();
 		player->m_minions.insert(minionIterator + castPosition, newMinion);
 
 		//remove card from hand
-		std::vector<Card*>::iterator cardIterator = player->m_hand.begin();
-		player->m_hand.erase(cardIterator + cardIndex);
+		player->RemoveCardFromHand(cardIndex);
 
+		newMinion->RefreshRenderables();
+		
+		player->UpdateBoardLockPositions();
+		player->UpdateHandLockPositions();
+		player->UpdateDeckCount();
+
+		newMinion->m_transform2D->SetLocalPosition(newMinion->m_lockPosition);
+
+		newMinion = nullptr;
 	}
 
 	//if (cardToCast->m_definition->m_type == SPELL_TYPE)
 	//{
 
 	//}
-
 	TODO("Weapon type");
 
 	// cleanup =============================================================================

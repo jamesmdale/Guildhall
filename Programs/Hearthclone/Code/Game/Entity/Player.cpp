@@ -43,6 +43,36 @@ Player::~Player()
 	m_minions.clear();
 }
 
+void Player::Update(float deltaSeconds)
+{
+	//update hand
+	for (int cardIndex = 0; cardIndex < (int)m_hand.size(); ++cardIndex)
+	{
+		m_hand[cardIndex]->Update(deltaSeconds);
+	}
+
+	//update minions
+	for (int minionIndex = 0; minionIndex < (int)m_minions.size(); ++minionIndex)
+	{
+		m_minions[minionIndex]->Update(deltaSeconds);
+	}
+}
+
+void Player::PreRender()
+{
+	//update hand
+	for (int cardIndex = 0; cardIndex < (int)m_hand.size(); ++cardIndex)
+	{
+		m_hand[cardIndex]->PreRender();
+	}
+
+	//update minions
+	for (int minionIndex = 0; minionIndex < (int)m_minions.size(); ++minionIndex)
+	{
+		m_minions[minionIndex]->PreRender();
+	}
+}
+
 void Player::LoadDeckFromDefinitionName(const std::string& deckName)
 {
 	DeckDefinition* deck = DeckDefinition::GetDefinitionByName(deckName);
@@ -135,4 +165,58 @@ void Player::UpdateHandLockPositions()
 
 void Player::UpdateBoardLockPositions()
 {
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+	Board* board = gameState->m_gameBoard;
+
+	AABB2 battlefieldQuad;
+	if (m_playerId == SELF_PLAYER_TYPE) //if player is self
+	{
+		battlefieldQuad = board->m_playerBattlfieldQuad;
+	}
+	if (m_playerId == ENEMY_PLAYER_TYPE) //if player is enemy
+	{
+		battlefieldQuad = board->m_enemyBattlfieldQuad;
+	}
+
+	float battlefieldDockCenterHeight = battlefieldQuad.maxs.y - ((battlefieldQuad.maxs.y - battlefieldQuad.mins.y) * 0.5f);
+	float battlefieldDockWidthPerCard = (battlefieldQuad.maxs.x - battlefieldQuad.mins.x) / (float)(g_maxBattlefieldSize + 1); // + 1 because we include deck image
+
+	for (int minionIndex = 0; minionIndex < (int)m_minions.size(); ++minionIndex)
+	{		
+		m_minions[minionIndex]->m_renderScene = g_currentState->m_renderScene2D;
+		m_minions[minionIndex]->RefreshRenderables();		
+
+		m_minions[minionIndex]->m_lockPosition = Vector2(battlefieldDockWidthPerCard * (minionIndex + 1), battlefieldDockCenterHeight);	
+		//m_minions[minionIndex]->m_isPositionLocked = true;
+	}
+
+	// cleanup =============================================================================
+	gameState = nullptr;
+	board = nullptr;
+}
+
+
+void Player::RemoveCardFromHand(int cardIndex)
+{
+	std::vector<Card*>::iterator cardIterator = m_hand.begin();
+
+	Card* card = m_hand[cardIndex];
+
+	card->m_isRendering = false;
+	card->m_isPositionLocked = false;
+	card->m_lockPosition = Vector2::ZERO;
+
+	//remove renderables of card from scene
+	for (int renderableIndex = 0; renderableIndex < (int)card->m_renderables.size(); ++renderableIndex)
+	{
+		if (card->m_renderables[renderableIndex] != nullptr)
+		{
+			card->m_renderScene->RemoveRenderable(card->m_renderables[renderableIndex]);
+		}
+	}
+	
+	//cleanup hand and card
+	m_hand[cardIndex] = nullptr;
+	m_hand.erase(cardIterator + cardIndex);
+	card = nullptr;
 }

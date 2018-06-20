@@ -48,8 +48,11 @@ const float g_boardBattlefieldCenterLineThicknessHeight = 0.01f;
 
 //card sizes
 const float g_cardPercentageOfClientWindowHeight = 0.14f;
+const float g_minionPercentageOfClientWindowHeight = 0.1f;
 const float g_cardAspectRatio = 0.722f;
+const float g_minionAspectRatio = 1.538f;
 const int g_maxHandSize = 11;
+const int g_maxBattlefieldSize = 11;
 
 //used to calculate center positions of all elements on a card
 const Vector2 g_cardSize = Vector2(370.f, 512.f);
@@ -73,10 +76,16 @@ const Vector2 g_cardHealthCenterRatio = Vector2(324.f/g_cardSize.x, (g_cardSize.
 const Vector2 g_cardHealthDimensionsRatio = Vector2(Vector2(50.f, 45.f)/g_cardSize);
 
 //used to calculate center positions of all elements on a minion
-const Vector2 g_minionSize = Vector2(316.f, 206.f);
+const Vector2 g_minionSize = Vector2(317.f, 206.f);
 
-const Vector2 g_minionImageCenterRatio = Vector2(186.f/g_cardSize.x, (g_cardSize.y - 194.f)/g_cardSize.y);
+const Vector2 g_minionImageCenterRatio = Vector2(158.f/g_minionSize.x, (g_minionSize.y - 103.f)/g_minionSize.y);
 const Vector2 g_minionImageDimensionsRatio = Vector2(Vector2(317.f, 206.f)/g_cardSize);
+
+const Vector2 g_minionAttackCenterRatio = Vector2(35.f/g_minionSize.x, (g_minionSize.y - 173.f)/g_minionSize.y);
+const Vector2 g_minionAttackDimensionsRatio = Vector2(Vector2(50.f, 45.f)/g_cardSize);
+
+const Vector2 g_minionHealthCenterRatio = Vector2(287.f/g_minionSize.x, (g_minionSize.y - 173.f)/g_minionSize.y);
+const Vector2 g_minionHealthDimensionsRatio = Vector2(Vector2(50.f, 45.f)/g_cardSize);
 
 //hero sizes
 const Vector2 g_heroPortraitPercentageOfClientWindow = Vector2(0.1f, 0.1f);

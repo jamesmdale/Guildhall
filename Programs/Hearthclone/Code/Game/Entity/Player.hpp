@@ -21,6 +21,8 @@ public:
 	Player();
 	~Player();
 
+	void Update(float deltaSeconds);
+
 	void LoadDeckFromDefinitionName(const std::string& deckName);
 	void UpdateDeckCount();
 	void ShuffleDeck();
@@ -28,6 +30,12 @@ public:
 	//card position update methods
 	void UpdateHandLockPositions();
 	void UpdateBoardLockPositions();
+
+	//prerender
+	void PreRender();
+
+	//hand utilities
+	void RemoveCardFromHand(int cardIndex);
 
 public:
 	std::vector<Card*> m_deck;

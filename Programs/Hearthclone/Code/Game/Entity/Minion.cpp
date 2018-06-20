@@ -2,8 +2,7 @@
 #include "Game\GameCommon.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
-
-
+#include "Engine\Core\StringUtils.hpp"
 
 Minion::Minion()
 {
@@ -22,6 +21,8 @@ Minion::Minion(const Card* fromCard)
 	m_tags = fromCard->m_tags;
 	
 	m_minionImage = fromCard->m_cardImage;
+
+	m_minionLayoutImage = Renderer::GetInstance()->CreateOrGetTexture("Data/Images/Template/Image_Circle_Drop_Frame.png");
 }
 
 Minion::~Minion()
@@ -39,19 +40,19 @@ void Minion::Initialize()
 
 void Minion::Update(float deltaSeconds)
 {
-	if (m_isPositionLocked == false)
-	{
-		if (m_isInputPriority)
-		{
-			Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition();
-			mousePosition = Vector2(ClampFloat(mousePosition.x, 0.f, Window::GetInstance()->GetClientWidth()), ClampFloat(mousePosition.y, 0.f, Window::GetInstance()->GetClientHeight()));
-			m_transform2D->SetLocalPosition(mousePosition);
-		}		
-	}
-	else
-	{
-		m_transform2D->SetLocalPosition(m_lockPosition);
-	}
+	//if (m_isPositionLocked == false)
+	//{
+	//	if (m_isInputPriority)
+	//	{
+	//		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition();
+	//		mousePosition = Vector2(ClampFloat(mousePosition.x, 0.f, Window::GetInstance()->GetClientWidth()), ClampFloat(mousePosition.y, 0.f, Window::GetInstance()->GetClientHeight()));
+	//		m_transform2D->SetLocalPosition(mousePosition);
+	//	}		
+	//}
+	//else
+	//{
+	//	m_transform2D->SetLocalPosition(m_lockPosition);
+	//}
 }
 
 void Minion::RefreshRenderables()
@@ -73,25 +74,40 @@ void Minion::RefreshRenderables()
 	Window* clientWindow = Window::GetInstance();
 	MeshBuilder mb;
 
-	float minionAspectRatio = 316.f/206.f;
-
-	float minionHeight = g_cardPercentageOfClientWindowHeight * clientWindow->GetClientHeight();
-	float minionWidth = minionHeight * minionAspectRatio;
+	float minionHeight = g_minionPercentageOfClientWindowHeight * clientWindow->GetClientHeight();
+	float minionWidth = minionHeight * g_minionAspectRatio;
 
 	m_dimensionsInPixels = Vector2(minionWidth, minionHeight);
 	Vector2 minionBottomRight = Vector2(Vector2::ZERO.x - (minionWidth * 0.5f), Vector2::ZERO.y - (minionHeight * 0.5f));
 
 	Renderable2D* minionRenderable = new Renderable2D();
 
-	//create card base image
-
-	mb.CreateQuad2D(minionBottomRight + (m_dimensionsInPixels * g_minionImageCenterRatio), m_dimensionsInPixels * g_cardImageDimensionsRatio, Rgba::WHITE);
+	//add minion base image
+	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels, Rgba::WHITE);
 
 	Material* minionMaterial = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
 	minionMaterial->SetTexture(0, m_minionImage);
-	
-	minionRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), minionMaterial);
 
+	minionRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), minionMaterial);
+	minionMaterial = nullptr;
+
+	//add overlay
+	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels, Rgba::WHITE);
+	Material* minionLayoutMaterial = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
+	minionLayoutMaterial->SetTexture(0, m_minionLayoutImage);
+	
+	minionRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), minionLayoutMaterial);
+	minionLayoutMaterial = nullptr;
+
+	//add health and attack
+	mb.CreateText2DInAABB2(minionBottomRight + (m_dimensionsInPixels * g_minionAttackCenterRatio), m_dimensionsInPixels * g_minionAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
+	mb.CreateText2DInAABB2(minionBottomRight + (m_dimensionsInPixels * g_minionHealthCenterRatio), m_dimensionsInPixels * g_minionHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
+	Material* minionText = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
+	minionText = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+	minionText->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+
+	minionRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), minionText);
+	minionText = nullptr;
 
 	m_renderables.push_back(minionRenderable);
 

@@ -7,6 +7,7 @@
 #include "Game\GameStates\GameState.hpp"
 #include "Game\GameStates\PlayingState.hpp"
 #include "Engine\Input\InputSystem.hpp"
+#include "Game\Actions\Action.hpp"
 
 bool isPreviewing = false;
 
@@ -201,6 +202,9 @@ void Card::OnLeftClicked()
 
 				self = nullptr;
 			}
+
+			std::map<std::string, std::string> parameters = {{"target", Stringf("%i", SELF_PLAYER_TYPE)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}};
+			AddActionToRefereeQueue("cast_from_hand", parameters);
 		}
 		else //return card to hand
 		{
