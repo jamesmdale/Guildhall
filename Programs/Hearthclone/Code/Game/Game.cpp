@@ -100,9 +100,6 @@ void Game::Initialize()
 	//register actions ==============================================================================
 	RegisterAllActions();
 
-	// register effects =========================================================================================
-	RegisterAllEffects();
-
 	// cleanup =============================================================================
 	theRenderer = nullptr;
 	theWindow = nullptr;

@@ -6,6 +6,8 @@
 #include "Game\Entity\Player.hpp"
 #include "Game\Entity\Minion.hpp"
 #include "Engine\Input\InputSystem.hpp"
+#include "Game\Effects\Effect.hpp"
+#include "Game\Effects\DerivedEffects\DrawEffect.hpp"
 
 // actions =============================================================================
 
@@ -67,22 +69,12 @@ void DrawAction(const std::map<std::string, std::string>& parameters)
 
 		Vector2 endPosition = Vector2(handDockWidthPerCard * (targetPlayer->m_hand.size()), handDockCenterHeight);
 
-		//initiate draw effect
-		std::map<std::string, std::string> effectParams;
-		effectParams.insert(std::pair<std::string, std::string>("totalEffectTime", Stringf("%f", 1.f)));
-		effectParams.insert(std::pair<std::string, std::string>("playerID", Stringf("%i", targetPlayer->m_playerId)));
-		effectParams.insert(std::pair<std::string, std::string>("startPosition", Stringf("%f,%f", deckQuad.GetCenter().x, deckQuad.GetCenter().y)));
-		effectParams.insert(std::pair<std::string, std::string>("endPosition", Stringf("%f,%f", endPosition.x,endPosition.y)));
-		effectParams.insert(std::pair<std::string, std::string>("startScale", Stringf("%f,%f", 0.1f, 0.1f)));
-
-		AddEffectToEffectQueue("draw_effect", card, effectParams);
+		DrawEffect* drawEffect = new DrawEffect(card, 1.f, targetPlayer->m_playerId, deckQuad.GetCenter(), endPosition, Vector2(0.1f, 0.1f));
+		AddEffectToEffectQueue(drawEffect);
 
 		card = nullptr;
+		drawEffect = nullptr;
 	}
-
-	//targetPlayer->UpdateDeckCount();
-	//targetPlayer->UpdateHandLockPositions();
-
 
 	targetPlayer = nullptr;
 	gameState = nullptr;

@@ -297,8 +297,8 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Definitions\DeckDefinition.cpp" />
     <ClCompile Include="Definitions\CardDefinition.cpp" />
+    <ClCompile Include="Effects\DerivedEffects\DrawEffect.cpp" />
     <ClCompile Include="Effects\Effect.cpp" />
-    <ClCompile Include="Effects\EffectList.cpp" />
     <ClCompile Include="Entity\Character.cpp" />
     <ClCompile Include="Entity\Card.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -314,6 +314,7 @@
     <ClCompile Include="Main_Win32.cpp" />
     <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="Entity\Minion.cpp" />
+    <ClCompile Include="Effects\DerivedEffects\ReorganizeHandEffect.cpp" />
     <ClCompile Include="TheApp.cpp" />
     <ClCompile Include="Triggers\Trigger.cpp" />
   </ItemGroup>
@@ -327,6 +328,7 @@
     <ClInclude Include="Board.hpp" />
     <ClInclude Include="Definitions\DeckDefinition.hpp" />
     <ClInclude Include="Definitions\CardDefinition.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\DrawEffect.hpp" />
     <ClInclude Include="Effects\Effect.hpp" />
     <ClInclude Include="Entity\Character.hpp" />
     <ClInclude Include="Entity\Card.hpp" />
@@ -343,6 +345,7 @@
     <ClInclude Include="Entity\HeroClass.hpp" />
     <ClInclude Include="Entity\Hero.hpp" />
     <ClInclude Include="Definitions\HeroDefinition.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\ReorganizeHandEffect.hpp" />
     <ClInclude Include="TheApp.hpp" />
     <ClInclude Include="Triggers\Trigger.hpp" />
   </ItemGroup>

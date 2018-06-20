@@ -6,53 +6,21 @@
 #include <queue>
 #include "Engine\Time\Clock.hpp"
 
-std::map<std::string, EffectCallback> s_registeredEffects;
-std::queue<EffectData> EffectQueue;
-Stopwatch* currentEffectStopwatch = nullptr;
+
+std::queue<Effect*> EffectQueue;
 
 // genereal functions =============================================================================
-
-void RegisterAllEffects()
-{
-	RegisterEffect("draw_effect", DrawEffect);
-	RegisterEffect("attack_effect", AttackEffect);
-}
-
-void RegisterEffect(std::string name, EffectCallback effect)
-{
-	s_registeredEffects.emplace(name, effect);
-}
-
-std::vector<std::string> GetRegisteredEffectList()
-{
-	std::vector<std::string> registeredEffectNames;
-
-	for (std::map<std::string, EffectCallback>::iterator iterator = s_registeredEffects.begin(); iterator != s_registeredEffects.end(); ++iterator)
-	{
-		registeredEffectNames.push_back(iterator->first);
-	}
-
-	return registeredEffectNames;
-}
-
-EffectCallback GetEffectCallbackFromRegisteredListByName(const std::string & effectName)
-{
-	std::map<std::string, EffectCallback>::iterator iterator = s_registeredEffects.find(effectName);
-
-	return iterator->second;
-}
-
-// RefereeQueue methods =========================================================================================
-
 void ProcessEffectQueue()
 {
 	//process everything on the RefereeQueue before allowing new user actions
 	if(GetEffectQueueCount() != 0)
 	{
-		EffectData effect = EffectQueue.front();
-		bool success = effect.callback(effect.targetWidget, effect.parameters, GetMasterDeltaSeconds());
-		if (success == true)
+		EffectQueue.front()->Update(GetMasterClock()->GetDeltaSeconds());
+
+		if(EffectQueue.front()->m_isComplete == true)		
 		{
+			delete(EffectQueue.front());
+			EffectQueue.front() = nullptr;
 			EffectQueue.pop(); //fifo
 		}
 	}
@@ -63,42 +31,17 @@ int GetEffectQueueCount()
 	return (int)EffectQueue.size();
 }
 
-void AddEffectToEffectQueue(const EffectData& action)
+void AddEffectToEffectQueue(Effect* effect)
 {
-	EffectQueue.push(action);
+	EffectQueue.push(effect);
 }
 
-void AddEffectToEffectQueue(const std::string & callbackName, Widget * targetWidget, const std::map<std::string, std::string> parameters)
+Effect::~Effect()
 {
-	EffectData data = EffectData(callbackName, targetWidget, parameters);
-	EffectQueue.push(data);
+	m_stopWatch = nullptr;
 }
 
-void AddEffectToEffectQueue(EffectCallback callback, Widget* targetWidget, const std::map<std::string, std::string>& parameters)
-{
-	EffectData data;
-	
-	data.callback = callback;
-	data.targetWidget = targetWidget;
-	data.parameters = parameters;
-
-	EffectQueue.push(data);
-}
-
-Stopwatch* SetNewStopwatch(float timer)
-{
-	currentEffectStopwatch = new Stopwatch(GetMasterClock());
-	currentEffectStopwatch->SetTimer(timer);
-
-	return currentEffectStopwatch;
-}
-
-void ClearStopwatch()
-{
-	currentEffectStopwatch = nullptr;
-}
-
-Stopwatch* GetStopwatch()
-{
-	return currentEffectStopwatch;
+void Effect::Update(float deltaSeconds)
+{ 
+	//do update stuff.
 }

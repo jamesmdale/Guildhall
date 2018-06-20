@@ -76,7 +76,10 @@
     <ClCompile Include="Actions\ActionList.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Effects\EffectList.cpp">
+    <ClCompile Include="Effects\DerivedEffects\DrawEffect.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Effects\DerivedEffects\ReorganizeHandEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
@@ -111,5 +114,7 @@
     <ClInclude Include="Actions\Action.hpp" />
     <ClInclude Include="Effects\Effect.hpp" />
     <ClInclude Include="Triggers\Trigger.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\DrawEffect.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\ReorganizeHandEffect.hpp" />
   </ItemGroup>
 </Project>
