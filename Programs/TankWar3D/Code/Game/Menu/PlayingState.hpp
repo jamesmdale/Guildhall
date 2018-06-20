@@ -4,6 +4,7 @@
 #include "Engine\Core\Raycast.hpp"
 #include "Engine\Renderer\RenderScene2D.hpp"
 
+class Bullet;
 class Tank;
 class PlayingState : public GameState
 {
@@ -25,12 +26,16 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
+	void SpawnBullet(const Vector3& startingPosition, const Vector3& startingRotation);
+
 public:
 	Tank* m_playerTank = nullptr;
 	RenderScene* m_renderScene = nullptr;
 	RenderScene2D* m_renderScene2D = nullptr;
 	Camera* m_uiCamera = nullptr;
 	Terrain* m_terrain = nullptr;
+
+	std::vector<Bullet*> m_bullets;
 };
 
 

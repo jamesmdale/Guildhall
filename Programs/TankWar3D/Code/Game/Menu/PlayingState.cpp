@@ -6,6 +6,7 @@
 #include "Game\Tank.hpp"
 #include "Engine\Camera\OrbitCamera.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Game\Bullet.hpp"
 
 
 PlayingState::~PlayingState()
@@ -88,6 +89,12 @@ void PlayingState::Update(float deltaSeconds)
 { 
 	// tank update =============================================================================
 	m_playerTank->Update(deltaSeconds);
+
+	// update bullets =========================================================================================
+	for (int bulletIndex = 0; bulletIndex < (int)m_bullets.size(); ++bulletIndex)
+	{
+		m_bullets[bulletIndex]->Update(deltaSeconds);
+	}
 }
 
 void PlayingState::PreRender()
@@ -110,7 +117,17 @@ void PlayingState::Render()
 
 void PlayingState::PostRender()
 {
-	//post render steps here.
+	for (int bulletIndex = 0; bulletIndex < (int)m_bullets.size(); bulletIndex++)
+	{
+		if (!m_bullets[bulletIndex]->IsAlive())
+		{
+			delete(m_bullets[bulletIndex]);
+			m_bullets[bulletIndex] = nullptr;
+
+			m_bullets.erase(m_bullets.begin() + bulletIndex);
+			bulletIndex--;
+		}
+	}
 }
 
 
@@ -125,4 +142,37 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	theInput = nullptr;
 
 	return deltaSeconds; //new deltaSeconds
+}
+
+void PlayingState::SpawnBullet(const Vector3 & startingPosition, const Vector3& startingRotation)
+{
+	Renderer* theRenderer = Renderer::GetInstance();
+	MeshBuilder meshBuilder;
+
+	Bullet* bullet = new Bullet(startingPosition, startingRotation);
+	Renderable* bulletRenderable = new Renderable();
+
+	bullet->m_gameState = this;
+	bullet->AddRenderable(bulletRenderable);
+	bullet->m_transform->AddChildTransform(bulletRenderable->m_transform);
+
+	Rgba bulletTint = Rgba::LIGHT_RED_TRANSPARENT;
+
+	bullet->m_renderScene = m_renderScene;
+
+	//create bullet mesh and material
+	meshBuilder.CreateStarQuads3D(Vector3::ZERO, Vector3(1.f, 1.f, 3.f), Rgba::WHITE);	
+	bulletRenderable->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
+	bulletRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("bullet")));	
+	bulletRenderable->GetMaterial()->SetProperty("TINT", Rgba::ConvertToVector4(bulletTint));
+
+	//add light to lists
+	m_renderScene->AddRenderable(bulletRenderable);
+	m_renderScene->AddLight(bullet->m_light);
+
+	m_bullets.push_back(bullet);
+
+	bulletRenderable = nullptr;
+	bullet = nullptr;
+	theRenderer = nullptr;
 }

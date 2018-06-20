@@ -222,6 +222,12 @@ void Tank::UpdateFromInput(float timeDelta)
 		}		
 	}
 
+	if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
+	{
+		Matrix44 turretToWorld = m_turret->m_transform->GetWorldMatrix();
+		m_playingState->SpawnBullet(m_turret->m_transform->GetWorldPosition(), turretToWorld.GetRotation());
+	}
+
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_0))
 	{
 		m_currentHealth--;
