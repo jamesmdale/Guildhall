@@ -15,6 +15,12 @@ PlayingState::~PlayingState()
 
 	delete(m_terrain);
 	m_terrain = nullptr;
+
+	delete(m_renderScene);
+	m_renderScene = nullptr;
+
+	delete(m_renderScene2D);
+	m_renderScene2D = nullptr;
 }
 
 void PlayingState::Initialize()
@@ -27,6 +33,8 @@ void PlayingState::Initialize()
 	//position camera behind player	
 	m_camera->m_skybox = new Skybox("Data/Images/galaxy2.png");
 	m_renderScene->AddCamera(m_camera);
+
+	m_renderScene2D->AddCamera(m_uiCamera);
 
 	// add directional light =========================================================================================
 	Rgba lightColor = Rgba::WHITE;
@@ -90,10 +98,11 @@ void PlayingState::Initialize()
 	
 	//cleanup tank turret and renderable
 	turretRenderable = nullptr;
-	tankTurret = nullptr; 
-	
+	tankTurret = nullptr; 	
 
 	m_playerTank->m_tankBodyTransform->AddChildTransform(m_playerTank->m_turret->m_transform);
+	m_playerTank->m_tankInformation->m_renderScene = m_renderScene2D;
+	m_playerTank->m_tankInformation->Initialize();
 
 
 	//add tank to lists
@@ -115,6 +124,11 @@ void PlayingState::Initialize()
 	{
 		m_renderScene->AddRenderable(m_terrain->m_renderables[renderableIndex]);
 	}
+
+
+	
+
+
 
 	theRenderer = nullptr;	
 }
@@ -140,6 +154,7 @@ void PlayingState::Render()
 	theRenderer->ClearColor(Rgba::BLACK);
 
 	Game::GetInstance()->m_forwardRenderingPath->Render(m_renderScene);
+	Game::GetInstance()->m_forwardRenderingPath2D->Render(m_renderScene2D);
 
 	theRenderer = nullptr;
 }

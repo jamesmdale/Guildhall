@@ -169,7 +169,7 @@ void Shutdown()
 
 //-----------------------------------------------------------------------------------------------
 int WINAPI WinMain( HINSTANCE applicationInstanceHandle, HINSTANCE, LPSTR commandLineString, int )
-{
+ {
 	UNUSED( commandLineString );
 	UNUSED(applicationInstanceHandle);
 	Initialize();

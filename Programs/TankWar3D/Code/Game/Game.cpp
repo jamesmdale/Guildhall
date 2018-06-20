@@ -31,11 +31,15 @@ bool m_isPaused = false;
 Game::Game()
 {
 	m_forwardRenderingPath = new ForwardRenderingPath();
+	m_forwardRenderingPath2D = new ForwardRenderingPath2D();
 }
 
 Game::~Game()
 {
 	//delete render members
+	delete(m_forwardRenderingPath2D);
+	m_forwardRenderingPath2D = nullptr;
+
 	delete(m_forwardRenderingPath);
 	m_forwardRenderingPath = nullptr;
 
@@ -94,7 +98,7 @@ void Game::Initialize()
 	GameState::AddMenuState(new LoadingState(m_uiCamera));
 	GameState::AddMenuState(new MainMenuState(m_uiCamera));
 	GameState::AddMenuState(new ReadyState(m_uiCamera));
-	GameState::AddMenuState(new PlayingState(m_gameCamera));
+	GameState::AddMenuState(new PlayingState(m_gameCamera, m_uiCamera));
 	//loadingMenuState
 	//readyUp
 	//play/level

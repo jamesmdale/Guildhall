@@ -40,6 +40,9 @@
     <ClCompile Include="Turret.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="TankUI.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -61,5 +64,6 @@
     <ClInclude Include="Menu\ReadyState.hpp" />
     <ClInclude Include="Tank.hpp" />
     <ClInclude Include="Turret.hpp" />
+    <ClInclude Include="TankUI.hpp" />
   </ItemGroup>
 </Project>

@@ -2,15 +2,18 @@
 #include "Game\Menu\MenuState.hpp"
 #include "Engine\Core\Terrain.hpp"
 #include "Engine\Core\Raycast.hpp"
+#include "Engine\Renderer\RenderScene2D.hpp"
 
 class Tank;
 class PlayingState : public GameState
 {
 public:
-	PlayingState(Camera* camera) : GameState(camera)
+	PlayingState(Camera* camera, Camera* uiCamera) : GameState(camera)
 	{
 		m_type = PLAYING_MENU_STATE;
 		m_renderScene = new RenderScene();
+		m_renderScene2D = new RenderScene2D();
+		m_uiCamera = uiCamera;
 	}
 
 	virtual ~PlayingState() override;
@@ -29,6 +32,8 @@ public:
 public:
 	Tank* m_playerTank = nullptr;
 	RenderScene* m_renderScene = nullptr;
+	RenderScene2D* m_renderScene2D = nullptr;
+	Camera* m_uiCamera = nullptr;
 	Terrain* m_terrain = nullptr;
 };
 

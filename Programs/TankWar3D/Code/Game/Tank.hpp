@@ -5,6 +5,7 @@
 #include "Engine\Time\Stopwatch.hpp"
 #include "Game\Menu\PlayingState.hpp"
 #include "Game\Turret.hpp"
+#include "Game\TankUI.hpp"
 
 class Tank : public GameObject
 {
@@ -43,6 +44,8 @@ public:
 	void SetCamera(Camera* camera);
 	void UpdateFromInput(float timeDelta);
 
+	void RefreshTankUI();
+
 public:
 	// transforms
 	Transform* m_cameraPivotTransform  = nullptr;
@@ -56,5 +59,9 @@ public:
 	
 	Vector3 m_baseDimensions;
 	Vector3 m_currentTarget;
+
+	TankUI* m_tankInformation = nullptr;
+
+	int m_currentHealth = 100;
 };
 

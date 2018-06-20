@@ -13,6 +13,7 @@ Tank::Tank()
 	// create transforms =============================================================================
 	m_cameraPivotTransform  = new Transform();
 	m_tankBodyTransform  = new Transform();
+	m_tankInformation = new TankUI();
 
 	//add children to base transform
 	m_transform->AddChildTransform(m_cameraPivotTransform);
@@ -68,6 +69,12 @@ void Tank::Update(float timeDelta)
 	DebugRender::GetInstance()->CreateDebugBasis(m_transform->GetWorldMatrix(), Vector3(basePosition.x, basePosition.y + 0.5f, basePosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
 
 	DebugRender::GetInstance()->CreateDebugCrosshair2D(Window::GetInstance()->GetCenterOfClientWindow(), Rgba::GREEN, Rgba::GREEN, 0.0f, 1);
+
+	//copy new tank information to tank ui
+	RefreshTankUI();
+
+	//update ui information
+	m_tankInformation->Update(timeDelta);
 }
 
 void Tank::SetCamera(Camera* camera)
@@ -145,11 +152,20 @@ void Tank::UpdateFromInput(float timeDelta)
 
 			Vector3 rotation = Vector3(0.f, 10.f, 0.f) * timeDelta * multiplyValue;
 			m_transform->AddRotation(rotation);
-		}
+		}		
+	}
 
-		
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_0))
+	{
+		m_currentHealth--;
 	}
 
 	theRenderer = nullptr;
 	theInput = nullptr;
+}
+
+
+void Tank::RefreshTankUI()
+{
+	m_tankInformation->m_tankHealthThisFrame = m_currentHealth;
 }

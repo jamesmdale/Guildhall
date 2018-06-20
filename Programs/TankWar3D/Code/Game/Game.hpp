@@ -8,6 +8,7 @@
 #include "Engine\Renderer\RenderScene.hpp"
 #include "Engine\Renderer\ForwardRenderingPath.hpp"
 #include "Engine\ParticleSystem\ParticleEmitter.hpp"
+#include "Engine\Renderer\ForwardRenderingPath2D.hpp"
 
 class Game
 {
@@ -19,6 +20,7 @@ public:
 
 	//rendering members
 	ForwardRenderingPath* m_forwardRenderingPath = nullptr;
+	ForwardRenderingPath2D* m_forwardRenderingPath2D = nullptr;
 
 	//clock
 	Clock* m_gameClock = nullptr;
