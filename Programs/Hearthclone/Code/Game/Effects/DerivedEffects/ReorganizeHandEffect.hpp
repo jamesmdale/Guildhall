@@ -1,36 +1,25 @@
-//#pragma once
-//class ReorganizeHandEffect
-//{
-//public:
-//	ReorganizeHandEffect();
-//	~ReorganizeHandEffect();
-//};
-//
+#pragma once
+#include "Game\Effects\Effect.hpp"
+#include "Engine\Core\Widget.hpp"
+#include "Game\Entity\Player.hpp"
+#include "Engine\Math\Vector2.hpp"
+#include "Game\GameStates\PlayingState.hpp"
 
+class ReorganizeHandEffect : public Effect
+{
+public:
+	ReorganizeHandEffect(){};
+	ReorganizeHandEffect(float effectTime, ePlayerType player);
+	virtual ~ReorganizeHandEffect() override;
 
+	virtual void Update(float deltaSeconds) override;
 
-////NOTES: we expect target widget to be null in this case. We are acting on a player's hand
-//
-//bool isEffectComplete = false;
-//Stopwatch* stopwatch = GetStopwatch();
-//
-//// get parameters =============================================================================
-//float totalEffectTime = ConvertStringToFloat(parameters.find("totalEffectTime")->second);
-//ePlayerType playerID = (ePlayerType)ConvertStringToInt(parameters.find("playerID")->second);
-//
-//// first time setup =============================================================================
-//// if first time in effect setup stopwatch
-//if (stopwatch == nullptr)
-//{
-//	stopwatch = SetNewStopwatch(totalEffectTime);		
-//}
-//if (index = -1)
-//{
-//	index = 0;
-//}
-//
-//// process function =========================================================================================
-//
-//
-//
-//// cleanup =========================================================================================
+	void Initialize();
+
+public:
+	float m_totalEffectTime = 0.0f;
+	ePlayerType m_playerId = NUM_PLAYER_TYPES;
+	Player* m_player = nullptr;
+	PlayingState* m_gameState = nullptr;
+};
+
