@@ -12,6 +12,7 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Debug\DebugRender.hpp"
+#include "Engine\Audio\AudioSystem.hpp"
 #include <minwindef.h>
 
 
@@ -124,10 +125,10 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 //-----------------------------------------------------------------------------------------------
 void CreateOpenGLWindow(float clientAspect )
 {
-	Window* window = Window::CreateInstance( APP_NAME, clientAspect ); 
+	Window::CreateInstance( APP_NAME, clientAspect ); 
 	InputSystem::CreateInstance(); //post startup to follow if necessary later
 
-	window->AddHandler( AppMessageHandler ); 
+	Window::GetInstance()->AddHandler( AppMessageHandler );
 }
 
 void Initialize()
@@ -145,6 +146,9 @@ void Initialize()
 
 	DebugRender::CreateInstance();
 	DebugRender::GetInstance()->Initialize();
+
+	AudioSystem::CreateInstance();
+
 
 	g_theApp->Initialize();
 }

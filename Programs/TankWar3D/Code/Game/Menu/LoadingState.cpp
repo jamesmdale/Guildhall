@@ -1,6 +1,7 @@
 #include "Game\Menu\LoadingState.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Debug\DebugRender.hpp"
+#include "Engine\Audio\AudioSystem.hpp"
 
 static bool s_isLoading = false;
 
@@ -14,10 +15,18 @@ void LoadingState::Update(float deltaSeconds)
 	if (s_isLoading)
 	{
 		Renderer* theRenderer = Renderer::GetInstance();
+		AudioSystem* theAudio = AudioSystem::GetInstance();
 
-		//load intensive resources (big textures, audio, etc)
+		// load intensive resources (big textures, audio, etc) =========================================================================================
+		
+		//load textures
 		theRenderer->CreateOrGetImage("Data/Images/galaxy2.png");
 		theRenderer->CreateOrGetImage("Data/Images/terrain.jpg");
+
+		//load audio
+		theAudio->CreateOrGetAudioGroupFromXML("Data/Audio/AudioGroups/Lasers.xml");
+
+		//sleep to insure loading screen visibility
 		Sleep(1);
 
 		//after you are finished loading
@@ -26,6 +35,7 @@ void LoadingState::Update(float deltaSeconds)
 
 		TransitionMenuStatesImmediate(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
 
+		theAudio = nullptr;
 		theRenderer = nullptr;
 	}	
 }

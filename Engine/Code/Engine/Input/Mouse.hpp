@@ -26,6 +26,7 @@ public:
 	MouseMode GetMouseMode();
 
 	Vector2 GetMouseClientPosition();
+	Vector2 GetInvertedMouseClientPosition();
 	Vector2 GetMouseDelta();
 
 public:

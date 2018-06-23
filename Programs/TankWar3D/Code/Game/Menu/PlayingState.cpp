@@ -7,6 +7,7 @@
 #include "Engine\Camera\OrbitCamera.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Game\Bullet.hpp"
+#include "Engine\Audio\AudioSystem.hpp"
 
 
 PlayingState::~PlayingState()
@@ -169,6 +170,8 @@ void PlayingState::SpawnBullet(const Vector3 & startingPosition, const Vector3& 
 	//add light to lists
 	m_renderScene->AddRenderable(bulletRenderable);
 	m_renderScene->AddLight(bullet->m_light);
+
+	AudioSystem::GetInstance()->PlaySoundFromGroup("laser");
 
 	m_bullets.push_back(bullet);
 

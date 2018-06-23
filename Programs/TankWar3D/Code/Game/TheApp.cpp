@@ -12,6 +12,7 @@
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\File\ObjectFileLoader.hpp"
 #include "Game\Menu\MenuState.hpp"
+#include "Engine\Audio\AudioSystem.hpp"
 
 TheApp* g_theApp = nullptr;
 
@@ -22,13 +23,14 @@ TheApp::TheApp()
 
 TheApp::~TheApp()
 {
-	TODO("Cleanup (delete and null out) input system, renderer, game");
+	TODO("DELETE SYSTEMS AND NULL OUT");
 }
 
 void TheApp::RunFrame()
 {
 	Renderer::GetInstance()->BeginFrame();	
 	InputSystem::GetInstance()->BeginFrame();
+	AudioSystem::GetInstance()->BeginFrame();
 	MasterClockBeginFrame();
 
 	Update();
@@ -36,6 +38,7 @@ void TheApp::RunFrame()
 	Render();
 	PostRender();
 
+	AudioSystem::GetInstance()->EndFrame();
 	DebugRender::GetInstance()->EndFrame();
 	InputSystem::GetInstance()->EndFrame();
 	Renderer::GetInstance()->EndFrame();

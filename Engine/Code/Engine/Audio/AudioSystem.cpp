@@ -1,7 +1,9 @@
-#include "Engine/Audio/AudioSystem.hpp"
-//#include "Engine/Core/EngineCommon.hpp"
-#include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Core/StringUtils.hpp"
+#include "Engine\Audio\AudioSystem.hpp"
+#include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Core\ErrorWarningAssert.hpp"
+#include "Engine\Core\StringUtils.hpp"
+#include "Engine\Core\XMLUtilities.hpp"
+#include "Engine\ThirdParty\tinyxml2\tinyxml2.h"
 
 //-----------------------------------------------------------------------------------------------
 // To disable audio entirely (and remove requirement for fmod.dll / fmod64.dll) for any game,
@@ -12,7 +14,7 @@
 //	Downside: ALL games must now have this Code/Game/EngineBuildPreferences.hpp file.
 //
 #include "Game/EngineBuildPreferences.hpp"
-#if !defined( ENGINE_DISABLE_AUDIO )
+//#if !defined( ENGINE_DISABLE_AUDIO )
 
 
 //-----------------------------------------------------------------------------------------------
@@ -24,6 +26,7 @@
 #pragma comment( lib, "Engine/ThirdParty/fmod/fmod_vc.lib" )
 #endif
 
+static AudioSystem* g_theAudioSystem = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 // Initialization code based on example from "FMOD Studio Programmers API for Windows"
@@ -37,6 +40,21 @@ AudioSystem::AudioSystem()
 
 	result = m_fmodSystem->init( 512, FMOD_INIT_NORMAL, nullptr );
 	ValidateResult( result );
+}
+
+AudioSystem* AudioSystem::CreateInstance()
+{
+	if (g_theAudioSystem == nullptr)
+	{
+		g_theAudioSystem = new AudioSystem();
+	}
+
+	return g_theAudioSystem;
+}
+
+AudioSystem * AudioSystem::GetInstance()
+{
+	return g_theAudioSystem;
 }
 
 
@@ -115,6 +133,58 @@ SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float vo
 	}
 
 	return (SoundPlaybackID) channelAssignedToSound;
+}
+
+SoundPlaybackID AudioSystem::PlaySoundFromGroup(const std::string& soundGroupName)
+{
+	AudioGroup* audioGroup = nullptr;
+	for (int audioGroupIndex = 0; audioGroupIndex < (int)m_registeredAudioGroups.size(); ++audioGroupIndex)
+	{
+		if (soundGroupName == m_registeredAudioGroups[audioGroupIndex]->groupName)
+		{
+			audioGroup = m_registeredAudioGroups[audioGroupIndex];
+			break;
+		}
+	}
+
+	if (audioGroup == nullptr)	
+		return MISSING_SOUND_ID;
+	
+	int randomSound = GetRandomIntInRange(0, (int)audioGroup->soundIds.size() - 1);
+
+	SoundPlaybackID id = PlaySound(audioGroup->soundIds[randomSound], audioGroup->isLooped, audioGroup->volume, audioGroup->balance, audioGroup->speed, audioGroup->isPaused);
+	return id;
+}
+
+void AudioSystem::CreateOrGetAudioGroupFromXML(const std::string& xmlFilePath)
+{
+	tinyxml2::XMLDocument tileDefDoc;
+	tileDefDoc.LoadFile(xmlFilePath.c_str());
+
+	tinyxml2::XMLElement* pRoot = tileDefDoc.FirstChildElement();
+
+	AudioGroup* audioGroup = new AudioGroup();
+	std::string filePath = "Data/Audio/";
+
+	audioGroup->groupName = ParseXmlAttribute(*pRoot, "name", audioGroup->groupName);
+	filePath = ParseXmlAttribute(*pRoot, "path", filePath);
+
+	for (const tinyxml2::XMLElement* definitionNode = pRoot->FirstChildElement(); definitionNode; definitionNode = definitionNode->NextSiblingElement())
+	{	
+		std::string soundName = "invalid";
+
+		soundName = ParseXmlAttribute(*definitionNode, "name", soundName);
+		std::string audioPath = Stringf("%s%s", filePath.c_str(), soundName.c_str());
+		SoundID id = CreateOrGetSound(audioPath);
+
+		if (id != MISSING_SOUND_ID)
+		{
+			audioGroup->soundIds.push_back(id);
+		}		
+	}
+
+	m_registeredAudioGroups.push_back(audioGroup);
+	audioGroup = nullptr;
 }
 
 
@@ -200,4 +270,4 @@ void AudioSystem::ValidateResult( FMOD_RESULT result )
 }
 
 
-#endif // !defined( ENGINE_DISABLE_AUDIO )
+//#endif  !defined( ENGINE_DISABLE_AUDIO )
