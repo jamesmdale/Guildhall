@@ -50,10 +50,12 @@ void ReorganizeHandEffect::Initialize()
 	if (m_playerId == SELF_PLAYER_TYPE)
 	{
 		m_player = m_gameState->m_player;
+		m_boardQuad = m_gameState->m_gameBoard->m_playerHandQuad;
 	}
 	else if (m_playerId == ENEMY_PLAYER_TYPE)
 	{
 		m_player = m_gameState->m_enemyPlayer;
+		m_boardQuad = m_gameState->m_gameBoard->m_enemyHandQuad;
 	}
 
 	UpdateHandIndex();
@@ -72,12 +74,11 @@ void ReorganizeHandEffect::UpdateHandIndex()
 		return;
 	}
 	
-	AABB2 handQuad = m_gameState->m_gameBoard->m_playerHandQuad;
 	m_currentCard = m_player->m_hand[m_currentHandIndex];
 
 	//get cards final location
-	float handDockCenterHeight = handQuad.maxs.y - ((handQuad.maxs.y - handQuad.mins.y) * 0.5f);
-	float handDockWidthPerCard = (handQuad.maxs.x - handQuad.mins.x) / (float)(g_maxHandSize + 1); // + 1 because we include deck image
+	float handDockCenterHeight = m_boardQuad.maxs.y - ((m_boardQuad.maxs.y - m_boardQuad.mins.y) * 0.5f);
+	float handDockWidthPerCard = (m_boardQuad.maxs.x - m_boardQuad.mins.x) / (float)(g_maxHandSize + 1); // + 1 because we include deck image
 
 	m_startPosition = m_player->m_hand[m_currentHandIndex]->m_transform2D->GetWorldPosition();
 	m_endPosition = Vector2((handDockWidthPerCard * (m_currentHandIndex + 1)), handDockCenterHeight);

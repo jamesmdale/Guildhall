@@ -82,6 +82,12 @@
     <ClCompile Include="Effects\DerivedEffects\ReorganizeHandEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Effects\DerivedEffects\ReorganizeMinionsEffect.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="REORGANIZEMINIONSEFFECT.CPP">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -116,5 +122,6 @@
     <ClInclude Include="Triggers\Trigger.hpp" />
     <ClInclude Include="Effects\DerivedEffects\DrawEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\ReorganizeHandEffect.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\ReorganizeMinionsEffect.hpp" />
   </ItemGroup>
 </Project>

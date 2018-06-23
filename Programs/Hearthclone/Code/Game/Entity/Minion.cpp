@@ -53,6 +53,7 @@ void Minion::Update(float deltaSeconds)
 	//{
 	//	m_transform2D->SetLocalPosition(m_lockPosition);
 	//}
+	m_transform2D->SetLocalPosition(m_lockPosition);
 }
 
 void Minion::RefreshRenderables()

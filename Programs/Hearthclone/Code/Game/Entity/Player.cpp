@@ -165,6 +165,11 @@ void Player::UpdateHandLockPositions()
 
 void Player::UpdateBoardLockPositions()
 {
+	if (m_minions.size() == 0)
+	{
+		return;
+	}
+
 	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
 	Board* board = gameState->m_gameBoard;
 
@@ -178,15 +183,21 @@ void Player::UpdateBoardLockPositions()
 		battlefieldQuad = board->m_enemyBattlfieldQuad;
 	}
 
-	float battlefieldDockCenterHeight = battlefieldQuad.maxs.y - ((battlefieldQuad.maxs.y - battlefieldQuad.mins.y) * 0.5f);
-	float battlefieldDockWidthPerCard = (battlefieldQuad.maxs.x - battlefieldQuad.mins.x) / (float)(g_maxBattlefieldSize + 1); // + 1 because we include deck image
+	Vector2 boardCenter = battlefieldQuad.GetCenter();
+	Vector2 dimensions = battlefieldQuad.GetDimensions();
+	float minionDimensionsX = m_minions[0]->GetMinionDimensions().x + 10.f; //padding
+	float sizeX = minionDimensionsX * (float)m_minions.size();
+	AABB2 adjustedBattlefieldQuad = AABB2(Vector2(boardCenter.x - (sizeX * 0.5f), battlefieldQuad.mins.y), Vector2(boardCenter.x + (sizeX * 0.5f), battlefieldQuad.maxs.y));
+	//battlefieldQuad = AABB2(boardCenter, sizeX, dimensions.y);	
+
+	float battlefieldDockCenterHeight = adjustedBattlefieldQuad.maxs.y - ((adjustedBattlefieldQuad.maxs.y - adjustedBattlefieldQuad.mins.y) * 0.5f);
 
 	for (int minionIndex = 0; minionIndex < (int)m_minions.size(); ++minionIndex)
 	{		
 		m_minions[minionIndex]->m_renderScene = g_currentState->m_renderScene2D;
 		m_minions[minionIndex]->RefreshRenderables();		
 
-		m_minions[minionIndex]->m_lockPosition = Vector2(battlefieldDockWidthPerCard * (minionIndex + 1), battlefieldDockCenterHeight);	
+		m_minions[minionIndex]->m_lockPosition = Vector2(adjustedBattlefieldQuad.mins.x + ((minionDimensionsX * 0.5f) * (minionIndex + 1)), battlefieldDockCenterHeight);	
 		//m_minions[minionIndex]->m_isPositionLocked = true;
 	}
 

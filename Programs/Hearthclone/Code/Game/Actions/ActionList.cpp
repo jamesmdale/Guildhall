@@ -9,6 +9,7 @@
 #include "Game\Effects\Effect.hpp"
 #include "Game\Effects\DerivedEffects\DrawEffect.hpp"
 #include "Game\Effects\DerivedEffects\ReorganizeHandEffect.hpp"
+#include "Game\Effects\DerivedEffects\ReorganizeMinionsEffect.hpp"
 
 // actions =============================================================================
 
@@ -152,12 +153,24 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 
 		newMinion->m_transform2D->SetLocalPosition(newMinion->m_lockPosition);
 
-		float timeForEffect = 0.25f / (float)player->m_hand.size();
+		if ((int)player->m_hand.size() > 0)
+		{
+			float timeForEffect = 0.25f / (float)player->m_hand.size();
+			ReorganizeHandEffect* handEffect = new ReorganizeHandEffect(timeForEffect, SELF_PLAYER_TYPE);
+			AddEffectToEffectQueue(handEffect);
 
-		ReorganizeHandEffect* handEffect = new ReorganizeHandEffect(timeForEffect, SELF_PLAYER_TYPE);
-		AddEffectToEffectQueue(handEffect);
+			handEffect = nullptr;
+		}		
 
-		handEffect = nullptr;
+		if ((int)player->m_minions.size() > 0)
+		{
+			float timeForEffect = 0.25f / (float)player->m_minions.size();
+			ReorganizeMinionsEffect* minionEffect = new ReorganizeMinionsEffect(timeForEffect, SELF_PLAYER_TYPE);
+			AddEffectToEffectQueue(minionEffect);
+
+			minionEffect = nullptr;
+		}		
+		
 		newMinion = nullptr;
 	}
 
