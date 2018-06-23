@@ -8,6 +8,7 @@
 #include "Engine\Input\InputSystem.hpp"
 #include "Game\Effects\Effect.hpp"
 #include "Game\Effects\DerivedEffects\DrawEffect.hpp"
+#include "Game\Effects\DerivedEffects\ReorganizeHandEffect.hpp"
 
 // actions =============================================================================
 
@@ -69,7 +70,9 @@ void DrawAction(const std::map<std::string, std::string>& parameters)
 
 		Vector2 endPosition = Vector2(handDockWidthPerCard * (targetPlayer->m_hand.size()), handDockCenterHeight);
 
-		DrawEffect* drawEffect = new DrawEffect(card, 1.f, targetPlayer->m_playerId, deckQuad.GetCenter(), endPosition, Vector2(0.1f, 0.1f));
+		float effectTime = 1.f / drawAmount;
+
+		DrawEffect* drawEffect = new DrawEffect(card, effectTime, targetPlayer->m_playerId, deckQuad.GetCenter(), endPosition, Vector2(0.1f, 0.1f));
 		AddEffectToEffectQueue(drawEffect);
 
 		card = nullptr;
@@ -149,6 +152,12 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 
 		newMinion->m_transform2D->SetLocalPosition(newMinion->m_lockPosition);
 
+		float timeForEffect = 0.25f / (float)player->m_hand.size();
+
+		ReorganizeHandEffect* handEffect = new ReorganizeHandEffect(timeForEffect, SELF_PLAYER_TYPE);
+		AddEffectToEffectQueue(handEffect);
+
+		handEffect = nullptr;
 		newMinion = nullptr;
 	}
 
