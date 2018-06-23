@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Core\Command.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -37,6 +38,7 @@ public:
 	AudioSystem();
 	static AudioSystem* CreateInstance();
 	static AudioSystem* GetInstance();
+	void Initialize();
 	virtual ~AudioSystem();
 
 public:
@@ -60,4 +62,7 @@ protected:
 	std::vector< FMOD::Sound* >			m_registeredSounds;
 	std::vector<AudioGroup*>			m_registeredAudioGroups;
 };
+
+
+void SetVolume(Command& cmd);
 

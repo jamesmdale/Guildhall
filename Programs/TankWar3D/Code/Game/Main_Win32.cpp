@@ -148,6 +148,7 @@ void Initialize()
 	DebugRender::GetInstance()->Initialize();
 
 	AudioSystem::CreateInstance();
+	AudioSystem::GetInstance()->Initialize();
 
 
 	g_theApp->Initialize();

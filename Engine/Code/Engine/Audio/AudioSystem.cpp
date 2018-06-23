@@ -4,6 +4,7 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\XMLUtilities.hpp"
 #include "Engine\ThirdParty\tinyxml2\tinyxml2.h"
+#include "Engine\Core\DevConsole.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // To disable audio entirely (and remove requirement for fmod.dll / fmod64.dll) for any game,
@@ -27,6 +28,7 @@
 #endif
 
 static AudioSystem* g_theAudioSystem = nullptr;
+float overallVolume = 1.f;
 
 //-----------------------------------------------------------------------------------------------
 // Initialization code based on example from "FMOD Studio Programmers API for Windows"
@@ -57,6 +59,10 @@ AudioSystem * AudioSystem::GetInstance()
 	return g_theAudioSystem;
 }
 
+void AudioSystem::Initialize()
+{
+	CommandRegister("set_volume", CommandRegistration(SetVolume, ": Type set_volume with 0.0f to 1.0f value to set overall volume"));
+}
 
 //-----------------------------------------------------------------------------------------------
 AudioSystem::~AudioSystem()
@@ -127,7 +133,7 @@ SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float vo
 		channelAssignedToSound->setMode(playbackMode);
 		channelAssignedToSound->getFrequency( &frequency );
 		channelAssignedToSound->setFrequency( frequency * speed );
-		channelAssignedToSound->setVolume( volume );
+		channelAssignedToSound->setVolume(overallVolume * volume );
 		channelAssignedToSound->setPan( balance );
 		channelAssignedToSound->setLoopCount( loopCount );
 	}
@@ -214,7 +220,7 @@ void AudioSystem::SetSoundPlaybackVolume( SoundPlaybackID soundPlaybackID, float
 	}
 
 	FMOD::Channel* channelAssignedToSound = (FMOD::Channel*) soundPlaybackID;
-	channelAssignedToSound->setVolume( volume );
+	channelAssignedToSound->setVolume( overallVolume * volume );
 }
 
 
@@ -267,6 +273,13 @@ void AudioSystem::ValidateResult( FMOD_RESULT result )
 	{
 		ERROR_RECOVERABLE( Stringf( "Engine/Audio SYSTEM ERROR: Got error result code %i - error codes listed in fmod_common.h\n", (int) result ) );
 	}
+}
+
+void SetVolume(Command &cmd)
+{
+	overallVolume = ClampFloatZeroToOne(cmd.GetNextFloat());
+	cmd.m_commandInfo->m_successMessage = Stringf("%s %f", "Volume set to ", overallVolume);
+	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
 }
 
 
