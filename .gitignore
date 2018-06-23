@@ -4,6 +4,7 @@
 *.o
 *.obj
 !**/Data/**/*.obj
+!**/Run_Win32/*.obj
 
 # Precompiled Headers
 *.gch
