@@ -138,7 +138,7 @@ void PlayingState::Update(float deltaSeconds)
 		{
 			m_bullets[bulletIndex]->Update(deltaSeconds);
 		}
-	}	
+	}
 
 	// copy new tank information to tank ui =========================================================================================
 	RefreshTankUI();
@@ -231,7 +231,7 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	}
 	else if (m_respawnTimer->HasElapsed())
 	{
-		if(theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
+		if(theInput->WasKeyJustPressed(theInput->KEYBOARD_SPACE))
 		{
 			isPlayerAlive = true;
 			RespawnTank();

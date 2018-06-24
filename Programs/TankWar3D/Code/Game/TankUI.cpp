@@ -23,7 +23,7 @@ void TankUI::Initialize()
 
 void TankUI::Update(float deltaSeconds)
 {
-	if (m_tankHealthThisFrame != m_tankHealthLastFrame || m_numEnemiesThisFrame != m_numEnemiesLastFrame) 
+	if (m_tankHealthThisFrame != m_tankHealthLastFrame || m_numEnemiesThisFrame != m_numEnemiesLastFrame || !m_isPlayerAlive) 
 	{
 		RefreshRenderables();
 	}
@@ -86,11 +86,11 @@ void TankUI::RefreshRenderables()
 		if (!gameState->m_respawnTimer->HasElapsed())
 		{
 			float roundedFloat = RoundDownToDecimalPlace(timeRemainingBeforeRespawn, 100);
-			mb.CreateText2DInAABB2(textCenter, Vector2(200.f, 200.f), 4.f / 3.f, Stringf("Time until respawn: %f", roundedFloat), Rgba::WHITE); //numenemies
+			mb.CreateText2DInAABB2(textCenter, Vector2(500.f, 500.f), 4.f / 3.f, Stringf("Time until respawn: %f", roundedFloat), Rgba::WHITE); //numenemies
 		}
 		else
 		{
-			mb.CreateText2DInAABB2(textCenter, Vector2(200.f, 200.f), 4.f / 3.f, "Fire to respawn", Rgba::WHITE); //numenemies
+			mb.CreateText2DInAABB2(textCenter, Vector2(500.f, 500.f), 4.f / 3.f, "Space to respawn", Rgba::WHITE); //numenemies
 
 		}
 		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
