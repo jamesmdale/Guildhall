@@ -15,6 +15,10 @@ public:
 
 	//local setters
 	void SetLocalPosition(Vector3 position);
+	void SetLocalPositionX(float x){m_localPosition.x = x;}
+	void SetLocalPositionY(float y){m_localPosition.y = y;}
+	void SetLocalPositionZ(float z){m_localPosition.z = z;}
+
 	void SetLocalRotation(Vector3 rotation);
 	void SetLocalScale(Vector3 scale);
 

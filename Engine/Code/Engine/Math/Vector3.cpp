@@ -13,6 +13,12 @@ const Vector3 Vector3::DEFAULT_LIGHT_ATTENUATION = Vector3(0, 1.f, 0.75f);
 
 const Vector3 Vector3::GRAVITY_FORCE = Vector3(0.f, -9.8f, 0.f);
 
+Vector3::Vector3()
+{
+	x = 0.f;
+	y = 0.f;
+	z = 0.f;
+}
 
 //-----------------------------------------------------------------------------------------------
 Vector3::Vector3( const Vector3& copy )	

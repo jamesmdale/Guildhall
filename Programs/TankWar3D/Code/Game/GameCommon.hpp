@@ -22,8 +22,10 @@ const int g_spawnerStartingHealth = 10;
 
 //swarmer info
 const int g_swarmerStartingHealth = 1;
-const float g_swarmerMoveSpeed = 2.f;
+const float g_swarmerMoveSpeed = 1.f;
 const float g_swarmerRadius = 1.0f;
+const float g_swarmerMinDistanceToOther = 5.f;
+const Vector3 g_swarmerMaxVelocity = Vector3(0.05f, 0.05f, 0.05f);
 
 //game related globals
 extern bool g_isDebug;
