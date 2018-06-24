@@ -281,6 +281,11 @@ int RoundToNearestInt( float inValue )
 	return roundedInt;
 }
 
+float RoundDownToDecimalPlace(float inValue, int decimalPlace)
+{
+	return floorf(inValue * decimalPlace) / decimalPlace;
+}
+
 float TurnToward( float currentDegrees, float goalDegrees, float maxTurnDegrees )
 {
 	float displacement = GetAngularDisplacement(currentDegrees, goalDegrees);

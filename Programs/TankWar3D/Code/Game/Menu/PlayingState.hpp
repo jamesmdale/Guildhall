@@ -3,11 +3,15 @@
 #include "Engine\Core\Terrain.hpp"
 #include "Engine\Core\Raycast.hpp"
 #include "Engine\Renderer\RenderScene2D.hpp"
+#include "Game\TankUI.hpp"
+#include "Engine\Time\Stopwatch.hpp"
 
+//forward declarations
 class Spawner;
 class Swarmer;
 class Bullet;
 class Tank;
+
 class PlayingState : public GameState
 {
 public:
@@ -16,7 +20,11 @@ public:
 		m_type = PLAYING_MENU_STATE;
 		m_renderScene = new RenderScene();
 		m_renderScene2D = new RenderScene2D();
+		m_ui = new TankUI();
 		m_uiCamera = uiCamera;
+
+		m_respawnTimer = new Stopwatch(GetMasterClock());
+		m_respawnTimer->SetTimer(g_respawnTimer);
 	}
 
 	virtual ~PlayingState() override;
@@ -30,9 +38,14 @@ public:
 
 	void SpawnBullet(const Vector3& startingPosition, const Vector3& startingRotation);
 	void RemoveDeadSwarmer(Swarmer* swarmer);
+	void RefreshTankUI();
+	void RespawnTank();
 
 public:
 	Tank* m_playerTank = nullptr;
+
+	TankUI* m_ui = nullptr;
+
 	RenderScene* m_renderScene = nullptr;
 	RenderScene2D* m_renderScene2D = nullptr;
 	Camera* m_uiCamera = nullptr;
@@ -41,6 +54,8 @@ public:
 	std::vector<Spawner*> m_spawners;
 	std::vector<Swarmer*> m_swarmers;
 	std::vector<Bullet*> m_bullets;
+
+	Stopwatch* m_respawnTimer = nullptr;
 };
 
 

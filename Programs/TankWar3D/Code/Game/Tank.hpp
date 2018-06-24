@@ -5,7 +5,6 @@
 #include "Engine\Time\Stopwatch.hpp"
 #include "Game\Menu\PlayingState.hpp"
 #include "Game\Turret.hpp"
-#include "Game\TankUI.hpp"
 #include "Engine\Renderer\Renderable.hpp"
 
 class Tank : public GameObject
@@ -41,17 +40,20 @@ public:
 	virtual ~Tank() override;
 
 	void Initialize();
+
+	//update methods
 	virtual void Update(float deltaTime) override;
-
-	void SetCamera(Camera* camera);
-	void UpdateFromInput(float timeDelta);
-
-	void RefreshTankUI();
-
+	void UpdateFromInput(float deltaSeconds);
 	Vector3 UpdateTarget(float deltaSeconds);
+	void UpdateTrajectoryRenderable(const Vector3& target);
+
+	//misc methods
 	RayCastHit3 RaycastFromCamera(float deltaSeconds);
 
-	void UpdateTrajectoryRenderable(const Vector3& target);
+	void SetCamera(Camera* camera);
+
+	//convenience methods
+	inline bool IsAlive(){return m_heatlth > 0 ? true : false;}
 
 public:
 	// transforms
@@ -67,10 +69,8 @@ public:
 	Vector3 m_baseDimensions;
 	Vector3 m_currentTarget;
 
-	TankUI* m_tankInformation = nullptr;
-
 	Renderable* m_trajectory = nullptr;
 
-	int m_currentHealth = 100;
+	int m_heatlth = 100;
 };
 

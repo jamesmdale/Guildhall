@@ -20,7 +20,6 @@ Tank::Tank()
 	// create transforms =============================================================================
 	m_cameraPivotTransform  = new Transform();
 	m_tankBodyTransform  = new Transform();
-	m_tankInformation = new TankUI();
 
 	// add children to base transform =========================================================================================
 	m_transform->AddChildTransform(m_cameraPivotTransform);
@@ -77,10 +76,6 @@ void Tank::Initialize()
 
 	m_tankBodyTransform->AddChildTransform(m_turret->m_transform);
 
-	// setup tank ui =========================================================================================
-	m_tankInformation->m_renderScene = m_gameState->m_renderScene2D;
-	m_tankInformation->Initialize();
-
 	// setup tank target trajectory =========================================================================================
 	m_trajectory = new Renderable();
 
@@ -105,7 +100,7 @@ void Tank::Initialize()
 	tankTurret = nullptr;
 }
 
-void Tank::Update(float timeDelta)
+void Tank::Update(float deltaSeconds)
 {
 	bool doesAddNewBreadCrumb = m_breadCrumbTimer->Decrement();
 	if (doesAddNewBreadCrumb)
@@ -140,20 +135,13 @@ void Tank::Update(float timeDelta)
 	m_tankBodyTransform->SetLocalRotation(Vector3(rotation.x, 0.f, rotation.z));
 
 	// raycast for targetting =========================================================================================
-	Vector3 targetLocation = UpdateTarget(timeDelta);
+	Vector3 targetLocation = UpdateTarget(deltaSeconds);
 
 	// update trajectory renderable =========================================================================================
 	UpdateTrajectoryRenderable(targetLocation);
 
 	//debug
 	DebugRender::GetInstance()->CreateDebugCrosshair2D(Window::GetInstance()->GetCenterOfClientWindow(), Rgba::GREEN, Rgba::GREEN, 0.0f, 1);
-
-
-	// copy new tank information to tank ui =========================================================================================
-	RefreshTankUI();
-
-	//update ui information
-	m_tankInformation->Update(timeDelta);
 }
 
 void Tank::SetCamera(Camera* camera)
@@ -163,7 +151,7 @@ void Tank::SetCamera(Camera* camera)
 	m_cameraPivotTransform->AddChildTransform(m_camera->m_transform);
 }
 
-void Tank::UpdateFromInput(float timeDelta)
+void Tank::UpdateFromInput(float deltaSeconds)
 {
 	Renderer* theRenderer = Renderer::GetInstance();
 	InputSystem* theInput = InputSystem::GetInstance();
@@ -174,7 +162,7 @@ void Tank::UpdateFromInput(float timeDelta)
 	mouseDelta = InputSystem::GetInstance()->GetMouse()->GetMouseDelta();				
 
 	// calculate rotation for camera and use same rotation for tank ============================================================================
-	m_cameraPivotTransform->AddRotation(Vector3(mouseDelta.y, mouseDelta.x, 0.f) * (timeDelta * 10.f));
+	m_cameraPivotTransform->AddRotation(Vector3(mouseDelta.y, mouseDelta.x, 0.f) * (deltaSeconds * 10.f));
 
 	// update movement =============================================================================
 	Vector3 positionToAdd = Vector3::ZERO;
@@ -183,13 +171,13 @@ void Tank::UpdateFromInput(float timeDelta)
 	if(theInput->IsKeyPressed(theInput->KEYBOARD_W))
 	{
 		//calculate movement for camera and use same movement for Tank and light
-		positionToAdd = m_transform->GetWorldForward() * timeDelta * 10.f;
+		positionToAdd = m_transform->GetWorldForward() * deltaSeconds * 10.f;
 		m_transform->TranslatePosition(positionToAdd);
 	}
 
 	if(theInput->IsKeyPressed(theInput->KEYBOARD_S))
 	{	
-		positionToAdd = (-1.f * m_transform->GetWorldForward()) * timeDelta * 10.f;
+		positionToAdd = (-1.f * m_transform->GetWorldForward()) * deltaSeconds * 10.f;
 		m_transform->TranslatePosition(positionToAdd);		
 	}
 
@@ -204,7 +192,7 @@ void Tank::UpdateFromInput(float timeDelta)
 				multiplyValue *= 3.f;
 			}
 
-			Vector3 rotation = Vector3(0.f, -10.f, 0.f) * timeDelta * multiplyValue;
+			Vector3 rotation = Vector3(0.f, -10.f, 0.f) * deltaSeconds * multiplyValue;
 			m_transform->AddRotation(rotation);
 		}
 	}
@@ -220,7 +208,7 @@ void Tank::UpdateFromInput(float timeDelta)
 				multiplyValue *= 3.f;
 			}
 
-			Vector3 rotation = Vector3(0.f, 10.f, 0.f) * timeDelta * multiplyValue;
+			Vector3 rotation = Vector3(0.f, 10.f, 0.f) * deltaSeconds * multiplyValue;
 			m_transform->AddRotation(rotation);
 		}		
 	}
@@ -233,18 +221,11 @@ void Tank::UpdateFromInput(float timeDelta)
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_0))
 	{
-		m_currentHealth--;
+		m_heatlth--;
 	}
 
 	theRenderer = nullptr;
 	theInput = nullptr;
-}
-
-
-void Tank::RefreshTankUI()
-{
-	m_tankInformation->m_tankHealthThisFrame = m_currentHealth;
-	m_tankInformation->m_numEnemiesThisFrame = (int)m_gameState->m_swarmers.size();
 }
 
 Vector3 Tank::UpdateTarget(float deltaSeconds)

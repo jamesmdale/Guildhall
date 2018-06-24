@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine\Core\Widget.hpp"
+#include "Engine\Time\Stopwatch.hpp"
 
 class TankUI : public Widget
 {
@@ -18,6 +19,7 @@ public:
 public:
 	int m_tankHealthThisFrame = 100;
 	int m_numEnemiesThisFrame = 0;
+	bool m_isPlayerAlive = true;
 
 private:
 	int m_tankHealthLastFrame = 100;

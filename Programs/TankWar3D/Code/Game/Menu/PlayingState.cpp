@@ -11,6 +11,7 @@
 #include "Game\Swarmer.hpp"
 #include "Game\Spawner.hpp"
 
+bool isPlayerAlive = true;
 
 PlayingState::~PlayingState()
 {
@@ -104,32 +105,46 @@ void PlayingState::Initialize()
 		spawner = nullptr;
 	}
 
+	// UI creation =========================================================================================
+	m_ui->m_renderScene = m_renderScene2D;
+	m_ui->Initialize();
+
 
 	theRenderer = nullptr;	
 }
 
 void PlayingState::Update(float deltaSeconds)
 { 
-	// tank update =============================================================================
-	m_playerTank->Update(deltaSeconds);
-
-	// update spawner =========================================================================================
-	for (int spawnerIndex = 0; spawnerIndex < (int)m_spawners.size(); ++spawnerIndex)
+	//if player is dead, don't update any game elements
+	if (isPlayerAlive)
 	{
-		m_spawners[spawnerIndex]->Update(deltaSeconds);
-	}
+		// tank update =============================================================================
+		m_playerTank->Update(deltaSeconds);
 
-	// update swarmer =========================================================================================
-	for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
-	{
-		m_swarmers[swarmerIndex]->Update(deltaSeconds);
-	}
+		// update spawner =========================================================================================
+		for (int spawnerIndex = 0; spawnerIndex < (int)m_spawners.size(); ++spawnerIndex)
+		{
+			m_spawners[spawnerIndex]->Update(deltaSeconds);
+		}
 
-	// update bullets =========================================================================================
-	for (int bulletIndex = 0; bulletIndex < (int)m_bullets.size(); ++bulletIndex)
-	{
-		m_bullets[bulletIndex]->Update(deltaSeconds);
-	}
+		// update swarmer =========================================================================================
+		for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
+		{
+			m_swarmers[swarmerIndex]->Update(deltaSeconds);
+		}
+
+		// update bullets =========================================================================================
+		for (int bulletIndex = 0; bulletIndex < (int)m_bullets.size(); ++bulletIndex)
+		{
+			m_bullets[bulletIndex]->Update(deltaSeconds);
+		}
+	}	
+
+	// copy new tank information to tank ui =========================================================================================
+	RefreshTankUI();
+
+	//update ui information
+	m_ui->Update(deltaSeconds);
 }
 
 void PlayingState::PreRender()
@@ -188,6 +203,15 @@ void PlayingState::PostRender()
 		}
 	}
 
+	if (!m_playerTank->IsAlive())
+	{
+		if (isPlayerAlive == true)
+		{
+			isPlayerAlive = false;
+			m_respawnTimer->Reset();
+		}
+	}
+
 	if (m_spawners.size() == 0 && m_swarmers.size() == 0)
 	{
 		int i = 0;
@@ -200,8 +224,19 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 {
 	InputSystem* theInput = InputSystem::GetInstance();
 
-	m_playerTank->UpdateFromInput(deltaSeconds);
-
+	//if tank is dead, it no longer has input.
+	if (isPlayerAlive)
+	{
+		m_playerTank->UpdateFromInput(deltaSeconds);
+	}
+	else if (m_respawnTimer->HasElapsed())
+	{
+		if(theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
+		{
+			isPlayerAlive = true;
+			RespawnTank();
+		}
+	}
 
 	//cleanup
 	theInput = nullptr;
@@ -256,4 +291,17 @@ void PlayingState::RemoveDeadSwarmer(Swarmer * swarmer)
 			swarmerIndex--;
 		}
 	}
+}
+
+void PlayingState::RefreshTankUI()
+{
+	m_ui->m_tankHealthThisFrame = m_playerTank->m_heatlth;
+	m_ui->m_numEnemiesThisFrame = (int)m_swarmers.size();
+	m_ui->m_isPlayerAlive = isPlayerAlive;
+}
+
+void PlayingState::RespawnTank()
+{
+	m_playerTank->m_heatlth = 100.f;
+	m_playerTank->m_transform->ResetPositionData();
 }

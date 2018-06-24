@@ -40,9 +40,9 @@ Bullet::~Bullet()
 
 }
 
-void Bullet::Update(float timeDelta)
+void Bullet::Update(float deltaSeconds)
 {
-	m_timeToLive -= timeDelta;
+	m_timeToLive -= deltaSeconds;
 
 	if (m_timeToLive <= 0.0f)
 	{
@@ -50,7 +50,7 @@ void Bullet::Update(float timeDelta)
 	}
 
 	//update movement
-	Vector3 positionToAdd = m_transform->GetWorldForward() * timeDelta * defaultMovementSpeed;
+	Vector3 positionToAdd = m_transform->GetWorldForward() * deltaSeconds * defaultMovementSpeed;
 	m_transform->TranslatePosition(positionToAdd);
 	
 	Vector3 currentPosition = m_transform->GetWorldPosition();

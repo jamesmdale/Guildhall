@@ -3,10 +3,12 @@
 #include "Engine\Window\Window.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Game\Menu\PlayingState.hpp"
 
 
 TankUI::TankUI()
 {
+
 }
 
 
@@ -66,8 +68,39 @@ void TankUI::RefreshRenderables()
 	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
 	tankUiRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
 
-	m_renderables.push_back(tankUiRenderable);
+	
+	//if player is dead, we need to show overlay
+	if (m_isPlayerAlive == false)
+	{
+		PlayingState* gameState = (PlayingState*)g_currentState;
+		int timeRemainingBeforeRespawn = g_respawnTimer- (int)gameState->m_respawnTimer->GetElapsedTimeInSeconds();
 
+		//add overlay
+		mb.CreateQuad2D(clientWindow->GetClientWindow(), Rgba::WHITE);
+		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
+		materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::LIGHT_RED_TRANSPARENT));
+		tankUiRenderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);
+
+		mb.CreateText2DInAABB2(clientWindow->GetCenterOfClientWindow(), Vector2(500.f, 500.f), 4.f / 3.f, "YOU ARE VERY DEAD", Rgba::WHITE); //numenemies
+		Vector2 textCenter = clientWindow->GetCenterOfClientWindow() - Vector2(0.f, 200);
+		if (!gameState->m_respawnTimer->HasElapsed())
+		{
+			float roundedFloat = RoundDownToDecimalPlace(timeRemainingBeforeRespawn, 100);
+			mb.CreateText2DInAABB2(textCenter, Vector2(200.f, 200.f), 4.f / 3.f, Stringf("Time until respawn: %f", roundedFloat), Rgba::WHITE); //numenemies
+		}
+		else
+		{
+			mb.CreateText2DInAABB2(textCenter, Vector2(200.f, 200.f), 4.f / 3.f, "Fire to respawn", Rgba::WHITE); //numenemies
+
+		}
+		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+		materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+		tankUiRenderable->AddRenderableData(4, mb.CreateMesh<VertexPCU>(), materialInstance);
+	}
+
+	materialInstance = nullptr;
+
+	m_renderables.push_back(tankUiRenderable);
 	m_renderScene->AddRenderable(tankUiRenderable);
 
 	clientWindow = nullptr;

@@ -10,7 +10,7 @@ public:
 	Bullet(const Vector3& startingPosition, const Vector3& startingRotation);
 	virtual ~Bullet() override;
 
-	virtual void Update(float timeDelta) override;
+	virtual void Update(float deltaSeconds) override;
 
 	void MarkAsDead() { m_isDead = true; }
 	bool IsAlive() { return !m_isDead; }
