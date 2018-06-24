@@ -29,6 +29,7 @@ public:
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
 	void SpawnBullet(const Vector3& startingPosition, const Vector3& startingRotation);
+	void RemoveDeadSwarmer(Swarmer* swarmer);
 
 public:
 	Tank* m_playerTank = nullptr;

@@ -38,6 +38,8 @@ Terrain::~Terrain()
 {
 	delete(m_heightMap);
 	m_heightMap = nullptr;
+
+	DebuggerPrintf("Terrain got deleted");
 }
 
 // getters =============================================================================

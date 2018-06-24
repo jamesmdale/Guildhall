@@ -1,5 +1,8 @@
 #include "Game\Bullet.hpp"
 #include "Engine\Core\Rgba.hpp"
+#include "Game\Spawner.hpp"
+#include "Game\Swarmer.hpp"
+#include "Engine\Audio\AudioSystem.hpp"
 
 //defaults to set in constructor
 float defaultTimeToLive = 5.f;
@@ -50,13 +53,43 @@ void Bullet::Update(float timeDelta)
 	Vector3 positionToAdd = m_transform->GetWorldForward() * timeDelta * defaultMovementSpeed;
 	m_transform->TranslatePosition(positionToAdd);
 	
-	Vector3 position = m_transform->GetWorldPosition();
+	Vector3 currentPosition = m_transform->GetWorldPosition();
 
-	float bulletHeight = m_gameState->m_terrain->GetHeightAtPositionXZ(Vector2(position.x, position.z));
+	float terrainHeightAtPosition = m_gameState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
 	
-	if (bulletHeight >= position.y)
+	if (terrainHeightAtPosition >= currentPosition.y)
 	{
 		MarkAsDead();
+		AudioSystem::GetInstance()->PlaySoundFromGroup("impact");
+		return;
+	}
+
+	for (int spawnerIndex = 0; spawnerIndex < (int)m_gameState->m_spawners.size(); ++spawnerIndex)
+	{
+		Vector3 spawnerPosition = m_gameState->m_spawners[spawnerIndex]->m_transform->GetWorldPosition();
+
+		AABB3 spawnerBounds = AABB3(spawnerPosition, g_spawnerDimensions.x * 0.5f, g_spawnerDimensions.y * 0.5f, g_spawnerDimensions.z * 0.5f);
+
+		if (spawnerBounds.IsPointInside(currentPosition))
+		{
+			MarkAsDead();
+			AudioSystem::GetInstance()->PlaySoundFromGroup("impact");
+			m_gameState->m_spawners[spawnerIndex]->m_health--;
+			return;
+		}
+	}
+
+	for (int swarmerIndex = 0; swarmerIndex < (int)m_gameState->m_swarmers.size(); ++swarmerIndex)
+	{
+		Vector3 swarmerPosition = m_gameState->m_swarmers[swarmerIndex]->m_transform->GetWorldPosition();
+
+		if (GetDistance(currentPosition, swarmerPosition) < g_swarmerRadius)
+		{
+			MarkAsDead();
+			AudioSystem::GetInstance()->PlaySoundFromGroup("impact");
+			m_gameState->m_swarmers[swarmerIndex]->m_health--;
+			return;
+		}
 	}
 
 	UpdateLightDataFromWorldTransform();

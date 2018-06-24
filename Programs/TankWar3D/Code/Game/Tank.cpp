@@ -36,17 +36,17 @@ Tank::~Tank()
 	m_tankBodyTransform = nullptr;	
 
 	m_camera = nullptr;
-	m_playingState = nullptr;
+	m_gameState = nullptr;
 }
 
 void Tank::Initialize()
 {
 	MeshBuilder meshBuilder;	
 
-	m_renderScene = m_playingState->m_renderScene;
+	m_renderScene = m_gameState->m_renderScene;
 
 	// create tank renderable =========================================================================================
-	m_baseDimensions = Vector3(1.0f, 0.5f, 2.0f);
+	m_baseDimensions = Vector3(1.5f, 0.5f, 2.5f);
 
 	Renderable* tankRenderable = new Renderable();
 	meshBuilder.LoadObjectFromFile("Data/Model/claire_car/RallyFighter.obj");
@@ -78,7 +78,7 @@ void Tank::Initialize()
 	m_tankBodyTransform->AddChildTransform(m_turret->m_transform);
 
 	// setup tank ui =========================================================================================
-	m_tankInformation->m_renderScene = m_playingState->m_renderScene2D;
+	m_tankInformation->m_renderScene = m_gameState->m_renderScene2D;
 	m_tankInformation->Initialize();
 
 	// setup tank target trajectory =========================================================================================
@@ -118,8 +118,8 @@ void Tank::Update(float timeDelta)
 	Vector3 basePosition = m_transform->GetWorldPosition();
 
 	//get height and normal from terrain
-	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(basePosition.x, basePosition.z)) + m_baseDimensions.y;	
-	Vector3 terrainNormal = m_playingState->m_terrain->GetNormalAtPositionXZ(Vector2(basePosition.x, basePosition.z));
+	float heightFromTerrain = m_gameState->m_terrain->GetHeightAtPositionXZ(Vector2(basePosition.x, basePosition.z)) + m_baseDimensions.y;	
+	Vector3 terrainNormal = m_gameState->m_terrain->GetNormalAtPositionXZ(Vector2(basePosition.x, basePosition.z));
 
 	//calculate new basis from normal (new up)
 	Vector3 newRight = CrossProduct(terrainNormal, m_tankBodyTransform->GetWorldForward());
@@ -228,7 +228,7 @@ void Tank::UpdateFromInput(float timeDelta)
 	if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 	{
 		Matrix44 turretToWorld = m_turret->m_transform->GetWorldMatrix();
-		m_playingState->SpawnBullet(m_turret->m_transform->GetWorldPosition(), turretToWorld.GetRotation());
+		m_gameState->SpawnBullet(m_turret->m_transform->GetWorldPosition(), turretToWorld.GetRotation());
 	}
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_0))
@@ -244,6 +244,7 @@ void Tank::UpdateFromInput(float timeDelta)
 void Tank::RefreshTankUI()
 {
 	m_tankInformation->m_tankHealthThisFrame = m_currentHealth;
+	m_tankInformation->m_numEnemiesThisFrame = (int)m_gameState->m_swarmers.size();
 }
 
 Vector3 Tank::UpdateTarget(float deltaSeconds)
@@ -298,11 +299,11 @@ RayCastHit3 Tank::RaycastFromCamera(float deltaSeconds)
 		currentDistance += deltaSeconds;
 
 		currentPosition = ray.Evaluate(currentDistance);
-		float heightAtPosition = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
+		float heightAtPosition = m_gameState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
 
-		for (int spawnerIndex = 0; spawnerIndex < (int)m_playingState->m_spawners.size(); ++spawnerIndex)
+		for (int spawnerIndex = 0; spawnerIndex < (int)m_gameState->m_spawners.size(); ++spawnerIndex)
 		{
-			Vector3 spawnerPosition = m_playingState->m_spawners[spawnerIndex]->m_transform->GetWorldPosition();
+			Vector3 spawnerPosition = m_gameState->m_spawners[spawnerIndex]->m_transform->GetWorldPosition();
 
 			AABB3 spawnerBounds = AABB3(spawnerPosition, g_spawnerDimensions.x * 0.5f, g_spawnerDimensions.y * 0.5f, g_spawnerDimensions.z * 0.5f);
 
@@ -314,9 +315,9 @@ RayCastHit3 Tank::RaycastFromCamera(float deltaSeconds)
 			}
 		}
 
-		for (int swarmerIndex = 0; swarmerIndex < (int)m_playingState->m_swarmers.size(); ++swarmerIndex)
+		for (int swarmerIndex = 0; swarmerIndex < (int)m_gameState->m_swarmers.size(); ++swarmerIndex)
 		{
-			Vector3 swarmerPosition = m_playingState->m_swarmers[swarmerIndex]->m_transform->GetWorldPosition();
+			Vector3 swarmerPosition = m_gameState->m_swarmers[swarmerIndex]->m_transform->GetWorldPosition();
 
 			if (GetDistance(currentPosition, swarmerPosition) < g_swarmerRadius)
 			{

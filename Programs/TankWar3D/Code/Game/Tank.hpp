@@ -62,7 +62,7 @@ public:
 
 	Camera* m_camera = nullptr;
 	Stopwatch* m_breadCrumbTimer = nullptr;
-	PlayingState* m_playingState = nullptr;
+	PlayingState* m_gameState = nullptr;
 	
 	Vector3 m_baseDimensions;
 	Vector3 m_currentTarget;

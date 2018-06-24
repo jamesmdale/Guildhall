@@ -15,7 +15,6 @@ Stopwatch::~Stopwatch()
 {
 	if(m_referenceClock != nullptr)
 	{
-		delete(m_referenceClock);
 		m_referenceClock = nullptr;
 	}	
 }

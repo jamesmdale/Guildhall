@@ -16,12 +16,13 @@ public:
 	void Initialize();
 
 	Swarmer* SpawnSwarmer();
-	void RemoveDeadSwarmer(Swarmer* swarmer);
+
+	inline bool IsAlive(){return m_health > 0 ? true : false;}
 
 public:
 	PlayingState* m_gameState = nullptr;
 	Stopwatch* m_spawnTimer;
-	std::vector<Swarmer*> m_swarmers;
+	int m_numSwarmers = 0;
 	int m_health = 0;
 };
 

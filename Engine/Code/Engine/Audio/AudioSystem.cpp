@@ -28,7 +28,7 @@
 #endif
 
 static AudioSystem* g_theAudioSystem = nullptr;
-float overallVolume = 1.f;
+float overallVolume = 0.15f;
 
 //-----------------------------------------------------------------------------------------------
 // Initialization code based on example from "FMOD Studio Programmers API for Windows"

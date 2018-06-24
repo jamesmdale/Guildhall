@@ -17,9 +17,11 @@ public:
 
 public:
 	int m_tankHealthThisFrame = 100;
+	int m_numEnemiesThisFrame = 0;
 
 private:
 	int m_tankHealthLastFrame = 100;
+	int m_numEnemiesLastFrame = 0;
 
 };
 

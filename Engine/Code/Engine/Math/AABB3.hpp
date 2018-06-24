@@ -20,6 +20,7 @@ public:
 
 	bool IsPointInside(float x, float y, float z) const; //is (x,y) within disc's interior?
 	bool IsPointInside(const Vector3& point) const; //is "point" within disc's interior?
+	bool DoesOverlapWithSphere(const Vector3& sphereCenter, float sphereRadius);
 
 	Vector3 GetDimensions() const; //return a vector2 of (width, height)
 	Vector3 GetCenter() const; //return center position of the box

@@ -25,6 +25,7 @@ void LoadingState::Update(float deltaSeconds)
 
 		//load audio
 		theAudio->CreateOrGetAudioGroupFromXML("Data/Audio/AudioGroups/Lasers.xml");
+		theAudio->CreateOrGetAudioGroupFromXML("Data/Audio/AudioGroups/Impacts.xml");
 
 		//sleep to insure loading screen visibility
 		Sleep(1);

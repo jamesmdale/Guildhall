@@ -12,13 +12,16 @@ Swarmer::Swarmer()
 
 Swarmer::~Swarmer()
 {
-	m_parentSpawner->RemoveDeadSwarmer(this);
-	m_parentSpawner = nullptr;
+	if (m_parentSpawner != nullptr)
+	{
+		m_parentSpawner->m_numSwarmers--;
+		m_parentSpawner = nullptr;
+	}
 
 	delete(m_eyeTransform);
 	m_eyeTransform = nullptr;
 
-	m_playingState = nullptr;
+	m_gameState = nullptr;
 }
 
 void Swarmer::Update(float deltaSeconds)
@@ -27,8 +30,8 @@ void Swarmer::Update(float deltaSeconds)
 	Vector3 basePosition = m_transform->GetWorldPosition();	
 
 	//get height and normal from terrain
-	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(basePosition.x, basePosition.z)) + 1.f;
-	Vector3 terrainNormal = m_playingState->m_terrain->GetNormalAtPositionXZ(Vector2(basePosition.x, basePosition.z));
+	float heightFromTerrain = m_gameState->m_terrain->GetHeightAtPositionXZ(Vector2(basePosition.x, basePosition.z)) + 1.f;
+	Vector3 terrainNormal = m_gameState->m_terrain->GetNormalAtPositionXZ(Vector2(basePosition.x, basePosition.z));
 
 	//calculate new basis from normal (new up)
 	Vector3 newRight = CrossProduct(terrainNormal, m_transform->GetWorldForward());
@@ -44,7 +47,7 @@ void Swarmer::Update(float deltaSeconds)
 	m_transform->SetLocalPosition(Vector3(basePosition.x, heightFromTerrain, basePosition.z));
 
 	// swarmer look at =========================================================================================
-	Vector3 targetPosition = m_playingState->m_playerTank->m_transform->GetWorldPosition();
+	Vector3 targetPosition = m_gameState->m_playerTank->m_transform->GetWorldPosition();
 
 	Matrix44 swarmerWorld = m_transform->GetWorldMatrix();
 	Vector3 swarmerWorldUp = swarmerWorld.GetUp();
@@ -55,6 +58,19 @@ void Swarmer::Update(float deltaSeconds)
 	
 	Vector3 positionToAdd = m_transform->GetWorldForward() * deltaSeconds * g_swarmerMoveSpeed;
 	m_transform->TranslatePosition(positionToAdd);
+
+	// swarmer to player collision =========================================================================================
+	Tank* playerTank = m_gameState->m_playerTank;
+
+	AABB3 tankBody = AABB3(playerTank->m_tankBodyTransform->GetWorldPosition(), playerTank->m_baseDimensions.x, playerTank->m_baseDimensions.y, playerTank->m_baseDimensions.z);
+
+	if(tankBody.DoesOverlapWithSphere(m_transform->GetWorldPosition(), g_swarmerRadius))
+	{
+		m_health--;
+		playerTank->m_currentHealth -= 5;
+	}
+
+	playerTank = nullptr;
 }
 
 void Swarmer::Initialize()
@@ -66,7 +82,7 @@ void Swarmer::Initialize()
 
 	//add main body renderable
 	Renderable* bodyRenderable = new Renderable();
-	meshBuilder.CreateUVSphere(Vector3::ZERO, g_swarmerRadius, 20, 20, Rgba::WHITE);
+	meshBuilder.CreateUVSphere(Vector3::ZERO, g_swarmerRadius, 8, 8, Rgba::WHITE);
 	bodyRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
 	bodyRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("lit")));
 	bodyRenderable->m_material->SetTexture(0, Renderer::GetInstance()->CreateOrGetTexture("Data/Images/alienSkin.jpg"));
@@ -76,7 +92,7 @@ void Swarmer::Initialize()
 
 	//add eye renderable
 	Renderable* eyeRenderable = new Renderable();
-	meshBuilder.CreateUVSphere(Vector3::ZERO, 0.25f, 20, 20, Rgba::WHITE);
+	meshBuilder.CreateUVSphere(Vector3::ZERO, 0.25f, 10, 10, Rgba::WHITE);
 	eyeRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
 	eyeRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("lit")));
 	eyeRenderable->m_material->SetTexture(0, Renderer::GetInstance()->CreateOrGetTexture("Data/Images/alienEye.jpg"));

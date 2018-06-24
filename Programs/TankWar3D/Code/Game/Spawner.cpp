@@ -15,19 +15,15 @@ Spawner::Spawner()
 Spawner::~Spawner()
 {
 	m_gameState = nullptr;
+
 	delete(m_spawnTimer);
 	m_spawnTimer = nullptr;
-
-	for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
-	{
-		m_swarmers[swarmerIndex] = nullptr;
-	}
-	m_swarmers.clear();
 }
 
 void Spawner::Update(float deltaSeconds)
 {
-	if (m_spawnTimer->HasElapsed() && (int)m_swarmers.size() < g_spawnerMaxSwarmers)
+	int val = m_numSwarmers;
+	if (m_spawnTimer->HasElapsed() && m_numSwarmers <= g_spawnerMaxSwarmers)
 	{
 		Swarmer* swarmer = SpawnSwarmer();
 		swarmer = nullptr;
@@ -64,7 +60,7 @@ Swarmer* Spawner::SpawnSwarmer()
 	Swarmer* swarmer = new Swarmer();
 	swarmer->m_parentSpawner = this;
 	swarmer->m_renderScene = m_gameState->m_renderScene;
-	swarmer->m_playingState = m_gameState;
+	swarmer->m_gameState = m_gameState;
 	swarmer->Initialize();
 
 	Vector3 spawnPosition = m_transform->GetWorldPosition();
@@ -73,24 +69,11 @@ Swarmer* Spawner::SpawnSwarmer()
 	swarmer->m_transform->SetLocalPosition(spawnPosition);
 
 	//add swarmer to spawner list
-	m_swarmers.push_back(swarmer);
+	m_numSwarmers++;
 
 	//add swarmer to spawner list
 	m_gameState->m_swarmers.push_back(swarmer);
 
 	//cleanup
 	return swarmer;
-}
-
-void Spawner::RemoveDeadSwarmer(Swarmer* swarmer)
-{
-	//remove swarmer from our list. DOES NOT DELETE (just removes and resizes)
-	for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
-	{
-		if (m_swarmers[swarmerIndex] == swarmer)
-		{
-			m_swarmers[swarmerIndex] = nullptr;
-			m_swarmers.erase(m_swarmers.begin() + swarmerIndex);
-		}
-	}
 }

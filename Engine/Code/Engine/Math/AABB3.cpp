@@ -156,6 +156,77 @@ bool AABB3::IsPointInside(const Vector3& point) const //is "point" within AABB3'
 	return isPointInside;
 }
 
+bool AABB3::DoesOverlapWithSphere(const Vector3 & sphereCenter, float sphereRadius)
+{
+	//easy out if box scenter is inside the sphere
+	if (GetDistanceSquared(sphereCenter, GetCenter()) < sphereRadius * sphereRadius)
+	{
+		//	return true;
+	}	
+
+	Vector3 displacement = sphereCenter - GetCenter();
+	Vector3 closestPointOnBox;
+	Vector3 boxDimensions = GetDimensions();
+
+	// check x =========================================================================================
+	//sphere to is to the left of our box
+	if (displacement.x < -boxDimensions.x * 0.5f)
+	{
+		closestPointOnBox.x = -boxDimensions.x * 0.5f;
+	}	
+	//sphere is to the right of our box
+	else if (displacement.x > boxDimensions.x * 0.5f)
+	{
+		closestPointOnBox.x = boxDimensions.x * 0.5f;
+	}
+	else
+	{
+		closestPointOnBox.x = displacement.x;
+	}
+
+	// check y =========================================================================================
+	//sphere to is below of our box
+	if (displacement.y < -boxDimensions.y * 0.5f)
+	{
+		closestPointOnBox.y = -boxDimensions.y * 0.5f;
+	}
+	//sphere is above of our box
+	else if (displacement.y > boxDimensions.y * 0.5f)
+	{
+		closestPointOnBox.y = boxDimensions.y * 0.5f;
+	}
+	else
+	{
+		closestPointOnBox.y = displacement.y;
+	}
+
+	// check z =========================================================================================
+	//sphere is in front of our box
+	if (displacement.z < -boxDimensions.z * 0.5f)
+	{
+		closestPointOnBox.z = -boxDimensions.z * 0.5f;
+	}
+	//sphere is behind of our box
+	else if (displacement.z > boxDimensions.z * 0.5f)
+	{
+		closestPointOnBox.z = boxDimensions.z * 0.5f;
+	}	
+	else
+	{
+		closestPointOnBox.z = displacement.z;
+	}
+
+	
+	float distanceSquared = GetDistanceSquared(displacement, closestPointOnBox);
+	
+	if (distanceSquared < sphereRadius * sphereRadius)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 bool DoAABBsOverlap(const AABB3& box1, const AABB3& box2) // determine if boxes overlap
 {
 	bool doBoxesOverlap = true;

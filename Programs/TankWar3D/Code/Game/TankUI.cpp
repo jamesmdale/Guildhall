@@ -21,13 +21,14 @@ void TankUI::Initialize()
 
 void TankUI::Update(float deltaSeconds)
 {
-	if (m_tankHealthThisFrame != m_tankHealthLastFrame) 
+	if (m_tankHealthThisFrame != m_tankHealthLastFrame || m_numEnemiesThisFrame != m_numEnemiesLastFrame) 
 	{
 		RefreshRenderables();
 	}
 
 	//copy any members over
 	m_tankHealthLastFrame = m_tankHealthThisFrame;
+	m_numEnemiesLastFrame = m_numEnemiesThisFrame;
 }
 
 void TankUI::RefreshRenderables()
@@ -49,17 +50,18 @@ void TankUI::RefreshRenderables()
 	Window* clientWindow = Window::GetInstance();
 	MeshBuilder mb;
 
-	Vector2 dimensions = Vector2(clientWindow->GetClientDimensions().x - 50.f, clientWindow->GetClientDimensions().y - 50.f);
-	AABB2 uiBounds = AABB2(Vector2(dimensions - Vector2(200.f, 200.f)), dimensions);
+	Vector2 dimensions = Vector2(clientWindow->GetClientDimensions().x - 10.f, clientWindow->GetClientDimensions().y - 10.f);
+	AABB2 healthBounds = AABB2(Vector2(dimensions - Vector2(200.f, 200.f)), dimensions);
+	AABB2 numEnemiesBounds = AABB2(Vector2(healthBounds.mins.x, healthBounds.mins.y - 40.f), Vector2(healthBounds.maxs.x, healthBounds.mins.y));
 
-	Renderable2D* tankUiRenderable = new Renderable2D();
-	
+	Renderable2D* tankUiRenderable = new Renderable2D();	
 
 	//green is full health - transitions to red
 	float percentageAlive = ClampFloatZeroToOne((float)m_tankHealthThisFrame/100.f);	
 	Rgba color = Rgba(1.f - percentageAlive, percentageAlive, 0.f, 1.f);
 
-	mb.CreateText2DInAABB2(uiBounds.GetCenter(), uiBounds.GetDimensions(), 4.f / 3.f, Stringf("%s: %i/100", "Health", m_tankHealthThisFrame), color); //name
+	mb.CreateText2DInAABB2(healthBounds.GetCenter(), healthBounds.GetDimensions(), 4.f / 3.f, Stringf("%s: %i/100", "Health", m_tankHealthThisFrame), color); //health
+	mb.CreateText2DInAABB2(numEnemiesBounds.GetCenter(), numEnemiesBounds.GetDimensions(), 4.f / 3.f, Stringf("%s: %i", "Swarmers Alive: ", m_numEnemiesThisFrame), Rgba::WHITE); //numenemies
 	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
 	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
 	tankUiRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);

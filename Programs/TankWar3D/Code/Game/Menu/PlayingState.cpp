@@ -72,7 +72,7 @@ void PlayingState::Initialize()
 	// add tank =========================================================================================
 	m_playerTank = new Tank();
 	m_playerTank->SetCamera(m_camera);
-	m_playerTank->m_playingState = (PlayingState*)g_currentState;
+	m_playerTank->m_gameState = (PlayingState*)g_currentState;
 	m_playerTank->Initialize();
 
 	// add terrain =========================================================================================
@@ -88,7 +88,7 @@ void PlayingState::Initialize()
 	for (int spawnerIndex = 0; spawnerIndex < g_startingNumSpawners; ++spawnerIndex)
 	{
 		Spawner* spawner = new Spawner();
-		spawner->m_gameState = this;
+		spawner->m_gameState = (PlayingState*)g_currentState;
 		spawner->m_renderScene = m_renderScene;
 		spawner->Initialize();
 
@@ -113,20 +113,22 @@ void PlayingState::Update(float deltaSeconds)
 	// tank update =============================================================================
 	m_playerTank->Update(deltaSeconds);
 
-	// update bullets =========================================================================================
-	for (int bulletIndex = 0; bulletIndex < (int)m_bullets.size(); ++bulletIndex)
-	{
-		m_bullets[bulletIndex]->Update(deltaSeconds);
-	}
-
+	// update spawner =========================================================================================
 	for (int spawnerIndex = 0; spawnerIndex < (int)m_spawners.size(); ++spawnerIndex)
 	{
 		m_spawners[spawnerIndex]->Update(deltaSeconds);
 	}
 
+	// update swarmer =========================================================================================
 	for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
 	{
 		m_swarmers[swarmerIndex]->Update(deltaSeconds);
+	}
+
+	// update bullets =========================================================================================
+	for (int bulletIndex = 0; bulletIndex < (int)m_bullets.size(); ++bulletIndex)
+	{
+		m_bullets[bulletIndex]->Update(deltaSeconds);
 	}
 }
 
@@ -161,6 +163,36 @@ void PlayingState::PostRender()
 			bulletIndex--;
 		}
 	}
+
+	for (int spawnerIndex = 0; spawnerIndex < (int)m_spawners.size(); spawnerIndex++)
+	{
+		if (!m_spawners[spawnerIndex]->IsAlive())
+		{
+			delete(m_spawners[spawnerIndex]);
+			m_spawners[spawnerIndex] = nullptr;
+
+			m_spawners.erase(m_spawners.begin() + spawnerIndex);
+			spawnerIndex--;
+		}
+	}
+
+	for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); swarmerIndex++)
+	{
+		if (!m_swarmers[swarmerIndex]->IsAlive())
+		{
+			//remove swarmer from gamestate list
+			Swarmer* swarmer = m_swarmers[swarmerIndex];
+			RemoveDeadSwarmer(m_swarmers[swarmerIndex]);
+			delete(swarmer);
+			swarmer = nullptr;
+		}
+	}
+
+	if (m_spawners.size() == 0 && m_swarmers.size() == 0)
+	{
+		int i = 0;
+		TODO("WE HAVE VICTORY!!!!");
+	}
 }
 
 
@@ -185,7 +217,7 @@ void PlayingState::SpawnBullet(const Vector3 & startingPosition, const Vector3& 
 	Bullet* bullet = new Bullet(startingPosition, startingRotation);
 	Renderable* bulletRenderable = new Renderable();
 
-	bullet->m_gameState = this;
+	bullet->m_gameState = (PlayingState*)g_currentState;
 	bullet->AddRenderable(bulletRenderable);
 	bullet->m_transform->AddChildTransform(bulletRenderable->m_transform);
 
@@ -210,4 +242,18 @@ void PlayingState::SpawnBullet(const Vector3 & startingPosition, const Vector3& 
 	bulletRenderable = nullptr;
 	bullet = nullptr;
 	theRenderer = nullptr;
+}
+
+void PlayingState::RemoveDeadSwarmer(Swarmer * swarmer)
+{
+	//remove swarmer from our list. DOES NOT DELETE (just removes and resizes)
+	for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
+	{
+		if (m_swarmers[swarmerIndex] == swarmer)
+		{
+			m_swarmers[swarmerIndex] = nullptr;
+			m_swarmers.erase(m_swarmers.begin() + swarmerIndex);
+			swarmerIndex--;
+		}
+	}
 }
