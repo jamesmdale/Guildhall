@@ -27,6 +27,9 @@ void Terrain::GenerateMeshFromHeightMap()
 
 	m_renderables.push_back(renderable);
 
+	m_worldBounds = AABB3(Vector3(m_uvBounds.mins.x * m_cellScale, 0.f, m_uvBounds.mins.y * m_cellScale),
+		Vector3(m_uvBounds.maxs.x * m_cellScale, m_heightScale, m_uvBounds.maxs.y * m_cellScale));
+
 	//cleanup
 	renderable = nullptr;
 }

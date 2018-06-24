@@ -8,6 +8,8 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Game\Bullet.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
+#include "Game\Swarmer.hpp"
+#include "Game\Spawner.hpp"
 
 
 PlayingState::~PlayingState()
@@ -74,12 +76,32 @@ void PlayingState::Initialize()
 	m_playerTank->Initialize();
 
 	// add terrain =========================================================================================
-	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-50, -50, 50.f, 50.f), 2.f, 10.f, "Data/Images/terrain.jpg");
+	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-100, -100, 100.f, 100.f), 3.f, 20.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_terrain->m_renderables.size(); ++renderableIndex)
 	{
 		m_renderScene->AddRenderable(m_terrain->m_renderables[renderableIndex]);
+	}
+
+	// add spawners =========================================================================================
+	for (int spawnerIndex = 0; spawnerIndex < g_startingNumSpawners; ++spawnerIndex)
+	{
+		Spawner* spawner = new Spawner();
+		spawner->m_gameState = this;
+		spawner->m_renderScene = m_renderScene;
+		spawner->Initialize();
+
+		float xPosition = GetRandomFloatInRange(m_terrain->m_worldBounds.mins.x, m_terrain->m_worldBounds.maxs.x);
+		float zPosition = GetRandomFloatInRange(m_terrain->m_worldBounds.mins.z, m_terrain->m_worldBounds.maxs.z);
+
+		float height = m_terrain->GetHeightAtPositionXZ(Vector2(xPosition, zPosition));
+
+  		spawner->m_transform->SetLocalPosition(Vector3(xPosition, height + (g_spawnerDimensions.y * 0.5f) - 1.f, zPosition));
+
+		m_spawners.push_back(spawner);
+
+		spawner = nullptr;
 	}
 
 
@@ -95,6 +117,16 @@ void PlayingState::Update(float deltaSeconds)
 	for (int bulletIndex = 0; bulletIndex < (int)m_bullets.size(); ++bulletIndex)
 	{
 		m_bullets[bulletIndex]->Update(deltaSeconds);
+	}
+
+	for (int spawnerIndex = 0; spawnerIndex < (int)m_spawners.size(); ++spawnerIndex)
+	{
+		m_spawners[spawnerIndex]->Update(deltaSeconds);
+	}
+
+	for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
+	{
+		m_swarmers[swarmerIndex]->Update(deltaSeconds);
 	}
 }
 

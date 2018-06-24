@@ -46,6 +46,12 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Spawner.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Swarmer.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -69,5 +75,7 @@
     <ClInclude Include="Turret.hpp" />
     <ClInclude Include="TankUI.hpp" />
     <ClInclude Include="Bullet.hpp" />
+    <ClInclude Include="Spawner.hpp" />
+    <ClInclude Include="Swarmer.hpp" />
   </ItemGroup>
 </Project>

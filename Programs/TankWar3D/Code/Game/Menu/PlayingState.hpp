@@ -4,6 +4,8 @@
 #include "Engine\Core\Raycast.hpp"
 #include "Engine\Renderer\RenderScene2D.hpp"
 
+class Spawner;
+class Swarmer;
 class Bullet;
 class Tank;
 class PlayingState : public GameState
@@ -35,6 +37,8 @@ public:
 	Camera* m_uiCamera = nullptr;
 	Terrain* m_terrain = nullptr;
 
+	std::vector<Spawner*> m_spawners;
+	std::vector<Swarmer*> m_swarmers;
 	std::vector<Bullet*> m_bullets;
 };
 

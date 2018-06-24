@@ -1,0 +1,6 @@
+<material name="lit">
+	<shader name="lit" />
+	<textures>
+		<texture bind="0" file="default" />
+	</textures>
+</material>

@@ -304,6 +304,8 @@
     <ClCompile Include="Menu\MenuState.cpp" />
     <ClCompile Include="Menu\PlayingState.cpp" />
     <ClCompile Include="Menu\ReadyState.cpp" />
+    <ClCompile Include="Spawner.cpp" />
+    <ClCompile Include="Swarmer.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="TankUI.cpp" />
     <ClCompile Include="TheApp.cpp" />
@@ -324,6 +326,8 @@
     <ClInclude Include="Menu\MenuState.hpp" />
     <ClInclude Include="Menu\PlayingState.hpp" />
     <ClInclude Include="Menu\ReadyState.hpp" />
+    <ClInclude Include="Spawner.hpp" />
+    <ClInclude Include="Swarmer.hpp" />
     <ClInclude Include="Tank.hpp" />
     <ClInclude Include="TankUI.hpp" />
     <ClInclude Include="TheApp.hpp" />
