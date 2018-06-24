@@ -65,6 +65,7 @@ Swarmer* Spawner::SpawnSwarmer()
 	Swarmer* swarmer = new Swarmer();
 	swarmer->m_parentSpawner = this;
 	swarmer->m_renderScene = m_gameState->m_renderScene;
+	swarmer->m_playingState = m_gameState;
 	swarmer->Initialize();
 	//swarmer->m_transform->SetLocalPosition(m_transform->GetWorldPosition());
 	

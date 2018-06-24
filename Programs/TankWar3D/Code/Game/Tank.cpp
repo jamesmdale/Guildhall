@@ -110,7 +110,14 @@ void Tank::Update(float timeDelta)
 		m_breadCrumbTimer->Reset();
 		DebugRender::GetInstance()->CreateDebugPoint(m_transform->GetWorldPosition() + m_transform->GetWorldForward(), .25f, Rgba::GREEN, Rgba::RED, 4.f, LESS_DEPTH_TYPE, m_camera);
 	}
+
+	// raycast for targetting =========================================================================================
+	Vector3 targetLocation = UpdateTarget(timeDelta);
+
+	// update trajectory renderable =========================================================================================
+	UpdateTrajectoryRenderable(targetLocation);
 	
+	// update position from terrain =========================================================================================
 	Vector3 basePosition = m_transform->GetWorldPosition();
 
 	//get height and normal from terrain
@@ -136,17 +143,10 @@ void Tank::Update(float timeDelta)
 	m_tankBodyTransform->SetLocalRotation(Vector3(rotation.x, 0.f, rotation.z));
 
 	//debug
-	DebugRender::GetInstance()->CreateDebugBasis(m_transform->GetWorldMatrix(), Vector3(basePosition.x, basePosition.y + 0.5f, basePosition.z), 1.f, 0.f, 1.f, m_playingState->m_camera);
-
 	DebugRender::GetInstance()->CreateDebugCrosshair2D(Window::GetInstance()->GetCenterOfClientWindow(), Rgba::GREEN, Rgba::GREEN, 0.0f, 1);
 
-	//raycast for targetting
-	Vector3 targetLocation = UpdateTarget(timeDelta);
-	
-	//update trajectory renderable
-	UpdateTrajectoryRenderable(targetLocation);
 
-	//copy new tank information to tank ui
+	// copy new tank information to tank ui =========================================================================================
 	RefreshTankUI();
 
 	//update ui information

@@ -2,13 +2,13 @@
 #include "Game\Spawner.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Game\GameCommon.hpp"
-
+#include "Game\Tank.hpp"
+#include "Engine\Math\MathUtils.hpp"
 
 Swarmer::Swarmer()
 {
 	m_health = g_swarmerStartingHealth;
 }
-
 
 Swarmer::~Swarmer()
 {
@@ -17,10 +17,44 @@ Swarmer::~Swarmer()
 
 	delete(m_eyeTransform);
 	m_eyeTransform = nullptr;
+
+	m_playingState = nullptr;
 }
 
 void Swarmer::Update(float deltaSeconds)
 {
+	// update from terrain =========================================================================================
+	Vector3 basePosition = m_transform->GetWorldPosition();	
+
+	//get height and normal from terrain
+	float heightFromTerrain = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(basePosition.x, basePosition.z)) + 1.f;
+	Vector3 terrainNormal = m_playingState->m_terrain->GetNormalAtPositionXZ(Vector2(basePosition.x, basePosition.z));
+
+	//calculate new basis from normal (new up)
+	Vector3 newRight = CrossProduct(terrainNormal, m_transform->GetWorldForward());
+	Vector3 newForward = CrossProduct(newRight, terrainNormal);
+
+	//create a matrix using the new basis that we can extract the rotation from
+	Matrix44 newMatrix;
+	newMatrix.SetIBasis(Vector4(newRight.GetNormalized(), 0.f));
+	newMatrix.SetJBasis(Vector4(terrainNormal.GetNormalized(), 0.f));
+	newMatrix.SetKBasis(Vector4(newForward.GetNormalized(), 0.f));
+
+	//update the tank transform's position
+	m_transform->SetLocalPosition(Vector3(basePosition.x, heightFromTerrain, basePosition.z));
+
+	// swarmer look at =========================================================================================
+	Vector3 targetPosition = m_playingState->m_playerTank->m_transform->GetWorldPosition();
+
+	Matrix44 swarmerWorld = m_transform->GetWorldMatrix();
+	Vector3 swarmerWorldUp = swarmerWorld.GetUp();
+	Matrix44 swarmerLookAt = swarmerWorld.LookAt(swarmerWorld.GetPosition(), targetPosition, swarmerWorldUp);
+	Vector3 rotation = Matrix44::GetRotationFromMatrix(swarmerLookAt);
+
+	m_transform->SetLocalRotation(Vector3(rotation.x, rotation.y, 0.f));	
+	
+	Vector3 positionToAdd = m_transform->GetWorldForward() * deltaSeconds * g_swarmerMoveSpeed;
+	m_transform->TranslatePosition(positionToAdd);
 }
 
 void Swarmer::Initialize()
