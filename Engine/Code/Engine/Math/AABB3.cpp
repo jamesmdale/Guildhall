@@ -26,7 +26,7 @@ AABB3::AABB3(const Vector3& center, float radiusX, float radiusY, float radiusZ)
 
 	maxs.x = center.x + radiusX;
 	maxs.y = center.y + radiusY;
-	maxs.z = center.y + radiusZ;
+	maxs.z = center.z + radiusZ;
 }
 
 void AABB3::StretchToIncludePoint(float x, float y, float z)  //expand radius if (x,y) is outside

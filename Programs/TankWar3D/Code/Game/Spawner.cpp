@@ -30,7 +30,6 @@ void Spawner::Update(float deltaSeconds)
 	if (m_spawnTimer->HasElapsed() && (int)m_swarmers.size() < g_spawnerMaxSwarmers)
 	{
 		Swarmer* swarmer = SpawnSwarmer();
-
 		swarmer = nullptr;
 		m_spawnTimer->Reset();
 	}

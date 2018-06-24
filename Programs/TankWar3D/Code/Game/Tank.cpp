@@ -10,6 +10,9 @@
 #include "Engine\Window\Window.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Core\Raycast.hpp"
+#include "Game\Spawner.hpp"
+#include "Game\Swarmer.hpp"
+#include "Engine\Math\MathUtils.hpp"
 
 
 Tank::Tank()
@@ -110,12 +113,6 @@ void Tank::Update(float timeDelta)
 		m_breadCrumbTimer->Reset();
 		DebugRender::GetInstance()->CreateDebugPoint(m_transform->GetWorldPosition() + m_transform->GetWorldForward(), .25f, Rgba::GREEN, Rgba::RED, 4.f, LESS_DEPTH_TYPE, m_camera);
 	}
-
-	// raycast for targetting =========================================================================================
-	Vector3 targetLocation = UpdateTarget(timeDelta);
-
-	// update trajectory renderable =========================================================================================
-	UpdateTrajectoryRenderable(targetLocation);
 	
 	// update position from terrain =========================================================================================
 	Vector3 basePosition = m_transform->GetWorldPosition();
@@ -141,6 +138,12 @@ void Tank::Update(float timeDelta)
 
 	//update the tank body's rotation
 	m_tankBodyTransform->SetLocalRotation(Vector3(rotation.x, 0.f, rotation.z));
+
+	// raycast for targetting =========================================================================================
+	Vector3 targetLocation = UpdateTarget(timeDelta);
+
+	// update trajectory renderable =========================================================================================
+	UpdateTrajectoryRenderable(targetLocation);
 
 	//debug
 	DebugRender::GetInstance()->CreateDebugCrosshair2D(Window::GetInstance()->GetCenterOfClientWindow(), Rgba::GREEN, Rgba::GREEN, 0.0f, 1);
@@ -295,14 +298,40 @@ RayCastHit3 Tank::RaycastFromCamera(float deltaSeconds)
 		currentDistance += deltaSeconds;
 
 		currentPosition = ray.Evaluate(currentDistance);
-
 		float heightAtPosition = m_playingState->m_terrain->GetHeightAtPositionXZ(Vector2(currentPosition.x, currentPosition.z));
+
+		for (int spawnerIndex = 0; spawnerIndex < (int)m_playingState->m_spawners.size(); ++spawnerIndex)
+		{
+			Vector3 spawnerPosition = m_playingState->m_spawners[spawnerIndex]->m_transform->GetWorldPosition();
+
+			AABB3 spawnerBounds = AABB3(spawnerPosition, g_spawnerDimensions.x * 0.5f, g_spawnerDimensions.y * 0.5f, g_spawnerDimensions.z * 0.5f);
+
+			if (spawnerBounds.IsPointInside(currentPosition))
+			{
+				raycast.hit = true;
+				raycast.position = Vector3(currentPosition.x, currentPosition.y, currentPosition.z);
+				return raycast;
+			}
+		}
+
+		for (int swarmerIndex = 0; swarmerIndex < (int)m_playingState->m_swarmers.size(); ++swarmerIndex)
+		{
+			Vector3 swarmerPosition = m_playingState->m_swarmers[swarmerIndex]->m_transform->GetWorldPosition();
+
+			if (GetDistance(currentPosition, swarmerPosition) < g_swarmerRadius)
+			{
+				raycast.hit = true;
+				raycast.position = Vector3(currentPosition.x, currentPosition.y, currentPosition.z);
+				return raycast;
+			}
+		}
+
 		if (currentPosition.y <= heightAtPosition)
 		{
 			raycast.hit = true;
 			raycast.position = Vector3(currentPosition.x, heightAtPosition, currentPosition.z);
 			return raycast;
-		}
+		}		
 	}
 
 	if (raycast.hit == false)

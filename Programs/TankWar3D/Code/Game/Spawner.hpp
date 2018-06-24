@@ -3,6 +3,7 @@
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Core\GameObject.hpp"
 #include "Game\Menu\PlayingState.hpp"
+#include "Engine\Math\AABB3.hpp"
 
 class Swarmer;
 

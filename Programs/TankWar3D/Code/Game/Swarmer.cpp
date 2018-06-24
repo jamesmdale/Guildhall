@@ -66,7 +66,7 @@ void Swarmer::Initialize()
 
 	//add main body renderable
 	Renderable* bodyRenderable = new Renderable();
-	meshBuilder.CreateUVSphere(Vector3::ZERO, 1.f, 20, 20, Rgba::WHITE);
+	meshBuilder.CreateUVSphere(Vector3::ZERO, g_swarmerRadius, 20, 20, Rgba::WHITE);
 	bodyRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
 	bodyRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("lit")));
 	bodyRenderable->m_material->SetTexture(0, Renderer::GetInstance()->CreateOrGetTexture("Data/Images/alienSkin.jpg"));
@@ -81,6 +81,7 @@ void Swarmer::Initialize()
 	eyeRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("lit")));
 	eyeRenderable->m_material->SetTexture(0, Renderer::GetInstance()->CreateOrGetTexture("Data/Images/alienEye.jpg"));
 
+	//displace and rotate eye forward
 	m_eyeTransform->SetLocalPosition(Vector3(0.f, 0.5f, 0.75f));
 	m_eyeTransform->AddRotation(Vector3(0.f, 90.f, 0.f));
 
