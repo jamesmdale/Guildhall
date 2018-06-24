@@ -76,7 +76,7 @@ void PlayingState::Initialize()
 	m_playerTank->Initialize();
 
 	// add terrain =========================================================================================
-	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-100, -100, 100.f, 100.f), 3.f, 20.f, "Data/Images/terrain.jpg");
+	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-100, -100, 100.f, 100.f), 1.f, 10.f, "Data/Images/terrain.jpg");
 	m_terrain->GenerateMeshFromHeightMap();
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_terrain->m_renderables.size(); ++renderableIndex)

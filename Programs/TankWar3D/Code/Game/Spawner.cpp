@@ -44,7 +44,7 @@ void Spawner::Initialize()
 	Renderable* bodyRenderable = new Renderable();
 	meshBuilder.CreateCube(Vector3::ZERO, g_spawnerDimensions, Rgba::WHITE);
 	bodyRenderable->AddMesh(meshBuilder.CreateMesh<VertexLit>());
-	bodyRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("default")));
+	bodyRenderable->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("lit")));
 	bodyRenderable->m_material->SetTexture(0, Renderer::GetInstance()->CreateOrGetTexture("Data/Images/alienShip.jpg"));
 	AddRenderable(bodyRenderable);
 
@@ -67,11 +67,11 @@ Swarmer* Spawner::SpawnSwarmer()
 	swarmer->m_renderScene = m_gameState->m_renderScene;
 	swarmer->m_playingState = m_gameState;
 	swarmer->Initialize();
-	//swarmer->m_transform->SetLocalPosition(m_transform->GetWorldPosition());
+
+	Vector3 spawnPosition = m_transform->GetWorldPosition();
 	
-	Vector3 worldPosition = swarmer->m_transform->GetWorldPosition();
-	float height = m_gameState->m_terrain->GetHeightAtPositionXZ(Vector2(worldPosition.x, worldPosition.y));
-	swarmer->m_transform->SetLocalPosition(Vector3(worldPosition.x, height + 0.5f, worldPosition.y));
+	//float height = m_gameState->m_terrain->GetHeightAtPositionXZ(Vector2(spawnPosition.x, spawnPosition.z));
+	swarmer->m_transform->SetLocalPosition(spawnPosition);
 
 	//add swarmer to spawner list
 	m_swarmers.push_back(swarmer);
