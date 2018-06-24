@@ -83,7 +83,7 @@ void Bullet::Update(float timeDelta)
 	{
 		Vector3 swarmerPosition = m_gameState->m_swarmers[swarmerIndex]->m_transform->GetWorldPosition();
 
-		if (GetDistance(currentPosition, swarmerPosition) < g_swarmerRadius)
+		if (GetDistanceSquared(currentPosition, swarmerPosition) < g_swarmerRadius * g_swarmerRadius)
 		{
 			MarkAsDead();
 			AudioSystem::GetInstance()->PlaySoundFromGroup("impact");

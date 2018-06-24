@@ -146,7 +146,7 @@ void ForwardRenderingPath::SortDrawsByCameraDistance(std::vector<DrawCallData> o
 
 			if(outDrawCalls[j].m_sortingLayer == outDrawCalls[i].m_sortingLayer && outDrawCalls[j].m_renderType == outDrawCalls[i].m_renderType)
 			{
-				if(GetDistance(cameraPosition, outDrawCalls[j].m_model.GetPosition()) > GetDistance(cameraPosition, outDrawCalls[i].m_model.GetPosition()))
+				if(GetDistanceSquared(cameraPosition, outDrawCalls[j].m_model.GetPosition()) > GetDistanceSquared(cameraPosition, outDrawCalls[i].m_model.GetPosition()))
 				{				
 					std::swap(outDrawCalls[j], outDrawCalls[i]);
 				}

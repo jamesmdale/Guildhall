@@ -319,7 +319,7 @@ RayCastHit3 Tank::RaycastFromCamera(float deltaSeconds)
 		{
 			Vector3 swarmerPosition = m_gameState->m_swarmers[swarmerIndex]->m_transform->GetWorldPosition();
 
-			if (GetDistance(currentPosition, swarmerPosition) < g_swarmerRadius)
+			if (GetDistanceSquared(currentPosition, swarmerPosition) < g_swarmerRadius * g_swarmerRadius)
 			{
 				raycast.hit = true;
 				raycast.position = Vector3(currentPosition.x, currentPosition.y, currentPosition.z);
