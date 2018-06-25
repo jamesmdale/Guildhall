@@ -126,19 +126,19 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 std::vector<Widget*>* PlayingState::GetInteractableWidgets()
 {
-	std::vector<Widget*> interactableWidgets;
+	std::vector<Widget*>* interactableWidgets = new std::vector<Widget*>();
 
 	// player =========================================================================================
 	//add widgets from player's hand
 	for (int widgetIndex = 0; widgetIndex < (int)m_player->m_hand.size(); ++widgetIndex)
 	{
-		interactableWidgets.push_back(m_player->m_hand[widgetIndex]);
+		interactableWidgets->push_back(m_player->m_hand[widgetIndex]);
 	}
 
 	//add widgets from player's minions
 	for (int widgetIndex = 0; widgetIndex < (int)m_player->m_minions.size(); ++widgetIndex)
 	{
-		interactableWidgets.push_back(m_player->m_minions[widgetIndex]);
+		interactableWidgets->push_back(m_player->m_minions[widgetIndex]);
 	}
 	
 	TODO("Add hero input update");
@@ -150,13 +150,13 @@ std::vector<Widget*>* PlayingState::GetInteractableWidgets()
 	//add widgets from enemy player's hand
 	for (int widgetIndex = 0; widgetIndex < (int)m_enemyPlayer->m_hand.size(); ++widgetIndex)
 	{
-		interactableWidgets.push_back(m_enemyPlayer->m_hand[widgetIndex]);
+		interactableWidgets->push_back(m_enemyPlayer->m_hand[widgetIndex]);
 	}
 
 	//add widgets from enemy player's battlefield
 	for (int widgetIndex = 0; widgetIndex < (int)m_enemyPlayer->m_minions.size(); ++widgetIndex)
 	{
-		interactableWidgets.push_back(m_enemyPlayer->m_minions[widgetIndex]);
+		interactableWidgets->push_back(m_enemyPlayer->m_minions[widgetIndex]);
 	}
 
 	TODO("Add hero input update");
@@ -167,7 +167,7 @@ std::vector<Widget*>* PlayingState::GetInteractableWidgets()
 	// game board =========================================================================================
 
 	//return
-	return &interactableWidgets;
+	return interactableWidgets;
 }
 
 Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactableWidgets)

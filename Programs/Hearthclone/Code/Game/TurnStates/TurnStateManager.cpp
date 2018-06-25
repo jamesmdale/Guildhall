@@ -56,7 +56,7 @@ void TurnStateManager::Update(float deltaSeconds)
 
 float TurnStateManager::UpdateFromInput(float deltaSeconds)
 {
-	if (m_transitionState != NUM_PLAY_STATES)
+	if (m_transitionState == NUM_PLAY_STATES)
 	{
 		switch (m_currentState)
 		{
@@ -146,8 +146,7 @@ void TurnStateManager::Transition()
 	{
 		m_currentState = m_transitionState;
 		m_transitionState = NUM_PLAY_STATES;
-	}
-	
+	}	
 }
 
 // update methods =========================================================================================
@@ -191,15 +190,20 @@ void TurnStateManager::TransitionInStartOfGame()
 	m_playingState->m_activePlayer = m_playingState->m_player;
 
 	isFinishedTransitioningIn = true;
+	m_currentState = m_transitionState;
+	m_transitionState = NUM_PLAY_STATES;
+
+	TransitionToState(START_OF_TURN_PLAY_STATE);
 }
 
 void TurnStateManager::TransitionInStartOfTurn()
 {
+	TODO("Swap active player");
 	//swap active player
-	if (m_playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
+	/*if (m_playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
 		m_playingState->m_activePlayer = m_playingState->m_enemyPlayer;
 	else
-		m_playingState->m_activePlayer = m_playingState->m_player;
+		m_playingState->m_activePlayer = m_playingState->m_player;*/
 
 	//add one mana crystal if below max
 	if(m_playingState->m_player->m_manaCount < 10)
@@ -210,6 +214,10 @@ void TurnStateManager::TransitionInStartOfTurn()
 	AddActionToRefereeQueue("draw", parameters);
 
 	isFinishedTransitioningIn = true;
+	m_currentState = m_transitionState;
+	m_transitionState = NUM_PLAY_STATES;
+
+	TransitionToState(MAIN_PLAY_STATE);
 }
 
 void TurnStateManager::TransitionInMain()
