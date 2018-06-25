@@ -9,8 +9,6 @@ Minion::Minion()
 	UpdateSortLayer(g_defaultCardSortLayer);
 }
 
-
-
 Minion::Minion(const Card* fromCard)
 {
 	UpdateSortLayer(g_defaultCardSortLayer);

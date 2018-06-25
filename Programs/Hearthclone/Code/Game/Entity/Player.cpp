@@ -188,7 +188,8 @@ void Player::UpdateBoardLockPositions()
 	float minionDimensionsX = m_minions[0]->GetMinionDimensions().x + 10.f; //padding
 	float sizeX = minionDimensionsX * (float)m_minions.size();
 	AABB2 adjustedBattlefieldQuad = AABB2(Vector2(boardCenter.x - (sizeX * 0.5f), battlefieldQuad.mins.y), Vector2(boardCenter.x + (sizeX * 0.5f), battlefieldQuad.maxs.y));
-	//battlefieldQuad = AABB2(boardCenter, sizeX, dimensions.y);	
+	Vector2 adjustedBattlefieldQuadCenter = adjustedBattlefieldQuad.GetCenter();
+	Vector2 adjustedBattlefieldQuadDim = adjustedBattlefieldQuad.GetDimensions();
 
 	float battlefieldDockCenterHeight = adjustedBattlefieldQuad.maxs.y - ((adjustedBattlefieldQuad.maxs.y - adjustedBattlefieldQuad.mins.y) * 0.5f);
 
@@ -197,8 +198,7 @@ void Player::UpdateBoardLockPositions()
 		m_minions[minionIndex]->m_renderScene = g_currentState->m_renderScene2D;
 		m_minions[minionIndex]->RefreshRenderables();		
 
-		m_minions[minionIndex]->m_lockPosition = Vector2(adjustedBattlefieldQuad.mins.x + ((minionDimensionsX * 0.5f) * (minionIndex + 1)), battlefieldDockCenterHeight);	
-		//m_minions[minionIndex]->m_isPositionLocked = true;
+		m_minions[minionIndex]->m_lockPosition = Vector2(adjustedBattlefieldQuad.mins.x + ((minionDimensionsX * 0.5f) * (float)((minionIndex * 2) + 1)), battlefieldDockCenterHeight);	
 	}
 
 	// cleanup =============================================================================
