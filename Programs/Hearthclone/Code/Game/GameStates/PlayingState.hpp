@@ -4,7 +4,7 @@
 #include "Game\Board.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 
-class TurnState;
+class TurnStateManager;
 class Player;
 class Tank;
 class PlayingState : public GameState
@@ -24,7 +24,7 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
-	std::vector<Widget*> GetInteractableWidgets();
+	std::vector<Widget*>* GetInteractableWidgets();
 	Widget* GetSelectedWidget(const std::vector<Widget*>& interactableWidgets);
 
 public:
@@ -37,9 +37,9 @@ public:
 
 	Widget* m_currentSelectedWidget = nullptr;
 
-	TurnState* m_turnStateManager = nullptr;
+	TurnStateManager* m_turnStateManager = nullptr;
 	
-	int m_activePlayerID;
+	Player* m_activePlayer = nullptr;
 	int m_turnCount;
 
 	//MatchLog

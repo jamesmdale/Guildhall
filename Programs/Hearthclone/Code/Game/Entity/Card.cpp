@@ -192,10 +192,8 @@ void Card::OnLeftClicked()
 			m_lockPosition = battlefieldLocation;
 
 			int cardIndexInPlayerHand = 0;
-			ePlayerType player;
-			if (gameState->m_activePlayerID == SELF_PLAYER_TYPE)
+			if (gameState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
 			{
-				player = SELF_PLAYER_TYPE;
 				Player* self = gameState->m_player;
 				for (int cardIndex = 0; cardIndex < (int)self->m_hand.size(); ++cardIndex)
 				{
@@ -205,7 +203,6 @@ void Card::OnLeftClicked()
 						break; 
 					}
 				}
-
 				self = nullptr;
 			}
 

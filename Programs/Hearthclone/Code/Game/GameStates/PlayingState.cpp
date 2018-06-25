@@ -12,9 +12,7 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Game\Entity\Player.hpp"
 #include "Game\Entity\Minion.hpp"
-#include "Game\TurnStates\TurnState.hpp"
-
-Widget* currentSelectedWidget = nullptr;
+#include "Game\TurnStates\TurnStateManager.hpp"
 
 
 PlayingState::~PlayingState()
@@ -44,7 +42,7 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
-	m_turnStateManager = new TurnState();
+	m_turnStateManager = new TurnStateManager();
 	m_turnStateManager->m_playingState = this;
 
 	m_gameBoard = new Board("board");
@@ -67,23 +65,24 @@ void PlayingState::Initialize()
 	m_gameTime = new Stopwatch();
 	m_gameTime->SetClock(GetMasterClock());
 
-	m_activePlayerID = SELF_PLAYER_TYPE;
-	
-	TODO("Randomize which player plays first at game start");
-	//m_activePlayerID = (ePlayerType)GetRandomIntZeroOrOne();
-	
+	m_activePlayer = m_player;	
 
+	//cleanup
 	theRenderer = nullptr;	
 }
 
 void PlayingState::Update(float deltaSeconds)
 { 
-	// process queues
+	//process queues
 	ProcessEffectQueue();
 	ProcessRefereeQueue();
 
-	//update turn state manager
-	m_turnStateManager->Update(deltaSeconds);
+	//if we are processing actions and effects, don't allow turn state to update.
+	if (GetEffectQueueCount() == 0 && GetRefereeQueueCount() == 0)
+	{
+		//update turn state manager
+		m_turnStateManager->Update(deltaSeconds);
+	}	
 		
 	//update enemy
 	m_enemyPlayer->Update(deltaSeconds);
@@ -99,8 +98,7 @@ void PlayingState::PreRender()
 	m_enemyPlayer->PreRender();
 
 	//run prerender for player
-	m_player->PreRender();
-	
+	m_player->PreRender();	
 }
 
 void PlayingState::Render()
@@ -120,97 +118,13 @@ void PlayingState::PostRender()
 
 float PlayingState::UpdateFromInput(float deltaSeconds)
 {
-	InputSystem* theInput = InputSystem::GetInstance();
-	std::string mouseText = "NONE";
+	m_turnStateManager->UpdateFromInput(deltaSeconds);	
 
-	Vector2 mouseCoordinates = theInput->GetMouse()->GetInvertedMouseClientPosition();
-	std::vector<Widget*> interactableWidgets = GetInteractableWidgets();
-
-	//basically does nothing
-	if (theInput->WasKeyJustReleased(theInput->MOUSE_LEFT_CLICK))
-	{
-		if (m_currentSelectedWidget != nullptr)
-		{
-			m_currentSelectedWidget->OnLeftReleased();
-		}	
-	}
-	//basically does nothing
-	if (theInput->WasKeyJustReleased(theInput->MOUSE_RIGHT_CLICK))
-	{
-		if (m_currentSelectedWidget != nullptr)
-		{
-			m_currentSelectedWidget->OnRightReleased();
-		}
-	}	
-
-	//left click input is only available to the current player
-	if (theInput->IsKeyPressed(theInput->MOUSE_LEFT_CLICK) && m_activePlayerID == SELF_PLAYER_TYPE)
-	{
-		if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
-		{
-			if (m_currentSelectedWidget == nullptr)
-			{
-				m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
-			}
-			//if the previously selected widget isn't holding input priority, we can select a new widget
-			else
-			{
-				if (!m_currentSelectedWidget->m_isInputPriority)
-				{
-					m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
-				}
-			}
-		
-
-			if(m_currentSelectedWidget != nullptr)
-				m_currentSelectedWidget->OnLeftClicked();
-		}
-	}
-	if (theInput->IsKeyPressed(theInput->MOUSE_RIGHT_CLICK))
-	{
-		if (theInput->WasKeyJustPressed(theInput->MOUSE_RIGHT_CLICK))
-		{			
-			if (m_currentSelectedWidget == nullptr)
-			{
-				m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
-			}
-			else
-			{
-				//if the previously selected widget isn't holding input priority, we can select a new widget
-				if (!m_currentSelectedWidget->m_isInputPriority)
-				{
-					m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
-				}
-			}		
-
-			if(m_currentSelectedWidget != nullptr)
-				m_currentSelectedWidget->OnRightClicked();
-		}
-	}	
-
-	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_1))
-	{
-		std::map<std::string, std::string> parameters = {{"target", "player"}, {"amount", "2"}};
-		AddActionToRefereeQueue("draw", parameters);
-	}
-
-	DebugRender::GetInstance()->CreateDebugText2D(Vector2(Window::GetInstance()->m_clientWidth - 300, Window::GetInstance()->m_clientHeight - 20), 20.f, 1.f, Stringf("%f, %f", mouseCoordinates.x, mouseCoordinates.y).c_str(), Rgba::WHITE, Rgba::WHITE, 0.f, ALWAYS_DEPTH_TYPE);
-
-	// cleanup =========================================================================================
-	for (int widgetIndex = 0; widgetIndex < (int)interactableWidgets.size(); ++widgetIndex)
-	{
-		interactableWidgets[widgetIndex] = nullptr;
-	}
-	interactableWidgets.clear();
-
-	theInput = nullptr;
-
-	// return =========================================================================================
-
+	// return 
 	return deltaSeconds; //new deltaSeconds
 }
 
-std::vector<Widget*> PlayingState::GetInteractableWidgets()
+std::vector<Widget*>* PlayingState::GetInteractableWidgets()
 {
 	std::vector<Widget*> interactableWidgets;
 
@@ -253,7 +167,7 @@ std::vector<Widget*> PlayingState::GetInteractableWidgets()
 	// game board =========================================================================================
 
 	//return
-	return interactableWidgets;
+	return &interactableWidgets;
 }
 
 Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactableWidgets)
@@ -287,27 +201,5 @@ Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactable
 
 	// return =========================================================================================
 	return selectedWidget;
-}
-
-void UpdateStartGame()
-{
-	
-}
-
-void UpdateStartTurn()
-{
-	//do things that happen at turn start. triggers can happen here
-
-}
-
-void UpdateMain()
-{
-	//do things that happen at turn start. triggers can happen here
-
-}
-
-void UpdateEndTurn()
-{
-
 }
 

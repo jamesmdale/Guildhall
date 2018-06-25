@@ -316,9 +316,9 @@
     <ClCompile Include="Entity\Minion.cpp" />
     <ClCompile Include="Effects\DerivedEffects\ReorganizeHandEffect.cpp" />
     <ClCompile Include="Effects\DerivedEffects\ReorganizeMinionsEffect.cpp" />
-    <ClCompile Include="REORGANIZEMINIONSEFFECT.CPP" />
     <ClCompile Include="TheApp.cpp" />
     <ClCompile Include="Triggers\Trigger.cpp" />
+    <ClCompile Include="TurnStates\TurnStateManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engine\Code\Engine\Engine.vcxproj">
@@ -351,6 +351,7 @@
     <ClInclude Include="Effects\DerivedEffects\ReorganizeMinionsEffect.hpp" />
     <ClInclude Include="TheApp.hpp" />
     <ClInclude Include="Triggers\Trigger.hpp" />
+    <ClInclude Include="TurnStates\TurnStateManager.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
