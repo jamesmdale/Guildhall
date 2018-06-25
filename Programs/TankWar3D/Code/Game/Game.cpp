@@ -114,6 +114,9 @@ void Game::Initialize()
 
 void Game::Update()
 {
+	if (GameState::GetTransitionMenuState() != nullptr)	
+		return;
+	
 	float deltaSeconds = m_gameClock->GetDeltaSeconds();
 
 	GameState::GetCurrentMenuState()->Update(deltaSeconds);
@@ -121,21 +124,33 @@ void Game::Update()
 
 void Game::PreRender()
 {
+	if (GameState::GetTransitionMenuState() != nullptr)	
+		return;
+	
 	GameState::GetCurrentMenuState()->PreRender();
 }
 
 void Game::Render()
 {
-	GameState::GetCurrentMenuState()->Render();
+	if (GameState::GetTransitionMenuState() != nullptr)
+		return;
+
+		GameState::GetCurrentMenuState()->Render();
 }
 
 void Game::PostRender()
 {
+	if (GameState::GetTransitionMenuState() != nullptr)
+		return;
+	
 	GameState::GetCurrentMenuState()->PostRender();
 }
 
 float Game::UpdateInput(float deltaSeconds)
 {
+	if (GameState::GetTransitionMenuState() != nullptr)
+		return deltaSeconds;
+
 	deltaSeconds = GameState::GetCurrentMenuState()->UpdateFromInput(deltaSeconds);
 
 	return deltaSeconds;

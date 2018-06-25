@@ -18,9 +18,6 @@ public:
 	PlayingState(Camera* camera, Camera* uiCamera) : GameState(camera)
 	{
 		m_type = PLAYING_MENU_STATE;
-		m_renderScene = new RenderScene();
-		m_renderScene2D = new RenderScene2D();
-		m_ui = new TankUI();
 		m_uiCamera = uiCamera;
 
 		m_respawnTimer = new Stopwatch(GetMasterClock());
@@ -35,6 +32,9 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
+	virtual void TransitionIn(float secondsTransitioning) override;
+	virtual void TransitionOut(float secondsTransitioning) override;
+	virtual void ResetState() override;
 
 	void SpawnBullet(const Vector3& startingPosition, const Vector3& startingRotation);
 	void RemoveDeadSwarmer(Swarmer* swarmer);

@@ -46,7 +46,7 @@ float ReadyState::UpdateFromInput(float deltaSeconds)
 		switch (m_selectedMenuOption)
 		{
 			case(READY):
-				TransitionMenuStatesImmediate(GetMenuStateFromGlobalListByType(PLAYING_MENU_STATE));
+				TransitionMenuStates(GetMenuStateFromGlobalListByType(PLAYING_MENU_STATE));
 		}
 	}
 

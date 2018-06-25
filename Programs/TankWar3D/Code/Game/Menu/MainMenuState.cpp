@@ -103,6 +103,12 @@ float MainMenuState::UpdateFromInput(float deltaSeconds)
 	return deltaSeconds; //new deltaSeconds
 }
 
+void MainMenuState::TransitionOut(float secondsTransitioning)
+{
+	ResetState();
+	s_isFinishedTransitioningOut = true;
+}
+
 void MainMenuState::ResetState()
 {
 	m_selectedMenuOption = PLAY;

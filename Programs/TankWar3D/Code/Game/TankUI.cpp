@@ -68,6 +68,7 @@ void TankUI::RefreshRenderables()
 		tankUiRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
 
 		mb.CreateText2DInAABB2(clientWindow->GetCenterOfClientWindow(), Vector2(1000.f, 500.f), 4.f / 3.f, "WINNER WINNER CHICKEN DINNER!!", Rgba::WHITE); //numenemies
+		mb.CreateText2DInAABB2(clientWindow->GetCenterOfClientWindow() - Vector2(0.f, 100.f), Vector2(1000.f, 500.f), 4.f / 3.f, "Press SPACE to return to menu", Rgba::WHITE); //numenemies
 		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
 		materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
 		tankUiRenderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);

@@ -34,6 +34,11 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
+	//init scenes and ui
+	m_renderScene = new RenderScene();
+	m_renderScene2D = new RenderScene2D();
+	m_ui = new TankUI();
+
 	m_camera->m_transform->TranslatePosition(Vector3(0.f, 3.f, -10.f));
 
 	//position camera behind player	
@@ -74,13 +79,17 @@ void PlayingState::Initialize()
 	// add tank =========================================================================================
 	m_playerTank = new Tank();
 	m_playerTank->SetCamera(m_camera);
-	m_playerTank->m_gameState = (PlayingState*)g_currentState;
+	m_playerTank->m_gameState = this;
 	m_playerTank->Initialize();
 
 	// add terrain =========================================================================================
-	m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-100, -100, 100.f, 100.f), 1.f, 10.f, "Data/Images/terrain.jpg");
-	m_terrain->GenerateMeshFromHeightMap();
+	if (m_terrain == nullptr)
+	{
+		m_terrain = new Terrain("terrain", Vector3(0.f, 0.f, 0.f), AABB2(-100, -100, 100.f, 100.f), 1.f, 10.f, "Data/Images/terrain.jpg");
+		m_terrain->GenerateMeshFromHeightMap();
+	}
 
+	m_terrain->m_renderScene = m_renderScene;
 	for (int renderableIndex = 0; renderableIndex < (int)m_terrain->m_renderables.size(); ++renderableIndex)
 	{
 		m_renderScene->AddRenderable(m_terrain->m_renderables[renderableIndex]);
@@ -90,7 +99,7 @@ void PlayingState::Initialize()
 	for (int spawnerIndex = 0; spawnerIndex < g_startingNumSpawners; ++spawnerIndex)
 	{
 		Spawner* spawner = new Spawner();
-		spawner->m_gameState = (PlayingState*)g_currentState;
+		spawner->m_gameState = this;
 		spawner->m_renderScene = m_renderScene;
 		spawner->Initialize();
 
@@ -110,8 +119,11 @@ void PlayingState::Initialize()
 	m_ui->m_renderScene = m_renderScene2D;
 	m_ui->Initialize();
 
+	isVictory = false;
 
 	theRenderer = nullptr;	
+
+	m_isInitialized = true;
 }
 
 void PlayingState::Update(float deltaSeconds)
@@ -201,6 +213,7 @@ void PlayingState::PostRender()
 			RemoveDeadSwarmer(m_swarmers[swarmerIndex]);
 			delete(swarmer);
 			swarmer = nullptr;
+			swarmerIndex--;
 		}
 	}
 
@@ -222,6 +235,12 @@ void PlayingState::PostRender()
 
 float PlayingState::UpdateFromInput(float deltaSeconds)
 {
+	//if we are transitioning, don't accept input
+	if (GetTransitionMenuState() != nullptr)
+	{
+		return deltaSeconds;
+	}
+
 	InputSystem* theInput = InputSystem::GetInstance();
 
 	//if tank is dead, it no longer has input.
@@ -242,11 +261,13 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	{
 		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_SPACE))
 		{
+			isVictory = false;
+			
 			//after you are finished loading
 			GameState* state = GetMenuStateFromGlobalListByType(MAIN_MENU_STATE);
 			GUARANTEE_OR_DIE(state != nullptr, "LOADING STATE TRANSITION: PLAYING STATE NOT FOUND");
 
-			TransitionMenuStatesImmediate(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
+			TransitionMenuStates(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
 		}	
 	}
 
@@ -269,6 +290,74 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	theInput = nullptr;
 
 	return deltaSeconds; //new deltaSeconds
+}
+
+void PlayingState::TransitionIn(float secondsTransitioning)
+{
+	Initialize();
+	s_isFinishedTransitioningIn = true;
+}
+
+void PlayingState::TransitionOut(float secondsTransitioning)
+{
+	ResetState();
+	s_isFinishedTransitioningOut = true;
+}
+
+void PlayingState::ResetState()
+{
+	m_camera->m_transform->ResetPositionData();
+
+	//delete bullets
+	for (int bulletIndex = 0; bulletIndex < (int)m_bullets.size(); bulletIndex++)
+	{
+		delete(m_bullets[bulletIndex]);
+		m_bullets[bulletIndex] = nullptr;
+
+		m_bullets.erase(m_bullets.begin() + bulletIndex);
+		bulletIndex--;		
+	}
+	m_bullets.clear();
+
+	//delete spawners
+	for (int spawnerIndex = 0; spawnerIndex < (int)m_spawners.size(); spawnerIndex++)
+	{
+		delete(m_spawners[spawnerIndex]);
+		m_spawners[spawnerIndex] = nullptr;
+
+		m_spawners.erase(m_spawners.begin() + spawnerIndex);
+		spawnerIndex--;		
+	}
+	m_spawners.clear();
+
+	//delete swarmers
+	for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); swarmerIndex++)
+	{
+		//remove swarmer from gamestate list
+		Swarmer* swarmer = m_swarmers[swarmerIndex];
+		RemoveDeadSwarmer(m_swarmers[swarmerIndex]);
+		delete(swarmer);
+		swarmer = nullptr;
+		swarmerIndex--;
+	}
+	m_swarmers.clear();
+
+	delete(m_playerTank);
+	m_playerTank = nullptr;
+
+	delete(m_ui);
+	m_ui = nullptr;
+
+	//delete(m_terrain);
+	//m_terrain = nullptr;
+
+	delete(m_renderScene);
+	m_renderScene = nullptr;
+
+	delete(m_renderScene2D);
+	m_renderScene2D = nullptr;	
+
+	isVictory = false;
 }
 
 void PlayingState::SpawnBullet(const Vector3 & startingPosition, const Vector3& startingRotation)
@@ -315,7 +404,7 @@ void PlayingState::RemoveDeadSwarmer(Swarmer * swarmer)
 		{
 			m_swarmers[swarmerIndex] = nullptr;
 			m_swarmers.erase(m_swarmers.begin() + swarmerIndex);
-			swarmerIndex--;
+			return;
 		}
 	}
 }

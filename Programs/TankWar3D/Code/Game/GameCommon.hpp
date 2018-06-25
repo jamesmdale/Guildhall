@@ -15,7 +15,7 @@ const Rgba g_backgroundColor = Rgba(1.f, 1.f, 1.f, 1.f);
 
 //spawner info
 const Vector3 g_spawnerDimensions = Vector3(5.f, 10.f, 5.f);
-const int g_startingNumSpawners = 1;
+const int g_startingNumSpawners = 4;
 const float g_spawnerSpawnRateInSeconds = 2.f;
 const float g_spawnerMaxSwarmers = 10.f;
 const int g_spawnerStartingHealth = 10;

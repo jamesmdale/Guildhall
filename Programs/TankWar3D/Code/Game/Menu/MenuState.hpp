@@ -57,9 +57,7 @@ public:
 	
 
 private:
-	static void FinishTransition();
-	bool m_isInitialized = false;
-	
+	static void FinishTransition();	
 
 public:
 	eGameState m_type = NONE_MENU_STATE;
@@ -68,12 +66,13 @@ public:
 
 	bool m_doesResetOnTransition = true;
 	
+	static bool s_isFinishedTransitioningOut;
+	static bool s_isFinishedTransitioningIn;
+	bool m_isInitialized = false;
 
 private:
 	static float s_secondsInState;
-	static float s_secondsTransitioning;
-	static bool s_isFinishedTransitioningOut;
-	static bool s_isFinishedTransitioningIn;
+	static float s_secondsTransitioning;	
 	static std::vector<GameState*> s_menuStates;
 };
 
