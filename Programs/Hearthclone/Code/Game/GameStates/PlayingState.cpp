@@ -12,21 +12,16 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Game\Entity\Player.hpp"
 #include "Game\Entity\Minion.hpp"
+#include "Game\TurnStates\TurnState.hpp"
 
 Widget* currentSelectedWidget = nullptr;
 
-enum ePlayState
-{
-	START_OF_GAME_PLAY_STATE,
-	START_OF_TURN_PLAY_STATE,
-	MAIN_PLAY_STATE,
-	END_OF_TURN_PLAY_STATE,
-	END_OF_GAME_PLAY_STATE,
-	NUM_PLAY_STATES
-};
 
 PlayingState::~PlayingState()
 {
+	delete(m_turnStateManager);
+	m_turnStateManager = nullptr;
+
 	delete(m_gameBoard);
 	m_gameBoard = nullptr;
 
@@ -49,6 +44,9 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
+	m_turnStateManager = new TurnState();
+	m_turnStateManager->m_playingState = this;
+
 	m_gameBoard = new Board("board");
 	m_gameBoard->m_renderScene = m_renderScene2D;
 	m_gameBoard->Initialize();
@@ -58,7 +56,6 @@ void PlayingState::Initialize()
 	m_player->m_playerId = SELF_PLAYER_TYPE;
 	m_player->m_gameState = this;
 	m_player->LoadDeckFromDefinitionName("All Yetis");
-
 
 	//load their decks
 	m_enemyPlayer = new Player();
@@ -81,9 +78,12 @@ void PlayingState::Initialize()
 
 void PlayingState::Update(float deltaSeconds)
 { 
-	// process queues =========================================================================================
+	// process queues
 	ProcessEffectQueue();
 	ProcessRefereeQueue();
+
+	//update turn state manager
+	m_turnStateManager->Update(deltaSeconds);
 		
 	//update enemy
 	m_enemyPlayer->Update(deltaSeconds);

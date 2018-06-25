@@ -4,6 +4,7 @@
 #include "Game\Board.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 
+class TurnState;
 class Player;
 class Tank;
 class PlayingState : public GameState
@@ -35,6 +36,8 @@ public:
 	Player* m_enemyPlayer = nullptr; 
 
 	Widget* m_currentSelectedWidget = nullptr;
+
+	TurnState* m_turnStateManager = nullptr;
 	
 	int m_activePlayerID;
 	int m_turnCount;
