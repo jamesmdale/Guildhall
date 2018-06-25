@@ -25,6 +25,7 @@ Vector2 Mouse::GetMouseClientPosition()
 
 	return Vector2( (float)client_pos.x, (float)client_pos.y ); 
 }
+
 Vector2 Mouse::GetInvertedMouseClientPosition()
 {
 	Vector2 clientPosition = GetMouseClientPosition();

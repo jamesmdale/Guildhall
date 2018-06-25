@@ -4,7 +4,7 @@
 Widget::Widget()
 {
 	m_transform2D = new Transform2D();
-	UpdateSortLayer(0);
+	UpdateSortLayer(-1);
 }
 
 Widget::~Widget()
@@ -31,14 +31,14 @@ Widget::Widget(std::string name)
 {
 	m_name = name;
 	m_transform2D = new Transform2D();
-	UpdateSortLayer(0);
+	UpdateSortLayer(-1);
 }
 
 Widget::Widget(std::string name, Renderable2D* renderable2D)
 {
 	m_name = name;
 	m_transform2D = new Transform2D();
-	UpdateSortLayer(0);
+	UpdateSortLayer(-1);
 }
 
 void Widget::Initialize()

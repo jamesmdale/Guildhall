@@ -6,14 +6,11 @@ struct DrawCallData2D
 {
 	~DrawCallData2D()
 	{
-		for (int dataIndex = 0; dataIndex < (int)m_renderableData.size(); ++dataIndex)
-		{
-			m_renderableData[dataIndex] = nullptr;
-		}
+		m_renderableData = nullptr;		
 	}
 
 	Matrix44 m_model;
-	std::vector<RenderableData*> m_renderableData;
+	RenderableData* m_renderableData;
 	int m_sortingLayer;
 };
 
@@ -26,5 +23,6 @@ public:
 	void Render(RenderScene2D* scene);
 	void RenderSceneForCamera(Camera* camera, RenderScene2D* scene);
 	void SortDrawsBySortOrder(std::vector<DrawCallData2D>& outDrawCalls);
+	void SortDrawCallRenderableOrder(std::vector<DrawCallData2D>& outDrawCalls);
 };
 

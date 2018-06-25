@@ -64,6 +64,8 @@ void Board::Initialize()
 
 	boardRenderable = nullptr;
 	theRenderer = nullptr;
+
+	UpdateSortLayer(GetSortLayer());
 }
 
 

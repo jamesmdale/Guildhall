@@ -56,8 +56,8 @@ Card::~Card()
 
 void Card::Initialize()
 {
-	UpdateSortLayer(g_defaultCardSortLayer);
 	RefreshCardRenderables();
+	UpdateSortLayer(g_defaultCardSortLayer);
 	
 	//other intialization data goes here.
 }
@@ -68,7 +68,7 @@ void Card::Update(float deltaSeconds)
 	{
 		if (m_isInputPriority)
 		{
-			Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition();
+			Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 			mousePosition = Vector2(ClampFloat(mousePosition.x, 0.f, Window::GetInstance()->GetClientWidth()), ClampFloat(mousePosition.y, 0.f, Window::GetInstance()->GetClientHeight()));
 			m_transform2D->SetLocalPosition(mousePosition);
 		}		
@@ -90,8 +90,13 @@ void Card::RefreshCardRenderables()
 			delete(m_renderables[renderableIndex]);
 			m_renderables[renderableIndex] = nullptr;
 		}
+		
 	}
-	m_renderables.clear();
+	if (m_renderables.size() > 0)
+	{
+		m_renderables.clear();
+	}
+	
 
 	// create card layout =============================================================================
 	Renderer* theRenderer = Renderer::GetInstance();
@@ -127,7 +132,7 @@ void Card::RefreshCardRenderables()
 	materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
 	materialInstance->SetTexture(0, m_cardImage);
 
-	cardRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), materialInstance);
+	cardRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
 
 	// create card image renderable =========================================================================================
 
@@ -139,7 +144,7 @@ void Card::RefreshCardRenderables()
 	
 	materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
 	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
-	cardRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);	
+	cardRenderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);	
 
 	m_renderables.push_back(cardRenderable);
 
@@ -149,6 +154,7 @@ void Card::RefreshCardRenderables()
 		m_renderScene->AddRenderable(m_renderables[renderableIndex]);
 	}
 
+	UpdateSortLayer(GetSortLayer());
 	m_isRendering = true;
 
 	clientWindow = nullptr;
@@ -175,7 +181,7 @@ void Card::OnLeftClicked()
 		m_isPositionLocked = true;
 		UpdateSortLayer(g_defaultCardSortLayer);
 
-		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition();
+		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 
 		//player is playing card.
 		if (mousePosition.y > gameState->m_gameBoard->m_playerHandQuad.maxs.y)

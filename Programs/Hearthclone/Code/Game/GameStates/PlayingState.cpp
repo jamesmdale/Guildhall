@@ -123,7 +123,7 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	InputSystem* theInput = InputSystem::GetInstance();
 	std::string mouseText = "NONE";
 
-	Vector2 mouseCoordinates = theInput->GetMouse()->GetMouseClientPosition();
+	Vector2 mouseCoordinates = theInput->GetMouse()->GetInvertedMouseClientPosition();
 	std::vector<Widget*> interactableWidgets = GetInteractableWidgets();
 
 	//basically does nothing
@@ -148,7 +148,6 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	{
 		if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 		{
-
 			if (m_currentSelectedWidget == nullptr)
 			{
 				m_currentSelectedWidget = GetSelectedWidget(interactableWidgets);
@@ -259,7 +258,7 @@ std::vector<Widget*> PlayingState::GetInteractableWidgets()
 
 Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactableWidgets)
 {
-	Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition();
+	Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 
 	//create a vector of widgets that are under the mouse position.  We will sort according to layer to find selected widget
 	Widget* selectedWidget = nullptr;

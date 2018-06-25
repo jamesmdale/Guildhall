@@ -6,6 +6,7 @@
 
 Minion::Minion()
 {
+	UpdateSortLayer(g_defaultCardSortLayer);
 }
 
 
@@ -33,9 +34,9 @@ Minion::~Minion()
 }
 
 void Minion::Initialize()
-{
-	UpdateSortLayer(g_defaultCardSortLayer);
+{	
 	RefreshRenderables();
+	UpdateSortLayer(g_defaultCardSortLayer);
 }
 
 void Minion::Update(float deltaSeconds)
@@ -120,6 +121,8 @@ void Minion::RefreshRenderables()
 
 	clientWindow = nullptr;
 	theRenderer = nullptr;
+
+	UpdateSortLayer(GetSortLayer());
 }
 
 Vector2 Minion::GetMinionDimensions()

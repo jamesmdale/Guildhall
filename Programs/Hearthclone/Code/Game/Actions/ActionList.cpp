@@ -119,7 +119,7 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 			TODO("Don't allow them to cast. BREAK");
 		}
 
-		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition();
+		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 		
 		int castPosition = 0;
 
