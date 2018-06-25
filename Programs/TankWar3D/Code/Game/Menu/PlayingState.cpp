@@ -12,6 +12,7 @@
 #include "Game\Spawner.hpp"
 
 bool isPlayerAlive = true;
+bool isVictory = false;
 
 PlayingState::~PlayingState()
 {
@@ -116,7 +117,7 @@ void PlayingState::Initialize()
 void PlayingState::Update(float deltaSeconds)
 { 
 	//if player is dead, don't update any game elements
-	if (isPlayerAlive)
+	if (isPlayerAlive && !isVictory)
 	{
 		// tank update =============================================================================
 		m_playerTank->Update(deltaSeconds);
@@ -214,8 +215,7 @@ void PlayingState::PostRender()
 
 	if (m_spawners.size() == 0 && m_swarmers.size() == 0)
 	{
-		int i = 0;
-		TODO("WE HAVE VICTORY!!!!");
+		isVictory = true;
 	}
 }
 
@@ -225,7 +225,7 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	InputSystem* theInput = InputSystem::GetInstance();
 
 	//if tank is dead, it no longer has input.
-	if (isPlayerAlive)
+	if (isPlayerAlive && !isVictory)
 	{
 		m_playerTank->UpdateFromInput(deltaSeconds);
 	}
@@ -237,6 +237,33 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 			RespawnTank();
 		}
 	}
+	
+	if (isVictory == true)
+	{
+		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_SPACE))
+		{
+			//after you are finished loading
+			GameState* state = GetMenuStateFromGlobalListByType(MAIN_MENU_STATE);
+			GUARANTEE_OR_DIE(state != nullptr, "LOADING STATE TRANSITION: PLAYING STATE NOT FOUND");
+
+			TransitionMenuStatesImmediate(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
+		}	
+	}
+
+	//kill all enemies
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_K))
+	{
+		for (int spawnerIndex = 0; spawnerIndex < (int)m_spawners.size(); ++spawnerIndex)
+		{
+			m_spawners[spawnerIndex]->m_health = 0;
+		}
+
+		for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
+		{
+			m_swarmers[swarmerIndex]->m_health = 0;
+		}
+	}
+
 
 	//cleanup
 	theInput = nullptr;
@@ -298,6 +325,7 @@ void PlayingState::RefreshTankUI()
 	m_ui->m_tankHealthThisFrame = m_playerTank->m_heatlth;
 	m_ui->m_numEnemiesThisFrame = (int)m_swarmers.size();
 	m_ui->m_isPlayerAlive = isPlayerAlive;
+	m_ui->m_isVictory = isVictory;
 }
 
 void PlayingState::RespawnTank()

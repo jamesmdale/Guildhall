@@ -23,7 +23,7 @@ void TankUI::Initialize()
 
 void TankUI::Update(float deltaSeconds)
 {
-	if (m_tankHealthThisFrame != m_tankHealthLastFrame || m_numEnemiesThisFrame != m_numEnemiesLastFrame || !m_isPlayerAlive) 
+	if (m_tankHealthThisFrame != m_tankHealthLastFrame || m_numEnemiesThisFrame != m_numEnemiesLastFrame || !m_isPlayerAlive || m_isVictory) 
 	{
 		RefreshRenderables();
 	}
@@ -57,52 +57,70 @@ void TankUI::RefreshRenderables()
 	AABB2 numEnemiesBounds = AABB2(Vector2(healthBounds.mins.x, healthBounds.mins.y - 40.f), Vector2(healthBounds.maxs.x, healthBounds.mins.y));
 
 	Renderable2D* tankUiRenderable = new Renderable2D();	
+	Material* materialInstance = nullptr;
 
-	//green is full health - transitions to red
-	float percentageAlive = ClampFloatZeroToOne((float)m_tankHealthThisFrame/100.f);	
-	Rgba color = Rgba(1.f - percentageAlive, percentageAlive, 0.f, 1.f);
-
-	mb.CreateText2DInAABB2(healthBounds.GetCenter(), healthBounds.GetDimensions(), 4.f / 3.f, Stringf("%s: %i/100", "Health", m_tankHealthThisFrame), color); //health
-	mb.CreateText2DInAABB2(numEnemiesBounds.GetCenter(), numEnemiesBounds.GetDimensions(), 4.f / 3.f, Stringf("%s: %i", "Swarmers Alive: ", m_numEnemiesThisFrame), Rgba::WHITE); //numenemies
-	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
-	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
-	tankUiRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
-
-	
-	//if player is dead, we need to show overlay
-	if (m_isPlayerAlive == false)
+	if (m_isVictory)
 	{
-		PlayingState* gameState = (PlayingState*)g_currentState;
-		int timeRemainingBeforeRespawn = g_respawnTimer- (int)gameState->m_respawnTimer->GetElapsedTimeInSeconds();
-
 		//add overlay
 		mb.CreateQuad2D(clientWindow->GetClientWindow(), Rgba::WHITE);
 		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
-		materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::LIGHT_RED_TRANSPARENT));
-		tankUiRenderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);
+		materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::LIGHT_ORANGE_TRANSPARENT));
+		tankUiRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
 
-		mb.CreateText2DInAABB2(clientWindow->GetCenterOfClientWindow(), Vector2(500.f, 500.f), 4.f / 3.f, "YOU ARE VERY DEAD", Rgba::WHITE); //numenemies
-		Vector2 textCenter = clientWindow->GetCenterOfClientWindow() - Vector2(0.f, 200);
-		if (!gameState->m_respawnTimer->HasElapsed())
-		{
-			float roundedFloat = RoundDownToDecimalPlace(timeRemainingBeforeRespawn, 100);
-			mb.CreateText2DInAABB2(textCenter, Vector2(500.f, 500.f), 4.f / 3.f, Stringf("Time until respawn: %f", roundedFloat), Rgba::WHITE); //numenemies
-		}
-		else
-		{
-			mb.CreateText2DInAABB2(textCenter, Vector2(500.f, 500.f), 4.f / 3.f, "Space to respawn", Rgba::WHITE); //numenemies
-
-		}
+		mb.CreateText2DInAABB2(clientWindow->GetCenterOfClientWindow(), Vector2(1000.f, 500.f), 4.f / 3.f, "WINNER WINNER CHICKEN DINNER!!", Rgba::WHITE); //numenemies
 		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
 		materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
-		tankUiRenderable->AddRenderableData(4, mb.CreateMesh<VertexPCU>(), materialInstance);
+		tankUiRenderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);
 	}
 
-	materialInstance = nullptr;
+	else
+	{
+		//green is full health - transitions to red
+		float percentageAlive = ClampFloatZeroToOne((float)m_tankHealthThisFrame / 100.f);
+		Rgba color = Rgba(1.f - percentageAlive, percentageAlive, 0.f, 1.f);
+
+		mb.CreateText2DInAABB2(healthBounds.GetCenter(), healthBounds.GetDimensions(), 4.f / 3.f, Stringf("%s: %i/100", "Health", m_tankHealthThisFrame), color); //health
+		mb.CreateText2DInAABB2(numEnemiesBounds.GetCenter(), numEnemiesBounds.GetDimensions(), 4.f / 3.f, Stringf("%s: %i", "Swarmers Alive: ", m_numEnemiesThisFrame), Rgba::WHITE); //numenemies
+		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+		materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+		tankUiRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
+
+
+		//if player is dead, we need to show overlay
+		if (m_isPlayerAlive == false)
+		{
+			PlayingState* gameState = (PlayingState*)g_currentState;
+			int timeRemainingBeforeRespawn = g_respawnTimer - (int)gameState->m_respawnTimer->GetElapsedTimeInSeconds();
+
+			//add overlay
+			mb.CreateQuad2D(clientWindow->GetClientWindow(), Rgba::WHITE);
+			materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
+			materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::LIGHT_RED_TRANSPARENT));
+			tankUiRenderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);
+
+			mb.CreateText2DInAABB2(clientWindow->GetCenterOfClientWindow(), Vector2(500.f, 500.f), 4.f / 3.f, "YOU ARE VERY DEAD", Rgba::WHITE); //numenemies
+			Vector2 textCenter = clientWindow->GetCenterOfClientWindow() - Vector2(0.f, 200);
+			if (!gameState->m_respawnTimer->HasElapsed())
+			{
+				float roundedFloat = RoundDownToDecimalPlace(timeRemainingBeforeRespawn, 100);
+				mb.CreateText2DInAABB2(textCenter, Vector2(500.f, 500.f), 4.f / 3.f, Stringf("Time until respawn: %f", roundedFloat), Rgba::WHITE); //numenemies
+			}
+			else
+			{
+				mb.CreateText2DInAABB2(textCenter, Vector2(500.f, 500.f), 4.f / 3.f, "Space to respawn", Rgba::WHITE); //numenemies
+
+			}
+			materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+			materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+			tankUiRenderable->AddRenderableData(4, mb.CreateMesh<VertexPCU>(), materialInstance);
+		}
+			
+	}
 
 	m_renderables.push_back(tankUiRenderable);
 	m_renderScene->AddRenderable(tankUiRenderable);
 
+	materialInstance = nullptr;
 	clientWindow = nullptr;
 	theRenderer = nullptr;
 }

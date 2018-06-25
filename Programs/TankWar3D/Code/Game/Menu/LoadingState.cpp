@@ -36,6 +36,7 @@ void LoadingState::Update(float deltaSeconds)
 
 		TransitionMenuStatesImmediate(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
 
+		state = nullptr;
 		theAudio = nullptr;
 		theRenderer = nullptr;
 	}	

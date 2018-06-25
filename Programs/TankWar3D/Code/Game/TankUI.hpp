@@ -20,6 +20,7 @@ public:
 	int m_tankHealthThisFrame = 100;
 	int m_numEnemiesThisFrame = 0;
 	bool m_isPlayerAlive = true;
+	bool m_isVictory = false;
 
 private:
 	int m_tankHealthLastFrame = 100;
