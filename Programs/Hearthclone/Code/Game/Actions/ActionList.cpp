@@ -11,6 +11,8 @@
 #include "Game\Effects\DerivedEffects\ReorganizeHandEffect.hpp"
 #include "Game\Effects\DerivedEffects\ReorganizeMinionsEffect.hpp"
 #include "Game\Board.hpp"
+#include "Game\TurnStates\TurnStateManager.hpp"
+#include "Game\Effects\DerivedEffects\TurnChange.hpp"
 
 // actions =============================================================================
 
@@ -187,3 +189,28 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 	player = nullptr;
 	gameState = nullptr;
 }
+
+void EndTurnAction(const std::map<std::string, std::string>& parameters)
+{
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+
+	TODO("Handle triggers");
+
+	gameState->m_turnStateManager->TransitionToState(END_OF_TURN_PLAY_STATE);
+
+	gameState = nullptr;
+}
+
+void StartTurnAction(const std::map<std::string, std::string>& parameters)
+{
+
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+
+	TODO("Handle triggers");
+
+	TurnChange* turnChangeEffect = new TurnChange(gameState->m_activePlayer->m_playerId, 3.f, gameState->m_renderScene2D);
+
+	AddEffectToEffectQueue(turnChangeEffect);
+
+}
+

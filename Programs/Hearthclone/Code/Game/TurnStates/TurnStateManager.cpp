@@ -187,10 +187,12 @@ void TurnStateManager::TransitionInStartOfTurn()
 
 	TODO("This isn't always true (Overload as an example)");
 	m_playingState->m_player->m_manaCount = m_playingState->m_player->m_maxManaCount;
-		
+	
+	std::map<std::string, std::string> parameters;
+	AddActionToRefereeQueue("start_turn", parameters);
 
 	//draw a card
-	std::map<std::string, std::string> parameters = {{"target", "player"}, {"amount", "1"}};
+	parameters = {{"target", "player"}, {"amount", "1"}};
 	AddActionToRefereeQueue("draw", parameters);
 
 	m_playingState->m_gameBoard->RefreshPlayerManaWidget();

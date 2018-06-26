@@ -62,6 +62,10 @@ void AttackAction(const std::map<std::string, std::string>& parameters);
 
 void CastFromHandAction(const std::map<std::string, std::string>& parameters);
 
+void EndTurnAction(const std::map<std::string, std::string>& parameters);
+
+void StartTurnAction(const std::map<std::string, std::string>& parameters);
+
 
 
 

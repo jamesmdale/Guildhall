@@ -1,5 +1,6 @@
 #include "Game\Entity\EndTurnButton.hpp"
 #include "Game\GameStates\PlayingState.hpp"
+#include "Game\Actions\Action.hpp"
 
 EndTurnButton::~EndTurnButton()
 {
@@ -8,6 +9,8 @@ EndTurnButton::~EndTurnButton()
 
 void EndTurnButton::OnLeftClicked()
 {
+	std::map<std::string, std::string> parameters;
+
 	//call end turn
-	int i = 0;
+	AddActionToRefereeQueue("end_turn", parameters);
 }

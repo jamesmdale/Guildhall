@@ -16,6 +16,8 @@ void RegisterAllActions()
 	RegisterAction("draw", DrawAction);
 	RegisterAction("attack", AttackAction);
 	RegisterAction("cast_from_hand", CastFromHandAction);
+	RegisterAction("end_turn", EndTurnAction);
+	RegisterAction("start_turn", StartTurnAction);
 }
 
 void RegisterAction(std::string name, ActionCallback action)
