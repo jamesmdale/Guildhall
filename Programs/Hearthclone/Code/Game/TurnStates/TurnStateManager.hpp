@@ -30,13 +30,6 @@ public:
 * ==========================================================================================================================================================================================*/
 
 private:
-	//update methods
-	/*void UpdateStartOfGame(float deltaSeconds);
-	void UpdateStartOfTurn(float deltaSeconds);
-	void UpdateMain(float deltaSeconds);
-	void UpdateEndOfTurn(float deltaSeconds);
-	void UpdateEndOfGame(float deltaSeconds);*/
-
 	//transition in methods
 	void TransitionInStartOfGame();
 	void TransitionInStartOfTurn();

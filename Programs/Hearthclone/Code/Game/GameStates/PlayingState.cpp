@@ -100,6 +100,9 @@ void PlayingState::Update(float deltaSeconds)
 
 void PlayingState::PreRender()
 {
+	//pre render for turn widget
+	m_gameBoard->m_endTurnWidget->PreRender();
+
 	//run prerender for enemy player
 	m_enemyPlayer->PreRender();
 
@@ -171,6 +174,7 @@ std::vector<Widget*>* PlayingState::GetInteractableWidgets()
 
 	TODO("Add gameboard update");
 	// game board =========================================================================================
+	interactableWidgets->push_back(m_gameBoard->m_endTurnWidget);
 
 	//return
 	return interactableWidgets;

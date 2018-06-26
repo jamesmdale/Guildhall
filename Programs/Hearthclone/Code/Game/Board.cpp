@@ -61,10 +61,12 @@ void Board::Initialize()
 
 	//Initialize dynamic widgets
 	m_playerManaWidget = new Widget();
-	m_endTurnWidget = new Widget();
+	m_endTurnWidget = new EndTurnButton();
 
 	m_playerManaWidget->m_renderScene = m_renderScene;
 	m_endTurnWidget->m_renderScene = m_renderScene;
+
+	m_endTurnWidget->m_playingState = m_playingState;
 
 	//add renderable to scene
 	m_renderables.push_back(boardRenderable);
@@ -291,8 +293,10 @@ void Board::RefreshEndTurnWidget()
 
 	Renderable2D* renderable = new Renderable2D();
 
+	m_endTurnWidget->m_dimensionsInPixels = m_endTurnQuad.GetDimensions();
+
 	// add quads for end turn =========================================================================================
-	mb.CreateQuad2D(m_endTurnQuad, Rgba::GREEN);
+	mb.CreateQuad2D(Vector2::ZERO, m_endTurnWidget->m_dimensionsInPixels, Rgba::GREEN);
 	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
 
 	renderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), materialInstance);
@@ -306,7 +310,7 @@ void Board::RefreshEndTurnWidget()
 
 	//add mesh and material to renderable ========================================================================================
 
-	mb.CreateText2DInAABB2(m_endTurnQuad.GetCenter(), m_endTurnQuad.GetDimensions(), 4.f / 3.f, "END TURN", Rgba::WHITE);	
+	mb.CreateText2DInAABB2(Vector2::ZERO, m_endTurnWidget->m_dimensionsInPixels, 4.f / 3.f, "END TURN", Rgba::WHITE);	
 	Material* textInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
 	textInstance->SetProperty("TINT", Rgba::ConvertToVector4(colorText));
 
@@ -314,12 +318,14 @@ void Board::RefreshEndTurnWidget()
 
 	m_endTurnWidget->m_renderables.push_back(renderable);
 
+
 	for (int renderableIndex = 0; renderableIndex < (int)m_endTurnWidget->m_renderables.size(); ++renderableIndex)
 	{
-		m_endTurnWidget->m_renderScene->AddRenderable(m_endTurnWidget->m_renderables[renderableIndex]);
+		m_endTurnWidget->m_renderScene->AddRenderable(m_endTurnWidget->m_renderables[renderableIndex]);		
 	}
 
 	m_endTurnWidget->UpdateSortLayer(2);
+	m_endTurnWidget->m_transform2D->SetLocalPosition(m_endTurnQuad.GetCenter());
 
 	// cleanup =========================================================================================
 	materialInstance = nullptr;

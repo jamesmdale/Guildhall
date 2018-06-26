@@ -150,33 +150,6 @@ void TurnStateManager::Transition()
 	}	
 }
 
-// update methods =========================================================================================
-//void TurnStateManager::UpdateStartOfGame(float deltaSeconds)
-//{
-//
-//}
-//
-//void TurnStateManager::UpdateStartOfTurn(float deltaSeconds)
-//{
-//
-//}
-//
-//
-//void TurnStateManager::UpdateMain(float deltaSeconds)
-//{
-//
-//}
-//
-//void TurnStateManager::UpdateEndOfTurn(float deltaSeconds)
-//{
-//
-//}
-//
-//void TurnStateManager::UpdateEndOfGame(float deltaSeconds)
-//{
-//
-//}
-
 void TurnStateManager::TransitionInStartOfGame()
 {
 	//each player draws 3 cards

@@ -2,6 +2,7 @@
 #include "Engine\Core\Widget.hpp"
 #include "Engine\Camera\Camera.hpp"
 #include "Engine\Math\AABB2.hpp"
+#include "Game\Entity\EndTurnButton.hpp"
 
 class PlayingState;
 class Board : public Widget
@@ -25,7 +26,7 @@ public:
 public:
 	//dynamic elements on game board =========================================================================================
 	PlayingState* m_playingState = nullptr;
-	Widget* m_endTurnWidget = nullptr;
+	EndTurnButton* m_endTurnWidget = nullptr;
 	Widget* m_playerManaWidget = nullptr;
 
 	// enemy board quads =========================================================================================
