@@ -213,6 +213,10 @@ void TurnStateManager::TransitionInMain()
 void TurnStateManager::TransitionInEndOfTurn()
 {
 	isFinishedTransitioningIn = true;
+	m_currentState = m_transitionState;
+	m_transitionState = NUM_PLAY_STATES;
+
+	TransitionToState(START_OF_TURN_PLAY_STATE);
 }
 
 void TurnStateManager::TransitionInEndOfGame()
