@@ -48,7 +48,7 @@ void TurnChange::InitializeTurnRenderable()
 
 	m_renderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), textInstance);
 	m_renderable->m_widgetSortLayer = 999;
-	m_renderScene->AddRenderable(m_renderable);
+	//m_renderScene->AddRenderable(m_renderable);
 
 	textInstance = nullptr;
 	theWindow = nullptr;

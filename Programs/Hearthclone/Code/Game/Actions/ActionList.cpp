@@ -101,6 +101,7 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 	// Get Parameters =============================================================================
 	ePlayerType playerType = (ePlayerType)ConvertStringToInt(parameters.find("target")->second);
 	int cardIndex = ConvertStringToInt(parameters.find("handIndex")->second);
+	Vector2 battlefieldLocation = ConvertStringToVector2(parameters.find("newLocation")->second);
 
 	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
 	Player* player = nullptr;
@@ -112,15 +113,30 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 
 	Card* cardToCast = player->m_hand[cardIndex];	
 
+	bool canCastCard = true;
+
 	// Process Function =============================================================================	
 	if (cardToCast->m_definition->m_type == MINION_TYPE)
 	{
 		TODO("Cast triggers here");
 
-		if ((int)player->m_minions.size() > 10)
+		//if we have max minions in play or not enough mana to cast, we can't cast card. return.
+		if ((int)player->m_minions.size() >= g_maxMinionCount || player->m_manaCount < cardToCast->m_definition->m_cost)
 		{
-			TODO("Don't allow them to cast. BREAK");
+			cardToCast->OnRightClicked(); //handles input priority
+
+			//cleanup and return
+			gameState = nullptr;
+			player = nullptr;
+			cardToCast = nullptr;
+			return;
 		}
+
+		//set card position
+		cardToCast->m_transform2D->SetLocalPosition(battlefieldLocation);
+		cardToCast->m_lockPosition = battlefieldLocation;
+
+		player->m_manaCount -= cardToCast->m_cost;
 
 		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 		
@@ -150,9 +166,13 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 
 		newMinion->RefreshRenderables();
 		
+		//update dynamic renderables
 		player->UpdateBoardLockPositions();
 		player->UpdateHandLockPositions();
 		player->UpdateDeckCount();
+
+		gameState->m_gameBoard->RefreshPlayerManaWidget();
+
 
 		newMinion->m_transform2D->SetLocalPosition(newMinion->m_lockPosition);
 
@@ -208,7 +228,7 @@ void StartTurnAction(const std::map<std::string, std::string>& parameters)
 
 	TODO("Handle triggers");
 
-	TurnChange* turnChangeEffect = new TurnChange(gameState->m_activePlayer->m_playerId, 3.f, gameState->m_renderScene2D);
+	TurnChange* turnChangeEffect = new TurnChange(gameState->m_activePlayer->m_playerId, 1.5f, gameState->m_renderScene2D);
 
 	AddEffectToEffectQueue(turnChangeEffect);
 

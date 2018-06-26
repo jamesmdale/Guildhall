@@ -52,6 +52,7 @@ const float g_minionPercentageOfClientWindowHeight = 0.1f;
 const float g_cardAspectRatio = 0.722f;
 const float g_minionAspectRatio = 1.538f;
 const int g_maxHandSize = 11;
+const int g_maxMinionCount = 7;
 const int g_maxBattlefieldSize = 11;
 
 //used to calculate center positions of all elements on a card

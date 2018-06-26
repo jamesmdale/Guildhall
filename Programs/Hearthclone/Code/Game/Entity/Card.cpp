@@ -187,27 +187,28 @@ void Card::OnLeftClicked()
 		//player is playing card.
 		if (mousePosition.y > playingState->m_gameBoard->m_playerHandQuad.maxs.y)
 		{
-			//queue play card action
-			Vector2 battlefieldLocation = playingState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
-			m_transform2D->SetLocalPosition(battlefieldLocation);
-			m_lockPosition = battlefieldLocation;
+			//determine if card is castable
+			//if(m_)
 
+			//we can cast the card so queue play card action
+
+			//get the new location to cast
+			Vector2 battlefieldLocation = playingState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
+			
+
+			Player* player = playingState->m_activePlayer;
 			int cardIndexInPlayerHand = 0;
-			if (playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
+
+			for (int cardIndex = 0; cardIndex < (int)playingState->m_activePlayer->m_hand.size(); ++cardIndex)
 			{
-				Player* self = playingState->m_player;
-				for (int cardIndex = 0; cardIndex < (int)self->m_hand.size(); ++cardIndex)
+				if (playingState->m_activePlayer->m_hand[cardIndex] == this)
 				{
-					if (self->m_hand[cardIndex] == this)
-					{
-						cardIndexInPlayerHand = cardIndex;
-						break; 
-					}
+					cardIndexInPlayerHand = cardIndex;
+					break; 
 				}
-				self = nullptr;
 			}
 
-			std::map<std::string, std::string> parameters = {{"target", Stringf("%i", SELF_PLAYER_TYPE)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}};
+			std::map<std::string, std::string> parameters = {{"target", Stringf("%i", SELF_PLAYER_TYPE)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", battlefieldLocation.x, battlefieldLocation.y)}};
 			AddActionToRefereeQueue("cast_from_hand", parameters);
 		}
 		else //return card to hand
