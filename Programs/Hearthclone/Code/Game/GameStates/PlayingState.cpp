@@ -13,6 +13,7 @@
 #include "Game\Entity\Player.hpp"
 #include "Game\Entity\Minion.hpp"
 #include "Game\TurnStates\TurnStateManager.hpp"
+#include "Game\Board.hpp"
 
 
 PlayingState::~PlayingState()
@@ -47,6 +48,7 @@ void PlayingState::Initialize()
 
 	m_gameBoard = new Board("board");
 	m_gameBoard->m_renderScene = m_renderScene2D;
+	m_gameBoard->m_playingState = this;
 	m_gameBoard->Initialize();
 
 	//add players
@@ -66,6 +68,10 @@ void PlayingState::Initialize()
 	m_gameTime->SetClock(GetMasterClock());
 
 	m_activePlayer = m_player;	
+
+	//update board dynamic renderables
+	m_gameBoard->RefreshEndTurnWidget();
+	m_gameBoard->RefreshPlayerManaWidget();
 
 	//cleanup
 	theRenderer = nullptr;	

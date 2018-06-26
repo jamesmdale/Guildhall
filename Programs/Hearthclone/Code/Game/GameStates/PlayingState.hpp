@@ -1,9 +1,9 @@
 #pragma once
 #include "Game\GameStates\GameState.hpp"
-#include "Engine\Core\Terrain.hpp"
-#include "Game\Board.hpp"
 #include "Engine\Time\Stopwatch.hpp"
+#include "Engine\Core\Widget.hpp"
 
+class Board;
 class TurnStateManager;
 class Player;
 class Tank;
@@ -29,6 +29,7 @@ public:
 
 public:
 	Board* m_gameBoard = nullptr;
+
 	Stopwatch* m_gameTime = nullptr;
 
 	//player contains hand, graveyard, their side of the battlefield, and their class

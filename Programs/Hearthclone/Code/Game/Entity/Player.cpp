@@ -5,6 +5,7 @@
 #include "Game\Entity\Card.hpp"
 #include "Game\Entity\Minion.hpp"
 #include "Game\Entity\Hero.hpp"
+#include "Game\Board.hpp"
 
 
 Player::Player()

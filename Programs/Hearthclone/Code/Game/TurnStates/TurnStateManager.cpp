@@ -9,6 +9,7 @@
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Game\Board.hpp"
 
 bool isFinishedTransitioningIn = true;
 bool isFinishedTransitioningOut = true;
@@ -206,13 +207,22 @@ void TurnStateManager::TransitionInStartOfTurn()
 		m_playingState->m_activePlayer = m_playingState->m_player;*/
 
 	//add one mana crystal if below max
-	if(m_playingState->m_player->m_manaCount < 10)
-		m_playingState->m_player->m_manaCount++;
+	if (m_playingState->m_player->m_maxManaCount < 10)
+	{
+		m_playingState->m_player->m_maxManaCount++;
+	}
+
+	TODO("This isn't always true (Overload as an example)");
+	m_playingState->m_player->m_manaCount = m_playingState->m_player->m_maxManaCount;
+		
 
 	//draw a card
 	std::map<std::string, std::string> parameters = {{"target", "player"}, {"amount", "1"}};
 	AddActionToRefereeQueue("draw", parameters);
 
+	m_playingState->m_gameBoard->RefreshPlayerManaWidget();
+
+	//transition to next state
 	isFinishedTransitioningIn = true;
 	m_currentState = m_transitionState;
 	m_transitionState = NUM_PLAY_STATES;

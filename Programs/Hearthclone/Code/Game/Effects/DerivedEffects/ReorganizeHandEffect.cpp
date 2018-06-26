@@ -5,6 +5,7 @@
 #include "Engine\Math\MathUtils.hpp"
 #include "Game\Effects\DerivedEffects\ReorganizeHandEffect.hpp"
 #include "Game\Entity\Card.hpp"
+#include "Game\Board.hpp"
 
 ReorganizeHandEffect::ReorganizeHandEffect(float effectTime, ePlayerType player)
 {

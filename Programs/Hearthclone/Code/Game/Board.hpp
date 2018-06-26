@@ -3,6 +3,7 @@
 #include "Engine\Camera\Camera.hpp"
 #include "Engine\Math\AABB2.hpp"
 
+class PlayingState;
 class Board : public Widget
 {
 public:
@@ -17,12 +18,16 @@ public:
 
 	void CreateBoardMeshesForRenderable(Renderable2D* renderable);
 	void CreateBoardTextMeshesForRenderable(Renderable2D* renderable);
+	void RefreshPlayerManaWidget();
+	void RefreshEndTurnWidget();
 	void CreateBoardTexturedMeshesForRenderable(Renderable2D* renderable);
-	
-	void UpdateRenderables();
 
 public:
-	
+	//dynamic elements on game board =========================================================================================
+	PlayingState* m_playingState = nullptr;
+	Widget* m_endTurnWidget = nullptr;
+	Widget* m_playerManaWidget = nullptr;
+
 	// enemy board quads =========================================================================================
 	AABB2 m_enemyHandQuad;
 	AABB2 m_enemyBattlfieldQuad;

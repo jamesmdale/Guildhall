@@ -3,6 +3,10 @@
 #include "Engine\Window\Window.hpp"
 #include "Game\GameCommon.hpp"
 #include "Engine\Renderer\Renderer.hpp"
+#include "Game\GameStates\PlayingState.hpp"
+#include "Game\Entity\Player.hpp"
+#include "Engine\Core\StringUtils.hpp"
+#include "Game\GameStates\PlayingState.hpp"
 
 //board tints
 Rgba boardBaseColor = Rgba(228, 187, 118, 255); //light brown
@@ -22,6 +26,8 @@ Board::Board()
 
 Board::~Board()
 {
+	m_endTurnWidget = nullptr;
+	m_playerManaWidget = nullptr;
 }
 
 void Board::Initialize()
@@ -53,9 +59,15 @@ void Board::Initialize()
 	//add text to board
 	CreateBoardTextMeshesForRenderable(boardRenderable);
 
+	//Initialize dynamic widgets
+	m_playerManaWidget = new Widget();
+	m_endTurnWidget = new Widget();
+
+	m_playerManaWidget->m_renderScene = m_renderScene;
+	m_endTurnWidget->m_renderScene = m_renderScene;
+
 	//add renderable to scene
 	m_renderables.push_back(boardRenderable);
-
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
 	{
@@ -170,20 +182,18 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	m_enemyManaQuad = AABB2(enemyManaCenter, manaDimensions.x * 0.5f, manaDimensions.y * 0.5f);
 	m_playerManaQuad = AABB2(playerManaCenter, manaDimensions.x * 0.5f, manaDimensions.y * 0.5f);
 
-	mb.CreateQuad2D(enemyManaCenter, manaDimensions, Rgba::BLUE);
-	mb.CreateQuad2D(playerManaCenter, manaDimensions, Rgba::BLUE);
+	//mb.CreateQuad2D(enemyManaCenter, manaDimensions, Rgba::BLUE);
+	//mb.CreateQuad2D(playerManaCenter, manaDimensions, Rgba::BLUE);
 
 	// create quad for battlefield divider =========================================================================================
 	mb.CreateQuad2D(clientWindow->GetCenterOfClientWindow(), Vector2(clientWindowDimensions.x, clientWindowDimensions.y * g_boardBattlefieldCenterLineThicknessHeight), Rgba::BLACK);
 	
-	// create quad for battlefield divider =========================================================================================
+	// create quad end turn =========================================================================================
 	Vector2 endTurnCenter = Vector2(clientWindowDimensions.x - (endTurnDimensions.x * 0.5f)
 		, clientWindowDimensions.y * 0.5f);
 
-	//store off hero portrait quads
+	//store end turn quad
 	m_endTurnQuad = AABB2(endTurnCenter, endTurnDimensions.x * 0.5f, endTurnDimensions.y * 0.5f);
-
-	mb.CreateQuad2D(endTurnCenter, endTurnDimensions, Rgba::GREEN);
 
 	// add mesh and material to renderable =========================================================================================
 	renderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
@@ -239,17 +249,145 @@ void Board::CreateBoardTextMeshesForRenderable(Renderable2D * renderable)
 
 	Window* clientWindow = Window::GetInstance();
 
-	m_endTurnQuad.GetCenter();
+	//m_endTurnQuad.GetCenter();
 
-	mb.CreateText2DInAABB2(m_endTurnQuad.GetCenter(), m_endTurnQuad.GetDimensions(), 4.f / 3.f, "END TURN", Rgba::BLACK);
+	//mb.CreateText2DInAABB2(m_endTurnQuad.GetCenter(), m_endTurnQuad.GetDimensions(), 4.f / 3.f, "END TURN", Rgba::BLACK);
 
 	// add mesh and material to renderable =========================================================================================
-	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
-	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::BLACK));
+	//Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+	//materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::BLACK));
 
-	renderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);
+	//renderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);
 
 	// cleanup =========================================================================================
 	clientWindow = nullptr;
+	theRenderer = nullptr;
+}
+
+// widget =========================================================================================
+
+void Board::RefreshEndTurnWidget()
+{
+	Renderer* theRenderer = Renderer::GetInstance();
+
+	// remove existing renderables =========================================================================================
+	if (m_endTurnWidget->m_renderables.size() > 0)
+	{
+		for (int renderableIndex = 0; renderableIndex < (int)m_endTurnWidget->m_renderables.size(); ++renderableIndex)
+		{
+			m_renderScene->RemoveRenderable(m_endTurnWidget->m_renderables[renderableIndex]);
+
+			if (m_endTurnWidget->m_renderables[renderableIndex] != nullptr)
+			{
+				delete(m_endTurnWidget->m_renderables[renderableIndex]);
+				m_endTurnWidget->m_renderables[renderableIndex] = nullptr;
+			}
+		}
+		m_endTurnWidget->m_renderables.clear();
+	}	
+
+	MeshBuilder mb;
+	mb.FlushBuilder();
+
+	Renderable2D* renderable = new Renderable2D();
+
+	// add quads for end turn =========================================================================================
+	mb.CreateQuad2D(m_endTurnQuad, Rgba::GREEN);
+	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
+
+	renderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), materialInstance);
+
+	//if player is self, colortext is white
+	Rgba colorText = Rgba::WHITE;
+
+	//if player is enemy colortext is black
+	if (m_playingState->m_activePlayer->m_playerId == ENEMY_PLAYER_TYPE)
+		colorText = Rgba::BLACK;
+
+	//add mesh and material to renderable ========================================================================================
+
+	mb.CreateText2DInAABB2(m_endTurnQuad.GetCenter(), m_endTurnQuad.GetDimensions(), 4.f / 3.f, "END TURN", Rgba::WHITE);	
+	Material* textInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+	textInstance->SetProperty("TINT", Rgba::ConvertToVector4(colorText));
+
+	renderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), textInstance);
+
+	m_endTurnWidget->m_renderables.push_back(renderable);
+
+	for (int renderableIndex = 0; renderableIndex < (int)m_endTurnWidget->m_renderables.size(); ++renderableIndex)
+	{
+		m_endTurnWidget->m_renderScene->AddRenderable(m_endTurnWidget->m_renderables[renderableIndex]);
+	}
+
+	m_endTurnWidget->UpdateSortLayer(2);
+
+	// cleanup =========================================================================================
+	materialInstance = nullptr;
+	renderable = nullptr;
+	theRenderer = nullptr;
+}
+
+void Board::RefreshPlayerManaWidget()
+{
+	Renderer* theRenderer = Renderer::GetInstance();	
+
+	// remove existing renderables =========================================================================================
+	if (m_playerManaWidget->m_renderables.size() > 0)
+	{
+		for (int renderableIndex = 0; renderableIndex < (int)m_playerManaWidget->m_renderables.size(); ++renderableIndex)
+		{
+			m_renderScene->RemoveRenderable(m_playerManaWidget->m_renderables[renderableIndex]);
+
+			if (m_playerManaWidget->m_renderables[renderableIndex] != nullptr)
+			{
+				delete(m_playerManaWidget->m_renderables[renderableIndex]);
+				m_playerManaWidget->m_renderables[renderableIndex] = nullptr;
+			}
+		}
+		m_playerManaWidget->m_renderables.clear();
+	}	
+
+	MeshBuilder mb;
+	mb.FlushBuilder();
+
+	Renderable2D* renderable = new Renderable2D();
+
+	// add quads for mana =========================================================================================
+	mb.CreateQuad2D(m_playerManaQuad, Rgba::WHITE);
+	mb.CreateQuad2D(m_enemyManaQuad, Rgba::WHITE);
+	Material* materialHexagon = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
+	materialHexagon->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+	materialHexagon->SetTexture(0, theRenderer->CreateOrGetTexture("Data/Images/Template/Hexagon.png"));
+
+	renderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), materialHexagon);
+
+	// add text for current mana =========================================================================================
+	int playerManaCount = m_playingState->m_player->m_manaCount;
+	int playerMaxManaCount = m_playingState->m_player->m_maxManaCount;
+
+	int enemyManaCount = m_playingState->m_enemyPlayer->m_manaCount;
+	int enemyMaxManaCount = m_playingState->m_enemyPlayer->m_maxManaCount;
+
+	Vector2 quadSizeHalved = m_playerManaQuad.GetDimensions() * 0.5f;
+
+	mb.CreateText2DInAABB2(m_playerManaQuad.GetCenter(), m_playerManaQuad.GetDimensions() - quadSizeHalved, 1.f, Stringf("%i/%i", playerManaCount, playerMaxManaCount), Rgba::WHITE);
+	mb.CreateText2DInAABB2(m_enemyManaQuad.GetCenter(), m_enemyManaQuad.GetDimensions() - quadSizeHalved, 1.f, Stringf("%i/%i", enemyManaCount, enemyMaxManaCount), Rgba::WHITE);
+	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+
+	renderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), materialInstance);	
+
+	m_playerManaWidget->m_renderables.push_back(renderable);
+
+	for (int renderableIndex = 0; renderableIndex < (int)m_playerManaWidget->m_renderables.size(); ++renderableIndex)
+	{
+		m_playerManaWidget->m_renderScene->AddRenderable(m_playerManaWidget->m_renderables[renderableIndex]);
+	}
+
+	m_playerManaWidget->UpdateSortLayer(2);
+
+	// cleanup =========================================================================================
+	renderable = nullptr;
+	materialInstance = nullptr;
 	theRenderer = nullptr;
 }

@@ -43,6 +43,7 @@ public:
 	std::vector<Card*> m_hand;
 	std::vector<Minion*> m_minions;
 	int m_manaCount = 0;
+	int m_maxManaCount = 0;
 	Hero* m_hero = nullptr;
 
 	PlayingState* m_gameState = nullptr;

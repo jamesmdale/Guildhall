@@ -10,6 +10,7 @@
 #include "Game\Effects\DerivedEffects\DrawEffect.hpp"
 #include "Game\Effects\DerivedEffects\ReorganizeHandEffect.hpp"
 #include "Game\Effects\DerivedEffects\ReorganizeMinionsEffect.hpp"
+#include "Game\Board.hpp"
 
 // actions =============================================================================
 

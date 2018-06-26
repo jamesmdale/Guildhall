@@ -5,6 +5,7 @@
 #include "Engine\Math\MathUtils.hpp"
 #include "Game\Effects\DerivedEffects\ReorganizeHandEffect.hpp"
 #include "Game\Entity\Minion.hpp"
+#include "Game\Board.hpp"
 
 ReorganizeMinionsEffect::ReorganizeMinionsEffect(float effectTime, ePlayerType player)
 {

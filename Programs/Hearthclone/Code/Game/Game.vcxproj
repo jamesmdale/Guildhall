@@ -299,6 +299,7 @@
     <ClCompile Include="Definitions\CardDefinition.cpp" />
     <ClCompile Include="Effects\DerivedEffects\DrawEffect.cpp" />
     <ClCompile Include="Effects\Effect.cpp" />
+    <ClCompile Include="Entity\EndTurnButton.cpp" />
     <ClCompile Include="Entity\Character.cpp" />
     <ClCompile Include="Entity\Card.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -332,6 +333,7 @@
     <ClInclude Include="Definitions\CardDefinition.hpp" />
     <ClInclude Include="Effects\DerivedEffects\DrawEffect.hpp" />
     <ClInclude Include="Effects\Effect.hpp" />
+    <ClInclude Include="Entity\EndTurnButton.hpp" />
     <ClInclude Include="Entity\Character.hpp" />
     <ClInclude Include="Entity\Card.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />

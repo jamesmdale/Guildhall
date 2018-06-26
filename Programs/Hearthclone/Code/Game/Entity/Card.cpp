@@ -8,6 +8,7 @@
 #include "Game\GameStates\PlayingState.hpp"
 #include "Engine\Input\InputSystem.hpp"
 #include "Game\Actions\Action.hpp"
+#include "Game\Board.hpp"
 
 bool isPreviewing = false;
 
@@ -168,7 +169,7 @@ Vector2 Card::GetCardDimensions()
 
 void Card::OnLeftClicked()
 {
-	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+	PlayingState* playingState = (PlayingState*)GameState::GetCurrentGameState();
 	if (m_isInputPriority == false)
 	{
 		m_isInputPriority = true;
@@ -184,17 +185,17 @@ void Card::OnLeftClicked()
 		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 
 		//player is playing card.
-		if (mousePosition.y > gameState->m_gameBoard->m_playerHandQuad.maxs.y)
+		if (mousePosition.y > playingState->m_gameBoard->m_playerHandQuad.maxs.y)
 		{
 			//queue play card action
-			Vector2 battlefieldLocation = gameState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
+			Vector2 battlefieldLocation = playingState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
 			m_transform2D->SetLocalPosition(battlefieldLocation);
 			m_lockPosition = battlefieldLocation;
 
 			int cardIndexInPlayerHand = 0;
-			if (gameState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
+			if (playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
 			{
-				Player* self = gameState->m_player;
+				Player* self = playingState->m_player;
 				for (int cardIndex = 0; cardIndex < (int)self->m_hand.size(); ++cardIndex)
 				{
 					if (self->m_hand[cardIndex] == this)
