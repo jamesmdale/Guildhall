@@ -18,7 +18,7 @@ public:
 	void SwarmerToTankCollision();
 
 	//flocking methods
-	void Flock(float deltaSeconds);
+	Vector3 Flock(float deltaSeconds);
 	Vector3 SeparateWithNeighbors(float deltaSeconds);
 	Vector3 AlignWithNeighbors(float deltaSeconds);
 	Vector3 CenterTowardsNeighbors(float deltaSeconds);
@@ -26,7 +26,6 @@ public:
 
 	//convenience methods
 	inline bool IsAlive(){return m_health > 0 ? true : false;}
-	void ApplyForce(const Vector3& force) { m_acceleration += force/m_mass; }
 
 public:
 	Spawner* m_parentSpawner = nullptr;
@@ -36,7 +35,5 @@ public:
 
 	//movement
 	Vector3 m_velocity;
-	Vector3 m_acceleration;
-	float  m_mass = 10.f;
 };
 

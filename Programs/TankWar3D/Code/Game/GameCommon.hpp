@@ -17,14 +17,14 @@ const Rgba g_backgroundColor = Rgba(1.f, 1.f, 1.f, 1.f);
 const Vector3 g_spawnerDimensions = Vector3(5.f, 10.f, 5.f);
 const int g_startingNumSpawners = 4;
 const float g_spawnerSpawnRateInSeconds = 2.f;
-const float g_spawnerMaxSwarmers = 10.f;
+const float g_spawnerMaxSwarmers = 15.f;
 const int g_spawnerStartingHealth = 10;
 
 //swarmer info
 const int g_swarmerStartingHealth = 1;
-const float g_swarmerMoveSpeed = 1.f;
+const float g_swarmerMoveSpeed = 0.25f;
 const float g_swarmerRadius = 1.0f;
-const float g_swarmerMinDistanceToOther = 5.f;
+const float g_swarmerMinDistanceToOther = 3.f;
 const Vector3 g_swarmerMaxVelocity = Vector3(0.05f, 0.05f, 0.05f);
 
 //respawn

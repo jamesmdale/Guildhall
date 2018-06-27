@@ -23,7 +23,7 @@ Spawner::~Spawner()
 void Spawner::Update(float deltaSeconds)
 {
 	int val = m_numSwarmers;
-	if (m_spawnTimer->HasElapsed() && m_numSwarmers <= g_spawnerMaxSwarmers)
+	if (m_spawnTimer->HasElapsed() && m_numSwarmers < g_spawnerMaxSwarmers)
 	{
 		Swarmer* swarmer = SpawnSwarmer();
 		swarmer = nullptr;

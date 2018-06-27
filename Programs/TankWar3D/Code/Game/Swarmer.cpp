@@ -36,9 +36,6 @@ void Swarmer::Update(float deltaSeconds)
 
 	//calculate whether swarmer is colliding with tank
 	SwarmerToTankCollision();
-
-	//reset acceleration for the frame
-	m_acceleration = Vector3::ZERO;
 }
 
 void Swarmer::UpdateSwarmerFromTerrain()
@@ -60,26 +57,28 @@ void Swarmer::UpdateSwarmerFromTerrain()
 	newMatrix.SetKBasis(Vector4(newForward.GetNormalized(), 0.f));
 
 	//update the tank transform's position
-	m_transform->SetLocalPosition(Vector3(basePosition.x, 0.0f, basePosition.z));
+	m_transform->SetLocalPosition(Vector3(basePosition.x, basePosition.y, basePosition.z));
 }
 
 void Swarmer::UpdateSwarmerMovement(float deltaSeconds)
 {
 	Vector3 position = m_transform->GetWorldPosition();
 	Vector2 basePositionXZ = Vector2(position.x, position.z);
-	Flock(deltaSeconds);
 
-	//final velocity calculation =========================================================================================
-	m_velocity += m_acceleration;	
-
-	//clamp veloicty
-	m_velocity = ClampVector3Uniform(m_velocity, -1.f * Vector3(0.05f, 0.05f, 0.05f), Vector3(0.05f, 0.05f, 0.05f));
+	Vector3 newDirection = Flock(deltaSeconds);
 
 	//make sure final height is not greater than terrain height
 	float heightFromTerrain = m_gameState->m_terrain->GetHeightAtPositionXZ(basePositionXZ) + 1.f;
-	 
-	m_transform->TranslatePosition(m_velocity);
-	m_transform->SetLocalPositionY(heightFromTerrain);
+	
+	//Vector3 movementVector = m_velocity * g_swarmerMoveSpeed * deltaSeconds;
+	m_velocity = newDirection * g_swarmerMoveSpeed * deltaSeconds;
+	m_velocity.Normalize();
+
+	//clamp final velocity
+	m_velocity = ClampVector3Uniform(m_velocity, -1.f * g_swarmerMaxVelocity, g_swarmerMaxVelocity);
+
+	m_transform->SetLocalPosition(position + m_velocity);
+	m_transform->SetLocalPositionY(heightFromTerrain + 1.f);
 }
 
 void Swarmer::SwarmerToTankCollision()
@@ -91,29 +90,30 @@ void Swarmer::SwarmerToTankCollision()
 
 	if (tankBody.DoesOverlapWithSphere(m_transform->GetWorldPosition(), g_swarmerRadius))
 	{
-		m_health--;
-		playerTank->m_heatlth -= 20;
+		//m_health--;
+		playerTank->m_heatlth -= 0;
 	}
 
 	playerTank = nullptr;
 }
 
-void Swarmer::Flock(float deltaSeconds)
+Vector3 Swarmer::Flock(float deltaSeconds)
 {
 	Vector3 separateSteer = SeparateWithNeighbors(deltaSeconds);
 	Vector3 alignSteer = AlignWithNeighbors(deltaSeconds);
 	Vector3 centerSteer = CenterTowardsNeighbors(deltaSeconds);
 	Vector3 targetSteer = SeekTarget(deltaSeconds, m_gameState->m_playerTank->m_transform->GetWorldPosition());
 
-	separateSteer *= 1.5f;
-//	alignSteer *= 1.0f;
-//	centerSteer *= 1.0f;
-	targetSteer *= 1.0f;
+	separateSteer *= 5.0f;
+    alignSteer *= 2.0f;
+    centerSteer *= 1.0f;
+	targetSteer *= 2.0f;
 
-	ApplyForce(separateSteer);
-	ApplyForce(alignSteer);
-	ApplyForce(centerSteer);
-	ApplyForce(targetSteer);
+	//sum of directions to create a new direction
+	Vector3 newDirection = separateSteer + alignSteer + centerSteer + targetSteer;
+	newDirection.Normalize();
+
+	return newDirection;
 }
 
 Vector3 Swarmer::SeparateWithNeighbors(float deltaSeconds)
@@ -121,9 +121,10 @@ Vector3 Swarmer::SeparateWithNeighbors(float deltaSeconds)
 	Vector3 currentPosition = m_transform->GetWorldPosition();
 	Vector2 basePositionXZ = Vector2(currentPosition.x, currentPosition.z);
 
-	Vector3 displacementSum = Vector3::ZERO;
-	int numCloseSwarmers = 0;
+	Vector3 velocitySum = Vector3::ZERO;
 	Vector3 steerDir = Vector3::ZERO;
+
+	int numCloseSwarmers = 0;
 
 	// apply separation forces =========================================================================================
 	for (int swarmerIndex = 0; swarmerIndex < (int)m_gameState->m_swarmers.size(); swarmerIndex++)
@@ -134,27 +135,32 @@ Vector3 Swarmer::SeparateWithNeighbors(float deltaSeconds)
 
 		Swarmer* swarmer = m_gameState->m_swarmers[swarmerIndex];
 		Vector3 swarmerPosition = swarmer->m_transform->GetWorldPosition();
-		float distanceToSwarmerSquared = GetDistanceSquared(currentPosition, swarmerPosition);
 
-		if (distanceToSwarmerSquared < g_swarmerMinDistanceToOther * g_swarmerMinDistanceToOther)
+		float distance = GetDistance(currentPosition, swarmerPosition);
+
+		if (distance < g_swarmerMinDistanceToOther)
 		{
 			Vector3 displacement = currentPosition - swarmerPosition;
 			displacement.Normalize();
-			displacementSum += displacement;
+
+			Vector3 velocity = displacement/distance;
+
+			velocity = displacement / displacement.GetLength();
+			velocity.Normalize();
+
+			velocitySum = velocitySum + velocity;
 			numCloseSwarmers++;
-		}
+		}		
 
 		swarmer = nullptr;
 	}
 
 	if (numCloseSwarmers > 0)
 	{
-		displacementSum = displacementSum / numCloseSwarmers;
-		displacementSum *= deltaSeconds * g_swarmerMoveSpeed;
+		Vector3 averageVelocity = velocitySum/numCloseSwarmers;
 
-		steerDir = displacementSum - m_velocity;
-		steerDir *= deltaSeconds * g_swarmerMoveSpeed;
-	}	
+		steerDir = averageVelocity;
+	}
 
 	return steerDir;
 }
@@ -176,9 +182,9 @@ Vector3 Swarmer::AlignWithNeighbors(float deltaSeconds)
 
 		Swarmer* swarmer = m_gameState->m_swarmers[swarmerIndex];
 		Vector3 swarmerPosition = swarmer->m_transform->GetWorldPosition();
-		float distanceToSwarmerSquared = GetDistanceSquared(currentPosition, swarmerPosition);
+		float distance = GetDistance(currentPosition, swarmerPosition);
 		
-		if (distanceToSwarmerSquared < g_swarmerMinDistanceToOther * g_swarmerMinDistanceToOther)
+		if (distance < g_swarmerMinDistanceToOther)
 		{
 			velocitySum += m_gameState->m_swarmers[swarmerIndex]->m_velocity;
 			numCloseSwarmers++;
@@ -187,12 +193,8 @@ Vector3 Swarmer::AlignWithNeighbors(float deltaSeconds)
 
 	if (numCloseSwarmers > 0)
 	{
-		velocitySum = velocitySum / (float)m_gameState->m_swarmers.size();
-		velocitySum.Normalize();
-		velocitySum *= deltaSeconds * g_swarmerMoveSpeed;
-
-		steerDir *= deltaSeconds * g_swarmerMoveSpeed;
-		steerDir = velocitySum - m_velocity;
+		Vector3 averageVelocity = velocitySum/numCloseSwarmers;
+		steerDir = averageVelocity;
 	}	
 
 	return steerDir;
@@ -201,10 +203,12 @@ Vector3 Swarmer::AlignWithNeighbors(float deltaSeconds)
 Vector3 Swarmer::CenterTowardsNeighbors(float deltaSeconds)
 {
 	Vector3 currentPosition = m_transform->GetWorldPosition();
-	Vector3 locationSum = Vector3::ZERO;
+	Vector2 basePositionXZ = Vector2(currentPosition.x, currentPosition.z);
+
+	Vector3 velocitySum = Vector3::ZERO;
+	Vector3 steerDir = Vector3::ZERO;
 
 	int numCloseSwarmers = 0;
-	Vector3 steerDir;
 
 	// apply separation forces =========================================================================================
 	for (int swarmerIndex = 0; swarmerIndex < (int)m_gameState->m_swarmers.size(); swarmerIndex++)
@@ -215,19 +219,31 @@ Vector3 Swarmer::CenterTowardsNeighbors(float deltaSeconds)
 
 		Swarmer* swarmer = m_gameState->m_swarmers[swarmerIndex];
 		Vector3 swarmerPosition = swarmer->m_transform->GetWorldPosition();
-		float distanceToSwarmerSquared = GetDistanceSquared(currentPosition, swarmerPosition);
 
-		if (distanceToSwarmerSquared < g_swarmerMinDistanceToOther * g_swarmerMinDistanceToOther)
+		float distance = GetDistance(currentPosition, swarmerPosition);
+
+		if (distance < g_swarmerMinDistanceToOther)
 		{
-			locationSum += m_gameState->m_swarmers[swarmerIndex]->m_transform->GetWorldPosition();
+			Vector3 displacement = swarmerPosition - currentPosition;
+			displacement.Normalize();
+
+			Vector3 velocity = displacement/distance;
+
+			velocity = displacement / displacement.GetLength();
+			velocity.Normalize();
+
+			velocitySum = velocitySum + velocity;
 			numCloseSwarmers++;
-		}
+		}		
+
+		swarmer = nullptr;
 	}
 
 	if (numCloseSwarmers > 0)
 	{
-		locationSum = locationSum / (float)m_gameState->m_swarmers.size();
-		return SeekTarget(deltaSeconds, locationSum);
+		Vector3 averageVelocity = velocitySum/numCloseSwarmers;
+
+		steerDir = averageVelocity;
 	}
 
 	return steerDir;
@@ -239,8 +255,7 @@ Vector3 Swarmer::SeekTarget(float deltaSeconds, const Vector3& targetPosition)
 	Vector3 desiredDirection = targetPosition - m_transform->GetWorldPosition();
 	desiredDirection.Normalize();
 
-	steerDir = desiredDirection - m_velocity;
-	steerDir *= deltaSeconds * g_swarmerMoveSpeed;
+	steerDir = desiredDirection;
 
 	return steerDir;
 }
