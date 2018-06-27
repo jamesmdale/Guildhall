@@ -1277,11 +1277,13 @@ void Renderer::EnablePointLight(int index, const Vector3& position, const Rgba& 
 	buffer->m_lights[index].m_lightDirectionFactor = 0.f; //0 for point light. (0-1] for directed light
 	buffer->m_lights[index].m_lightInnerAngle = CosDegrees(360.f/2.f); //360 to 360 for light in all directions
 	buffer->m_lights[index].m_lightOuterAngle = CosDegrees(360.f/2.f); //360 to 360 for light in all directions
+	buffer->m_lights[index].m_isShadowCasting = 0.f;
+	buffer->m_lights[index].m_viewProjectionMatrix = Matrix44::IDENTITY;
 
 	buffer = nullptr;
 }
 
-void Renderer::EnableDirectionalLight(int index, const Vector3& position, const Rgba& color, float intensity, const Vector3& attenuationConstants, const Vector3& forward, float directionFactor, float innerAngle, float outerAngle)
+void Renderer::EnableDirectionalLight(int index, const Vector3& position, const Rgba& color, float intensity, const Vector3& attenuationConstants, const Vector3& forward, float directionFactor, float innerAngle, float outerAngle, float isShadowCasting, const Matrix44& viewProjectionMatrix)
 {
 	LightBuffer* buffer = m_lightBuffer->as<LightBuffer>();
 
@@ -1293,6 +1295,8 @@ void Renderer::EnableDirectionalLight(int index, const Vector3& position, const 
 	buffer->m_lights[index].m_lightDirectionFactor = directionFactor; //0 for point light. (0-1] for directed light
 	buffer->m_lights[index].m_lightInnerAngle = CosDegrees(innerAngle/2.f); //360 to 360 for light in all directions
 	buffer->m_lights[index].m_lightOuterAngle = CosDegrees(outerAngle/2.f); //360 to 360 for light in all directions
+	buffer->m_lights[index].m_isShadowCasting = isShadowCasting;
+	buffer->m_lights[index].m_viewProjectionMatrix = viewProjectionMatrix;
 
 	buffer = nullptr;
 }
@@ -1309,11 +1313,13 @@ void Renderer::EnableConeLight(int index, const Vector3& position, Rgba & color,
 	buffer->m_lights[index].m_lightDirectionFactor = directionFactor; //0 for point light. (0-1] for directed light
 	buffer->m_lights[index].m_lightInnerAngle = CosDegrees(innerAngle/2.f); //360 to 360 for light in all directions
 	buffer->m_lights[index].m_lightOuterAngle = CosDegrees(outerAngle/2.f); //360 to 360 for light in all directions
+	buffer->m_lights[index].m_isShadowCasting = 0.f;
+	buffer->m_lights[index].m_viewProjectionMatrix = Matrix44::IDENTITY;
 
 	buffer = nullptr;
 }
 
-void Renderer::EnableLight(int index, const Vector3 & position, const Rgba & color, float intensity, const Vector3 & attenuationConstants, const Vector3 & forward, float directionFactor, float innerAngle, float outerAngle)
+void Renderer::EnableLight(int index, const Vector3 & position, const Rgba & color, float intensity, const Vector3 & attenuationConstants, const Vector3 & forward, float directionFactor, float innerAngle, float outerAngle, float isShadowCasting, const Matrix44& viewProjectionMatrix)
 {
 	LightBuffer* buffer = m_lightBuffer->as<LightBuffer>();
 
@@ -1325,7 +1331,8 @@ void Renderer::EnableLight(int index, const Vector3 & position, const Rgba & col
 	buffer->m_lights[index].m_lightDirectionFactor = directionFactor; //0 for point light. (0-1] for directed light
 	buffer->m_lights[index].m_lightInnerAngle = CosDegrees(innerAngle/2.f); //360 to 360 for light in all directions
 	buffer->m_lights[index].m_lightOuterAngle = CosDegrees(outerAngle/2.f); //360 to 360 for light in all directions
-
+	buffer->m_lights[index].m_isShadowCasting = isShadowCasting;
+	buffer->m_lights[index].m_viewProjectionMatrix = viewProjectionMatrix;
 	buffer = nullptr;
 }
 
@@ -1340,7 +1347,8 @@ void Renderer::EnableLight(int index, const Light& light)
 	buffer->m_lights[index].m_lightDirectionFactor = light.m_lightDirectionFactor; //0 for point light. (0-1] for directed light
 	buffer->m_lights[index].m_lightInnerAngle = CosDegrees(light.m_lightInnerAngle/2.f); //360 to 360 for light in all directions
 	buffer->m_lights[index].m_lightOuterAngle = CosDegrees(light.m_lightOuterAngle/2.f); //360 to 360 for light in all directions
-
+	buffer->m_lights[index].m_isShadowCasting = light.m_isShadowCasting;
+	buffer->m_lights[index].m_viewProjectionMatrix = light.m_viewProjectionMatrix;
 	buffer = nullptr;
 }
 

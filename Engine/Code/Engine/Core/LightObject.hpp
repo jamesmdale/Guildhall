@@ -36,7 +36,7 @@ public:
 		m_light->m_lightOuterAngle = outerAngle;
 	}
 
-	~LightObject();
+	virtual ~LightObject() override;
 
 	virtual void Update(float deltaSeconds) override;
 	void UpdateLightFromWorldTransform();
@@ -47,5 +47,8 @@ public:
 	TODO("Might want to remove this and make lights work regardless of type. (Fill in spot constants and direction in all scenarious)");
 	LightType m_lightType = LIGHT_TYPE_POINT_LIGHT;
 	Light* m_light = nullptr;
+
+	Matrix44 m_viewProjection;
+	Matrix44 m_inverseViewProjection;
 };
 

@@ -19,7 +19,7 @@ public:
 
 public:
 	float m_timeToLive;
-	Light* m_light = nullptr;
+	LightObject* m_lightObject = nullptr;
 	PlayingState* m_gameState = nullptr;
 
 private:

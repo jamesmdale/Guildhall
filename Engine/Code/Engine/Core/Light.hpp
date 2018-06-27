@@ -23,6 +23,14 @@ struct Light
 									 InfiniteLight = (1, 0, 0)
 									 Physical = (0, 0, 1)
 									 Fudged Physical = (0, 1, 0.75)*/
+	
+	//shadow casting features
+	Matrix44 m_viewProjectionMatrix = Matrix44::IDENTITY;
+	
+	//padding for shadow casting
+	Vector3 m_padding = Vector3::ZERO;
+	float m_isShadowCasting = 0.f;
+
 
 	void Disable() { m_colorAndIntensity.w = 0.0f;};
 	void SetToDefault()
@@ -34,5 +42,8 @@ struct Light
 		m_attenuation = Vector3(1.f, 0.f, 0.f); //x + (y * d) + (z * (d * d))	
 		m_lightOuterAngle = 360.f; //360 to 360 for light in all directions
 		m_lightForward = Vector3::FORWARD;
+		Matrix44 m_viewProjectionMatrix = Matrix44::IDENTITY;
+		Vector3 m_padding = Vector3::ZERO;
+		float m_isShadowCasting = 0.f;
 	}
 };

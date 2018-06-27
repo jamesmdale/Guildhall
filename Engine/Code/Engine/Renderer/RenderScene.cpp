@@ -1,5 +1,5 @@
 #include "Engine\Renderer\RenderScene.hpp"
-
+#include "Engine\Core\LightObject.hpp"
 
 
 RenderScene::RenderScene()
@@ -35,7 +35,7 @@ void RenderScene::RemoveCamera(Camera* cameraToRemove)
 	}
 }
 
-void RenderScene::RemoveLight(Light* lightToRemove)
+void RenderScene::RemoveLightObject(LightObject* lightToRemove)
 {
 	for (int lightIndex = 0; lightIndex < (int)m_lights.size(); lightIndex++)
 	{
@@ -58,23 +58,23 @@ std::vector<Light*> RenderScene::GetMostContributingLights(Vector3 renderablePos
 	/*if((int)m_lights.size() > MAX_LIGHTS)
 	{*/
 		//calculate attenuation based on renderable position foreach light
-		for (Light* light : m_lights)
+		for (LightObject* lightObject : m_lights)
 		{
-			Vector3 lightDirection = light->m_lightPosition - renderablePosition;
+			Vector3 lightDirection = lightObject->m_light->m_lightPosition - renderablePosition;
 			float distanceToLight = lightDirection.GetLength();
 
-			Vector3 lightForward = light->m_lightForward.GetNormalized();
+			Vector3 lightForward = lightObject->m_light->m_lightForward.GetNormalized();
 
 			//float dotAngle = DotProduct(lightForward, -1 * lightDirection);
-			float lightIntensity = light->m_colorAndIntensity.w;
+			float lightIntensity = lightObject->m_light->m_colorAndIntensity.w;
 
 			//float angleAttenuation = GLSLSmoothStep(light->m_lightOuterAngle, light->m_lightInnerAngle, dotAngle);
 			//angleAttenuation = ClampFloatZeroToOne(angleAttenuation);
 		
 			//lightIntensity = lightIntensity * angleAttenuation;
-			lightDirection = Interpolate(lightDirection, -1.f * lightForward, light->m_lightDirectionFactor);
+			lightDirection = Interpolate(lightDirection, -1.f * lightForward, lightObject->m_light->m_lightDirectionFactor);
 
-			float attenuation = lightIntensity / (light->m_attenuation.x + (light->m_attenuation.y * distanceToLight) + (light->m_attenuation.z * distanceToLight * distanceToLight));
+			float attenuation = lightIntensity / (lightObject->m_light->m_attenuation.x + (lightObject->m_light->m_attenuation.y * distanceToLight) + (lightObject->m_light->m_attenuation.z * distanceToLight * distanceToLight));
 		
 			lightAttenuations.push_back(attenuation);
 		}
@@ -96,7 +96,7 @@ std::vector<Light*> RenderScene::GetMostContributingLights(Vector3 renderablePos
 
 	for(int lightIndex = 0; lightIndex < numContributingLights; lightIndex++)
 	{
-		contributingLights.push_back(m_lights[lightIndex]);
+		contributingLights.push_back(m_lights[lightIndex]->m_light);
 	}
 
 	return contributingLights;

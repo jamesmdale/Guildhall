@@ -1,6 +1,6 @@
 #include "Engine\Renderer\ForwardRenderingPath.hpp"
 #include "Engine\Renderer\Renderer.hpp"
-#include "Engine\Core\Light.hpp"
+#include "Engine\Core\LightObject.hpp"
 
 
 ForwardRenderingPath::ForwardRenderingPath()
@@ -14,6 +14,14 @@ ForwardRenderingPath::~ForwardRenderingPath()
 
 void ForwardRenderingPath::Render(RenderScene* scene)
 {
+	for (int lightIndex = 0; lightIndex < (int)scene->m_lights.size(); ++lightIndex)
+	{
+		if (scene->m_lights[lightIndex]->m_light->m_isShadowCasting)
+		{
+			RenderShadowCastingObjectsForLight(scene->m_lights[lightIndex], scene);
+		}
+	}
+
 	for(Camera* camera : scene->m_cameras)
 	{
 		RenderSceneForCamera(camera, scene);
@@ -153,4 +161,11 @@ void ForwardRenderingPath::SortDrawsByCameraDistance(std::vector<DrawCallData> o
 			}
 		}
 	}
+}
+
+void ForwardRenderingPath::RenderShadowCastingObjectsForLight(LightObject* light, RenderScene* scene)
+{
+	Camera camera;
+
+	//switch(light->)
 }

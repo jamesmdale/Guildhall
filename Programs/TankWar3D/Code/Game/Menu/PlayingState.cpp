@@ -69,7 +69,7 @@ void PlayingState::Initialize()
 	directionalLight->UpdateLightFromWorldTransform();
 
 	//add light to lists
-	m_renderScene->AddLight(directionalLight->m_light);
+	m_renderScene->AddLightObject(directionalLight);
 
 	for (int renderableIndex = 0; renderableIndex < (int)directionalLight->m_renderables.size(); ++renderableIndex)
 	{
@@ -375,6 +375,7 @@ void PlayingState::SpawnBullet(const Vector3 & startingPosition, const Vector3& 
 	Rgba bulletTint = Rgba::LIGHT_RED_TRANSPARENT;
 
 	bullet->m_renderScene = m_renderScene;
+	bullet->m_lightObject->m_renderScene = m_renderScene;
 
 	//create bullet mesh and material
 	meshBuilder.CreateStarQuads3D(Vector3::ZERO, Vector3(1.f, 1.f, 3.f), Rgba::WHITE);	
@@ -384,7 +385,7 @@ void PlayingState::SpawnBullet(const Vector3 & startingPosition, const Vector3& 
 
 	//add light to lists
 	m_renderScene->AddRenderable(bulletRenderable);
-	m_renderScene->AddLight(bullet->m_light);
+	m_renderScene->AddLightObject(bullet->m_lightObject);
 
 	AudioSystem::GetInstance()->PlaySoundFromGroup("laser");
 

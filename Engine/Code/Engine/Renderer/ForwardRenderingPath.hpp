@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine\Renderer\RenderScene.hpp"
+#include "Engine\Core\LightObject.hpp"
 #include <vector>
 
 /************************************************************************/
@@ -28,6 +29,7 @@ public:
 	void SortDrawsBySortOrder(std::vector<DrawCallData> outDrawCalls);
 	void SortDrawsByRenderQueue(std::vector<DrawCallData> outDrawCalls);
 	void SortDrawsByCameraDistance(std::vector<DrawCallData> outDrawCalls, const Vector3& cameraPosition);
+	void RenderShadowCastingObjectsForLight(LightObject* light, RenderScene * scene);
 };
 
 

@@ -6,18 +6,19 @@
 
 LightObject::LightObject()
 {
-
+	m_light = new Light();
+	m_light->SetToDefault();
 }
 
 LightObject::~LightObject()
 {
-	m_renderScene->RemoveLight(m_light);
-
 	if (m_light != nullptr)
 	{
 		delete(m_light);
 		m_light = nullptr;
 	}
+
+	m_renderScene->RemoveLightObject(this);	
 }
 
 void LightObject::Update(float deltaSeconds)

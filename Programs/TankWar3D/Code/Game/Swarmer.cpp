@@ -79,6 +79,18 @@ void Swarmer::UpdateSwarmerMovement(float deltaSeconds)
 
 	m_transform->SetLocalPosition(position + m_velocity);
 	m_transform->SetLocalPositionY(heightFromTerrain + 1.f);
+
+	Matrix44 swarmerWorld = m_transform->GetWorldMatrix();
+
+	//rotate toward
+	Matrix44 swarmerLookAt = swarmerWorld.LookAt(swarmerWorld.GetPosition(), swarmerWorld.GetPosition() + m_velocity, swarmerWorld.GetUp());
+
+	Matrix44 lerpLookAt = swarmerWorld.TurnToward(swarmerLookAt, 0.01f);
+
+	m_transform->SetFromMatrix(lerpLookAt);
+	m_transform->SetLocalPosition(swarmerWorld.GetPosition());
+
+	
 }
 
 void Swarmer::SwarmerToTankCollision()

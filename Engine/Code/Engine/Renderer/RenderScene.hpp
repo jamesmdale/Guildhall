@@ -3,10 +3,11 @@
 #include "Engine\Camera\Camera.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include <vector>
-#include "Engine\Core\Light.hpp"
 #include "Engine\Math\Vector3.hpp"
+#include "Engine\Core\Light.hpp"
 
 
+class LightObject;
 class RenderScene
 {
 public:
@@ -15,11 +16,11 @@ public:
 
 	void AddRenderable(Renderable* renderable){m_renderables.push_back(renderable);}
 	void AddCamera(Camera* camera){m_cameras.push_back(camera);}
-	void AddLight(Light* light){m_lights.push_back(light);}
+	void AddLightObject(LightObject* light){m_lights.push_back(light);}
 
 	void RemoveRenderable(Renderable* renderableToRemove);
 	void RemoveCamera(Camera* cameraToRemove);
-	void RemoveLight(Light* lightToRemove);
+	void RemoveLightObject(LightObject* lightToRemove);
 
 public:
 	//max of MAX_LIGHTS
@@ -27,6 +28,6 @@ public:
 
 	std::vector<Renderable*> m_renderables;
 	std::vector<Camera*> m_cameras;
-	std::vector<Light*> m_lights;
+	std::vector<LightObject*> m_lights;
 };
 

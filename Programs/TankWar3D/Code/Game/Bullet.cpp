@@ -18,24 +18,23 @@ Bullet::Bullet(const Vector3& startingPosition, const Vector3& startingRotation)
 
 	Rgba lightColor = Rgba::RED;
 
-	m_light = new Light();
-	m_light->m_attenuation = Vector3::DEFAULT_LIGHT_ATTENUATION;
+	m_lightObject = new LightObject();
+	m_lightObject->m_renderScene = m_renderScene;
+	m_lightObject->m_light->m_attenuation = Vector3::DEFAULT_LIGHT_ATTENUATION;
 
 	Rgba defaultLightColor = Rgba::RED;
-	m_light->m_colorAndIntensity = Rgba::ConvertToVector4(defaultLightColor);
-	m_light->m_colorAndIntensity.w = defaultLightIntensity;
+	m_lightObject->m_light->m_colorAndIntensity = Rgba::ConvertToVector4(defaultLightColor);
+	m_lightObject->m_light->m_colorAndIntensity.w = defaultLightIntensity;
 
 	UpdateLightDataFromWorldTransform();
 }
 
 Bullet::~Bullet()
 {
-	m_renderScene->RemoveLight(m_light);
-
-	if (m_light != nullptr)
+	if (m_lightObject != nullptr)
 	{
-		delete(m_light);
-		m_light = nullptr;
+		delete(m_lightObject);
+		m_lightObject = nullptr;
 	}
 
 }
@@ -97,11 +96,11 @@ void Bullet::Update(float deltaSeconds)
 
 void Bullet::UpdateLightDataFromWorldTransform()
 {
-	m_light->m_lightForward = m_transform->GetWorldForward();
-	m_light->m_lightPosition = m_transform->GetWorldPosition();
+	m_lightObject->m_light->m_lightForward = m_transform->GetWorldForward();
+	m_lightObject->m_light->m_lightPosition = m_transform->GetWorldPosition();
 }
 
 Rgba Bullet::GetLightColor()
 {
-	return Rgba(m_light->m_colorAndIntensity.x, m_light->m_colorAndIntensity.y, m_light->m_colorAndIntensity.z, 1.f);
+	return Rgba(m_lightObject->m_light->m_colorAndIntensity.x, m_lightObject->m_light->m_colorAndIntensity.y, m_lightObject->m_light->m_colorAndIntensity.z, 1.f);
 }

@@ -35,7 +35,11 @@ struct Light
 
    vec3 forward;  
    float outerAngle;
+
+   mat4 viewProjection;
    
+   vec3 padding;
+   float isShadowCasting;   
 }; 
 
 //--------------------------------------------------------------------------------------

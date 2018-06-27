@@ -28,8 +28,6 @@ class Shader;
 struct RenderState; 
 class Material;
 
-
-
 struct LightBuffer
 {
 	Vector4 m_ambientColorAndIntensity  = Vector4(1.f, 1.f, 1.f, 0.25f);  //r, g, b, strength
@@ -233,11 +231,11 @@ public:
 	void DisableAllLights();
 	void ResetSpecularBuffer();
 	void EnablePointLight(int index, const Vector3& position, const Rgba& color, float intensity = 1.0f, const Vector3& attenuationConstants = Vector3(0.f, 0.f, 1.f));
-	void EnableDirectionalLight(int index, const Vector3& position, const Rgba& color, float intensity = 1.0f, const Vector3& attenuationConstants = Vector3(0.f, 0.f, 1.f), const Vector3& forward = Vector3::FORWARD, float directionFactor = 1.f, float innerAngle = 360.f, float outerAngle = 360.f);
+	void EnableDirectionalLight(int index, const Vector3& position, const Rgba& color, float intensity = 1.0f, const Vector3& attenuationConstants = Vector3(0.f, 0.f, 1.f), const Vector3& forward = Vector3::FORWARD, float directionFactor = 1.f, float innerAngle = 360.f, float outerAngle = 360.f, float isShadowCasting = 0.f, const Matrix44& viewProjection = Matrix44::IDENTITY);
 	void EnableConeLight(int index, const Vector3& position, Rgba& color, float intensity = 1.0f, const Vector3& attenuationConstants = Vector3(0.f, 0.f, 1.f), const Vector3& forward = Vector3::FORWARD, float directionFactor = 1.f, float innerAngle = 360.f, float outerAngle = 360.f);
 	
 	//enable light regardless of type -----------------------------------------------------------------------------------------------------------------------
-	void EnableLight(int index, const Vector3& position, const Rgba& color, float intensity = 1.0f, const Vector3& attenuationConstants = Vector3(0.f, 0.f, 1.f), const Vector3& forward = Vector3::FORWARD, float directionFactor = 1.f, float innerAngle = 360.f, float outerAngle = 360.f);
+	void EnableLight(int index, const Vector3& position, const Rgba& color, float intensity = 1.0f, const Vector3& attenuationConstants = Vector3(0.f, 0.f, 1.f), const Vector3& forward = Vector3::FORWARD, float directionFactor = 1.f, float innerAngle = 360.f, float outerAngle = 360.f, float isShadowCasting = 0.f, const Matrix44& viewProjection = Matrix44::IDENTITY);
 	void EnableLight(int index, const Light& light);
 	void SetLightBufferFromArray(std::vector<Light*> lights);
 
