@@ -366,14 +366,18 @@ Matrix44 Matrix44::TurnToward(Matrix44& target, float maxTurnAngle)
 	inner = ClampFloat( inner, -1.0f, 1.0f ); 
 	float theta = AcosfAsDegrees( trace - 1.0f, 1.0f); 
 
-	float t = GetMinFloat( theta / maxTurnAngle, 1.0f );
+	float t = GetMinFloat( maxTurnAngle/theta, 1.0f );
+
+	//handles infinity condition
+	if (isnan(t))
+	{
+		t = 0.1f;
+	}
 
 	Matrix44 finalMatrix = SphericalInterpolateMatrix( *this, target, t ); 
 	finalMatrix.SetTranslation(this->GetPosition());
 
-	return finalMatrix;
-
-	
+	return finalMatrix;	
 }
 
 // Producers
@@ -434,6 +438,26 @@ Matrix44 Matrix44::MakeOrtho2D( const Vector2& bottomLeft, const Vector2& topRig
 
 	return *orthoMatrix;
 }
+
+Matrix44 Matrix44::MakeOrtho3D(const Vector3& center, const Vector2& dimensions, float nearPlane, float farPlane)
+{
+	Matrix44 orthoMatrix;
+
+	Vector2 topRight = Vector2(center.x + (dimensions.x * 0.5f), center.y + (dimensions.y * 0.5f));
+	Vector2 bottomLeft = Vector2(center.x - (dimensions.x * 0.5f), center.y - (dimensions.y * 0.5f));
+
+	orthoMatrix.Tx = (-1 *((topRight.x + bottomLeft.x)/ (topRight.x - bottomLeft.x)));
+	orthoMatrix.Ty = (-1 *((topRight.y + bottomLeft.y)/ (topRight.y - bottomLeft.y)));
+	orthoMatrix.Tz = -1*(farPlane + nearPlane)/(farPlane - nearPlane);
+	
+	orthoMatrix.Ix = 2/(topRight.x - bottomLeft.x);
+	orthoMatrix.Jy = 2/(topRight.y - bottomLeft.y);
+	orthoMatrix.Kz = 2/(farPlane - nearPlane);
+
+	return orthoMatrix;
+}
+
+
 
 Matrix44 Matrix44::MakeTranslation3D( const Vector3& translation )
 {
@@ -585,7 +609,7 @@ Matrix44 Matrix44::LookAt(const Vector3& position, const Vector3& target, const 
 	float yAxisDot = -(DotProduct(yAxis, position));
 	float zAxisDot = -(DotProduct(zAxis, position));*/
 
-	Matrix44 lookAtMatrix = Matrix44(Vector4(xAxis, 0.f), Vector4(yAxis, 0.f), Vector4(zAxis, 0.f), Vector4::IDENTITY_POINT_TRANSLATION);
+	Matrix44 lookAtMatrix = Matrix44(Vector4(xAxis, 0.f), Vector4(yAxis, 0.f), Vector4(zAxis, 0.f), Vector4(position, 1.f));
 
 	return lookAtMatrix;
 }
@@ -805,6 +829,11 @@ Vector3 Matrix44::GetRotation() const
 	}
 
 	return Vector3(xDegrees, yDegrees, zDegrees);
+}
+
+Vector3 Matrix44::GetScale() const
+{
+	return Vector3( GetIBasis().GetLength(), GetJBasis().GetLength(), GetKBasis().GetLength());	
 }
 
 Vector3 Matrix44::GetRight() const

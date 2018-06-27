@@ -124,3 +124,11 @@ Matrix44 Camera::GetView()
 	m_viewMatrix = m_transform->GetWorldMatrix().InvertFastToNew();
 	return m_viewMatrix;
 }
+
+Matrix44 Camera::GetViewProjection()
+{
+	Matrix44 viewProjection = m_viewMatrix;
+	viewProjection.Append(m_projMatrix);
+
+	return viewProjection;
+}

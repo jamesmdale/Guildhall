@@ -215,7 +215,7 @@ void Tank::UpdateFromInput(float deltaSeconds)
 
 	if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 	{
-		Matrix44 turretToWorld = m_turret->m_transform->GetWorldMatrix();
+		Matrix44 turretToWorld = m_turret->m_transform->m_transformMatrix;
 		m_gameState->SpawnBullet(m_turret->m_transform->GetWorldPosition(), turretToWorld.GetRotation());
 	}
 
@@ -232,23 +232,39 @@ Vector3 Tank::UpdateTarget(float deltaSeconds)
 {
 	RayCastHit3 raycastResult = RaycastFromCamera(deltaSeconds);
 
-	// update tank turret to look at to result location =========================================================================================
-	Matrix44 turretWorld = m_turret->m_transform->GetWorldMatrix();
-	Vector3 turretWorldUp = turretWorld.GetUp();
+	Matrix44 tankToWorld = m_tankBodyTransform->GetWorldMatrix();
 
-	Matrix44 turretLookAt = turretWorld.LookAt(turretWorld.GetPosition(), raycastResult.position, turretWorldUp);
+	Matrix44 worldToTank = m_tankBodyTransform->GetWorldMatrix().GetInverse();
+	Vector3 targetInTankSpace = worldToTank.TransformPosition3D(raycastResult.position);
 
-	Matrix44 lerpLookAt = turretWorld.TurnToward(turretLookAt, 1.f);
+	Matrix44 lookAtInTankSpace = Matrix44::LookAt(m_turret->m_transform->GetLocalPosition(), targetInTankSpace, Vector3::UP);
+	
+	Vector3 rotation = Vector3(lookAtInTankSpace.GetRotation().x, lookAtInTankSpace.GetRotation().y, 0.f);
+	m_turret->m_transform->SetFromMatrix(lookAtInTankSpace);
+	//m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
 
-	Matrix44 worldToTank = m_transform->GetWorldMatrix().GetInverse();
-	worldToTank.Append(lerpLookAt);
 
-	Vector3 rotation = Vector3(worldToTank.GetRotation().x, worldToTank.GetRotation().y, 0.f);
-	m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
+
+	//// update tank turret to look at to result location =========================================================================================
+	//Matrix44 turretWorld = m_turret->m_transform->GetWorldMatrix();
+	//Vector3 turretWorldUp = turretWorld.GetUp();
+
+	//Matrix44 turretLookAt = turretWorld.LookAt(turretWorld.GetPosition(), raycastResult.position, m_transform->GetWorldUp());
+
+	////Matrix44 lerpLookAt = turretWorld.TurnToward(turretLookAt, 0.1f);
+
+	//Matrix44 worldToTank = m_transform->GetWorldMatrix().GetInverse();
+
+	////worldToTank.Append(lerpLookAt);
+	//worldToTank.Append(turretLookAt);
+
+
+	//Vector3 rotation = Vector3(worldToTank.GetRotation().x, worldToTank.GetRotation().y, 0.f);
+	//m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
 
 
 	// render debug position =========================================================================================
-	Vector3 raycastRenderStartPosition = m_transform->GetLocalPosition() + (m_transform->GetWorldUp());
+	//Vector3 raycastRenderStartPosition = m_transform->GetLocalPosition() + (m_transform->GetWorldUp());
 
 	//turret forward debug line
 	//DebugRender::GetInstance()->CreateDebugLine(m_turret->m_transform->GetWorldPosition(), raycastResult.position, Rgba::ORANGE, Rgba::ORANGE, 0.f, 1, m_camera);
@@ -337,8 +353,12 @@ void Tank::UpdateTrajectoryRenderable(const Vector3& target)
 
 	MeshBuilder meshBuilder;
 
+	//Vector3 currentPos = m_turret->m_transform->GetWorldPosition();
+	Vector3 currentPos = m_transform->GetWorldPosition();
+	DebugRender::GetInstance()->CreateDebugLine(currentPos + Vector3(0.f, 5.f, 0.f), target, Rgba::WHITE);
+
 	meshBuilder.CreateLine(m_turret->m_transform->GetWorldPosition(), target, Rgba::RED);
-	meshBuilder.CreateCube(target, Vector3::ONE, Rgba::RED);
+	//meshBuilder.CreateCube(target, Vector3::ONE, Rgba::RED);
 	m_trajectory->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
 
 	m_renderScene->AddRenderable(m_trajectory);

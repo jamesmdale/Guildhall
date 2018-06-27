@@ -165,7 +165,25 @@ void ForwardRenderingPath::SortDrawsByCameraDistance(std::vector<DrawCallData> o
 
 void ForwardRenderingPath::RenderShadowCastingObjectsForLight(LightObject* light, RenderScene* scene)
 {
-	Camera camera;
+	Renderer* renderer = Renderer::GetInstance();
+	Camera* camera = new Camera();
 
-	//switch(light->)
+	switch (light->m_lightType)
+	{
+		case LIGHT_TYPE_DIRECTIONAL_LIGHT:
+//			camera.SetProjectionOrtho(256.f, 256.f, -100.f, 100.f);
+			break;
+		default:
+			GUARANTEE_OR_DIE(false, "UNSUPPORT SHADOW LIGHT TYPE");
+			break;
+	}
+
+	camera->m_transform->SetFromMatrix(light->m_transform->GetWorldMatrix());
+
+	camera->SetDepthStencilTarget(renderer->CreateDepthStencilTarget(1024, 1024));
+	renderer->SetCamera(camera);
+	light->m_light->m_viewProjectionMatrix = camera->GetViewProjection();
+
+	renderer = nullptr;
+	camera = nullptr;
 }

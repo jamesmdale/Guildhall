@@ -32,6 +32,7 @@ public:
 	void SetView(Matrix44 view);
 
 	Matrix44 GetView();
+	Matrix44 GetViewProjection();
 
 public:
 	//default all to identity

@@ -60,6 +60,8 @@ public:
 	static Matrix44 MakeScale2D( float scaleX, float scaleY );
 	static Matrix44 MakeOrtho2D( const Vector2& bottomLeft, const Vector2& topRight );
 
+	Matrix44 MakeOrtho3D(const Vector3& center, const Vector2& dimensions, float near, float);
+
 	static Matrix44 MakeTranslation3D( const Vector3& translation );
 	static Matrix44 MakeRotationAroundX3D(float rotationDegreesAroundX);
 	static Matrix44 MakeRotationAroundY3D(float rotationDegreesAroundY);
@@ -89,6 +91,7 @@ public:
 	Vector3 GetPosition() const {return Vector3(Tx, Ty, Tz);};
 	Vector3 GetTranslation() const {return GetPosition();};
 	Vector3 GetRotation() const;
+	Vector3 GetScale() const;
 
 	Vector3 GetRight() const;
 	Vector3 GetUp() const;

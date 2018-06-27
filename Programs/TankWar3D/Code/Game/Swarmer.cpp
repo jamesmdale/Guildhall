@@ -87,10 +87,8 @@ void Swarmer::UpdateSwarmerMovement(float deltaSeconds)
 
 	Matrix44 lerpLookAt = swarmerWorld.TurnToward(swarmerLookAt, 0.01f);
 
-	m_transform->SetFromMatrix(lerpLookAt);
-	m_transform->SetLocalPosition(swarmerWorld.GetPosition());
-
-	
+	m_transform->SetRotationFromMatrix(lerpLookAt);
+	m_transform->SetLocalPosition(swarmerWorld.GetPosition());	
 }
 
 void Swarmer::SwarmerToTankCollision()

@@ -23,6 +23,7 @@ public:
 	void SetLocalScale(Vector3 scale);
 
 	//matrix setters
+	void SetRotationFromMatrix(const Matrix44& matrix);
 	void SetFromMatrix(const Matrix44& matrix);
 	void SetIBasis(const Vector4& iBasis);
 	void SetJBasis(const Vector4& jBasis);
