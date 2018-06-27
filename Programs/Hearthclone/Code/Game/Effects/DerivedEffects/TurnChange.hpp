@@ -21,6 +21,6 @@ public:
 	ePlayerType m_toPlayerType = NUM_PLAYER_TYPES;
 	float m_totalEffectTime;
 	RenderScene2D* m_renderScene = nullptr;
-	Renderable2D* m_renderable = nullptr;
+	Widget* m_turnChangeWidget = nullptr;
 };
 

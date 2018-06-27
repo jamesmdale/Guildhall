@@ -18,15 +18,16 @@ TurnChange::TurnChange(ePlayerType toPlayerType, float totalEffectTime, RenderSc
 
 TurnChange::~TurnChange() 
 {
-	delete(m_renderable);
-	m_renderable = nullptr;
+	delete(m_turnChangeWidget);
+	m_turnChangeWidget = nullptr;
 
 	m_renderScene = nullptr;
 }
 
 void TurnChange::InitializeTurnRenderable()
 {
-	m_renderable = new Renderable2D();
+	m_turnChangeWidget = new Widget();
+	m_turnChangeWidget->m_renderScene = m_renderScene;
 
 	Renderer* theRenderer = Renderer::GetInstance();
 	Window* theWindow = Window::GetInstance();
@@ -42,13 +43,17 @@ void TurnChange::InitializeTurnRenderable()
 	else
 		text = "ENEMY TURN";
 
+	Renderable2D* renderable = new Renderable2D();
+
 	mb.CreateText2DInAABB2(windowCenter, textBoxSize, 4.f / 3.f, text, Rgba::WHITE);	
 	Material* textInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
 	textInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
 
-	m_renderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), textInstance);
-	m_renderable->m_widgetSortLayer = 999;
-	//m_renderScene->AddRenderable(m_renderable);
+	renderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), textInstance);
+	renderable->m_widgetSortLayer = 999;
+
+	m_turnChangeWidget->m_renderables.push_back(renderable);
+	m_renderScene->AddRenderable(renderable);
 
 	textInstance = nullptr;
 	theWindow = nullptr;

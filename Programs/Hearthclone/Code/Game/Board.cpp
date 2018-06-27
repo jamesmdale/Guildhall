@@ -375,9 +375,19 @@ void Board::RefreshPlayerManaWidget()
 	int enemyMaxManaCount = m_playingState->m_enemyPlayer->m_maxManaCount;
 
 	Vector2 quadSizeHalved = m_playerManaQuad.GetDimensions() * 0.5f;
+	Vector2 quadSizeThird = m_playerManaQuad.GetDimensions() * 0.75f;
 
-	mb.CreateText2DInAABB2(m_playerManaQuad.GetCenter(), m_playerManaQuad.GetDimensions() - quadSizeHalved, 1.f, Stringf("%i/%i", playerManaCount, playerMaxManaCount), Rgba::WHITE);
-	mb.CreateText2DInAABB2(m_enemyManaQuad.GetCenter(), m_enemyManaQuad.GetDimensions() - quadSizeHalved, 1.f, Stringf("%i/%i", enemyManaCount, enemyMaxManaCount), Rgba::WHITE);
+	if(playerMaxManaCount != 10)
+		mb.CreateText2DInAABB2(m_playerManaQuad.GetCenter(), m_playerManaQuad.GetDimensions() - quadSizeHalved, 1.f, Stringf("%i/%i", playerManaCount, playerMaxManaCount), Rgba::WHITE);
+	else
+		mb.CreateText2DInAABB2(m_playerManaQuad.GetCenter(), m_playerManaQuad.GetDimensions() - quadSizeThird, 1.f, Stringf("%i", playerManaCount), Rgba::WHITE);
+
+	if(enemyMaxManaCount != 10)
+		mb.CreateText2DInAABB2(m_enemyManaQuad.GetCenter(), m_enemyManaQuad.GetDimensions() - quadSizeHalved, 1.f, Stringf("%i/%i", enemyManaCount, enemyMaxManaCount), Rgba::WHITE);
+	else
+		mb.CreateText2DInAABB2(m_enemyManaQuad.GetCenter(), m_enemyManaQuad.GetDimensions() - quadSizeThird, 1.f, Stringf("%i", enemyManaCount), Rgba::WHITE);
+
+
 	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
 	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
 

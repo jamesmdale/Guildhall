@@ -53,6 +53,7 @@ void DrawAction(const std::map<std::string, std::string>& parameters)
 		handQuad = gameState->m_gameBoard->m_playerHandQuad;
 	}
 
+	//process each draw
 	for (int drawIndex = 0; drawIndex < drawAmount; ++drawIndex)
 	{
 		//add card to hand. remove card from deck
