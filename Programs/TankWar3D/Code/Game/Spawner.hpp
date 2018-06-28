@@ -15,7 +15,7 @@ public:
 	virtual void Update(float deltaSeconds) override;
 	void Initialize();
 
-	Swarmer* SpawnSwarmer();
+	void SpawnSwarmer();
 
 	inline bool IsAlive(){return m_health > 0 ? true : false;}
 

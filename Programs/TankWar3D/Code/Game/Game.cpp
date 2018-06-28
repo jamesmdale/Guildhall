@@ -90,6 +90,7 @@ void Game::Initialize()
 
 	m_uiCamera = new Camera();
 	m_uiCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
+	//m_uiCamera->SetDepthStencilTarget(theRenderer->GetDefaultDepthStencilTarget());
 	m_uiCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
 	m_uiCamera->SetView(Matrix44::IDENTITY);
 

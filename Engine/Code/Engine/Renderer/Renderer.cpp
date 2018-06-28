@@ -998,6 +998,7 @@ void Renderer::SetCamera(Camera* camera)
 
 	camera->GetView();
 	camera->m_frameBufferOutput.Finalize(); // make sure the framebuffer is finished being setup; 
+    glViewport(0, 0, camera->m_viewPortDimensions.x, camera->m_viewPortDimensions.y); //set dimensions of view port
 	m_currentCamera = camera;
 }
 

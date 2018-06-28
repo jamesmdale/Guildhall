@@ -111,6 +111,7 @@ void Tank::Update(float deltaSeconds)
 	
 	// update position from terrain =========================================================================================
 	Vector3 basePosition = m_transform->GetWorldPosition();
+	Vector3 forward = m_transform->GetWorldForward();
 
 	//get height and normal from terrain
 	float heightFromTerrain = m_gameState->m_terrain->GetHeightAtPositionXZ(Vector2(basePosition.x, basePosition.z)) + m_baseDimensions.y;	
@@ -234,16 +235,16 @@ Vector3 Tank::UpdateTarget(float deltaSeconds)
 
 	Matrix44 tankToWorld = m_tankBodyTransform->GetWorldMatrix();
 
-	Matrix44 worldToTank = m_tankBodyTransform->GetWorldMatrix().GetInverse();
+	Matrix44 worldToTank = m_tankBodyTransform->GetWorldMatrix().GetInverse()	;
 	Vector3 targetInTankSpace = worldToTank.TransformPosition3D(raycastResult.position);
 
 	Matrix44 lookAtInTankSpace = Matrix44::LookAt(m_turret->m_transform->GetLocalPosition(), targetInTankSpace, Vector3::UP);
+	Matrix44 lerpLookAt = worldToTank.TurnToward(lookAtInTankSpace, 0.001f);
+
 	
 	Vector3 rotation = Vector3(lookAtInTankSpace.GetRotation().x, lookAtInTankSpace.GetRotation().y, 0.f);
 	m_turret->m_transform->SetFromMatrix(lookAtInTankSpace);
 	//m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
-
-
 
 	//// update tank turret to look at to result location =========================================================================================
 	//Matrix44 turretWorld = m_turret->m_transform->GetWorldMatrix();

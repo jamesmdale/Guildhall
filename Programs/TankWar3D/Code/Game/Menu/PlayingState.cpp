@@ -51,13 +51,14 @@ void PlayingState::Initialize()
 	Rgba lightColor = Rgba::WHITE;
 	LightObject* directionalLight = new LightObject("directionalLight", LIGHT_TYPE_DIRECTIONAL_LIGHT, lightColor, 0.8f, Vector3(1.f, 0.f, 0.f), 1.f, 360.f, 360.f);
 
-	directionalLight->m_transform->TranslatePosition(Vector3(500.f, 50.f, 0.f));
+	directionalLight->m_transform->TranslatePosition(Vector3(-10.f, 25.f, -10.f));
 	directionalLight->m_renderScene = m_renderScene;
 
 	Renderable* lightRenderable = new Renderable();
 	directionalLight->m_transform->AddChildTransform(lightRenderable->m_transform);
+	directionalLight->m_light->m_isShadowCasting = true;
 
-	meshBuilder.CreateUVSphere( Vector3::ZERO, 20.f, 15, 15, Rgba::WHITE);	
+	meshBuilder.CreateUVSphere( Vector3::ZERO, 5.f, 5.f, 5.f, Rgba::WHITE);	
 	lightRenderable->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
 	lightRenderable->SetMaterial(new Material());
 	lightRenderable->GetMaterial()->SetShader(theRenderer->m_defaultShader);
@@ -67,6 +68,8 @@ void PlayingState::Initialize()
 	directionalLight->AddRenderable(lightRenderable);
 	directionalLight->m_transform->SetLocalRotation(Vector3(30.f, -90.f, 0.f));
 	directionalLight->UpdateLightFromWorldTransform();
+
+	lightRenderable = nullptr;
 
 	//add light to lists
 	m_renderScene->AddLightObject(directionalLight);

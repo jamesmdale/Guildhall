@@ -2,6 +2,8 @@
 #include "Engine\Renderer\RenderScene.hpp"
 #include "Engine\Core\LightObject.hpp"
 #include <vector>
+#include "Engine\Renderer\Texture.hpp"
+#include "Engine\Renderer\Sampler.hpp"
 
 /************************************************************************/
 /* Draw Call Data                                                       */
@@ -30,6 +32,14 @@ public:
 	void SortDrawsByRenderQueue(std::vector<DrawCallData> outDrawCalls);
 	void SortDrawsByCameraDistance(std::vector<DrawCallData> outDrawCalls, const Vector3& cameraPosition);
 	void RenderShadowCastingObjectsForLight(LightObject* light, RenderScene * scene);
+
+public:
+
+	//members used in shadow maps
+	Camera* m_shadowCamera = nullptr;
+	Sampler* m_shadowSampler = nullptr;
+	Texture* m_shadowColorTarget = nullptr;
+	Texture* m_shadowDepthTarget = nullptr;
 };
 
 

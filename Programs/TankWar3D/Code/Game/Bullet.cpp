@@ -31,12 +31,8 @@ Bullet::Bullet(const Vector3& startingPosition, const Vector3& startingRotation)
 
 Bullet::~Bullet()
 {
-	if (m_lightObject != nullptr)
-	{
-		delete(m_lightObject);
-		m_lightObject = nullptr;
-	}
-
+	delete(m_lightObject);
+	m_lightObject = nullptr;	
 }
 
 void Bullet::Update(float deltaSeconds)

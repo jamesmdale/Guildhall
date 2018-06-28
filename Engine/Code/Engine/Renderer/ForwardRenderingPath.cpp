@@ -2,9 +2,16 @@
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Core\LightObject.hpp"
 
-
 ForwardRenderingPath::ForwardRenderingPath()
 {
+	m_shadowCamera = new Camera();
+	m_shadowCamera->m_viewPortDimensions = Vector2(2048.f, 2048.f);
+	m_shadowColorTarget = Renderer::GetInstance()->CreateRenderTarget(2048, 2048, TEXTURE_FORMAT_RGBA8);
+	m_shadowDepthTarget = Renderer::GetInstance()->CreateRenderTarget(2048, 2048, TEXTURE_FORMAT_D24S8);
+
+	m_shadowCamera->SetColorTarget(m_shadowColorTarget);
+	m_shadowCamera->SetDepthStencilTarget(m_shadowDepthTarget);
+	//sampler init
 }
 
 
@@ -166,24 +173,44 @@ void ForwardRenderingPath::SortDrawsByCameraDistance(std::vector<DrawCallData> o
 void ForwardRenderingPath::RenderShadowCastingObjectsForLight(LightObject* light, RenderScene* scene)
 {
 	Renderer* renderer = Renderer::GetInstance();
-	Camera* camera = new Camera();
+	renderer->SetCamera(m_shadowCamera);
+
+	renderer->ClearDepth(1.f);
+	renderer->ClearColor(Rgba::BLACK);
+	renderer->EnableDepth(LESS_DEPTH_TYPE, true);
 
 	switch (light->m_lightType)
 	{
 		case LIGHT_TYPE_DIRECTIONAL_LIGHT:
-//			camera.SetProjectionOrtho(256.f, 256.f, -100.f, 100.f);
+			m_shadowCamera->SetProjectionOrtho(256.f, 1.f, -100.f, 100.f);
 			break;
 		default:
 			GUARANTEE_OR_DIE(false, "UNSUPPORT SHADOW LIGHT TYPE");
 			break;
 	}
 
-	camera->m_transform->SetFromMatrix(light->m_transform->GetWorldMatrix());
+	m_shadowCamera->m_transform->SetFromMatrix(light->m_transform->GetWorldMatrix());
+	m_shadowCamera->GetView();
+	
+	Matrix44 shadowMatrix;
+	shadowMatrix.Append(m_shadowCamera->m_projMatrix);
+	shadowMatrix.Append(m_shadowCamera->GetView());
+	light->m_light->m_viewProjectionMatrix = shadowMatrix;
 
-	camera->SetDepthStencilTarget(renderer->CreateDepthStencilTarget(1024, 1024));
-	renderer->SetCamera(camera);
-	light->m_light->m_viewProjectionMatrix = camera->GetViewProjection();
+	TODO("Will have to change this later if implementing multi-material for 3D rendering path");
+	for (int renderableIndex = 0; renderableIndex < (int)scene->m_renderables.size(); ++renderableIndex)
+	{
+		renderer->BindMaterial(scene->m_renderables[renderableIndex]->m_material);
+
+		if (scene->m_renderables[renderableIndex]->m_material->m_shader->GetRenderQueueType() == RENDER_QUEUE_OPAQUE)
+		{
+			Matrix44 model = scene->m_renderables[renderableIndex]->m_transform->GetWorldMatrix();
+			for (int meshIndex = 0; meshIndex < (int)scene->m_renderables[renderableIndex]->m_meshes.size(); ++meshIndex)
+			{
+				renderer->DrawMesh(scene->m_renderables[renderableIndex]->m_meshes[meshIndex], model);
+			}			
+		}
+	}
 
 	renderer = nullptr;
-	camera = nullptr;
 }

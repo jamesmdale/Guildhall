@@ -133,7 +133,6 @@ void CreateOpenGLWindow(float clientAspect )
 
 void Initialize()
 {
-	g_theApp = new TheApp();
 	CreateOpenGLWindow( CLIENT_ASPECT );
 
 	RenderStartup();
@@ -150,7 +149,7 @@ void Initialize()
 	AudioSystem::CreateInstance();
 	AudioSystem::GetInstance()->Initialize();
 
-
+	g_theApp = new TheApp();
 	g_theApp->Initialize();
 }
 

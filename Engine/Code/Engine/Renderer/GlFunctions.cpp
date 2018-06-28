@@ -69,6 +69,7 @@ PFNGLUNIFORM3FVPROC glUniform3fv = nullptr;
 PFNGLUNIFORM4FVPROC glUniform4fv = nullptr;
 PFNGLBLENDFUNCPROC glBlendFunc = nullptr;
 PFNGLENABLEPROC glEnable = nullptr;
+PFNGLVIEWPORTPROC glViewport = nullptr;
 PFNGLGENSAMPLERSPROC glGenSamplers = nullptr;
 PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri = nullptr;
 PFNGLDELETESAMPLERSPROC glDeleteSamplers = nullptr;
@@ -184,6 +185,7 @@ void BindGLFunctions()
 	GL_BIND_FUNCTION(glDeleteTextures);
 	GL_BIND_FUNCTION(glTexStorage2D);
 	GL_BIND_FUNCTION(glTexSubImage2D);
+	GL_BIND_FUNCTION(glViewport);
 }
 
 bool GLCheckError( char const* file, int line )

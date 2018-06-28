@@ -25,8 +25,7 @@ void Spawner::Update(float deltaSeconds)
 	int val = m_numSwarmers;
 	if (m_spawnTimer->HasElapsed() && m_numSwarmers < g_spawnerMaxSwarmers)
 	{
-		Swarmer* swarmer = SpawnSwarmer();
-		swarmer = nullptr;
+		SpawnSwarmer();
 		m_spawnTimer->Reset();
 	}
 }
@@ -52,7 +51,7 @@ void Spawner::Initialize()
 	}
 }
 
-Swarmer* Spawner::SpawnSwarmer()
+void Spawner::SpawnSwarmer()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
@@ -74,6 +73,5 @@ Swarmer* Spawner::SpawnSwarmer()
 	//add swarmer to spawner list
 	m_gameState->m_swarmers.push_back(swarmer);
 
-	//cleanup
-	return swarmer;
+	theRenderer = nullptr;
 }

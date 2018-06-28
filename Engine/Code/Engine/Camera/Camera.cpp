@@ -6,7 +6,18 @@
 
 Camera::Camera()
 {
+	Window* theWindow = Window::GetInstance();
+	Renderer* theRenderer = Renderer::GetInstance();
+
+	m_viewPortDimensions = theWindow->GetClientDimensions(); //default dimensions to window size
+
+// 	m_frameBufferOutput.m_depthStencilTarget = theRenderer->CreateDepthStencilTarget(m_viewPortDimensions.x, m_viewPortDimensions.y);
+// 	m_frameBufferOutput.m_colorTarget = theRenderer->CreateRenderTarget(m_viewPortDimensions.x, m_viewPortDimensions.y);
+
 	m_transform = new Transform();
+
+	theRenderer = nullptr;
+	theWindow = nullptr;
 }
 
 Camera::~Camera()
@@ -121,14 +132,15 @@ void Camera::SetPerspective(float fovDegrees, float aspect, float nearVal, float
 
 Matrix44 Camera::GetView()
 {
-	m_viewMatrix = m_transform->GetWorldMatrix().InvertFastToNew();
+	m_viewMatrix = m_transform->GetWorldMatrix();
+	m_viewMatrix.Invert();
 	return m_viewMatrix;
 }
 
 Matrix44 Camera::GetViewProjection()
 {
-	Matrix44 viewProjection = m_viewMatrix;
-	viewProjection.Append(m_projMatrix);
+	Matrix44 viewProjection = m_projMatrix;
+	viewProjection.Append(m_viewMatrix);
 
 	return viewProjection;
 }

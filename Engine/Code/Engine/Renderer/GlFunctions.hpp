@@ -82,6 +82,7 @@ extern PFNGLDELETETEXTURESPROC glDeleteTextures;
 extern PFNGLTEXSTORAGE2DPROC glTexStorage2D;
 extern PFNGLPIXELSTOREIPROC glPixelStorei;
 extern PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D;
+extern PFNGLVIEWPORTPROC glViewport;
 
 //bind functions
 extern void BindNewWGLFunctions();

@@ -199,6 +199,8 @@ Vector3 Swarmer::AlignWithNeighbors(float deltaSeconds)
 			velocitySum += m_gameState->m_swarmers[swarmerIndex]->m_velocity;
 			numCloseSwarmers++;
 		}
+
+		swarmer = nullptr;
 	}
 
 	if (numCloseSwarmers > 0)
