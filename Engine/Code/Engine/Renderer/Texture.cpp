@@ -144,7 +144,7 @@ bool Texture::CreateRenderTarget(int width, int height, TextureFormatType format
 	TODO("Save format asa member variable on texture as necessary");
 	//m_format = fmt; // I save the format with the texture
 					// for sanity checking.
-
+	GL_CHECK_ERROR();
 	return true; 
 }
 

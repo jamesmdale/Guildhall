@@ -90,7 +90,6 @@ public:
 
 	//textures
 	Texture* m_defaultTexture;
-	Texture* m_currentTexture;
 
 	//texture targets
 	Texture* m_defaultColorTarget;
@@ -184,7 +183,7 @@ public:
 	//textures -------------------------------------------------------------------------------------------------------------------------
 	void SetTexture(const Texture& texture);
 	void SetTexture(const Texture & texture, int index);
-	void BindTexture(Texture* texture, int index);
+	void BindTexture(const Texture& texture, int index, Sampler* sampler = nullptr);
 
 	void BindTextureCube(TextureCube * textureCube, int index);
 

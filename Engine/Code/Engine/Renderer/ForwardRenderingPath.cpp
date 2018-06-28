@@ -8,13 +8,17 @@ ForwardRenderingPath::ForwardRenderingPath()
 	m_shadowCamera = new Camera();
 	m_shadowCamera->m_viewPortDimensions = Vector2(2048.f, 2048.f);
 
-	m_shadowSampler = Sampler::CreateShadowSampler();
-	m_shadowColorTarget = Renderer::GetInstance()->CreateRenderTarget(2048, 2048, TEXTURE_FORMAT_RGBA8);
-	m_shadowDepthTarget = Renderer::GetInstance()->CreateRenderTarget(2048, 2048, TEXTURE_FORMAT_D24S8);
+	//init shadow sampler
+	m_shadowSampler = new Sampler();
+	m_shadowSampler->CreateShadowSampler();
 
+	//init shadow targets
+	m_shadowColorTarget = Renderer::GetInstance()->CreateRenderTarget(2048, 2048, TEXTURE_FORMAT_RGBA8);
+	m_shadowDepthTarget = Renderer::GetInstance()->CreateDepthStencilTarget(2048, 2048);
+
+	//set shadow camera targets
 	m_shadowCamera->SetColorTarget(m_shadowColorTarget);
 	m_shadowCamera->SetDepthStencilTarget(m_shadowDepthTarget);
-	//sampler init
 }
 
 
@@ -45,7 +49,7 @@ void ForwardRenderingPath::RenderSceneForCamera(Camera* camera, RenderScene* sce
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	theRenderer->SetCamera(camera);
-	theRenderer->BindTexture(m_shadowCamera->m_frameBufferOutput.m_depthStencilTarget, 3);
+	theRenderer->BindTexture(*m_shadowCamera->m_frameBufferOutput.m_depthStencilTarget, 5, m_shadowSampler);
 
 	theRenderer->ClearDepth(1.f);
 	theRenderer->ClearColor(Rgba::BLACK);
@@ -97,7 +101,6 @@ void ForwardRenderingPath::RenderSceneForCamera(Camera* camera, RenderScene* sce
 					Vector3 cameraPosition = camera->m_transform->GetWorldPosition();
 					theRenderer->SetVector3Uniform(handle, "EYE_POSITION", cameraPosition);
 				}	
-
 				theRenderer->DrawMesh(drawCall.m_meshes[meshIndex], drawCall.m_model);
 			}	
 		}
@@ -178,6 +181,7 @@ void ForwardRenderingPath::SortDrawsByCameraDistance(std::vector<DrawCallData> o
 void ForwardRenderingPath::RenderShadowCastingObjectsForLight(LightObject* light, RenderScene* scene)
 {
 	Renderer* renderer = Renderer::GetInstance();
+	m_shadowCamera->SetDepthStencilTarget(m_shadowDepthTarget);
 	renderer->SetCamera(m_shadowCamera);
 
 	renderer->ClearDepth(1.f);

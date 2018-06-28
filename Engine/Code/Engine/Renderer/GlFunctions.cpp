@@ -72,6 +72,7 @@ PFNGLENABLEPROC glEnable = nullptr;
 PFNGLVIEWPORTPROC glViewport = nullptr;
 PFNGLGENSAMPLERSPROC glGenSamplers = nullptr;
 PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri = nullptr;
+PFNGLSAMPLERPARAMETERFVPROC	glSamplerParameterfv = nullptr;
 PFNGLDELETESAMPLERSPROC glDeleteSamplers = nullptr;
 PFNGLBINDSAMPLERPROC glBindSampler = nullptr;
 PFNGLACTIVETEXTUREPROC glActiveTexture = nullptr;
@@ -146,6 +147,7 @@ void BindGLFunctions()
 	GL_BIND_FUNCTION(glEnable);
 	GL_BIND_FUNCTION(glGenSamplers);
 	GL_BIND_FUNCTION(glSamplerParameteri);
+	GL_BIND_FUNCTION(glSamplerParameterfv);
 	GL_BIND_FUNCTION(glDeleteSamplers);
 	GL_BIND_FUNCTION(glBindSampler);
 	GL_BIND_FUNCTION(glActiveTexture);

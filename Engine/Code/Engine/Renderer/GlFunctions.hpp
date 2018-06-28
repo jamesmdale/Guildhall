@@ -44,6 +44,7 @@ extern PFNGLBLENDFUNCPROC glBlendFunc;
 extern PFNGLENABLEPROC glEnable;
 extern PFNGLGENSAMPLERSPROC glGenSamplers;
 extern PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri;
+extern PFNGLSAMPLERPARAMETERFVPROC glSamplerParameterfv;
 extern PFNGLDELETESAMPLERSPROC glDeleteSamplers;
 extern PFNGLBINDSAMPLERPROC glBindSampler;
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;

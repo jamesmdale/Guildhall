@@ -62,7 +62,7 @@ layout (binding=2, std140) uniform SpecularBlock
 // Textures
 layout(binding = 0) uniform sampler2D gTexDiffuse;
 layout(binding = 1) uniform sampler2D gTexNormal;
-layout(binding = 3) uniform sampler2DShadow gTexShadow;
+layout(binding = 5) uniform sampler2DShadow gTexShadow;
 
 
 // Suggest always manually setting bindings - again, consitancy with 
@@ -183,6 +183,6 @@ void main( void )
    final_color = clamp(final_color, vec4(0), vec4(1) ); 
    
    // Output the colour
-   outColor = final_color;
+   outColor = final_color + texture(gTexShadow, vec3(1));
 
 }

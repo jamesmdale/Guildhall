@@ -287,12 +287,6 @@ void Renderer::BeginFrame()
 {
 	UseShaderProgram(CreateOrGetShaderProgramFromPath("default")); //always bind default passthrough at beginframe
 	DisableAllLights(); //Reset lighting presets
-
-	//ResetSpecularBuffer(); //Resetts specular buffer to defaults
-
-	//set camera and texture back to the defaults
-	/*m_currentCamera = m_defaultCamera;
-	m_currentTexture = m_defaultTexture;*/
 }
 
 void Renderer::EndFrame()
@@ -482,16 +476,6 @@ void Renderer::DrawAABB(const AABB2& bounds, const Rgba& tint)
 	Vector2 texCoordsAtMaxs = AABB2::ZERO_TO_ONE.maxs;
 	int textureIndex = 0;
 
-	BindSampler(m_defaultSampler, textureIndex);
-
-	// Bind the texture
-
-	glActiveTexture( GL_TEXTURE0 + textureIndex );
-	GL_CHECK_ERROR();
-
-	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
-	GL_CHECK_ERROR();
-
 	VertexPCU vertex[6];
 	vertex[0] =  VertexPCU(Vector3(bounds.mins.x, bounds.mins.y, 0), tint, Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
 	vertex[1] = VertexPCU(Vector3(bounds.maxs.x, bounds.mins.y, 0), tint, Vector2(texCoordsAtMaxs.x, texCoordsAtMins.y));
@@ -517,15 +501,6 @@ void Renderer::DrawOrientedTexturedAABB(Matrix44& transformMatrix,
 	Vector2 texCoordsAtMins = uvs.mins;
 	Vector2 texCoordsAtMaxs = uvs.maxs;
 	int textureIndex = 0;
-
-	BindSampler(m_defaultSampler, textureIndex);
-
-	// Bind the texture
-	glActiveTexture( GL_TEXTURE0 + textureIndex );
-	GL_CHECK_ERROR();
-
-	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
-	GL_CHECK_ERROR();
 
 	//position + (transformMatrixGetRight() * spriteDimensions.x) + (transformMatrix.GetUp() * spriteDimensions.y)
 	VertexPCU vertex[6];
@@ -571,16 +546,20 @@ void Renderer::DrawOrientedTexturedAABB(Matrix44& transformMatrix,
 //	DrawMeshImmediate(&vertex[0], 6, GetGLDrawPrimitive(TRIANGLES), position);
 //}
 
-void Renderer::BindTexture(Texture* texture, int index) //for now always zero
+void Renderer::BindTexture(const Texture& texture, int index, Sampler* sampler) //for now always zero
 {
-	m_currentTexture = texture;
-	BindSampler(m_defaultSampler, index);
+	//m_currentTexture = texture;
+
+	if(sampler == nullptr)
+		BindSampler(m_defaultSampler, index);
+	else
+		BindSampler(sampler, index);
 
 	// Bind the texture
 	glActiveTexture( GL_TEXTURE0 + index );
 	GL_CHECK_ERROR();
 
-	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
+	glBindTexture(GL_TEXTURE_2D, (texture).m_textureID);
 	GL_CHECK_ERROR();
 }
 
@@ -620,15 +599,6 @@ void Renderer::DrawCube(const Vector3& center, const Vector3& dimensions,
 
 	if(dimensions.z != 0.f)
 		zVal = dimensions.z/2.f;
-
-	BindSampler(m_defaultSampler, textureIndex);
-
-	// Bind the texture
-	glActiveTexture( GL_TEXTURE0 + textureIndex );
-	GL_CHECK_ERROR();
-
-	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
-	GL_CHECK_ERROR();
 
 	/*int indices [36] = {};*/
 	VertexPCU vertex[36];
@@ -770,16 +740,6 @@ void Renderer::DrawTriangle(const Vector3& aPosition, const Vector3& bPosition, 
 	int textureIndex = 0;
 	Vector2 texCoordsAtMins = AABB2::ZERO_TO_ONE.mins;
 	Vector2 texCoordsAtMaxs = AABB2::ZERO_TO_ONE.maxs;
-
-	BindSampler(m_defaultSampler, textureIndex);
-
-	// Bind the texture
-
-	glActiveTexture( GL_TEXTURE0 + textureIndex );
-	GL_CHECK_ERROR();
-
-	glBindTexture(GL_TEXTURE_2D, (*m_currentTexture).m_textureID);
-	GL_CHECK_ERROR();
 
 	VertexPCU vertex[3];
 	vertex[0] = VertexPCU(aPosition, tint, Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
@@ -932,6 +892,7 @@ bool Renderer::CopyFrameBuffer(FrameBuffer* destination, FrameBuffer* source)
 	if (dstFBO == srcFBO) {
 		return false; 
 	}
+	GL_CHECK_ERROR();
 
 	// the GL_READ_FRAMEBUFFER is where we copy from
 	glBindFramebuffer( GL_READ_FRAMEBUFFER, srcFBO ); 
@@ -978,16 +939,12 @@ bool Renderer::CopyFrameBuffer(FrameBuffer* destination, FrameBuffer* source)
 
 void Renderer::SetTexture(const Texture& texture)
 {
-	*m_currentTexture = texture;
-
-	BindTexture(m_currentTexture, 0);
+	BindTexture(texture, 0);
 }
 
 void Renderer::SetTexture(const Texture& texture, int index)
 {
-	*m_currentTexture = texture;
-
-	BindTexture(m_currentTexture, index);
+	BindTexture(texture, index);
 }
 
 void Renderer::SetCamera(Camera* camera)
@@ -1138,12 +1095,11 @@ void Renderer::PostStartup()
 	m_defaultSampler->Create();
 
 	//load default texture
-	Image defaultImage = Image(IntVector2(1,1), Rgba::WHITE, "default");
+	Image defaultImage = Image(IntVector2(1,1), Rgba::RED, "default");
 	Image normalImage = Image(IntVector2(1,1), Rgba::NORMAL_MAP_FLAT, "normal");
 
 	m_defaultTexture = CreateOrGetTexture(defaultImage);
 	m_defaultTexture = CreateOrGetTexture(normalImage);
-	m_currentTexture = new Texture();
 	
 	SetTexture(*m_defaultTexture);
 	

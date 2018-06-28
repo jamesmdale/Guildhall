@@ -2,5 +2,6 @@
 	<shader name="lit" />
 	<textures>
 		<texture bind="0" file="default" />
+		<texture bind="1" file="normal" />
 	</textures>
 </material>

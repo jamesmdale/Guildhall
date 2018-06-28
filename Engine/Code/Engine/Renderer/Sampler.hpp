@@ -8,6 +8,7 @@ public:
 	~Sampler();
 	
 	bool Create();
+	bool CreateShadowSampler();
 	void Destroy();
 	GLuint GetHandle(){return m_samplerHandle;};
 

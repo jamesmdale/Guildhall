@@ -1,5 +1,6 @@
 #include "Engine\Renderer\Sampler.hpp"
 #include "Engine\Core\Rgba.hpp"
+#include "Engine\Math\Vector4.hpp"
 
 Sampler::Sampler() 
 	: m_samplerHandle(NULL)
@@ -51,14 +52,15 @@ bool Sampler::CreateShadowSampler()
 	}
 
 	// setup wrapping
-	glSamplerParameteri( sampler_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );               
-	glSamplerParameteri( sampler_handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );               
-	glSamplerParameteri( sampler_handle, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER );               
+	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );               
+	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );               
+	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER );               
 
-	glSamplerParameterfv( sampler_handle, GL_TEXTURE_BORDER_COLOR, Rgba::WHITE ); 
+	glSamplerParameterfv( m_samplerHandle, GL_TEXTURE_BORDER_COLOR, (GLfloat*)&Rgba::ConvertToVector4(Rgba::WHITE)); 
 
-	glSamplerParameteri( sampler_handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE ); 
-	glSamplerParameteri( sampler_handle, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL ); 
+	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE ); 
+	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL ); 
+
 	// filtering; 
 	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MAG_FILTER, GL_NEAREST );

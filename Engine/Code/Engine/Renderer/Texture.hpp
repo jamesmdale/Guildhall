@@ -27,7 +27,7 @@ public:
 	IntVector2 GetDimensions();
 private:
 	Texture();
-	Texture(const Texture* copyTexture);
+	//Texture(const Texture* copyTexture);
 	Texture( const std::string& imageFilePath ); // Use renderer->CreateOrGetTexture() instead!
 	Texture ( Image& image );
 
@@ -36,7 +36,6 @@ private:
 	unsigned int GetHandle();
 	static Texture* CreateCompatible(const Texture& texture);
 	
-
 private:
 	unsigned int								m_textureID;
 	IntVector2									m_dimensions;	

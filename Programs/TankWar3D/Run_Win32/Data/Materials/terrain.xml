@@ -2,6 +2,6 @@
 	<shader name="lit" />
 	<textures>
 		<texture bind="0" file="Data\Images\asteroid.png" />
-		<texture bind="1" file="normal" />		
+		<texture bind="1" file="normal" />
 	</textures>
 </material>

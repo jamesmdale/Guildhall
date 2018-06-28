@@ -30,7 +30,7 @@ bool FrameBuffer::Finalize()
 	// and keep track of which locations to to which attachments. 
 	glFramebufferTexture( GL_FRAMEBUFFER, 
 		GL_COLOR_ATTACHMENT0 + 0, 
-		m_colorTarget->m_textureID,
+		m_colorTarget->GetHandle(),
 		0 ); 
 	GL_CHECK_ERROR();
 	// 0 to to attachment 0
