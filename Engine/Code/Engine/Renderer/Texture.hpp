@@ -2,7 +2,7 @@
 // Texture.hpp
 //
 #pragma once
-#include "Engine/Math/IntVector2.hpp"
+#include "Engine\Math\IntVector2.hpp"
 #include <string>
 #include <map>
 #include "Engine\Core\Image.hpp"
@@ -20,6 +20,8 @@ class Texture
 {
 	friend class Renderer; // Textures are managed by a Renderer instance
 	friend class FrameBuffer;
+	friend class ForwardRenderingPath;
+	friend class ForwardRenderingPath2D;
 
 public:
 	IntVector2 GetDimensions();

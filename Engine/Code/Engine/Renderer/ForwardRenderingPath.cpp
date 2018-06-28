@@ -4,8 +4,11 @@
 
 ForwardRenderingPath::ForwardRenderingPath()
 {
+	//init camera
 	m_shadowCamera = new Camera();
 	m_shadowCamera->m_viewPortDimensions = Vector2(2048.f, 2048.f);
+
+	m_shadowSampler = Sampler::CreateShadowSampler();
 	m_shadowColorTarget = Renderer::GetInstance()->CreateRenderTarget(2048, 2048, TEXTURE_FORMAT_RGBA8);
 	m_shadowDepthTarget = Renderer::GetInstance()->CreateRenderTarget(2048, 2048, TEXTURE_FORMAT_D24S8);
 
@@ -42,6 +45,8 @@ void ForwardRenderingPath::RenderSceneForCamera(Camera* camera, RenderScene* sce
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	theRenderer->SetCamera(camera);
+	theRenderer->BindTexture(m_shadowCamera->m_frameBufferOutput.m_depthStencilTarget, 3);
+
 	theRenderer->ClearDepth(1.f);
 	theRenderer->ClearColor(Rgba::BLACK);
 

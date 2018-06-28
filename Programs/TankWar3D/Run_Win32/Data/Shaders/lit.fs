@@ -62,6 +62,7 @@ layout (binding=2, std140) uniform SpecularBlock
 // Textures
 layout(binding = 0) uniform sampler2D gTexDiffuse;
 layout(binding = 1) uniform sampler2D gTexNormal;
+layout(binding = 3) uniform sampler2DShadow gTexShadow;
 
 
 // Suggest always manually setting bindings - again, consitancy with 
