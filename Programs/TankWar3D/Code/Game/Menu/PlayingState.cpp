@@ -10,9 +10,12 @@
 #include "Engine\Audio\AudioSystem.hpp"
 #include "Game\Swarmer.hpp"
 #include "Game\Spawner.hpp"
+#include "Engine\Audio\AudioSystem.hpp"
 
 bool isPlayerAlive = true;
 bool isVictory = false;
+
+SoundPlaybackID musicID;
 
 PlayingState::~PlayingState()
 {
@@ -122,8 +125,12 @@ void PlayingState::Initialize()
 	m_ui->m_renderScene = m_renderScene2D;
 	m_ui->Initialize();
 
+	AudioSystem* audio = AudioSystem::GetInstance();
+	musicID = audio->PlaySound(audio->CreateOrGetSound("Data/Audio/Panoramic.mp3"), true, 0.5f, 0.f, 1.f, false);
+
 	isVictory = false;
 
+	audio = nullptr;
 	theRenderer = nullptr;	
 
 	m_isInitialized = true;
@@ -231,6 +238,7 @@ void PlayingState::PostRender()
 
 	if (m_spawners.size() == 0 && m_swarmers.size() == 0)
 	{
+
 		isVictory = true;
 	}
 }
@@ -269,6 +277,8 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 			//after you are finished loading
 			GameState* state = GetMenuStateFromGlobalListByType(MAIN_MENU_STATE);
 			GUARANTEE_OR_DIE(state != nullptr, "LOADING STATE TRANSITION: PLAYING STATE NOT FOUND");
+
+			AudioSystem::GetInstance()->StopSound(musicID);
 
 			TransitionMenuStates(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
 		}	
