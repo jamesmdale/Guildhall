@@ -464,6 +464,64 @@ void MeshBuilder::CreateQuad2D(const AABB2& drawBounds, const Rgba& tint)
 	CreateQuad3D(Vector3(center.x, center.y, 0.f), drawBounds.GetDimensions(), tint);
 }
 
+void MeshBuilder::CreateTiledQuad2D(const Vector2& center, const Vector2& dimensions, const Vector2& cellDimensions, const Rgba& tint)
+{
+	CreateTiledQuad3D(Vector3(center.x, center.y, 0.f), Vector3(dimensions.x, dimensions.y, 0.f), cellDimensions, tint);
+}
+
+void MeshBuilder::CreateTiledQuad3D(const Vector3& center, const Vector3& dimensions, const Vector2& cellDimensions, const Rgba& tint)
+{
+	MeshBuilder mb;
+	int vertSize = GetVertexCount();
+
+	int numTilesX = (int)ceilf(dimensions.x/(float)cellDimensions.x); //round up
+	int numTilesY = (int)ceilf(dimensions.y/(float)cellDimensions.y); //round up
+
+	Vector2 mins = Vector2(center.x, center.y) - Vector2(dimensions.x * 0.5f, dimensions.y * 0.5f);
+	Vector2 maxs = Vector2(center.x, center.y) + Vector2(dimensions.x * 0.5f, dimensions.y * 0.5f);
+
+	Begin(TRIANGLES_DRAW_PRIMITIVE, true); //begin is does use index buffer
+
+
+	for (int yIndex = 0; yIndex < numTilesX; ++yIndex)
+	{
+		float yVal = yIndex * cellDimensions.y;
+
+		for (int xIndex = 0; xIndex < numTilesY; ++xIndex)
+		{
+			vertSize = GetVertexCount();
+
+			float xVal = xIndex * cellDimensions.x;
+
+			SetColor(tint);
+			SetUV(Vector2(0.f,0.f));
+			SetNormal(Vector3(0.f, 0.f, -1.f));
+			SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+			PushVertex(Vector3(ClampFloat(mins.x + xVal, mins.x, maxs.x), ClampFloat(mins.y + yVal, mins.y, maxs.y), 0.f));
+
+			SetColor(tint);
+			SetUV(Vector2(1.f,0.f));
+			SetNormal(Vector3(0.f, 0.f, -1.f));
+			SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+			PushVertex(Vector3(ClampFloat(mins.x + (xVal + cellDimensions.x), mins.x, maxs.x), ClampFloat(mins.y + yVal, mins.y, maxs.y), 0.f));
+
+			SetColor(tint);
+			SetUV(Vector2(1.f,1.f));
+			SetNormal(Vector3(0.f, 0.f, -1.f));
+			SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+			PushVertex(Vector3(ClampFloat(mins.x + (xVal + cellDimensions.x), mins.x, maxs.x), ClampFloat(mins.y + (yVal + cellDimensions.y), mins.y, maxs.y), 0.f));
+
+			SetColor(tint);
+			SetUV(Vector2(0.f,1.f));
+			SetNormal(Vector3(0.f, 0.f, -1.f));
+			SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+			PushVertex(Vector3(ClampFloat(mins.x + xVal, mins.x, maxs.x), ClampFloat(mins.y + (yVal + cellDimensions.y), mins.y, maxs.y), 0.f));
+
+			AddQuadIndices(vertSize + 0, vertSize + 1, vertSize + 2, vertSize + 3);
+		}	
+	}	
+}
+
 void MeshBuilder::CreateStarQuads3D(const Vector3& center, const Vector3& dimensions, const Rgba& tint)
 {
 	int vertSize = GetVertexCount();

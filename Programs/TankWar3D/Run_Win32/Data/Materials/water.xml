@@ -1,0 +1,6 @@
+<material name="water">
+	<shader name="lit" />
+	<textures>
+		<texture bind="0" file="Data\Images\spaceSlime.jpg" />
+	</textures>
+</material>

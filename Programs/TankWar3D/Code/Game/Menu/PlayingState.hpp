@@ -5,6 +5,7 @@
 #include "Engine\Renderer\RenderScene2D.hpp"
 #include "Game\TankUI.hpp"
 #include "Engine\Time\Stopwatch.hpp"
+#include "Engine\Math\Plane.hpp"
 
 //forward declarations
 class Spawner;
@@ -51,11 +52,14 @@ public:
 	Camera* m_uiCamera = nullptr;
 	Terrain* m_terrain = nullptr;
 
+	GameObject* m_waterPlane = nullptr;
+
 	std::vector<Spawner*> m_spawners;
 	std::vector<Swarmer*> m_swarmers;
 	std::vector<Bullet*> m_bullets;
 
 	Stopwatch* m_respawnTimer = nullptr;
+
 };
 
 

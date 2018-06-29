@@ -22,6 +22,9 @@ PlayingState::~PlayingState()
 	delete(m_playerTank);
 	m_playerTank = nullptr;
 
+	delete(m_waterPlane);
+	m_waterPlane = nullptr;
+
 	delete(m_terrain);
 	m_terrain = nullptr;
 
@@ -99,6 +102,23 @@ void PlayingState::Initialize()
 	for (int renderableIndex = 0; renderableIndex < (int)m_terrain->m_renderables.size(); ++renderableIndex)
 	{
 		m_renderScene->AddRenderable(m_terrain->m_renderables[renderableIndex]);
+	}
+
+	// add water object =============================================================================
+	m_waterPlane = new GameObject();
+
+	Renderable* waterRenderable = new Renderable();
+	Vector2 center = Vector2(m_terrain->m_worldBounds.GetCenter().x, m_terrain->m_worldBounds.GetCenter().z);
+	Vector2 dimensions = Vector2(m_terrain->m_worldBounds.GetDimensions().x, m_terrain->m_worldBounds.GetDimensions().z);
+	meshBuilder.CreateTiledQuad2D(Vector2::ZERO, Vector2(100.f, 100.f), Vector2(25.f, 25.f), Rgba::WHITE);	
+	waterRenderable->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
+	waterRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("water")));
+
+	m_waterPlane->AddRenderable(waterRenderable);
+	m_waterPlane->m_renderScene = m_renderScene;
+	for (int renderableIndex = 0; renderableIndex < (int)m_waterPlane->m_renderables.size(); ++renderableIndex)
+	{
+		m_waterPlane->m_renderScene->AddRenderable(m_waterPlane->m_renderables[renderableIndex]);
 	}
 
 	// add spawners =========================================================================================

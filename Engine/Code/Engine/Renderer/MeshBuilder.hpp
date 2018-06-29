@@ -53,6 +53,8 @@ public:
 	void CreateBasis(const Matrix44& basis, const Vector3& position, float scale);
 	void CreateQuad2D(const Vector2& center, const Vector2& dimensions, const Rgba& tint);
 	void CreateQuad2D(const AABB2& drawBounds, const Rgba& tint);
+	void CreateTiledQuad2D(const Vector2& center, const Vector2& dimensions, const Vector2& cellDimensions, const Rgba & tint);
+	void CreateTiledQuad3D(const Vector3& center, const Vector3& dimensions, const Vector2& cellDimensions, const Rgba & tint);
 	void CreateStarQuads3D(const Vector3& center, const Vector3& dimensions, const Rgba& tint);
 	void CreateText2D(const Vector2& center, float cellHeight, float aspectScale, const std::string& text, const Rgba& tint = Rgba::WHITE);
 	void CreateText2DInAABB2(const Vector2& center, const Vector2& dimensions, float aspectScale, const std::string& text, const Rgba& tint = Rgba::WHITE);
