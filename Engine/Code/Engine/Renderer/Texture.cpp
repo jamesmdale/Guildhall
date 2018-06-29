@@ -53,6 +53,8 @@ void Texture::PopulateFromData( unsigned char* imageData, const IntVector2& texe
 {
 	m_dimensions = texelSize;
 
+	int mipCount = CalculateMipCount(m_dimensions);
+
 	// Tell OpenGL that our pixel data is single-byte aligned
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 	GL_CHECK_ERROR();
@@ -79,7 +81,7 @@ void Texture::PopulateFromData( unsigned char* imageData, const IntVector2& texe
 		internalFormat = GL_RGB8;
 	}
 
-	glTexStorage2D(GL_TEXTURE_2D, 1, internalFormat, m_dimensions.x, m_dimensions.y);
+	glTexStorage2D(GL_TEXTURE_2D, mipCount, internalFormat, m_dimensions.x, m_dimensions.y);
 
 	GL_CHECK_ERROR();
 
@@ -91,6 +93,8 @@ void Texture::PopulateFromData( unsigned char* imageData, const IntVector2& texe
 		channels,			// r-g-b-a
 		pixelLayout,		//data type
 		imageData);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	GL_CHECK_ERROR();
 }
@@ -164,4 +168,15 @@ Texture * Texture::CreateCompatible(const Texture& texture)
 IntVector2 Texture::GetDimensions()
 {
 	return m_dimensions;
+}
+
+int Texture::CalculateMipCount(const IntVector2& dimensions)
+{
+	float value = GetLargerOfXY(dimensions);
+
+	float mipCount = log2f((float)value);
+	
+	//round count up to make sure it's larger than the max dimension
+	mipCount++;
+	return (int)mipCount; //takes the floor of the calculated mipcount to make it a whole number
 }

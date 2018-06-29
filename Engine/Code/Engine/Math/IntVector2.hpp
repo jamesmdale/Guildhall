@@ -39,3 +39,4 @@ public: // NOTE: this is one of the few cases where we break both the "m_" namin
 };
 int GetDistanceSquared(const IntVector2& a, const IntVector2& b);
 const IntVector2 Interpolate(const IntVector2& start, const IntVector2& end, float fractionTowardEnd);
+int GetLargerOfXY(const IntVector2& vector);

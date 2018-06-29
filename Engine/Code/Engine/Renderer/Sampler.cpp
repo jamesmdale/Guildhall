@@ -34,8 +34,16 @@ bool Sampler::Create()
 	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_WRAP_R, GL_REPEAT );  
 
 	// filtering; 
-	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	//glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+	//glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );         // Default: GL_LINEAR
+	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MAG_FILTER, GL_LINEAR );         // Default: GL_LINEAR
+
+	// level of detail 
+	glSamplerParameterf( m_samplerHandle, GL_TEXTURE_MIN_LOD, -1000.f); 
+	glSamplerParameterf( m_samplerHandle, GL_TEXTURE_MAX_LOD, 1000.f ); 
+
 	return true; 
 }
 
@@ -61,9 +69,18 @@ bool Sampler::CreateShadowSampler()
 	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE ); 
 	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL ); 
 
-	// filtering; 
-	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	// filtering
+
+	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MIN_FILTER, GL_LINEAR );         // Default: GL_LINEAR
+	glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MAG_FILTER, GL_LINEAR );         // Default: GL_LINEAR
+	
+	//glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+	//glSamplerParameteri( m_samplerHandle, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+	// level of detail 
+	glSamplerParameterf( m_samplerHandle, GL_TEXTURE_MIN_LOD, -1000.f); 
+	glSamplerParameterf( m_samplerHandle, GL_TEXTURE_MAX_LOD, 1000.f ); 
+
 	return true; 
 }
 

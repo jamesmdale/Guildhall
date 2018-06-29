@@ -45,6 +45,7 @@ extern PFNGLENABLEPROC glEnable;
 extern PFNGLGENSAMPLERSPROC glGenSamplers;
 extern PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri;
 extern PFNGLSAMPLERPARAMETERFVPROC glSamplerParameterfv;
+extern PFNGLSAMPLERPARAMETERFPROC glSamplerParameterf;
 extern PFNGLDELETESAMPLERSPROC glDeleteSamplers;
 extern PFNGLBINDSAMPLERPROC glBindSampler;
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;
@@ -83,6 +84,7 @@ extern PFNGLDELETETEXTURESPROC glDeleteTextures;
 extern PFNGLTEXSTORAGE2DPROC glTexStorage2D;
 extern PFNGLPIXELSTOREIPROC glPixelStorei;
 extern PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D;
+extern PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
 extern PFNGLVIEWPORTPROC glViewport;
 
 //bind functions

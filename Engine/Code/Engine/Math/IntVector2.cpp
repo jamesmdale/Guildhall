@@ -166,3 +166,13 @@ const IntVector2 Interpolate(const IntVector2& start, const IntVector2& end, flo
 {
 	return IntVector2(Interpolate(start.x, end.x, fractionTowardEnd), Interpolate(start.y, end.y, fractionTowardEnd));
 }
+
+int GetLargerOfXY(const IntVector2& vector)
+{
+	if(vector.y > vector.x)
+	{
+		return vector.y;
+	}
+
+	return vector.x;
+}

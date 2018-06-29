@@ -73,6 +73,7 @@ PFNGLVIEWPORTPROC glViewport = nullptr;
 PFNGLGENSAMPLERSPROC glGenSamplers = nullptr;
 PFNGLSAMPLERPARAMETERIPROC glSamplerParameteri = nullptr;
 PFNGLSAMPLERPARAMETERFVPROC	glSamplerParameterfv = nullptr;
+PFNGLSAMPLERPARAMETERFPROC glSamplerParameterf = nullptr;
 PFNGLDELETESAMPLERSPROC glDeleteSamplers = nullptr;
 PFNGLBINDSAMPLERPROC glBindSampler = nullptr;
 PFNGLACTIVETEXTUREPROC glActiveTexture = nullptr;
@@ -102,6 +103,7 @@ PFNGLBLENDEQUATIONPROC glBlendEquation = nullptr;
 PFNGLBLENDEQUATIONSEPARATEPROC glBlendEquationSeparate = nullptr;
 PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate = nullptr;
 PFNGLDELETETEXTURESPROC glDeleteTextures = nullptr;
+PFNGLGENERATEMIPMAPPROC glGenerateMipmap = nullptr;
 PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D = nullptr;
 
 void BindNewWGLFunctions()
@@ -148,6 +150,8 @@ void BindGLFunctions()
 	GL_BIND_FUNCTION(glGenSamplers);
 	GL_BIND_FUNCTION(glSamplerParameteri);
 	GL_BIND_FUNCTION(glSamplerParameterfv);
+	GL_BIND_FUNCTION(glSamplerParameterf);
+	GL_BIND_FUNCTION(glGenerateMipmap);
 	GL_BIND_FUNCTION(glDeleteSamplers);
 	GL_BIND_FUNCTION(glBindSampler);
 	GL_BIND_FUNCTION(glActiveTexture);

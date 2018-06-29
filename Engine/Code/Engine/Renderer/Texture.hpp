@@ -25,6 +25,7 @@ class Texture
 
 public:
 	IntVector2 GetDimensions();
+	int CalculateMipCount(const IntVector2& dimensions);
 private:
 	Texture();
 	//Texture(const Texture* copyTexture);
