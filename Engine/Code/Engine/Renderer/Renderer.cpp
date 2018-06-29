@@ -988,6 +988,8 @@ void Renderer::DrawMesh(Mesh* mesh, const Matrix44& modelMatrix)
 	SetMatrix44Uniform(programHandle, "PROJECTION", m_currentCamera->m_projMatrix);
 	SetMatrix44Uniform(programHandle, "VIEW", m_currentCamera->m_viewMatrix);
 	SetMatrix44Uniform(programHandle, "MODEL", modelMatrix);
+
+	//pass game time to shader
 	float value = (float)GetMasterClock()->GetRunningTime();
 	SetFloatUniform(programHandle, "TIME", value);
 

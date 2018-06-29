@@ -115,7 +115,7 @@ void Clock::Reset()
 
 double Clock::GetRunningTime()
 {
-	uint64_t elapsedHPC = GetMasterClock()->m_total.hpc - GetMasterClock()->GetStartHPC();
+	uint64_t elapsedHPC = GetMasterClock()->m_total.hpc;
 
 	return PerformanceCounterToSeconds(elapsedHPC);
 }
