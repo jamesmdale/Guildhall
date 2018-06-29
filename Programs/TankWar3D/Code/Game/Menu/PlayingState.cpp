@@ -126,7 +126,7 @@ void PlayingState::Initialize()
 	m_ui->Initialize();
 
 	AudioSystem* audio = AudioSystem::GetInstance();
-	musicID = audio->PlaySound(audio->CreateOrGetSound("Data/Audio/Panoramic.mp3"), true, 0.5f, 0.f, 1.f, false);
+	musicID = audio->PlaySound(audio->CreateOrGetSound("Data/Audio/Panoramic.mp3"), true, 0.75f, 0.f, 1.f, false);
 
 	isVictory = false;
 

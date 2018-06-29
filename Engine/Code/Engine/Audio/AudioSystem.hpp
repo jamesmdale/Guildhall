@@ -56,6 +56,9 @@ public:
 
 	virtual void				ValidateResult( FMOD_RESULT result );
 
+	static void ToggleMute();
+	static float GetVolume();
+
 protected:
 	FMOD::System*						m_fmodSystem;
 	std::map< std::string, SoundID >	m_registeredSoundIDs;
@@ -65,4 +68,5 @@ protected:
 
 
 void SetVolume(Command& cmd);
+
 

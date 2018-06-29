@@ -28,6 +28,8 @@
 #endif
 
 static AudioSystem* g_theAudioSystem = nullptr;
+
+bool isMuted = false;
 float overallVolume = 0.15f;
 
 //-----------------------------------------------------------------------------------------------
@@ -133,7 +135,13 @@ SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float vo
 		channelAssignedToSound->setMode(playbackMode);
 		channelAssignedToSound->getFrequency( &frequency );
 		channelAssignedToSound->setFrequency( frequency * speed );
-		channelAssignedToSound->setVolume(overallVolume * volume );
+
+		if(isMuted)
+			channelAssignedToSound->setVolume(0.f);
+		else
+			channelAssignedToSound->setVolume(overallVolume * volume );
+
+
 		channelAssignedToSound->setPan( balance );
 		channelAssignedToSound->setLoopCount( loopCount );
 	}
@@ -282,5 +290,14 @@ void SetVolume(Command &cmd)
 	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
 }
 
+void AudioSystem::ToggleMute()
+{
+	isMuted = !isMuted;
+}
+
+float AudioSystem::GetVolume()
+{
+	return overallVolume;
+}
 
 //#endif  !defined( ENGINE_DISABLE_AUDIO )

@@ -140,6 +140,13 @@ float TheApp::UpdateInput(float deltaSeconds)
 		g_isQuitting = true;
 	}
 
+	if(InputSystem::GetInstance()->WasKeyJustPressed(InputSystem::GetInstance()->KEYBOARD_M))
+	{
+		float volume = AudioSystem::GetInstance()->GetVolume();
+
+		AudioSystem::GetInstance()->ToggleMute();
+	}
+
 	if (!DevConsole::GetInstance()->IsOpen())
 	{
 		deltaSeconds = Game::GetInstance()->UpdateInput(deltaSeconds);
