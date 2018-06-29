@@ -112,7 +112,7 @@ Vector3 Swarmer::Flock(float deltaSeconds)
 	Vector3 separateSteer = SeparateWithNeighbors(deltaSeconds);
 	Vector3 alignSteer = AlignWithNeighbors(deltaSeconds);
 	Vector3 centerSteer = CenterTowardsNeighbors(deltaSeconds);
-	Vector3 targetSteer = SeekTarget(deltaSeconds, m_gameState->m_playerTank->m_transform->GetWorldPosition());
+	Vector3 targetSteer = SeekTarget(deltaSeconds, m_gameState->m_playerTank->m_transform->GetWorldPosition()); 
 
 	separateSteer *= 5.0f;
     alignSteer *= 2.0f;
