@@ -100,7 +100,7 @@ void Swarmer::SwarmerToTankCollision()
 
 	if (tankBody.DoesOverlapWithSphere(m_transform->GetWorldPosition(), g_swarmerRadius))
 	{
-		//m_health--;
+		m_health--;
 		playerTank->m_heatlth -= 5;
 	}
 
