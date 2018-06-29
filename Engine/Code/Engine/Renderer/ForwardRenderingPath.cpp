@@ -13,8 +13,8 @@ ForwardRenderingPath::ForwardRenderingPath()
 	m_shadowSampler->CreateShadowSampler();
 
 	//init shadow targets
-	m_shadowColorTarget = Renderer::GetInstance()->CreateRenderTarget(2048, 2048, TEXTURE_FORMAT_RGBA8);
-	m_shadowDepthTarget = Renderer::GetInstance()->CreateDepthStencilTarget(2048, 2048);
+	m_shadowColorTarget = Renderer::GetInstance()->CreateRenderTarget(2048.f, 2048.f, TEXTURE_FORMAT_RGBA8);
+	m_shadowDepthTarget = Renderer::GetInstance()->CreateDepthStencilTarget(2048.f, 2048.f);
 
 	//set shadow camera targets
 	m_shadowCamera->SetColorTarget(m_shadowColorTarget);

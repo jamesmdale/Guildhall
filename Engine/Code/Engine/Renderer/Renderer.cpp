@@ -1095,7 +1095,7 @@ void Renderer::PostStartup()
 	m_defaultSampler->Create();
 
 	//load default texture
-	Image defaultImage = Image(IntVector2(1,1), Rgba::RED, "default");
+	Image defaultImage = Image(IntVector2(1,1), Rgba::WHITE, "default");
 	Image normalImage = Image(IntVector2(1,1), Rgba::NORMAL_MAP_FLAT, "normal");
 
 	m_defaultTexture = CreateOrGetTexture(defaultImage);
