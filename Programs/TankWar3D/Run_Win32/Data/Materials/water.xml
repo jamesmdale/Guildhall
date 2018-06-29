@@ -1,6 +1,6 @@
 <material name="water">
-	<shader name="lit" />
+	<shader name="water" />
 	<textures>
-		<texture bind="0" file="Data\Images\spaceSlime.jpg" />
+		<texture bind="0" file="Data\Images\waterTexture.jpg" />
 	</textures>
 </material>

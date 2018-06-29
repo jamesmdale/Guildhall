@@ -2,6 +2,7 @@
 #include "Engine\Renderer\Renderer.hpp"
 #include "ForwardRenderingPath.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Time\Clock.hpp"
 
 
 ForwardRenderingPath2D::ForwardRenderingPath2D()
@@ -58,6 +59,7 @@ void ForwardRenderingPath2D::RenderSceneForCamera(Camera* camera, RenderScene2D*
 		{
 			Vector3 cameraPosition = camera->m_transform->GetWorldPosition();
 			theRenderer->SetVector3Uniform(handle, "EYE_POSITION", cameraPosition);
+			//theRenderer->SetVector3Uniform(handle, "TIME", Vector3((float)GetMasterClock()->GetRunningTime(), 0.f, 0.f));
 		}
 		else
 			GUARANTEE_OR_DIE(handle > -1, "HANDLE FOR DRAW CALL IS = -1");

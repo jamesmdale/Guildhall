@@ -107,12 +107,18 @@ void PlayingState::Initialize()
 	// add water object =============================================================================
 	m_waterPlane = new GameObject();
 
+	Vector2 terrainDimensions = Vector2(m_terrain->m_worldBounds.GetDimensions().x, m_terrain->m_worldBounds.GetDimensions().z);
+
 	Renderable* waterRenderable = new Renderable();
 	Vector2 center = Vector2(m_terrain->m_worldBounds.GetCenter().x, m_terrain->m_worldBounds.GetCenter().z);
 	Vector2 dimensions = Vector2(m_terrain->m_worldBounds.GetDimensions().x, m_terrain->m_worldBounds.GetDimensions().z);
-	meshBuilder.CreateTiledQuad2D(Vector2::ZERO, Vector2(100.f, 100.f), Vector2(25.f, 25.f), Rgba::WHITE);	
+	meshBuilder.CreateQuad2D(Vector2::ZERO, terrainDimensions, Rgba::WHITE);	
 	waterRenderable->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
 	waterRenderable->SetMaterial(Material::Clone(theRenderer->CreateOrGetMaterial("water")));
+	waterRenderable->m_transform->AddRotation(Vector3(90.f, 0.f, 0.f));
+	waterRenderable->m_transform->SetLocalPosition(Vector3(0.f, 0.5f, 0.f));
+
+	m_waterPlane->m_transform->AddChildTransform(waterRenderable->m_transform);
 
 	m_waterPlane->AddRenderable(waterRenderable);
 	m_waterPlane->m_renderScene = m_renderScene;
@@ -120,6 +126,8 @@ void PlayingState::Initialize()
 	{
 		m_waterPlane->m_renderScene->AddRenderable(m_waterPlane->m_renderables[renderableIndex]);
 	}
+
+	waterRenderable = nullptr;
 
 	// add spawners =========================================================================================
 	for (int spawnerIndex = 0; spawnerIndex < g_startingNumSpawners; ++spawnerIndex)

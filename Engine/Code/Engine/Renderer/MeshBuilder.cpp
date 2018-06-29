@@ -522,6 +522,40 @@ void MeshBuilder::CreateTiledQuad3D(const Vector3& center, const Vector3& dimens
 	}	
 }
 
+void MeshBuilder::CreateScrollableQuad2D(const Vector2& center, const Vector2& dimensions, const Rgba& tint)
+{
+	int vertSize = GetVertexCount();
+
+	AABB2 bounds = AABB2(center, dimensions.x, dimensions.y);
+
+	SetColor(tint);
+	SetUV(Vector2(bounds.mins));
+	SetNormal(Vector3(0.f, 0.f, -1.f));
+	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+	//PushVertex(Vector3(bounds.mins.x, bounds.mins.y, 0.f));
+	PushVertex(Vector3(0.f, 0.f, 0.f));
+
+	SetColor(tint);
+	SetUV(Vector2(bounds.maxs.x, bounds.mins.y));
+	SetNormal(Vector3(0.f, 0.f, -1.f));
+	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+	PushVertex(Vector3(1.f, 0.f, 0.f));
+
+	SetColor(tint);
+	SetUV(Vector2(bounds.maxs.x, bounds.maxs.y));
+	SetNormal(Vector3(0.f, 0.f, -1.f));
+	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+	PushVertex(Vector3(1.f, 1.f, 0.f));
+
+	SetColor(tint);
+	SetUV(Vector2(bounds.mins.x, bounds.maxs.y));
+	SetNormal(Vector3(0.f, 0.f, -1.f));
+	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+	PushVertex(Vector3(0.f, 1.f, 0.f));
+
+	AddQuadIndices(vertSize + 0, vertSize + 1, vertSize + 2, vertSize + 3);
+}
+
 void MeshBuilder::CreateStarQuads3D(const Vector3& center, const Vector3& dimensions, const Rgba& tint)
 {
 	int vertSize = GetVertexCount();

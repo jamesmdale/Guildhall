@@ -1,6 +1,7 @@
 #include "Engine\Renderer\ForwardRenderingPath.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Core\LightObject.hpp"
+#include "Engine\Time\Clock.hpp"
 
 ForwardRenderingPath::ForwardRenderingPath()
 {

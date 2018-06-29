@@ -46,6 +46,10 @@ public:
 		return deltaSeconds;
 	}; //frame time is deltaseconds
 
+	uint64_t GetStartHPC(){return m_startHPC;}
+
+	double GetRunningTime();
+
 public:
 	TimeUnit m_frame; 
 	TimeUnit m_total; 
@@ -66,6 +70,8 @@ private:
 Clock* GetMasterClock();
 float GetMasterDeltaSeconds();
 void MasterClockBeginFrame();
+
+
 
 // returns time since this clock 
 // using the current hpc, and our start hpc

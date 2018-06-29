@@ -6,24 +6,6 @@
 uniform vec3 EYE_POSITION;  // camera related
 uniform float TIME;
 
-// Scene related
-//uniform vec4 AMBIENT; // xyz color, w intensity
-
-// surface
-//uniform float SPECULAR_AMOUNT; // shininess (0 to 1)
-//uniform float SPECULAR_POWER; // smoothness (1 to whatever)
-
-// per light values
-//uniform vec3 LIGHT_POSITION[MAX_LIGHTS];
-//uniform vec4 LIGHT_COLOR[MAX_LIGHTS]; //w is intensity
-
-//attenuation
-//uniform vec3 ATTENUATION[MAX_LIGHTS];
-//uniform vec3 LIGHT_FORWARD[MAX_LIGHTS];
-//uniform vec3 LIGHT_DIRECTION_FACTOR[MAX_LIGHTS]; //0 means point light. 1 means directional (also matters for spot)
-//uniform float LIGHT_INNER_ANGLE[MAX_LIGHTS];
-//uniform float LIGHT_OUTER_ANGLE[MAX_LIGHTS];
-
 struct Light
 {
    vec3 position;
@@ -65,12 +47,6 @@ layout(binding = 0) uniform sampler2D gTexDiffuse;
 layout(binding = 1) uniform sampler2D gTexNormal;
 layout(binding = 5) uniform sampler2DShadow gTexShadow;
 
-
-// Suggest always manually setting bindings - again, consitancy with
-// other rendering APIs and well as you can make assumptions in your
-// engine without having to query
-//layout(binding = 0) uniform sampler2D gTexDiffuse;
-
 // Attributes ============================================
 in vec3 passWorldPos;
 in vec2 passUV;
@@ -79,51 +55,17 @@ in vec3 passWorldNormal;
 in vec3 passWorldTangent;
 in vec3 passWorldBitangent;
 
+
 out vec4 outColor;
 
 
-float GetShadowFactor( vec3 position, vec3 normal, Light light )
-{
-   float shadow = light.isShadowCasting;
-   if (shadow == 0.0f) {
-      return 1.0f;
-   }
-
-   // so, we're lit, so we will use the shadow sampler
-   float bias_factor = max( dot( light.forward, normal ), 0.0f );
-   bias_factor = sqrt(1 - (bias_factor * bias_factor));
-   position -= light.forward * bias_factor * .25f;
-
-   vec4 clip_pos = light.viewProjection * vec4(position, 1.0f);
-   vec3 ndc_pos = clip_pos.xyz / clip_pos.w;
-
-   // put from -1 to 1 range to 0 to 1 range
-   ndc_pos = (ndc_pos + vec3(1)) * .5f;
-
-   // can give this a "little" bias
-   // treat every surface as "slightly" closer"
-   // returns how many times I'm pass (GL_LESSEQUAL)
-   float is_lit = texture( gTexShadow, ndc_pos ).r;
-   // float my_depth = ndc_pos.z;
-
-   // use this to feathre shadows near the border
-   float min_uv = min( ndc_pos.x, ndc_pos.y );
-   float max_uv = max( ndc_pos.x, ndc_pos.y );
-   float blend = 1.0f - min( smoothstep(0.0f, .05f, min_uv), smoothstep(1.0, .95, max_uv) );
-
-   // step returns 0 if nearest_depth is less than my_depth, 1 otherwise.
-   // if (nearest_depth) is less (closer) than my depth, that is shadow, so 0 -> shaded, 1 implies light
-   // float is_lit = step( my_depth, nearest_depth ); //
-
-   // scale by shadow amount
-   return mix( light.isShadowCasting * is_lit, 1.0f, blend );
-}
 
 // Entry Point ===========================================
 void main( void )
 {
+   vec2 uv_offset = passUV + vec2(TIME * .001f); 
    // Color of this surface (defuse)
-   vec4 surface_color = texture( gTexDiffuse, passUV ) * passColor;
+   vec4 surface_color = texture( gTexDiffuse, passUV + uv_offset ) * passColor;
 
    //get normalcolor
    vec3 normal_color  = texture(gTexNormal, passUV).xyz;
@@ -165,9 +107,7 @@ void main( void )
          float f = dot( -light_dir, LIGHTS[lightIndex].forward );
 
          //get light forward
-         vec3 light_forward = normalize(LIGHTS[lightIndex].forward); //normalize just in case
-
-         float shadowFactor = GetShadowFactor(passWorldPos, world_normal, LIGHTS[lightIndex]);
+         vec3 light_forward = normalize(LIGHTS[lightIndex].forward); //normalize just in cas
 
          // figure out how far away angle-wise I am from the forward of the light (useful for spot lights)
          float dot_angle = dot( light_forward, -light_dir );
@@ -191,7 +131,7 @@ void main( void )
          float dot3 = dot(light_dir, world_normal);
 
          vec3 light_color = max(dot3, 0.0f) * LIGHTS[lightIndex].colorAndIntensity.xyz * attenuation;
-         surface_light += light_color * shadowFactor;
+         surface_light += light_color;
 
          // Next compute the reflected light
          float spec_factor = 0.0f;
@@ -206,7 +146,7 @@ void main( void )
          spec_factor = SPECULAR_AMOUNT * pow( spec_factor, SPECULAR_POWER );
 
          // Add in the reflected power of this light. (spec)
-         reflected_light += light_color * spec_factor * attenuation * shadowFactor;
+         reflected_light += light_color * spec_factor * attenuation;
      }
 
    // Surface lighting should never blow
