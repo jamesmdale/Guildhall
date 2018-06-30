@@ -63,9 +63,9 @@ out vec4 outColor;
 // Entry Point ===========================================
 void main( void )
 {
-   vec2 uv_offset = passUV + vec2(TIME * .001f); 
+   vec2 uv_offset = passUV + vec2(TIME * .01f); 
    // Color of this surface (defuse)
-   vec4 surface_color = texture( gTexDiffuse, passUV + uv_offset ) * passColor;
+   vec4 surface_color = texture( gTexDiffuse, passUV + uv_offset) * passColor;
 
    //get normalcolor
    vec3 normal_color  = texture(gTexNormal, passUV).xyz;
