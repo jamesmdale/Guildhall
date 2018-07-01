@@ -79,7 +79,7 @@ void Tank::Initialize()
 	// setup tank target trajectory =========================================================================================
 	m_trajectory = new Renderable();
 
-	meshBuilder.CreateLine(m_turret->m_muzzleTransform->GetWorldPosition(), m_turret->m_muzzleTransform->GetWorldPosition(), Rgba::RED);
+	meshBuilder.CreateCube(Vector3::ZERO, Vector3(0.5f, 0.5f, 0.5f), Rgba::RED);
 	m_trajectory->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
 	m_trajectory->SetMaterial(Material::Clone(Renderer::GetInstance()->CreateOrGetMaterial("default"))); 
 	m_renderScene->AddRenderable(m_trajectory);
@@ -240,7 +240,6 @@ Vector3 Tank::UpdateTarget(float deltaSeconds)
 
 	Matrix44 lookAtInTankSpace = Matrix44::LookAt(m_turret->m_transform->GetLocalPosition(), targetInTankSpace, Vector3::UP);
 	Matrix44 lerpLookAt = worldToTank.TurnToward(lookAtInTankSpace, 0.001f);
-
 	
 	Vector3 rotation = Vector3(lookAtInTankSpace.GetRotation().x, lookAtInTankSpace.GetRotation().y, 0.f);
 	m_turret->m_transform->SetFromMatrix(lookAtInTankSpace);
@@ -272,7 +271,7 @@ Vector3 Tank::UpdateTarget(float deltaSeconds)
 
 	////tank forward debug line
 	//DebugRender::GetInstance()->CreateDebugLine(m_transform->GetWorldPosition(), raycastResult.position, Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
-	//DebugRender::GetInstance()->CreateDebugCube(raycastResult.position, Vector3(1.f, 1.f, 1.f), Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
+	DebugRender::GetInstance()->CreateDebugCube(raycastResult.position, Vector3(1.f, 1.f, 1.f), Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
 
 	return raycastResult.position;
 }
@@ -343,24 +342,5 @@ RayCastHit3 Tank::RaycastFromCamera(float deltaSeconds)
 
 void Tank::UpdateTrajectoryRenderable(const Vector3& target)
 {
-	m_renderScene->RemoveRenderable(m_trajectory);
-	
-	for (int meshIndex = 0; meshIndex < (int)m_trajectory->m_meshes.size(); ++meshIndex)
-	{
-		delete(m_trajectory->m_meshes[meshIndex]);
-		m_trajectory->m_meshes[meshIndex] = nullptr;
-	}
-	m_trajectory->m_meshes.clear();
-
-	MeshBuilder meshBuilder;
-
-	//Vector3 currentPos = m_turret->m_transform->GetWorldPosition();
-	Vector3 currentPos = m_transform->GetWorldPosition();
-	DebugRender::GetInstance()->CreateDebugLine(currentPos + Vector3(0.f, 5.f, 0.f), target, Rgba::WHITE);
-
-	meshBuilder.CreateLine(m_turret->m_transform->GetWorldPosition(), target, Rgba::RED);
-	//meshBuilder.CreateCube(target, Vector3::ONE, Rgba::RED);
-	m_trajectory->AddMesh(meshBuilder.CreateMesh<VertexPCU>());
-
-	m_renderScene->AddRenderable(m_trajectory);
+	m_trajectory->m_transform->SetLocalPosition(target);
 }
