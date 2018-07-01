@@ -79,7 +79,7 @@ float Trajectory::GetMaxHeight(float gravity, float launchSpeed, float distance)
 
 	float tanTheta = tan(radians);
 
-	float maxHeight = 0.5 * (distance * distance);	
+	float maxHeight = 0.5f * (distance * distance);	
 
 	return maxHeight;
 }

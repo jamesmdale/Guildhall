@@ -986,7 +986,7 @@ float Matrix44::GetTrace()
 {
 	float sum = 0.0f;
 
-	for (int matrixIndex = 0.0f; matrixIndex < 3; ++matrixIndex)
+	for (int matrixIndex = 0; matrixIndex < 3; ++matrixIndex)
 	{
 		sum += GetValueAtIndex(matrixIndex, matrixIndex); //go along the diagonal and sum the values
 	}

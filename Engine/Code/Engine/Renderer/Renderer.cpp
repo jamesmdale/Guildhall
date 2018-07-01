@@ -474,7 +474,6 @@ void Renderer::DrawAABB(const AABB2& bounds, const Rgba& tint)
 {
 	Vector2 texCoordsAtMins = AABB2::ZERO_TO_ONE.mins;
 	Vector2 texCoordsAtMaxs = AABB2::ZERO_TO_ONE.maxs;
-	int textureIndex = 0;
 
 	VertexPCU vertex[6];
 	vertex[0] =  VertexPCU(Vector3(bounds.mins.x, bounds.mins.y, 0), tint, Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
@@ -500,7 +499,6 @@ void Renderer::DrawOrientedTexturedAABB(Matrix44& transformMatrix,
 
 	Vector2 texCoordsAtMins = uvs.mins;
 	Vector2 texCoordsAtMaxs = uvs.maxs;
-	int textureIndex = 0;
 
 	//position + (transformMatrixGetRight() * spriteDimensions.x) + (transformMatrix.GetUp() * spriteDimensions.y)
 	VertexPCU vertex[6];
@@ -586,7 +584,6 @@ void Renderer::DrawCube(const Vector3& center, const Vector3& dimensions,
 	const AABB2& uvSide,
 	const AABB2& uvBottom)
 {
-	int textureIndex = 0;
 	float xVal = 0.f;
 	float yVal = 0.f;
 	float zVal = 0.f;
@@ -737,7 +734,6 @@ void Renderer::DrawTexturedAABB(const AABB2& bounds, const Texture& texture, con
 
 void Renderer::DrawTriangle(const Vector3& aPosition, const Vector3& bPosition, const Vector3& cPosition, const Rgba& tint)
 {
-	int textureIndex = 0;
 	Vector2 texCoordsAtMins = AABB2::ZERO_TO_ONE.mins;
 	Vector2 texCoordsAtMaxs = AABB2::ZERO_TO_ONE.maxs;
 

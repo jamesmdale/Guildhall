@@ -11,11 +11,11 @@ ForwardRenderingPath::ForwardRenderingPath()
 
 	//init shadow sampler
 	m_shadowSampler = new Sampler();
-	m_shadowSampler->CreateShadowSampler();
+	m_shadowSampler->Create(SAMPLER_TYPE_SHADOW);
 
 	//init shadow targets
-	m_shadowColorTarget = Renderer::GetInstance()->CreateRenderTarget(2048.f, 2048.f, TEXTURE_FORMAT_RGBA8);
-	m_shadowDepthTarget = Renderer::GetInstance()->CreateDepthStencilTarget(2048.f, 2048.f);
+	m_shadowColorTarget = Renderer::GetInstance()->CreateRenderTarget(2048, 2048, TEXTURE_FORMAT_RGBA8);
+	m_shadowDepthTarget = Renderer::GetInstance()->CreateDepthStencilTarget(2048, 2048);
 
 	//set shadow camera targets
 	m_shadowCamera->SetColorTarget(m_shadowColorTarget);

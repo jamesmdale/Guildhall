@@ -71,6 +71,7 @@ float GameState::UpdateFromInput(float deltaSeconds)
 
 void GameState::TransitionIn(float secondsTransitioning)
 {
+	UNUSED(secondsTransitioning);
 	/*	does whatever it wants in terms of transitioning. when finished,
 	set s_isFinishedTransitioningIn to true
 	*/
@@ -79,6 +80,7 @@ void GameState::TransitionIn(float secondsTransitioning)
 
 void GameState::TransitionOut(float secondsTransitioning)
 {
+	UNUSED(secondsTransitioning);
 	/*	does whatever it wants in terms of transitioning. when finished,
 		set s_isFinishedTransitioningOut to true
 	*/

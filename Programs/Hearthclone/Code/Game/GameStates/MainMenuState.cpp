@@ -9,6 +9,7 @@ MainMenuState::~MainMenuState()
 
 void MainMenuState::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
 }
 
 void MainMenuState::PreRender()

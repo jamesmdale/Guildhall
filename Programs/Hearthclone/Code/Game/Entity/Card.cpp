@@ -65,6 +65,8 @@ void Card::Initialize()
 
 void Card::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
+
 	if (m_isPositionLocked == false)
 	{
 		if (m_isInputPriority)
@@ -116,7 +118,7 @@ void Card::RefreshCardRenderables()
 	// create background =========================================================================================
 	Renderable2D* cardRenderable = new Renderable2D();
 
-	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels * 0.99, GetCardColorByClass(m_definition->m_class)); //make it slightly smaller
+	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels * 0.99f, GetCardColorByClass(m_definition->m_class)); //make it slightly smaller
 	cardRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
 
 	// create card template overlay renderable =========================================================================================
@@ -196,7 +198,8 @@ void Card::OnLeftClicked()
 			Vector2 battlefieldLocation = playingState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
 			
 
-			Player* player = playingState->m_activePlayer;
+			ePlayerType playerType = playingState->m_activePlayer->m_playerId;
+
 			int cardIndexInPlayerHand = 0;
 
 			for (int cardIndex = 0; cardIndex < (int)playingState->m_activePlayer->m_hand.size(); ++cardIndex)
@@ -208,7 +211,7 @@ void Card::OnLeftClicked()
 				}
 			}
 
-			std::map<std::string, std::string> parameters = {{"target", Stringf("%i", SELF_PLAYER_TYPE)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", battlefieldLocation.x, battlefieldLocation.y)}};
+			std::map<std::string, std::string> parameters = {{"target", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", battlefieldLocation.x, battlefieldLocation.y)}};
 			AddActionToRefereeQueue("cast_from_hand", parameters);
 		}
 		else //return card to hand

@@ -12,6 +12,7 @@ LoadingState::~LoadingState()
 
 void LoadingState::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
 	if (s_isLoading)
 	{
 		Renderer* theRenderer = Renderer::GetInstance();

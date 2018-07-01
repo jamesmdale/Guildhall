@@ -154,7 +154,7 @@ AABB2 Window::GetClientWindow()
 	::GetClientRect(hwnd, &windowRect);
 
 	//windows has (0,0) top left
-	AABB2 windowAABB2 = AABB2(Vector2(windowRect.left, windowRect.top), Vector2(windowRect.right, windowRect.bottom));
+	AABB2 windowAABB2 = AABB2(Vector2((float)windowRect.left, (float)windowRect.top), Vector2((float)windowRect.right, (float)windowRect.bottom));
 
 	return windowAABB2;
 }

@@ -15,7 +15,7 @@ void ProcessEffectQueue()
 	//process everything on the RefereeQueue before allowing new user actions
 	if(GetEffectQueueCount() != 0)
 	{
-		EffectQueue.front()->Update(GetMasterClock()->GetDeltaSeconds());
+		EffectQueue.front()->Update((float)GetMasterClock()->GetDeltaSeconds());
 
 		if(EffectQueue.front()->m_isComplete == true)		
 		{
@@ -43,5 +43,5 @@ Effect::~Effect()
 
 void Effect::Update(float deltaSeconds)
 { 
-	//do update stuff.
+	UNUSED(deltaSeconds);
 }

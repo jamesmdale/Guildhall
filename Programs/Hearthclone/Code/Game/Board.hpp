@@ -18,7 +18,6 @@ public:
 	virtual void Initialize() override;
 
 	void CreateBoardMeshesForRenderable(Renderable2D* renderable);
-	void CreateBoardTextMeshesForRenderable(Renderable2D* renderable);
 	void RefreshPlayerManaWidget();
 	void RefreshEndTurnWidget();
 	void CreateBoardTexturedMeshesForRenderable(Renderable2D* renderable);

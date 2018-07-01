@@ -40,7 +40,7 @@ public:
 
 	void ClockSystemStartup() { Reset(); };
 
-	double GetDeltaSeconds()
+	float GetDeltaSeconds()
 	{ 
 		float deltaSeconds = ClampFloat((float)m_frame.hpcSeconds, 0.0f, 0.05f);
 		return deltaSeconds;

@@ -8,6 +8,7 @@ ReadyState::~ReadyState()
 
 void ReadyState::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
 }
 
 void ReadyState::PreRender()

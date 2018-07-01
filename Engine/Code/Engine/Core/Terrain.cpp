@@ -51,8 +51,8 @@ Vector3 Terrain::GetTerrainVertexPositionAtUV(float u, float v)
 
 	TODO("Could use linear height map to round off terrain.");
 	//
-	texelIndexX = ClampFloat(texelIndexX, 0.f, m_heightMap->GetDimensions().x - 1);
-	texelIndexY = ClampFloat(texelIndexY, 0.f, m_heightMap->GetDimensions().y - 1);
+	texelIndexX = ClampInt(texelIndexX, 0, m_heightMap->GetDimensions().x - 1);
+	texelIndexY = ClampInt(texelIndexY, 0, m_heightMap->GetDimensions().y - 1);
 
 	Rgba texel = m_heightMap->GetTexel(texelIndexX, texelIndexY);
 	float texelVal0To1 = texel.GetRedAsFloat();

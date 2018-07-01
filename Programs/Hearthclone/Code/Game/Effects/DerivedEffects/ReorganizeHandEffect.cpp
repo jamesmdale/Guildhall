@@ -22,6 +22,8 @@ ReorganizeHandEffect::~ReorganizeHandEffect()
 
 void ReorganizeHandEffect::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
+
 	// if first time in update, initialize members
 	if (m_isInitialized == false)
 	{

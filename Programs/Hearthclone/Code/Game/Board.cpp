@@ -56,9 +56,6 @@ void Board::Initialize()
 	//add textured elements to board
 	CreateBoardTexturedMeshesForRenderable(boardRenderable);
 
-	//add text to board
-	CreateBoardTextMeshesForRenderable(boardRenderable);
-
 	//Initialize dynamic widgets
 	m_playerManaWidget = new Widget();
 	m_endTurnWidget = new EndTurnButton();
@@ -103,8 +100,6 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	Vector2 endTurnDimensions = clientWindowDimensions * g_endTurnButtonPercentageOfClientWindow;
 
 	mb.CreateQuad2D(AABB2(clientWindow->GetClientWindow().mins, clientWindow->GetClientWindow().maxs), boardBaseColor); //whole board
-
-	Material* material = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
 
 	renderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
     
@@ -239,29 +234,6 @@ void Board::CreateBoardTexturedMeshesForRenderable(Renderable2D * renderable)
 	
 	// cleanup =========================================================================================
 	materialInstance = nullptr;
-	clientWindow = nullptr;
-	theRenderer = nullptr;
-}
-
-void Board::CreateBoardTextMeshesForRenderable(Renderable2D * renderable)
-{
-	Renderer* theRenderer = Renderer::GetInstance();
-	MeshBuilder mb;
-	mb.FlushBuilder();
-
-	Window* clientWindow = Window::GetInstance();
-
-	//m_endTurnQuad.GetCenter();
-
-	//mb.CreateText2DInAABB2(m_endTurnQuad.GetCenter(), m_endTurnQuad.GetDimensions(), 4.f / 3.f, "END TURN", Rgba::BLACK);
-
-	// add mesh and material to renderable =========================================================================================
-	//Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
-	//materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::BLACK));
-
-	//renderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);
-
-	// cleanup =========================================================================================
 	clientWindow = nullptr;
 	theRenderer = nullptr;
 }

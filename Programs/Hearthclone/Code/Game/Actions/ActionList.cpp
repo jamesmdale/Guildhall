@@ -114,8 +114,6 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 
 	Card* cardToCast = player->m_hand[cardIndex];	
 
-	bool canCastCard = true;
-
 	// Process Function =============================================================================	
 	if (cardToCast->m_definition->m_type == MINION_TYPE)
 	{
@@ -213,6 +211,8 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 
 void EndTurnAction(const std::map<std::string, std::string>& parameters)
 {
+	UNUSED(parameters);
+
 	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
 
 	TODO("Handle triggers");
@@ -224,6 +224,7 @@ void EndTurnAction(const std::map<std::string, std::string>& parameters)
 
 void StartTurnAction(const std::map<std::string, std::string>& parameters)
 {
+	UNUSED(parameters);
 
 	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
 

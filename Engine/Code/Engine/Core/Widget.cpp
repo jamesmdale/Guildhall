@@ -36,6 +36,8 @@ Widget::Widget(std::string name)
 
 Widget::Widget(std::string name, Renderable2D* renderable2D)
 {
+	UNUSED(renderable2D);
+
 	m_name = name;
 	m_transform2D = new Transform2D();
 	UpdateSortLayer(-1);

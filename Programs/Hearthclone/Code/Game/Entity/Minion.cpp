@@ -39,6 +39,7 @@ void Minion::Initialize()
 
 void Minion::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
 	//if (m_isPositionLocked == false)
 	//{
 	//	if (m_isInputPriority)

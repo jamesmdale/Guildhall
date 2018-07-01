@@ -22,6 +22,8 @@ DrawEffect::~DrawEffect()
 
 void DrawEffect::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
+
 	if (m_stopWatch == nullptr)
 	{
 		m_stopWatch = new Stopwatch(GetMasterClock());

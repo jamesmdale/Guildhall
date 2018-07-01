@@ -28,6 +28,8 @@ TurnStateManager::~TurnStateManager()
 
 void TurnStateManager::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
+
 	if (m_transitionState != NUM_PLAY_STATES)
 	{
 		Transition();

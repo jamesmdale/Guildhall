@@ -42,8 +42,8 @@ struct Light
 		m_attenuation = Vector3(1.f, 0.f, 0.f); //x + (y * d) + (z * (d * d))	
 		m_lightOuterAngle = 360.f; //360 to 360 for light in all directions
 		m_lightForward = Vector3::FORWARD;
-		Matrix44 m_viewProjectionMatrix = Matrix44::IDENTITY;
-		Vector3 m_padding = Vector3::ZERO;
-		float m_isShadowCasting = 0.f;
+		m_viewProjectionMatrix = Matrix44::IDENTITY;
+		m_padding = Vector3::ZERO;
+		m_isShadowCasting = 0.f;
 	}
 };

@@ -22,6 +22,8 @@ ReorganizeMinionsEffect::~ReorganizeMinionsEffect()
 
 void ReorganizeMinionsEffect::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
+
 	// if first time in update, initialize members
 	if (m_isInitialized == false)
 	{
@@ -61,11 +63,12 @@ void ReorganizeMinionsEffect::Initialize()
 		fullBoardSize = m_gameState->m_gameBoard->m_enemyBattlfieldQuad;
 	}
 
+	//init board quad size
 	Vector2 boardCenter = fullBoardSize.GetCenter();
 	Vector2 dimensions = fullBoardSize.GetDimensions();
 	float minionDimensionsX = m_player->m_minions[0]->GetMinionDimensions().x + 10.f; //padding
 	float sizeX = minionDimensionsX * (float)m_player->m_minions.size();
-	AABB2 m_boardQuad = AABB2(Vector2(boardCenter.x - (sizeX * 0.5f), fullBoardSize.mins.y), Vector2(boardCenter.x + (sizeX * 0.5f), fullBoardSize.maxs.y));
+	m_boardQuad = AABB2(Vector2(boardCenter.x - (sizeX * 0.5f), fullBoardSize.mins.y), Vector2(boardCenter.x + (sizeX * 0.5f), fullBoardSize.maxs.y));
 
 	UpdateMinionIndex();
 }

@@ -172,7 +172,7 @@ IntVector2 Texture::GetDimensions()
 
 int Texture::CalculateMipCount(const IntVector2& dimensions)
 {
-	float value = GetLargerOfXY(dimensions);
+	int value = GetLargerOfXY(dimensions);
 
 	float mipCount = log2f((float)value);
 	

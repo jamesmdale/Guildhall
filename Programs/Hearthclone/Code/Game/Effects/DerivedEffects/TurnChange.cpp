@@ -34,8 +34,8 @@ void TurnChange::InitializeTurnRenderable()
 	MeshBuilder mb;
 
 	//get size of text
-	Vector2 windowCenter = theWindow->GetCenterOfClientWindow();
-	Vector2 textBoxSize = theWindow->GetClientDimensions() * 0.25f;
+	Vector2 windowCenter = Vector2(theWindow->GetCenterOfClientWindow());
+	Vector2 textBoxSize =  Vector2(theWindow->GetClientDimensions()) * 0.25f;
 
 	std::string text = "";
 	if(m_toPlayerType == SELF_PLAYER_TYPE)
@@ -62,6 +62,8 @@ void TurnChange::InitializeTurnRenderable()
 
 void TurnChange::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
+
 	if (m_stopWatch == nullptr)
 	{
 		m_stopWatch = new Stopwatch(GetMasterClock());
