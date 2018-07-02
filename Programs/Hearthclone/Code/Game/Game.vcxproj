@@ -294,6 +294,7 @@
   <ItemGroup>
     <ClCompile Include="Actions\Action.cpp" />
     <ClCompile Include="Actions\ActionList.cpp" />
+    <ClCompile Include="Effects\DerivedEffects\AttackEffect.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Definitions\DeckDefinition.cpp" />
     <ClCompile Include="Definitions\CardDefinition.cpp" />
@@ -319,7 +320,7 @@
     <ClCompile Include="Effects\DerivedEffects\ReorganizeMinionsEffect.cpp" />
     <ClCompile Include="TheApp.cpp" />
     <ClCompile Include="Triggers\Trigger.cpp" />
-    <ClCompile Include="Effects\DerivedEffects\TurnChange.cpp" />
+    <ClCompile Include="Effects\DerivedEffects\TurnChangeEffect.cpp" />
     <ClCompile Include="TurnStates\TurnStateManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -329,6 +330,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actions\Action.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\AttackEffect.hpp" />
     <ClInclude Include="Board.hpp" />
     <ClInclude Include="Definitions\DeckDefinition.hpp" />
     <ClInclude Include="Definitions\CardDefinition.hpp" />
@@ -354,7 +356,7 @@
     <ClInclude Include="Effects\DerivedEffects\ReorganizeMinionsEffect.hpp" />
     <ClInclude Include="TheApp.hpp" />
     <ClInclude Include="Triggers\Trigger.hpp" />
-    <ClInclude Include="Effects\DerivedEffects\TurnChange.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\TurnChangeEffect.hpp" />
     <ClInclude Include="TurnStates\TurnStateManager.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

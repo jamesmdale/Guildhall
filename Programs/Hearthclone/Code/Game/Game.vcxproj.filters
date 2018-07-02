@@ -91,7 +91,10 @@
     <ClCompile Include="Entity\EndTurnButton.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Effects\DerivedEffects\TurnChange.cpp">
+    <ClCompile Include="Effects\DerivedEffects\TurnChangeEffect.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Effects\DerivedEffects\AttackEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,6 +134,7 @@
     <ClInclude Include="Effects\DerivedEffects\ReorganizeMinionsEffect.hpp" />
     <ClInclude Include="TurnStates\TurnStateManager.hpp" />
     <ClInclude Include="Entity\EndTurnButton.hpp" />
-    <ClInclude Include="Effects\DerivedEffects\TurnChange.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\TurnChangeEffect.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\AttackEffect.hpp" />
   </ItemGroup>
 </Project>

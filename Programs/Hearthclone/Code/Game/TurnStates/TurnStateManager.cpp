@@ -10,6 +10,7 @@
 #include "Engine\Window\Window.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Game\Board.hpp"
+#include "Game\Entity\Minion.hpp"
 
 bool isFinishedTransitioningIn = true;
 bool isFinishedTransitioningOut = true;
@@ -181,15 +182,23 @@ void TurnStateManager::TransitionInStartOfTurn()
 	else
 		m_playingState->m_activePlayer = m_playingState->m_player;*/
 
+	// handle start of turn state updates for new active player =========================================================================================
+
 	//add one mana crystal if below max
-	if (m_playingState->m_player->m_maxManaCount < 10)
+	if (m_playingState->m_activePlayer->m_maxManaCount < 10)
 	{
-		m_playingState->m_player->m_maxManaCount++;
+		m_playingState->m_activePlayer->m_maxManaCount++;
 	}
 
 	TODO("This isn't always true (Overload as an example)");
-	m_playingState->m_player->m_manaCount = m_playingState->m_player->m_maxManaCount;
-	
+	m_playingState->m_activePlayer->m_manaCount = m_playingState->m_activePlayer->m_maxManaCount;
+
+	//update minion age
+	for (int minionIndex = 0; minionIndex < (int)m_playingState->m_activePlayer->m_minions.size(); ++minionIndex)
+	{
+		m_playingState->m_activePlayer->m_minions[minionIndex]->m_age++;
+	}
+
 	std::map<std::string, std::string> parameters;
 	AddActionToRefereeQueue("start_turn", parameters);
 
@@ -246,6 +255,12 @@ void TurnStateManager::TransitionOutMain()
 
 void TurnStateManager::TransitionOutEndOfTurn()
 {
+	//update minion summoning sickness
+	for (int minionIndex = 0; minionIndex < (int)m_playingState->m_activePlayer->m_minions.size(); ++minionIndex)
+	{
+		m_playingState->m_activePlayer->m_minions[minionIndex]->m_hasAttackedThisTurn = false;
+	}
+
 	isFinishedTransitioningOut = true;
 }
 

@@ -13,10 +13,19 @@ public:
 	}
 	virtual ~Character() override;
 
+	static int GenerateNewCharacterId();
+	static void ResetCharacterIndexer();
 public:
+	int m_characterId;
 	int m_health;
 	int m_attack;
 
 	std::vector<std::string> m_tags;
+
+	static int s_characterIndexer;
 };
+
+
+
+
 

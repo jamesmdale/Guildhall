@@ -15,7 +15,6 @@
 #include "Game\TurnStates\TurnStateManager.hpp"
 #include "Game\Board.hpp"
 
-
 PlayingState::~PlayingState()
 {
 	delete(m_turnStateManager);
@@ -180,7 +179,30 @@ std::vector<Widget*>* PlayingState::GetInteractableWidgets()
 	return interactableWidgets;
 }
 
-Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactableWidgets)
+std::vector<Character*>* PlayingState::GetCharacterWidgets()
+{
+	std::vector<Character*>* characterWidgets = new std::vector<Character*>();
+
+	// add minions =========================================================================================
+	
+	//add friendly minions
+	for (int minionIndex = 0; minionIndex < (int)m_player->m_minions.size(); ++minionIndex)
+	{
+		characterWidgets->push_back(m_player->m_minions[minionIndex]);
+	}
+
+	//add enemy minions
+	for (int minionIndex = 0; minionIndex < (int)m_enemyPlayer->m_minions.size(); ++minionIndex)
+	{
+		characterWidgets->push_back(m_enemyPlayer->m_minions[minionIndex]);
+	}
+	
+	TODO("Add player hero widget");
+
+	return characterWidgets;
+}
+
+Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& widgets)
 {
 	Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 
@@ -188,9 +210,9 @@ Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactable
 	Widget* selectedWidget = nullptr;
 
 	//add each widget at the mouse cursor to 
-	for (int widgetIndex = 0; widgetIndex < (int)interactableWidgets.size(); ++widgetIndex)
+	for (int widgetIndex = 0; widgetIndex < (int)widgets.size(); ++widgetIndex)
 	{
-		Widget* widget = interactableWidgets[widgetIndex];
+		Widget* widget = widgets[widgetIndex];
 		Vector2 position = widget->m_transform2D->GetWorldPosition();
 		AABB2 widgetBounds = AABB2(position, widget->m_dimensionsInPixels.x, widget->m_dimensionsInPixels.y);
 
@@ -212,4 +234,39 @@ Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& interactable
 	// return =========================================================================================
 	return selectedWidget;
 }
+
+
+Character* PlayingState::GetSelectedCharacter(const std::vector<Character*>& widgets)
+{
+	Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
+
+	//create a vector of widgets that are under the mouse position.  We will sort according to layer to find selected widget
+	Character* selectedWidget = nullptr;
+
+	//add each widget at the mouse cursor to 
+	for (int widgetIndex = 0; widgetIndex < (int)widgets.size(); ++widgetIndex)
+	{
+		Character* widget = widgets[widgetIndex];
+		Vector2 position = widget->m_transform2D->GetWorldPosition();
+		AABB2 widgetBounds = AABB2(position, widget->m_dimensionsInPixels.x, widget->m_dimensionsInPixels.y);
+
+		if (widgetBounds.IsPointInside(mousePosition) == true)
+		{
+			if (selectedWidget == nullptr)
+			{
+				selectedWidget = widget;
+			}
+			else if (widget->GetSortLayer() > selectedWidget->GetSortLayer())
+			{
+				selectedWidget = widget;
+			}
+		}
+
+		widget = nullptr;
+	}
+
+	// return =========================================================================================
+	return selectedWidget;
+}
+
 

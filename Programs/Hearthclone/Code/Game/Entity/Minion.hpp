@@ -23,6 +23,8 @@ public:
 	virtual void OnLeftClicked() override;
 	virtual void OnRightClicked() override;
 
+	bool CheckForTag(const std::string& tagName);
+
 public:
 	//minion cards don't go to the graveyard as soon as they are put in play. Therefore we need to know if we have a card to put in the graveyard when this
 	const Card* m_cardReference = nullptr; 
@@ -33,5 +35,8 @@ public:
 	ePlayerType m_controller;
 
 	std::vector<std::string> m_tags;
+
+	int m_age = 0;
+	bool m_hasAttackedThisTurn = false;
 };
 

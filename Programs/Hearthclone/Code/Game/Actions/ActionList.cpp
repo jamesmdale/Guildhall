@@ -12,7 +12,7 @@
 #include "Game\Effects\DerivedEffects\ReorganizeMinionsEffect.hpp"
 #include "Game\Board.hpp"
 #include "Game\TurnStates\TurnStateManager.hpp"
-#include "Game\Effects\DerivedEffects\TurnChange.hpp"
+#include "Game\Effects\DerivedEffects\TurnChangeEffect.hpp"
 
 // actions =============================================================================
 
@@ -230,9 +230,8 @@ void StartTurnAction(const std::map<std::string, std::string>& parameters)
 
 	TODO("Handle triggers");
 
-	TurnChange* turnChangeEffect = new TurnChange(gameState->m_activePlayer->m_playerId, 1.5f, gameState->m_renderScene2D);
+	TurnChangeEffect* turnChangeEffect = new TurnChangeEffect(gameState->m_activePlayer->m_playerId, 1.5f, gameState->m_renderScene2D);
 
 	AddEffectToEffectQueue(turnChangeEffect);
-
 }
 

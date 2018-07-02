@@ -81,7 +81,8 @@ void Widget::DeleteRenderables()
 			m_renderables[renderableIndex] = nullptr;
 		}
 	}
-	m_renderables.clear();
+	if(m_renderables.size() > 0)
+		m_renderables.clear();
 }
 
 void Widget::UpdateSortLayer(int sortLayer)

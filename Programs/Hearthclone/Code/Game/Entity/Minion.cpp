@@ -3,14 +3,23 @@
 #include "Engine\Window\Window.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Game\GameStates\PlayingState.hpp"
+#include "Engine\Input\InputSystem.hpp"
+#include "Game\Board.hpp"
+#include "Game\Actions\Action.hpp"
+#include "Game\Effects\Effect.hpp"
+#include "Game\Effects\DerivedEffects\AttackEffect.hpp"
+#include "Engine\Core\StringUtils.hpp"
 
 Minion::Minion()
 {
+	m_characterId = Character::GenerateNewCharacterId();
 	UpdateSortLayer(g_defaultCardSortLayer);
 }
 
 Minion::Minion(const Card* fromCard)
 {
+	m_characterId = Character::GenerateNewCharacterId();
 	UpdateSortLayer(g_defaultCardSortLayer);
 
 	m_cardReference = fromCard;
@@ -131,8 +140,37 @@ Vector2 Minion::GetMinionDimensions()
 
 void Minion::OnLeftClicked()
 {
+	PlayingState* playingState = (PlayingState*)GameState::GetCurrentGameState();
+
+	if (m_isInputPriority == false)
+	{
+		m_isInputPriority = true;
+		m_isPositionLocked = false;
+		UpdateSortLayer(g_sortLayerMax);
+
+		AttackEffect* attack = new AttackEffect(this);
+
+		if (m_age > 0 || CheckForTag("charge"));
+		{
+			AddEffectToEffectQueue(attack);
+		}
+
+		//cleanup
+		attack = nullptr;
+	}
 }
 
 void Minion::OnRightClicked()
 {
+}
+
+bool Minion::CheckForTag(const std::string & tagName)
+{
+	for (int tagIndex = 0; tagIndex < (int)m_tags.size(); ++tagIndex)
+	{
+		if(m_tags[tagIndex] == tagName)
+			return true;		
+	}
+
+	return false;
 }

@@ -1,4 +1,4 @@
-#include "Game\Effects\DerivedEffects\TurnChange.hpp"
+#include "Game\Effects\DerivedEffects\TurnChangeEffect.hpp"
 #include "Game\GameStates\PlayingState.hpp"
 #include "Game\GameStates\GameState.hpp"
 #include "Engine\Time\Clock.hpp"
@@ -9,14 +9,14 @@
 #include "Engine\Renderer\Renderer.hpp"
 
 
-TurnChange::TurnChange(ePlayerType toPlayerType, float totalEffectTime, RenderScene2D* renderScene)
+TurnChangeEffect::TurnChangeEffect(ePlayerType toPlayerType, float totalEffectTime, RenderScene2D* renderScene)
 {
 	m_toPlayerType = toPlayerType;
 	m_totalEffectTime = totalEffectTime;
 	m_renderScene = renderScene;
 }
 
-TurnChange::~TurnChange() 
+TurnChangeEffect::~TurnChangeEffect() 
 {
 	delete(m_turnChangeWidget);
 	m_turnChangeWidget = nullptr;
@@ -24,7 +24,7 @@ TurnChange::~TurnChange()
 	m_renderScene = nullptr;
 }
 
-void TurnChange::InitializeTurnRenderable()
+void TurnChangeEffect::InitializeTurnRenderable()
 {
 	m_turnChangeWidget = new Widget();
 	m_turnChangeWidget->m_renderScene = m_renderScene;
@@ -60,7 +60,7 @@ void TurnChange::InitializeTurnRenderable()
 	theRenderer = nullptr;
 }
 
-void TurnChange::Update(float deltaSeconds)
+void TurnChangeEffect::Update(float deltaSeconds)
 {
 	UNUSED(deltaSeconds);
 

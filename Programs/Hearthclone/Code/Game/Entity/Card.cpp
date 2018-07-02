@@ -84,22 +84,8 @@ void Card::Update(float deltaSeconds)
 
 void Card::RefreshCardRenderables()
 {
-	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
-	{
-		m_renderScene->RemoveRenderable(m_renderables[renderableIndex]);
-
-		if (m_renderables[renderableIndex] != nullptr)
-		{
-			delete(m_renderables[renderableIndex]);
-			m_renderables[renderableIndex] = nullptr;
-		}
-		
-	}
-	if (m_renderables.size() > 0)
-	{
-		m_renderables.clear();
-	}
-	
+	//remove renderables from scene
+	DeleteRenderables();	
 
 	// create card layout =============================================================================
 	Renderer* theRenderer = Renderer::GetInstance();

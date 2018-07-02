@@ -49,11 +49,14 @@ const float g_boardBattlefieldCenterLineThicknessHeight = 0.01f;
 //card sizes
 const float g_cardPercentageOfClientWindowHeight = 0.14f;
 const float g_minionPercentageOfClientWindowHeight = 0.1f;
+
 const float g_cardAspectRatio = 0.722f;
 const float g_minionAspectRatio = 1.538f;
 const int g_maxHandSize = 11;
 const int g_maxMinionCount = 7;
 const int g_maxBattlefieldSize = 11;
+
+const float g_targetingPercentageOfClientWindowHeight = 0.05f;
 
 //used to calculate center positions of all elements on a card
 const Vector2 g_cardSize = Vector2(370.f, 512.f);

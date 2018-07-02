@@ -2,6 +2,7 @@
 #include "Game\GameStates\GameState.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Core\Widget.hpp"
+#include "Game\Entity\Character.hpp"
 
 class Board;
 class TurnStateManager;
@@ -24,8 +25,11 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
-	std::vector<Widget*>* GetInteractableWidgets();
-	Widget* GetSelectedWidget(const std::vector<Widget*>& interactableWidgets);
+	std::vector<Widget*>* GetInteractableWidgets();	
+	Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);
+
+	std::vector<Character*>* GetCharacterWidgets();
+	Character * GetSelectedCharacter(const std::vector<Character*>& widgets);
 
 public:
 	Board* m_gameBoard = nullptr;

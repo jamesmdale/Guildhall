@@ -5,13 +5,13 @@
 #include "Engine\Renderer\RenderScene.hpp"
 
 
-class TurnChange : public Effect
+class TurnChangeEffect : public Effect
 {
 public:
-	TurnChange(){};
-	TurnChange(ePlayerType toPlayerType, float totalEffectTime, RenderScene2D* renderScene);
+	TurnChangeEffect(){};
+	TurnChangeEffect(ePlayerType toPlayerType, float totalEffectTime, RenderScene2D* renderScene);
 	
-	virtual ~TurnChange() override;
+	virtual ~TurnChangeEffect() override;
 
 	void InitializeTurnRenderable();
 

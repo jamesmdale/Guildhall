@@ -55,6 +55,7 @@ int ClampInt(int inValue, int minInclusiveValue, int maxInclusiveValue);
 float RangeMapFloat(float inValue, float inStart, float inEnd, float outStart, float outEnd);
 float GetFractionInRange( float inValue, float rangeStart, float rangeEnd );
 
+//rotation and dot product
 float TurnToward( float currentDegrees, float goalDegrees, float maxTurnDegrees );
 float GetAngularDisplacement( float startDegrees, float endDegrees );
 float DotProduct(const Vector2& a, const Vector2& b);
