@@ -116,9 +116,9 @@ Vector3 Swarmer::Flock(float deltaSeconds)
 	 
 	
 	separateSteer *= 5.0f;
-    alignSteer *= 2.0f;
-    centerSteer *= 1.0f;
-	targetSteer *= 2.0f;
+    alignSteer *= 1.0f;
+    centerSteer *= 3.0f;
+	targetSteer *= 1.0f;
 
 	//sum of directions to create a new direction
 	Vector3 newDirection = separateSteer + alignSteer + centerSteer + targetSteer;

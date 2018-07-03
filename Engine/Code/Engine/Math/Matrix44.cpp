@@ -425,18 +425,18 @@ Matrix44 Matrix44::MakeScale2D( float scaleX, float scaleY )
 }
 Matrix44 Matrix44::MakeOrtho2D( const Vector2& bottomLeft, const Vector2& topRight )
 {
-	Matrix44* orthoMatrix = new Matrix44();
-	orthoMatrix->SetIdentity();
+	Matrix44 orthoMatrix;
+	orthoMatrix.SetIdentity();
 
-	orthoMatrix->Tx = (-1 *((topRight.x + bottomLeft.x)/ (topRight.x - bottomLeft.x)));
-	orthoMatrix->Ty = (-1 *((topRight.y + bottomLeft.y)/ (topRight.y - bottomLeft.y)));
-	orthoMatrix->Tz = -1*(1 + 0)/(1-0);
+	orthoMatrix.Tx = (-1 *((topRight.x + bottomLeft.x)/ (topRight.x - bottomLeft.x)));
+	orthoMatrix.Ty = (-1 *((topRight.y + bottomLeft.y)/ (topRight.y - bottomLeft.y)));
+	orthoMatrix.Tz = -1*(1 + 0)/(1-0);
+			   
+	orthoMatrix.Ix = 2/(topRight.x - bottomLeft.x);
+	orthoMatrix.Jy = 2/(topRight.y - bottomLeft.y);
+	orthoMatrix.Kz = 2;
 
-	orthoMatrix->Ix = 2/(topRight.x - bottomLeft.x);
-	orthoMatrix->Jy = 2/(topRight.y - bottomLeft.y);
-	orthoMatrix->Kz = 2;
-
-	return *orthoMatrix;
+	return orthoMatrix;
 }
 
 Matrix44 Matrix44::MakeOrtho3D(const Vector3& center, const Vector2& dimensions, float nearPlane, float farPlane)
@@ -461,88 +461,86 @@ Matrix44 Matrix44::MakeOrtho3D(const Vector3& center, const Vector2& dimensions,
 
 Matrix44 Matrix44::MakeTranslation3D( const Vector3& translation )
 {
-	Matrix44* translationMatrix = new Matrix44();
-	translationMatrix->SetIdentity();
+	Matrix44 translationMatrix;
+	translationMatrix.SetIdentity();
 
-	translationMatrix->Tx += translation.x;
-	translationMatrix->Ty += translation.y;
-	translationMatrix->Tz += translation.z;
+	translationMatrix.Tx += translation.x;
+	translationMatrix.Ty += translation.y;
+	translationMatrix.Tz += translation.z;
 
-	return *translationMatrix;
+	return translationMatrix;
 }
 
 Matrix44 Matrix44::MakeRotationAroundX3D(float rotationDegreesAroundX)
 {
-	Matrix44* rotationMatrix = new Matrix44();
-	rotationMatrix->SetIdentity();
+	Matrix44 rotationMatrix;
+	rotationMatrix.SetIdentity();
 
 	if(fmodf(rotationDegreesAroundX, 360.f) != 0.f)
 	{
-		rotationMatrix->Jy = CosDegrees(rotationDegreesAroundX);
-		rotationMatrix->Jz = -1.f * SinDegrees(rotationDegreesAroundX);
-		rotationMatrix->Ky = SinDegrees(rotationDegreesAroundX);
-		rotationMatrix->Kz = CosDegrees(rotationDegreesAroundX);
-	}
-	
+		rotationMatrix.Jy = CosDegrees(rotationDegreesAroundX);
+		rotationMatrix.Jz = -1.f * SinDegrees(rotationDegreesAroundX);
+		rotationMatrix.Ky = SinDegrees(rotationDegreesAroundX);
+		rotationMatrix.Kz = CosDegrees(rotationDegreesAroundX);
+	}	
 
-	return *rotationMatrix;
+	return rotationMatrix;
 }
 
 Matrix44 Matrix44::MakeRotationAroundY3D(float rotationDegreesAroundY)
 {
-	Matrix44* rotationMatrix = new Matrix44();
-	rotationMatrix->SetIdentity();
+	Matrix44 rotationMatrix;
+	rotationMatrix.SetIdentity();
 
 	if(fmodf(rotationDegreesAroundY, 360.f) != 0.f)
 	{
-		rotationMatrix->Ix = CosDegrees(rotationDegreesAroundY);
-		rotationMatrix->Iz = -1.f * SinDegrees(rotationDegreesAroundY);
-		rotationMatrix->Kx = SinDegrees(rotationDegreesAroundY);
-		rotationMatrix->Kz = CosDegrees(rotationDegreesAroundY);
+		rotationMatrix.Ix = CosDegrees(rotationDegreesAroundY);
+		rotationMatrix.Iz = -1.f * SinDegrees(rotationDegreesAroundY);
+		rotationMatrix.Kx = SinDegrees(rotationDegreesAroundY);
+		rotationMatrix.Kz = CosDegrees(rotationDegreesAroundY);
 	}
 
-	return *rotationMatrix;
+	return rotationMatrix;
 }
 
 Matrix44 Matrix44::MakeRotationAroundZ3D(float rotationDegreesAroundZ)
 {
-	Matrix44* rotationMatrix = new Matrix44();
-	rotationMatrix->SetIdentity();
+	Matrix44 rotationMatrix;
+	rotationMatrix.SetIdentity();
 
 	if(fmodf(rotationDegreesAroundZ, 360.f) != 0.f)
 	{
-		rotationMatrix->Ix = CosDegrees(rotationDegreesAroundZ);
-		rotationMatrix->Iy = SinDegrees(rotationDegreesAroundZ);
-		rotationMatrix->Jx = -1.f * SinDegrees(rotationDegreesAroundZ);
-		rotationMatrix->Jy = CosDegrees(rotationDegreesAroundZ);
+		rotationMatrix.Ix = CosDegrees(rotationDegreesAroundZ);
+		rotationMatrix.Iy = SinDegrees(rotationDegreesAroundZ);
+		rotationMatrix.Jx = -1.f * SinDegrees(rotationDegreesAroundZ);
+		rotationMatrix.Jy = CosDegrees(rotationDegreesAroundZ);
 	}
 
-	return *rotationMatrix;
+	return rotationMatrix;
 }
 
 Matrix44 Matrix44::MakeScaleUniform3D( float scaleXYZ )
 {
-	Matrix44* scaleMatrix = new Matrix44();
-	scaleMatrix->SetIdentity();
+	Matrix44 scaleMatrix;
+	scaleMatrix.SetIdentity();
 
-	scaleMatrix->Ix *= scaleXYZ;
-	scaleMatrix->Jy *= scaleXYZ;
-	scaleMatrix->Kz *= scaleXYZ;
+	scaleMatrix.Ix *= scaleXYZ;
+	scaleMatrix.Jy *= scaleXYZ;
+	scaleMatrix.Kz *= scaleXYZ;
 
-	return *scaleMatrix;
+	return scaleMatrix;
 }
 
 Matrix44 Matrix44::MakeScale3D( float scaleX, float scaleY, float scaleZ )
 {
-	
-	Matrix44* scaleMatrix = new Matrix44();
-	scaleMatrix->SetIdentity();
+	Matrix44 scaleMatrix;
+	scaleMatrix.SetIdentity();
 
-	scaleMatrix->Ix *= scaleX;
-	scaleMatrix->Jy *= scaleY;
-	scaleMatrix->Kz *= scaleZ;
+	scaleMatrix.Ix *= scaleX;
+	scaleMatrix.Jy *= scaleY;
+	scaleMatrix.Kz *= scaleZ;
 
-	return *scaleMatrix;
+	return scaleMatrix;
 }
 
 Matrix44 Matrix44::CloneTemporaryMatrix44(const Matrix44& matrixToClone)

@@ -152,6 +152,8 @@ Matrix44 Transform::GetWorldMatrix()
 			m_transformMatrix.Append(m_parentTransform->GetWorldMatrix());
 		}
 
+		Matrix44 tanslationMatrix = GetLocalTranslationMatrix();
+
 		//translate
 		m_transformMatrix.Append(GetLocalTranslationMatrix());
 
