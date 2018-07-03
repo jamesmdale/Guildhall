@@ -30,7 +30,8 @@
 static AudioSystem* g_theAudioSystem = nullptr;
 
 bool isMuted = false;
-float overallVolume = 0.15f;
+float tempPreviousMasterVolume = 1.0f;
+
 
 //-----------------------------------------------------------------------------------------------
 // Initialization code based on example from "FMOD Studio Programmers API for Windows"
@@ -63,7 +64,8 @@ AudioSystem * AudioSystem::GetInstance()
 
 void AudioSystem::Initialize()
 {
-	CommandRegister("set_volume", CommandRegistration(SetVolume, ": Type set_volume with 0.0f to 1.0f value to set overall volume"));
+	CommandRegister("set_volume", CommandRegistration(SetOverallVolume, ": Type set_volume with 0.0f to 1.0f value to set overall volume"));
+	CommandRegister("toggle_mute", CommandRegistration(ToggleMute, ": Toggle sound mute"));
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -139,12 +141,14 @@ SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float vo
 		if(isMuted)
 			channelAssignedToSound->setVolume(0.f);
 		else
-			channelAssignedToSound->setVolume(overallVolume * volume );
+			channelAssignedToSound->setVolume(volume);
 
 
 		channelAssignedToSound->setPan( balance );
 		channelAssignedToSound->setLoopCount( loopCount );
 	}
+
+	m_channelAssignments.push_back(channelAssignedToSound);
 
 	return (SoundPlaybackID) channelAssignedToSound;
 }
@@ -167,6 +171,9 @@ SoundPlaybackID AudioSystem::PlaySoundFromGroup(const std::string& soundGroupNam
 	int randomSound = GetRandomIntInRange(0, (int)audioGroup->soundIds.size() - 1);
 
 	SoundPlaybackID id = PlaySound(audioGroup->soundIds[randomSound], audioGroup->isLooped, audioGroup->volume, audioGroup->balance, audioGroup->speed, audioGroup->isPaused);
+
+	m_channelAssignments.push_back((FMOD::Channel*)id);
+
 	return id;
 }
 
@@ -228,7 +235,7 @@ void AudioSystem::SetSoundPlaybackVolume( SoundPlaybackID soundPlaybackID, float
 	}
 
 	FMOD::Channel* channelAssignedToSound = (FMOD::Channel*) soundPlaybackID;
-	channelAssignedToSound->setVolume( overallVolume * volume );
+	channelAssignedToSound->setVolume( volume );
 }
 
 
@@ -274,7 +281,7 @@ void AudioSystem::SetSoundPlaybackSpeed( SoundPlaybackID soundPlaybackID, float 
 }
 
 
-//-----------------------------------------------------------------------------------------------
+// static methods =========================================================================================
 void AudioSystem::ValidateResult( FMOD_RESULT result )
 {
 	if( result != FMOD_OK )
@@ -283,21 +290,83 @@ void AudioSystem::ValidateResult( FMOD_RESULT result )
 	}
 }
 
-void SetVolume(Command &cmd)
+void AudioSystem::SetMasterVolume(float volume)
 {
-	overallVolume = ClampFloatZeroToOne(cmd.GetNextFloat());
+	FMOD::ChannelGroup* master;
+	m_fmodSystem->getMasterChannelGroup(&master);
+
+	master->setVolume(volume);
+
+	master = nullptr;
+}
+
+float AudioSystem::GetMasterVolume()
+{
+	FMOD::ChannelGroup* master;
+	m_fmodSystem->getMasterChannelGroup(&master);
+
+	float volume = 1.f;
+
+	master->getVolume(&volume);
+
+	master = nullptr;
+	return volume;
+}
+
+
+void AudioSystem::ToggleMasterMute()
+{
+	AudioSystem* theAudio = AudioSystem::GetInstance();
+
+	isMuted = !isMuted;
+
+	if (isMuted == true)
+	{
+		tempPreviousMasterVolume = theAudio->GetMasterVolume();
+		theAudio->SetMasterVolume(0.0f);
+	}
+	else
+	{
+		theAudio->SetMasterVolume(tempPreviousMasterVolume);
+	}
+
+	theAudio = nullptr;
+}
+
+
+// commands =========================================================================================
+
+void SetOverallVolume(Command &cmd)
+{
+	AudioSystem* theAudio = AudioSystem::GetInstance();
+
+	float overallVolume = ClampFloatZeroToOne(cmd.GetNextFloat());
+	theAudio->SetMasterVolume(overallVolume);
+
 	cmd.m_commandInfo->m_successMessage = Stringf("%s %f", "Volume set to ", overallVolume);
 	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
+
+	theAudio = nullptr;
 }
 
-void AudioSystem::ToggleMute()
+void ToggleMute(Command & cmd)
 {
-	isMuted = !isMuted;
+	AudioSystem* theAudio = AudioSystem::GetInstance();
+
+	theAudio->ToggleMasterMute();
+
+	std::string muteString;
+
+	if(isMuted)
+		muteString = "Sound muted!";
+	else
+		muteString = "Sound unmuted!";
+
+	cmd.m_commandInfo->m_successMessage = Stringf("%s", muteString);
+	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
+
+	theAudio = nullptr;
 }
 
-float AudioSystem::GetVolume()
-{
-	return overallVolume;
-}
 
 //#endif  !defined( ENGINE_DISABLE_AUDIO )

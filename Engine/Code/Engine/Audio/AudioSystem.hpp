@@ -55,18 +55,21 @@ public:
 	virtual void				SetSoundPlaybackSpeed( SoundPlaybackID soundPlaybackID, float speed );		// speed is frequency multiplier (1.0 == normal)
 
 	virtual void				ValidateResult( FMOD_RESULT result );
+	virtual void				SetMasterVolume(float volume);
+	virtual float				GetMasterVolume();
 
-	static void ToggleMute();
-	static float GetVolume();
+	static void					ToggleMasterMute();
 
 protected:
 	FMOD::System*						m_fmodSystem;
 	std::map< std::string, SoundID >	m_registeredSoundIDs;
 	std::vector< FMOD::Sound* >			m_registeredSounds;
 	std::vector<AudioGroup*>			m_registeredAudioGroups;
+	std::vector<FMOD::Channel*>			m_channelAssignments;
 };
 
 
-void SetVolume(Command& cmd);
+void SetOverallVolume(Command& cmd);
+void ToggleMute(Command& cmd);
 
 
