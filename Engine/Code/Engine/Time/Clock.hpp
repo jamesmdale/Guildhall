@@ -47,6 +47,7 @@ public:
 	}; //frame time is deltaseconds
 
 	uint64_t GetStartHPC(){return m_startHPC;}
+	uint64_t GetLastHPC(){return m_lastFrameHPC;}
 
 	double GetRunningTime();
 

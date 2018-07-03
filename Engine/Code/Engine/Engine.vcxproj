@@ -44,6 +44,7 @@
     <ClCompile Include="Debug\DebugRender.cpp" />
     <ClCompile Include="Core\GameObject.cpp" />
     <ClCompile Include="Math\Plane.cpp" />
+    <ClCompile Include="Core\Profiler.cpp" />
     <ClCompile Include="Renderer\ForwardRenderingPath2D.cpp" />
     <ClCompile Include="ParticleSystem\ParticleEmitter.cpp" />
     <ClCompile Include="Renderer\Renderable2D.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="Debug\DebugRender.hpp" />
     <ClInclude Include="Core\GameObject.hpp" />
     <ClInclude Include="Math\Plane.hpp" />
+    <ClInclude Include="Core\Profiler.hpp" />
     <ClInclude Include="Renderer\ForwardRenderingPath2D.hpp" />
     <ClInclude Include="ParticleSystem\ParticleEmitter.hpp" />
     <ClInclude Include="Renderer\Renderable2D.hpp" />
