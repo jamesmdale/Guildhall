@@ -25,6 +25,7 @@ bool GetIsPointInsideCube(const Vector3& pointToCheck, const Vector3& cubeCenter
 float Modulus(float dividend, float divisor);
 float Modulus(Vector2 mod);
 double Modulus(double dividend, double divisor);
+int Modulus(int dividend, int divisor);
 
 //trig functions
 float CosDegrees(float degrees);

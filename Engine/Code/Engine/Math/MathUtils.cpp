@@ -598,17 +598,22 @@ bool GetIsPointInsideCube(const Vector3& pointToCheck, const Vector3& cubeCenter
 
 float Modulus(float dividend, float divisor)
 {
-	return fmodf(dividend, divisor);
+	return fmodf((divisor + fmodf(dividend, divisor)), divisor);
 }
 
 float Modulus(Vector2 mod)
 {
-	return fmodf(mod.x, mod.y);
+	return fmodf((mod.y + fmodf(mod.x, mod.y)), mod.y);
 }
 
 double Modulus(double dividend, double divisor)
 {
-	return fmod(dividend, divisor);
+	return fmodf((divisor + fmodf(dividend, divisor)), divisor);
+}
+
+int Modulus(int dividend, int divisor)
+{
+	return (divisor + (dividend % divisor)) % divisor;
 }
 
 Vector2 PolarDegreesToCartesian(float radius, float degrees)

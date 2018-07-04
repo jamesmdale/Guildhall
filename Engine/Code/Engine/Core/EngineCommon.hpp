@@ -6,16 +6,18 @@
 
 extern Blackboard g_gameConfigBlackboard;
 
-//EXPRESSIONS
+// EXPRESSIONS =============================================================================
 constexpr float CLIENT_ASPECT = 16/9.f;// We are requesting a 1:1 aspect (square) window area
 constexpr float DELTA_TIME = 1.0f/60.0f; //
 constexpr int MAX_LIGHTS = 8;
 
-//CONSTANTS
+constexpr int MAX_PROFILER_HISTORY = 256;
+
+// CONSTANTS =============================================================================
 extern const char* APP_NAME;	// ...becomes ???
 
 
-//DEFINITIONS
+// DEFINITIONS =============================================================================
 #define UNUSED(x) (void)(x);
 
 //todo info
@@ -36,6 +38,8 @@ extern const char* APP_NAME;	// ...becomes ???
 
 #define UNIMPLEMENTED()  TODO( "IMPLEMENT: " QUOTE(__FILE__) " (" QUOTE(__LINE__) ")" );// ASSERT_RECOVERABLE(0, "") 
 
-//TYPEDEFS
+#define PROFILING_ENABLED
+
+// TYPEDEFS =============================================================================
 typedef unsigned char byte_t;
 typedef unsigned int uint;

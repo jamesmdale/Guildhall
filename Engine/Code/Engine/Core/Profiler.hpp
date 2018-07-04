@@ -1,10 +1,22 @@
 #pragma once
-#include "Engine\Time\Clock.hpp"
 #include "Engine\Time\Time.hpp"
 #include <stdint.h>
+#include "Engine\Core\StringUtils.hpp"
+#include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Core\DevConsole.hpp"
+#include <queue>
 
+constexpr int MAX_HISTORY_COUNT = 256;
+
+// profile measurement =============================================================================
 struct ProfileMeasurement
 {
+	~ProfileMeasurement()
+	{
+		m_parent = nullptr;
+		DeleteTree();
+	}
+
 	char m_id[64];
 	uint64_t m_startTime;
 	uint64_t m_endTime;
@@ -14,8 +26,39 @@ struct ProfileMeasurement
 
 	void SetParent(ProfileMeasurement* parent){ m_parent = parent; }
 	void AddChild(ProfileMeasurement* child){m_children.push_back(child);}
+
+	void DeleteTree()
+	{
+		for (int childIndex = 0; childIndex < (int)m_children.size(); ++childIndex)
+		{
+			delete(m_children[childIndex]);
+			m_children[childIndex] = nullptr;
+		}
+	}
+
+	void PrintTree()
+	{
+		//calculate elapsed seconds
+		float secondsElapsed = (float)PerformanceCounterToSeconds(m_endTime - m_startTime);
+
+		//print formatted string for print
+		std::string printString = Stringf("ID: %s %f \n", m_id, secondsElapsed);
+		DebuggerPrintf(printString.c_str());
+		DevConsolePrintf(printString.c_str());
+		
+		for (int childIndex = 0; childIndex < (int)m_children.size(); ++childIndex)
+		{
+			m_children[childIndex]->PrintTree();
+		}
+	}
+
+	void Finish()
+	{
+		m_endTime = GetPerformanceCounter();
+	}
 };
 
+// profiler system =============================================================================
 class Profiler
 {
 public:
@@ -24,15 +67,70 @@ public:
 
 	static Profiler* CreateInstance();
 	static Profiler* GetInstance();
+	static void Initialize();
 
 	ProfileMeasurement* CreateMeasurement(const char* id);
+	void DestroyMeasurementTreeRecurssive();
+	void PrintHistory();
 
 	void MarkFrame();
 	void Push(const char* id);
 	void Pop();
 
+	void PauseProfiler();
+	void ResumeProfiler();
+
 public:
-	ProfileMeasurement* m_stack;
-	ProfileMeasurement* m_previousStack; //we keep N number of these to preserve history
+	ProfileMeasurement* m_stack = nullptr;
+
+	int m_frameIndex = 0;
+	ProfileMeasurement* m_measurementHistory[MAX_HISTORY_COUNT]; //we keep N number of these to preserve history
 };
 
+void Pause(Command& cmd);
+void Resume(Command& cmd);
+void LogHistory(Command& cmd);
+
+// profile log scope =============================================================================
+struct ProfileLogScoped
+{
+public:
+	ProfileLogScoped(const char* tag)
+	{
+		m_tag = tag;
+		m_hpcStart = GetPerformanceCounter();
+	}
+
+	~ProfileLogScoped()
+	{
+		uint64_t endHpc = GetPerformanceCounter() - m_hpcStart;
+		double hpcInSeconds = PerformanceCounterToSeconds(endHpc);
+		DevConsolePrintf(Stringf("Tag Name: %s - %f \n", m_tag, (float)hpcInSeconds).c_str());
+		DebuggerPrintf(Stringf("Tag Name: %s - %f \n", m_tag, (float)hpcInSeconds).c_str());
+	}
+
+public:
+	uint64_t m_hpcStart;
+	const char* m_tag;	
+};
+
+
+// profiler scope =============================================================================
+struct ProfilerScoped
+{
+public:
+	ProfilerScoped(const char* id)
+	{
+		Profiler::GetInstance()->Push(id);
+	}
+
+	~ProfilerScoped()
+	{
+		Profiler::GetInstance()->Pop();
+	}
+};
+
+#define PROFILE_LOG_SCOPE(tag) ProfileLogScoped __timer_ ##__LINE__ ## (tag)
+#define PROFILE_LOG_SCOPE_FUNCTION() ProfileLogScoped __timer_ ##__LINE__ ##__FUNCTION__( __FUNCTION__)
+
+#define PROFILER_PUSH() ProfilerScoped( __FUNCTION__)

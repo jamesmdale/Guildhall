@@ -115,10 +115,10 @@ Vector3 Swarmer::Flock(float deltaSeconds)
 	Vector3 targetSteer = SeekTarget(deltaSeconds, m_gameState->m_playerTank->m_transform->GetWorldPosition());
 	 
 	
-	separateSteer *= 5.0f;
+	separateSteer *= 8.0f;
     alignSteer *= 1.0f;
     centerSteer *= 3.0f;
-	targetSteer *= 1.0f;
+	targetSteer *= 2.0f;
 
 	//sum of directions to create a new direction
 	Vector3 newDirection = separateSteer + alignSteer + centerSteer + targetSteer;

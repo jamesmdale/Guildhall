@@ -1,11 +1,13 @@
 #include "Engine\Core\Profiler.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\StringUtils.hpp"
-#include "Engine\Core\ErrorWarningAssert.hpp"
+#include "Engine\Math\MathUtils.hpp"
 
 
 static Profiler* g_theProfiler = nullptr;
-
+bool g_isProfilerPaused = false;
+bool g_isProfilerPausing = false;
+bool g_isProfilerResuming = false;
 
 Profiler::Profiler()
 {
@@ -30,55 +32,142 @@ Profiler* Profiler::GetInstance()
 	return g_theProfiler;
 }
 
+void Profiler::Initialize()
+{
+	#if defined(PROFILING_ENABLED)
+
+	CommandRegister("profiler_pause", CommandRegistration(Pause, ": Pauses profiler capturing", "Profiler Paused!"));
+	CommandRegister("profiler_resume", CommandRegistration(Resume, ": Resume profiler capturing", "Profiler resumed!"));
+	CommandRegister("profiler_history", CommandRegistration(LogHistory, ": Print all history items in the profile history capture", "Profiler printing history.."));
+
+	#endif
+}
+
 // utility methods =========================================================================================
-
-
 ProfileMeasurement* Profiler::CreateMeasurement(const char* id)
 {
 	ProfileMeasurement* measure = new ProfileMeasurement();
 
 	strncpy_s(measure->m_id, id, 64);
-	measure->m_startTime = GetMasterClock()->GetLastHPC();
+	measure->m_startTime = GetPerformanceCounter();
 
 	return measure;
 }
 
+void Profiler::DestroyMeasurementTreeRecurssive()
+{	
+	bool isTreeTraversed = false;
+
+	delete(m_measurementHistory[m_frameIndex]);
+	m_measurementHistory[m_frameIndex] = nullptr;	
+}
+
+void Profiler::PrintHistory()
+{
+	int currentIndex = m_frameIndex;
+
+	for (int historyIndex = 0; historyIndex < MAX_HISTORY_COUNT; ++historyIndex)
+	{
+		int actualIndex = Modulus(currentIndex, MAX_HISTORY_COUNT);
+		ProfileMeasurement* measurement = m_measurementHistory[actualIndex];
+		
+		if (measurement != nullptr)
+			measurement->PrintTree();
+		else
+			return; //if we ever have a null pointer we know we reached the end of the list. (only happens if we arent at MAX_HISTORY_COUNT)
+
+		currentIndex = Modulus(currentIndex - 1, MAX_HISTORY_COUNT);
+	}
+}
+
 void Profiler::MarkFrame()
 {
+	// handle pause and resume states =============================================================================
+	if (g_isProfilerPausing)
+	{
+		g_isProfilerPausing = false;
+		g_isProfilerPaused = true;
+	}
+	if (g_isProfilerResuming)
+	{
+		g_isProfilerResuming = false;
+		g_isProfilerPaused = false;
+	}
+		
+
 	if (m_stack != nullptr)
 	{
-		if (m_previousStack != nullptr)
-		//	DestroyMeasurementTreeRecurssive(m_previousStack);
+		DestroyMeasurementTreeRecurssive();				
 
-		m_previousStack = m_stack;
+		m_measurementHistory[m_frameIndex] = m_stack;
 		Pop();
 
-		//GUARANTEE_OR_DIE(m_stack == nullptr, Stringf("Profiler: Invalid mark frame. Stack is not empty %s", m_stack->m_id); //means I pushed somewhere without popping if 
+		GUARANTEE_OR_DIE(m_stack == nullptr, Stringf("Profiler: Invalid mark frame. Stack is not empty %s", m_stack->m_id)); //means I pushed somewhere without popping if 
 	}
 
 	Push("frame");
+
+	//increase frame index
+	m_frameIndex = Modulus((m_frameIndex + 1), MAX_HISTORY_COUNT);
 }
 
 void Profiler::Push(const char* id)
 {
-	ProfileMeasurement* measure = CreateMeasurement(id);
-
-	if(m_stack == nullptr)
-		m_stack = measure;
-	else
+	if (!g_isProfilerPaused)
 	{
-		measure->SetParent(m_stack);
-		m_stack->AddChild(measure);
+		ProfileMeasurement* measure = CreateMeasurement(id);
 
-		m_stack = measure;	//add the new measurement to the top of the tree structure
-	}
+		if(m_stack == nullptr)
+			m_stack = measure;
+		else
+		{
+			measure->SetParent(m_stack);
+			m_stack->AddChild(measure);
+
+			m_stack = measure;	//add the new measurement to the top of the tree structure
+		}
+
+		measure = nullptr;
+	}	
 }
 
 void Profiler::Pop()
 {
-	//GUARANTEE_OR_DIE(m_stack != nullptr, "Profiler: Popped too many times - stack is empty"); //if this ever happens we popped too many times																											  
+	if (!g_isProfilerPaused)
+	{
+		GUARANTEE_OR_DIE(m_stack != nullptr, "Profiler: Popped too many times - stack is empty"); //if this ever happens we popped too many times																											  
 
-	//m_stack->Finish();	//sets the end time for this interval's time
-	m_stack = m_stack->m_parent;
-	
+		m_stack->Finish();			//sets the end time for this interval's time
+		m_stack = m_stack->m_parent;	
+	}
+}
+
+void Profiler::PauseProfiler()
+{
+	//when the frame is completed in the next MarkFrame(), the profiler system will be pause.
+	g_isProfilerPausing = true;
+}
+
+void Profiler::ResumeProfiler()
+{
+	//when the frame is completed in the next MarkFrame(), the profiler system will be unpause and allow captures again.
+	g_isProfilerResuming = true;
+}
+
+
+// console commands =============================================================================
+
+void Pause(Command & cmd)
+{
+	Profiler::GetInstance()->PauseProfiler();
+}
+
+void Resume(Command & cmd)
+{
+	Profiler::GetInstance()->ResumeProfiler();
+}
+
+void LogHistory(Command & cmd)
+{
+	Profiler::GetInstance()->PrintHistory();
 }

@@ -13,6 +13,7 @@
 #include "Engine\File\ObjectFileLoader.hpp"
 #include "Game\Menu\MenuState.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
+#include "Engine\Core\Profiler.hpp"
 
 TheApp* g_theApp = nullptr;
 
@@ -28,6 +29,10 @@ TheApp::~TheApp()
 
 void TheApp::RunFrame()
 {
+	//start profiler for frame
+	Profiler::GetInstance()->MarkFrame();
+
+	//begin frame for engine systems
 	Renderer::GetInstance()->BeginFrame();	
 	InputSystem::GetInstance()->BeginFrame();
 	AudioSystem::GetInstance()->BeginFrame();
@@ -45,7 +50,6 @@ void TheApp::RunFrame()
 
 	Sleep(1);
 	TODO("Need to add sleep function to release CPU cycles and reduce system demand");
-
 }
 
 void TheApp::Initialize()
@@ -74,6 +78,8 @@ void TheApp::Initialize()
 
 void TheApp::Update()
 {
+	Profiler::GetInstance()->Push("Update");
+
 	float deltaSeconds = GetMasterDeltaSeconds();
 
 	//update global menu data (handles transitions and timers)
@@ -92,10 +98,14 @@ void TheApp::Update()
 	{
 		DevConsole::GetInstance()->Update(deltaSeconds);
 	}
+
+	Profiler::GetInstance()->Pop();
 }
 
 void TheApp::PreRender()
 {
+	//PROFILER_PUSH();
+
 	Game::GetInstance()->PreRender();
 }
 

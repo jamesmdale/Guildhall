@@ -14,6 +14,7 @@
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
 #include <minwindef.h>
+#include "Engine\Core\Profiler.hpp"
 
 
 bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam ) 
@@ -148,6 +149,9 @@ void Initialize()
 
 	AudioSystem::CreateInstance();
 	AudioSystem::GetInstance()->Initialize();
+
+	Profiler::CreateInstance();
+	Profiler::GetInstance()->Initialize();
 
 	g_theApp = new TheApp();
 	g_theApp->Initialize();
