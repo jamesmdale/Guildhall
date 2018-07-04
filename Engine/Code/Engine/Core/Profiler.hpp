@@ -73,6 +73,8 @@ public:
 	void DestroyMeasurementTreeRecurssive();
 	void PrintHistory();
 
+	ProfileMeasurement* ProfileGetPreviousFrame(int skipCount = 0);
+
 	void MarkFrame();
 	void Push(const char* id);
 	void Pop();

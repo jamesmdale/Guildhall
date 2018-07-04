@@ -77,7 +77,28 @@ void Profiler::PrintHistory()
 			return; //if we ever have a null pointer we know we reached the end of the list. (only happens if we arent at MAX_HISTORY_COUNT)
 
 		currentIndex = Modulus(currentIndex - 1, MAX_HISTORY_COUNT);
+		measurement = nullptr;
 	}
+}
+
+ProfileMeasurement* Profiler::ProfileGetPreviousFrame(int skipCount)
+{
+	int returnIndex = 0;
+
+	//ensure skipcount is positive and 
+	skipCount = ClampInt(skipCount, 0, MAX_HISTORY_COUNT);
+
+	//add one to skip count so we go back at least one record
+	skipCount++; 
+
+	//if my skipcount is less than zero subtract skip count from MAX_HISTORY_COUNT
+	if (m_frameIndex - skipCount < 0)
+		returnIndex = MAX_HISTORY_COUNT - skipCount;
+	else
+		returnIndex = m_frameIndex - skipCount;
+
+	//return measurement history at proper skipped index
+	return m_measurementHistory[returnIndex];
 }
 
 void Profiler::MarkFrame()
