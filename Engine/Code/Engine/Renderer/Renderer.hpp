@@ -114,6 +114,8 @@ public:
 	static Renderer* GetInstance();
 	static Renderer* CreateInstance();
 
+	void Shutdown();
+
 	void BeginFrame();
 	void EndFrame();
 

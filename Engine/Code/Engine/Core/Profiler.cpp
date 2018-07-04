@@ -32,7 +32,7 @@ Profiler* Profiler::GetInstance()
 	return g_theProfiler;
 }
 
-void Profiler::Initialize()
+void Profiler::Startup()
 {
 	#if defined(PROFILING_ENABLED)
 
@@ -41,6 +41,12 @@ void Profiler::Initialize()
 	CommandRegister("profiler_history", CommandRegistration(LogHistory, ": Print all history items in the profile history capture", "Profiler printing history.."));
 
 	#endif
+}
+
+void Profiler::Shutdown()
+{
+	delete(g_theProfiler);
+	g_theProfiler = nullptr;
 }
 
 // utility methods =========================================================================================
@@ -103,7 +109,18 @@ ProfileMeasurement* Profiler::ProfileGetPreviousFrame(int skipCount)
 
 void Profiler::MarkFrame()
 {
-	// handle pause and resume states =============================================================================
+	// move stack into measurementHistory
+	if (m_stack != nullptr)
+	{
+		DestroyMeasurementTreeRecurssive();				
+
+		m_measurementHistory[m_frameIndex] = m_stack;
+		Pop();
+
+		GUARANTEE_OR_DIE(m_stack == nullptr, Stringf("Profiler: Invalid mark frame. Stack is not empty %s", m_stack->m_id)); //means I pushed somewhere without popping if 
+	}
+
+	// handle pause and resume states 
 	if (g_isProfilerPausing)
 	{
 		g_isProfilerPausing = false;
@@ -113,17 +130,6 @@ void Profiler::MarkFrame()
 	{
 		g_isProfilerResuming = false;
 		g_isProfilerPaused = false;
-	}
-		
-
-	if (m_stack != nullptr)
-	{
-		DestroyMeasurementTreeRecurssive();				
-
-		m_measurementHistory[m_frameIndex] = m_stack;
-		Pop();
-
-		GUARANTEE_OR_DIE(m_stack == nullptr, Stringf("Profiler: Invalid mark frame. Stack is not empty %s", m_stack->m_id)); //means I pushed somewhere without popping if 
 	}
 
 	Push("frame");
@@ -145,7 +151,8 @@ void Profiler::Push(const char* id)
 			measure->SetParent(m_stack);
 			m_stack->AddChild(measure);
 
-			m_stack = measure;	//add the new measurement to the top of the tree structure
+			//add the new measurement to the top of the tree structure
+			m_stack = measure;	
 		}
 
 		measure = nullptr;
@@ -158,7 +165,8 @@ void Profiler::Pop()
 	{
 		GUARANTEE_OR_DIE(m_stack != nullptr, "Profiler: Popped too many times - stack is empty"); //if this ever happens we popped too many times																											  
 
-		m_stack->Finish();			//sets the end time for this interval's time
+		//sets the end time for this interval's time
+		m_stack->Finish();			
 		m_stack = m_stack->m_parent;	
 	}
 }

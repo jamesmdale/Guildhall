@@ -21,7 +21,9 @@ public:
 public:
 	void BeginFrame(){};
 	void EndFrame();	
-	void Initialize();
+
+	void Startup();
+	void Shutdown();
 
 	void Update(float deltaSeconds);
 	void Render();

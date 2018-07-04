@@ -266,6 +266,12 @@ bool RenderStartup()
 	return true; 
 }
 
+void Renderer::Shutdown()
+{
+	delete(g_theRenderer);
+	g_theRenderer = nullptr;
+}
+
 
 TODO("Add to endframe")
 void GLShutdown()

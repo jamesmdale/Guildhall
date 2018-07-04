@@ -114,6 +114,12 @@ void DevConsole::Startup()
 	m_consoleCamera->SetView(Matrix44::IDENTITY);
 }
 
+void DevConsole::Shutdown()
+{
+	delete(g_theDevConsole);
+	g_theDevConsole = nullptr;
+}
+
 void DevConsole::PopulateWithNextMostRecentHistoryItem()
 {
 	int tempHistoryIndex = m_currentHistoryItemIndex;

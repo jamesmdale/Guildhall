@@ -483,7 +483,7 @@ void DebugRender::EndFrame()
 	}
 }
 
-void DebugRender::Initialize()
+void DebugRender::Startup()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
 	Window* theWindow = Window::GetInstance();
@@ -503,6 +503,12 @@ void DebugRender::Initialize()
 
 	theWindow = nullptr;
 	theRenderer = nullptr;
+}
+
+void DebugRender::Shutdown()
+{
+	delete(g_theDebugRenderer);
+	g_theDebugRenderer = nullptr;
 }
 
 void DebugRender::Update(float deltaSeconds)

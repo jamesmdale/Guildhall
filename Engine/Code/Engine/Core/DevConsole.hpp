@@ -58,7 +58,9 @@ public:
 	bool CheckIfValidInput(int asKey);
 	void AddNewHistoryItem(HistoryItem item);
 	bool SaveSessionLog(std::string fileName);
+
 	void Startup();
+	void Shutdown();
 
 	void ResetHistoryIndex(){m_currentHistoryItemIndex = -1;};
 	void PopulateWithNextMostRecentHistoryItem(); //decrements the m_currentHistoryItemIndex vector and sets the item to the current input

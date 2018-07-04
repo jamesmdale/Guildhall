@@ -6,15 +6,19 @@
 #include <vector>
 #include "Game\TheApp.hpp"
 #include "Game\Game.hpp"
-#include "GameCommon.hpp"
+#include "Game\GameCommon.hpp"
+#include "Game\EngineBuildPreferences.hpp"
+
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
-#include <minwindef.h>
 #include "Engine\Core\Profiler.hpp"
+
+#include <minwindef.h>
+
 
 
 bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam ) 
@@ -136,22 +140,7 @@ void Initialize()
 {
 	CreateOpenGLWindow( CLIENT_ASPECT );
 
-	RenderStartup();
-
-	Renderer::CreateInstance();
-	Renderer::GetInstance()->PostStartup();
-
-	DevConsole::CreateInstance();
-	DevConsole::GetInstance()->Startup();
-
-	DebugRender::CreateInstance();
-	DebugRender::GetInstance()->Initialize();
-
-	AudioSystem::CreateInstance();
-	AudioSystem::GetInstance()->Initialize();
-
-	Profiler::CreateInstance();
-	Profiler::GetInstance()->Initialize();
+	EngineStartup();
 
 	g_theApp = new TheApp();
 	g_theApp->Initialize();
@@ -167,7 +156,8 @@ void RunFrame()
 
 void Shutdown()
 {
-	GLShutdown();
+	EngineShutdown();
+	GLShutdown();	
 
 	// Destroy the global App instance	
 	delete g_theApp;			

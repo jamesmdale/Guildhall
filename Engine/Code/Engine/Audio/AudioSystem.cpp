@@ -62,10 +62,17 @@ AudioSystem * AudioSystem::GetInstance()
 	return g_theAudioSystem;
 }
 
-void AudioSystem::Initialize()
+void AudioSystem::Startup()
 {
+	//register devconsole commands
 	CommandRegister("set_volume", CommandRegistration(SetOverallVolume, ": Type set_volume with 0.0f to 1.0f value to set overall volume"));
 	CommandRegister("toggle_mute", CommandRegistration(ToggleMute, ": Toggle sound mute"));
+}
+
+void AudioSystem::Shutdown()
+{
+	delete(g_theAudioSystem);
+	g_theAudioSystem = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------

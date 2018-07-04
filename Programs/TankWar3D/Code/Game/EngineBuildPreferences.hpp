@@ -1,3 +1,3 @@
-#include "Engine\Core\Profiler.hpp"
 
 
+static const char* APP_NAME = "Tank War";

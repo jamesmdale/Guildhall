@@ -38,8 +38,10 @@ public:
 	AudioSystem();
 	static AudioSystem* CreateInstance();
 	static AudioSystem* GetInstance();
-	void Initialize();
 	virtual ~AudioSystem();
+
+	void Startup();
+	void Shutdown();	
 
 public:
 	virtual void				BeginFrame();

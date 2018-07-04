@@ -67,7 +67,9 @@ public:
 
 	static Profiler* CreateInstance();
 	static Profiler* GetInstance();
-	static void Initialize();
+
+	void Startup();
+	void Shutdown();
 
 	ProfileMeasurement* CreateMeasurement(const char* id);
 	void DestroyMeasurementTreeRecurssive();

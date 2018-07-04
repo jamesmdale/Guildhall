@@ -13,10 +13,6 @@ constexpr int MAX_LIGHTS = 8;
 
 constexpr int MAX_PROFILER_HISTORY = 256;
 
-// CONSTANTS =============================================================================
-extern const char* APP_NAME;	// ...becomes ???
-
-
 // DEFINITIONS =============================================================================
 #define UNUSED(x) (void)(x);
 
@@ -43,3 +39,8 @@ extern const char* APP_NAME;	// ...becomes ???
 // TYPEDEFS =============================================================================
 typedef unsigned char byte_t;
 typedef unsigned int uint;
+
+
+// Methods =============================================================================
+void EngineStartup();
+void EngineShutdown();
