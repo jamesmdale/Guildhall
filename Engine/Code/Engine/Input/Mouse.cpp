@@ -48,13 +48,17 @@ void Mouse::UpdateMousePosition()
 {
 	Window* theWindow = Window::GetInstance();
 
-	m_mousePositionLastFrame = m_mousePositionThisFrame; 
-	m_mousePositionThisFrame = GetMouseClientPosition();
-
-	if (m_currentMouseMode == MOUSE_RELATIVE_MODE)
+	HWND hwnd = GetActiveWindow();
+	if (theWindow->GetHandle() == hwnd)
 	{
-		m_mousePositionLastFrame = theWindow->GetCenterOfClientWindow();		
-		SetMousePosition(m_mousePositionLastFrame);				
+		m_mousePositionLastFrame = m_mousePositionThisFrame; 
+		m_mousePositionThisFrame = GetMouseClientPosition();
+
+		if (m_currentMouseMode == MOUSE_RELATIVE_MODE)
+		{
+			m_mousePositionLastFrame = theWindow->GetCenterOfClientWindow();		
+			SetMousePosition(m_mousePositionLastFrame);				
+		}
 	}
 }
 

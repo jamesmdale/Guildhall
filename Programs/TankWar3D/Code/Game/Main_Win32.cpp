@@ -146,7 +146,6 @@ void Initialize()
 	g_theApp->Initialize();
 }
 
-//  One "frame" of the game.  Generally: Input, Update, Render.  We call this 60+ times per second.=========================================================================================
 
 void RunFrame()
 {

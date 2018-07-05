@@ -1,8 +1,9 @@
-#include "Engine\Core\Profiler.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Math\MathUtils.hpp"
-
+#include "Engine\Profiler\ProfilerConsole.hpp"
+#include "Engine\Profiler\ProfilerReport.hpp"
 
 static Profiler* g_theProfiler = nullptr;
 bool g_isProfilerPaused = false;
@@ -39,6 +40,7 @@ void Profiler::Startup()
 	CommandRegister("profiler_pause", CommandRegistration(Pause, ": Pauses profiler capturing", "Profiler Paused!"));
 	CommandRegister("profiler_resume", CommandRegistration(Resume, ": Resume profiler capturing", "Profiler resumed!"));
 	CommandRegister("profiler_history", CommandRegistration(LogHistory, ": Print all history items in the profile history capture", "Profiler printing history.."));
+	CommandRegister("profiler_report", CommandRegistration(Report, ": Capture profiler report for last frame", "Profile printing report..."));
 
 	#endif
 }
@@ -107,6 +109,25 @@ ProfileMeasurement* Profiler::ProfileGetPreviousFrame(int skipCount)
 	return m_measurementHistory[returnIndex];
 }
 
+std::vector<ProfileMeasurement*> Profiler::ProfileGetHistory()
+{
+	std::vector<ProfileMeasurement*> orderedHistory;
+	int currentIndex = m_frameIndex;
+
+	for (int historyIndex = 0; historyIndex < MAX_HISTORY_COUNT; ++historyIndex)
+	{
+		int actualIndex = Modulus(currentIndex, MAX_HISTORY_COUNT);
+		ProfileMeasurement* measurement = m_measurementHistory[actualIndex];
+
+		orderedHistory.push_back(measurement);
+
+		currentIndex = Modulus(currentIndex - 1, MAX_HISTORY_COUNT);
+		measurement = nullptr;
+	}
+
+	return orderedHistory;
+}
+
 void Profiler::MarkFrame()
 {
 	// move stack into measurementHistory
@@ -163,7 +184,8 @@ void Profiler::Pop()
 {
 	if (!g_isProfilerPaused)
 	{
-		GUARANTEE_OR_DIE(m_stack != nullptr, "Profiler: Popped too many times - stack is empty"); //if this ever happens we popped too many times																											  
+		//if this ever happens we popped too many times
+		GUARANTEE_OR_DIE(m_stack != nullptr, "Profiler: Popped too many times - stack is empty"); 																											  
 
 		//sets the end time for this interval's time
 		m_stack->Finish();			
@@ -185,7 +207,6 @@ void Profiler::ResumeProfiler()
 
 
 // console commands =============================================================================
-
 void Pause(Command & cmd)
 {
 	Profiler::GetInstance()->PauseProfiler();
@@ -199,4 +220,16 @@ void Resume(Command & cmd)
 void LogHistory(Command & cmd)
 {
 	Profiler::GetInstance()->PrintHistory();
+}
+
+void Report(Command& cmd)
+{
+	ProfileMeasurement* measurement = Profiler::GetInstance()->ProfileGetPreviousFrame();
+
+	ProfilerReport report;
+
+	report.GenerateReportTreeFromFrame(measurement);
+	report.PrintReportToDevConsole();
+
+	measurement = nullptr;
 }

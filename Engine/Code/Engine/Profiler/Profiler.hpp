@@ -5,8 +5,11 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\DevConsole.hpp"
 #include <queue>
+#include "Engine\Math\IntRange.hpp"
 
 constexpr int MAX_HISTORY_COUNT = 256;
+
+class ProfilerReport;
 
 // profile measurement =============================================================================
 struct ProfileMeasurement
@@ -26,6 +29,8 @@ struct ProfileMeasurement
 
 	void SetParent(ProfileMeasurement* parent){ m_parent = parent; }
 	void AddChild(ProfileMeasurement* child){m_children.push_back(child);}
+
+	uint64_t GetElapsedTimeHPC(){return m_endTime - m_startTime;}
 
 	void DeleteTree()
 	{
@@ -76,6 +81,7 @@ public:
 	void PrintHistory();
 
 	ProfileMeasurement* ProfileGetPreviousFrame(int skipCount = 0);
+	std::vector<ProfileMeasurement*> ProfileGetHistory();
 
 	void MarkFrame();
 	void Push(const char* id);
@@ -94,6 +100,7 @@ public:
 void Pause(Command& cmd);
 void Resume(Command& cmd);
 void LogHistory(Command& cmd);
+void Report(Command& cmd);
 
 // profile log scope =============================================================================
 struct ProfileLogScoped

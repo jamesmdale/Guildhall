@@ -78,7 +78,7 @@ void TheApp::Initialize()
 
 void TheApp::Update()
 {
-	Profiler::GetInstance()->Push("Update");
+	PROFILER_PUSH();
 
 	float deltaSeconds = GetMasterDeltaSeconds();
 
@@ -99,7 +99,6 @@ void TheApp::Update()
 		DevConsole::GetInstance()->Update(deltaSeconds);
 	}
 
-	Profiler::GetInstance()->Pop();
 }
 
 void TheApp::PreRender()
