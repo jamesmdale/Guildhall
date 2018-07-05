@@ -13,6 +13,10 @@ constexpr int MAX_LIGHTS = 8;
 
 constexpr int MAX_PROFILER_HISTORY = 256;
 
+constexpr int PROFILER_SORT_LAYER = 999;
+constexpr float PROFILER_TEXT_CELL_HEIGHT = 15.f; //in pixels
+constexpr float PROFILER_TEXT_WIDTH_PADDING = 5.f; //in pixels
+
 // DEFINITIONS =============================================================================
 #define UNUSED(x) (void)(x);
 

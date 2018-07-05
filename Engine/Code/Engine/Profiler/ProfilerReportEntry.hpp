@@ -1,7 +1,6 @@
 #pragma once
 #include "Engine\Profiler\Profiler.hpp"
 #include <string>
-#include <map>
 #include <vector>
 
 class ProfilerReportEntry
@@ -37,6 +36,6 @@ public:
 	double m_selfPercentageOfFrame = 0.0;
 	uint64_t m_selfTime = 0.f;	
 
-	std::map<std::string, ProfilerReportEntry*> m_children;
+	std::vector<ProfilerReportEntry*> m_children;
 	ProfilerReportEntry* m_parent = nullptr;	
 };

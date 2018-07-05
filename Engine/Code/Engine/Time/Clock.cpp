@@ -120,6 +120,11 @@ double Clock::GetRunningTime()
 	return PerformanceCounterToSeconds(elapsedHPC);
 }
 
+float GetMasterFPS()
+{
+	return 1.f/GetMasterDeltaSeconds();
+}
+
 float GetMasterDeltaSeconds()
 {
 	if((float)g_masterClock->m_frame.hpcSeconds < std::numeric_limits<float>::min())

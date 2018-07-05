@@ -28,7 +28,7 @@ class DevConsole
 private:
 	DevConsole();
 
-	const float TEXT_CELL_HEIGHT = 20.f;
+	const float TEXT_CELL_HEIGHT = 15.f;
 	const float TEXT_DRAW_PADDING_Y = 5.f;
 	const float TEXT_DRAW_PADDING_X = 5.f;
 	const float CURSOR_TIMER = 0.3f;

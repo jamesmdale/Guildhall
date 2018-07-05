@@ -11,6 +11,7 @@ public:
 	explicit AABB2(float minX, float minY, float maxX, float maxY);
 	explicit AABB2(const Vector2& mins, const Vector2& maxs);
 	explicit AABB2(const Vector2& center, float radiusX, float radiusY);
+	explicit AABB2(const AABB2& bounds, const Vector2& minsPercentage, const Vector2& maxsPercentage);
 
 	void StretchToIncludePoint(float x, float y);  //expand radius if (x,y) is outside
 	void StretchToIncludePoint(const Vector2& point); //expand radius if point outside

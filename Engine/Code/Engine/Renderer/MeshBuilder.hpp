@@ -51,6 +51,7 @@ public:
 	void CreateLine2D(const Vector2& positionStart, const Vector2& positionEnd, const Rgba& color);
 	void CreateBasis(const Vector3& positionStart, float scale);
 	void CreateBasis(const Matrix44& basis, const Vector3& position, float scale);
+	void CreateText2DFromPoint(const Vector2 & startPos, float cellHeight, float aspectScale, const std::string & text, const Rgba & tint);
 	void CreateQuad2D(const Vector2& center, const Vector2& dimensions, const Rgba& tint);
 	void CreateQuad2D(const AABB2& drawBounds, const Rgba& tint);
 	void CreateTiledQuad2D(const Vector2& center, const Vector2& dimensions, const Vector2& cellDimensions, const Rgba & tint);

@@ -15,11 +15,12 @@ ProfilerReportEntry::~ProfilerReportEntry()
 {
 	m_parent = nullptr;
 
-	for (std::map<std::string, ProfilerReportEntry*>::iterator childIndex = m_children.begin(); childIndex != m_children.end(); ++childIndex)
+	for (int childIndex = 0; childIndex < (int)m_children.size(); ++childIndex)
 	{
-		delete(childIndex->second);
-		childIndex->second = nullptr;
+		delete(m_children[childIndex]);
+		m_children[childIndex] = nullptr;
 	}
+	m_children.clear();
 }
 
 void ProfilerReportEntry::PopulateTree(ProfileMeasurement* node)
@@ -75,7 +76,7 @@ ProfilerReportEntry* ProfilerReportEntry::GetOrCreateChild(const std::string& id
 		entry = new ProfilerReportEntry();
 		entry->m_id = id;
 		entry->m_parent = this;
-		m_children[entry->m_id] = entry;
+		m_children.push_back(entry);
 	}
 
 	return entry;
@@ -83,11 +84,11 @@ ProfilerReportEntry* ProfilerReportEntry::GetOrCreateChild(const std::string& id
 
 ProfilerReportEntry* ProfilerReportEntry::FindEntry(const std::string& id)
 {
-	std::map<std::string, ProfilerReportEntry*>::iterator childIterator;
-
-	childIterator = m_children.find("id");
-	if (childIterator != m_children.end())
-		return childIterator->second;
+	for (int childIndex = 0; childIndex < (int)m_children.size(); ++childIndex)
+	{
+		if(m_children[childIndex]->m_id == id)
+			return m_children[childIndex];
+	}
 
 	return nullptr;
 }
@@ -124,16 +125,16 @@ void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entry
 	std::string rootString = Stringf("ID: %s Call Count: %d Total Perc: %f Total Time: %f Self Perc: %f Self Time: %f \n", 
 		m_id,
 		m_callCount,
-		m_totalPercentageOfFrame,
+		100.0 * m_totalPercentageOfFrame,
 		PerformanceCounterToSeconds(m_totalTime),
-		m_selfPercentageOfFrame,
+		100.0 * m_selfPercentageOfFrame,
 		PerformanceCounterToSeconds(m_selfTime));
 
 	entryStrings->push_back(rootString);
 
-	for (std::map<std::string, ProfilerReportEntry*>::iterator childIndex = m_children.begin(); childIndex != m_children.end(); ++childIndex)
+	for (int childIndex = 0; childIndex < (int)m_children.size(); ++childIndex)
 	{
-		ProfilerReportEntry* index = childIndex->second;
+		ProfilerReportEntry* index = m_children[childIndex];
 
 		//add child data to string
 		index->GetFormattedDataString(entryStrings);
@@ -141,9 +142,6 @@ void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entry
 		index = nullptr;
 	}
 }
-
-
-
 
 
 

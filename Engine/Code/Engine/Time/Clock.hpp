@@ -51,6 +51,9 @@ public:
 
 	double GetRunningTime();
 
+	float GetFPS();
+
+
 public:
 	TimeUnit m_frame; 
 	TimeUnit m_total; 
@@ -69,6 +72,7 @@ private:
 }; 
 
 Clock* GetMasterClock();
+float GetMasterFPS();
 float GetMasterDeltaSeconds();
 void MasterClockBeginFrame();
 

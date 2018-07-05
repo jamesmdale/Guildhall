@@ -3,7 +3,8 @@
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
-#include "Engine\Core\Profiler.hpp"
+#include "Engine\Profiler\Profiler.hpp"
+#include "Engine\Profiler\ProfilerConsole.hpp"
 
 Blackboard g_gameConfigBlackboard;
 
@@ -25,10 +26,14 @@ void EngineStartup()
 
 	Profiler::CreateInstance();
 	Profiler::GetInstance()->Startup();
+
+	ProfilerConsole::CreateInstance();
+	ProfilerConsole::GetInstance()->Startup();
 }
 
 void EngineShutdown()
 {
+	ProfilerConsole::GetInstance()->Shutdown();
 
 	Profiler::GetInstance()->Shutdown();
 

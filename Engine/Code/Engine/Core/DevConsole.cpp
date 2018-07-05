@@ -238,7 +238,7 @@ void DevConsole::Render()
 		}		
 
 		float currentCellStartPosition = (float)(historyIndex + 1.f) * (TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y);
-		theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, currentCellStartPosition), m_inputHistoryStack[historyIndex].m_printText, 20.f, m_inputHistoryStack[historyIndex].m_printColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, currentCellStartPosition), m_inputHistoryStack[historyIndex].m_printText, 15.f, m_inputHistoryStack[historyIndex].m_printColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 	}
 
 	theRenderer->m_defaultShader->DisableBlending();

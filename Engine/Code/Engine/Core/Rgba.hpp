@@ -54,6 +54,7 @@ public:
 	static const Rgba CLEAR;
 	static const Rgba GRAY;
 	static const Rgba LIGHT_BLUE;
+	static const Rgba LIGHT_BLUE_TRANSPARENT;
 	static const Rgba PINK;
 	static const Rgba LIGHT_PINK_TRANSPARENT;
 	static const Rgba LIGHT_WHITE_TRANSPARENT;

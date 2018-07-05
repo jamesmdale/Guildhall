@@ -14,6 +14,8 @@ public:
 	void GenerateReportTreeFromFrame(ProfileMeasurement* root);
 	void PrintReportToDevConsole();
 
+	std::vector<std::string>* GetEntriesAsFormattedStrings();
+
 	void SortBySelfTime();
 	void SortByTotalTime();
 	uint64_t GetTotalFrameTime(){ return m_root->m_totalTime; }

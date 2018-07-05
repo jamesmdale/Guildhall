@@ -13,7 +13,8 @@
 #include "Engine\File\ObjectFileLoader.hpp"
 #include "Game\Menu\MenuState.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
-#include "Engine\Core\Profiler.hpp"
+#include "Engine\Profiler\Profiler.hpp"
+#include "Engine\Profiler\ProfilerConsole.hpp"
 
 TheApp* g_theApp = nullptr;
 
@@ -116,6 +117,11 @@ void TheApp::Render()
 	if(DebugRender::GetInstance()->IsEnabled())
 	{
 		DebugRender::GetInstance()->Render();
+	}
+
+	if (ProfilerConsole::GetInstance()->IsOpen())
+	{
+		ProfilerConsole::GetInstance()->Render();
 	}
 
 	if(DevConsole::GetInstance()->IsOpen())

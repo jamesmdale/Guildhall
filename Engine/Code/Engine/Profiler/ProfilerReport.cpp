@@ -10,13 +10,26 @@ void ProfilerReport::GenerateReportTreeFromFrame(ProfileMeasurement* root)
 
 void ProfilerReport::PrintReportToDevConsole()
 {
+	std::vector<std::string>* strings = GetEntriesAsFormattedStrings();
+
+	for (int stringIndex = 0; stringIndex < (int)strings->size(); ++stringIndex)
+	{
+		DevConsolePrintf(strings->at(stringIndex).c_str());
+	}
+
+	delete(strings);
+	strings = nullptr;
+}
+
+std::vector<std::string>* ProfilerReport::GetEntriesAsFormattedStrings()
+{
+	GUARANTEE_OR_DIE(m_root != nullptr, "PROFILER REPORT INVALID: NO REPORT TREE GENERATED TO FORMAT AS STRINGS");
+
 	std::vector<std::string>* entryStrings = new std::vector<std::string>();
 
 	//recursively get data strings for every node in the tree
 	m_root->GetFormattedDataString(entryStrings);
 
-	for (int stringIndex = 0; stringIndex < (int)entryStrings->size(); ++stringIndex)
-	{
-		DevConsolePrintf(entryStrings->at(stringIndex).c_str());
-	}
+	return entryStrings;
 }
+

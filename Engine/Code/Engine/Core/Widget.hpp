@@ -24,6 +24,8 @@ public:
 	void UpdateSortLayer(int sortLayer);
 	int GetSortLayer(){return m_sortLayer;}
 
+	void AddRenderable(Renderable2D* renderable);
+
 	//input udpates
 	virtual void OnLeftReleased();
 	virtual void OnRightReleased();

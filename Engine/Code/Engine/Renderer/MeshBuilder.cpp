@@ -738,6 +738,43 @@ void MeshBuilder::CreateBasis(const Matrix44& basis, const Vector3& position, fl
 	PushVertex(position + (basis.GetRight()* scale));
 }
 
+void MeshBuilder::CreateText2DFromPoint(const Vector2& startPos, float cellHeight, float aspectScale, const std::string& text, const Rgba& tint)
+{
+	Begin(TRIANGLES_DRAW_PRIMITIVE, true);
+
+	BitmapFont* font = Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont");
+
+	float cellWidth = cellHeight * (font->m_baseAspect * aspectScale);
+	int textLength = (int)text.length();
+
+	for(int charIndex = 0; charIndex < textLength; charIndex++)
+	{	
+		int vertSize = (int)m_vertices.size();
+		AABB2 uvs = font->GetUVsForGlyph(text.at(charIndex));
+		Vector2 texCoordsAtMins = uvs.mins;
+		Vector2 texCoordsAtMaxs = uvs.maxs;
+		AABB2 bounds = AABB2(Vector2(startPos.x + (cellWidth * charIndex), startPos.y), Vector2(startPos.x + (cellWidth * (charIndex + 1)), startPos.y + cellHeight));
+
+		SetColor(tint);
+		SetUV(Vector2(texCoordsAtMins.x, texCoordsAtMaxs.y));
+		PushVertex(Vector3(bounds.mins.x, bounds.mins.y, 0));
+
+		SetColor(tint);
+		SetUV(Vector2(texCoordsAtMaxs.x, texCoordsAtMaxs.y));
+		PushVertex(Vector3(bounds.maxs.x, bounds.mins.y, 0));	
+
+		SetColor(tint);
+		SetUV(Vector2(texCoordsAtMaxs.x, texCoordsAtMins.y));
+		PushVertex(Vector3(bounds.maxs.x, bounds.maxs.y, 0));
+
+		SetColor(tint);
+		SetUV(Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
+		PushVertex(Vector3(bounds.mins.x, bounds.maxs.y, 0));		
+
+		AddQuadIndices(vertSize, vertSize + 1, vertSize + 2, vertSize + 3);
+	}
+}
+
 void MeshBuilder::CreateText2D(const Vector2& center, float cellHeight, float aspectScale, const std::string& text, const Rgba& tint)
 {
 	Begin(TRIANGLES_DRAW_PRIMITIVE, true); 

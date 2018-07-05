@@ -95,6 +95,12 @@ void Widget::UpdateSortLayer(int sortLayer)
 	}
 }
 
+void Widget::AddRenderable(Renderable2D* renderable)
+{
+	renderable->m_widgetSortLayer = m_sortLayer;
+	m_renderables.push_back(renderable);
+}
+
 //handle mouse input
 void Widget::OnLeftReleased(){}
 void Widget::OnRightReleased(){}

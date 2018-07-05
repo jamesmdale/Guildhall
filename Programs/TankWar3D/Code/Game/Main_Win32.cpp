@@ -15,7 +15,8 @@
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
-#include "Engine\Core\Profiler.hpp"
+#include "Engine\Profiler\Profiler.hpp"
+#include "Engine\Profiler\ProfilerConsole.hpp"
 
 #include <minwindef.h>
 
