@@ -122,10 +122,16 @@ uint64_t ProfilerReportEntry::GetRootTotalTimeElapsed(ProfileMeasurement* node)
 	return totalTime;
 }
 
-void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entryStrings)
+void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entryStrings, int depth)
 {
-	std::string rootString = Stringf("%s %-22s %-8s %d %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f", 
-		"ID:",
+	std::string intentId = "ID:";
+	if (depth > 0)
+		intentId = "- ID:";
+
+	//std::string rootString = Stringf("%*s %s %-20s %-8s %-3d %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f", 
+	std::string rootString = Stringf("%*s %-20s %-8s %-3d %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f", 
+		5 * depth,
+		intentId.c_str(),
 		m_id.c_str(),
 		"Call Num:",
 		m_callCount,
@@ -144,8 +150,9 @@ void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entry
 	{
 		ProfilerReportEntry* index = m_children[childIndex];
 
+		
 		//add child data to string
-		index->GetFormattedDataString(entryStrings);
+		index->GetFormattedDataString(entryStrings, depth + 1);
 
 		index = nullptr;
 	}

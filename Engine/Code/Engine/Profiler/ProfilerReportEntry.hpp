@@ -20,7 +20,7 @@ public:
 	uint64_t GetRootTotalTimeElapsed(ProfileMeasurement* node);
 	uint64_t GetChildrenTotalTimeElapsed(ProfileMeasurement* node);
 
-	void GetFormattedDataString(std::vector<std::string>* entryStrings);
+	void GetFormattedDataString(std::vector<std::string>* entryStrings, int depth = 0);
 
 public:
 	bool m_isVisible = true;
