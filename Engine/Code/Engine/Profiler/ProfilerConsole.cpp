@@ -80,65 +80,71 @@ void ProfilerConsole::UpdateFromInput()
 {
 	InputSystem* theInput = InputSystem::GetInstance();
 
-	//change data view
-	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_V))
+	if (!DevConsole::GetInstance()->IsOpen())
 	{
-		switch (m_activeReportType)
+		//change data view
+		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_V))
 		{
-		case TREE_REPORT_TYPE:
-			m_activeReportType = FLAT_REPORT_TYPE;
-			m_activeFlatSortMode = TOTAL_PROFILER_SORT_MODE;
-			break;
-		case FLAT_REPORT_TYPE:
-			m_activeReportType = TREE_REPORT_TYPE;
-			break;
-		}			
-	}
-
-	//change sort mode
-	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_L))
-	{
-		switch (m_activeFlatSortMode)
-		{
-		case TOTAL_PROFILER_SORT_MODE:
-			m_activeFlatSortMode = SELF_PROFILER_SORT_MODE;
-			break;
-		case SELF_PROFILER_SORT_MODE:
-			m_activeFlatSortMode = TOTAL_PROFILER_SORT_MODE;
-			break;
+			switch (m_activeReportType)
+			{
+			case TREE_REPORT_TYPE:
+				m_activeReportType = FLAT_REPORT_TYPE;
+				m_activeFlatSortMode = TOTAL_PROFILER_SORT_MODE;
+				break;
+			case FLAT_REPORT_TYPE:
+				m_activeReportType = TREE_REPORT_TYPE;
+				break;
+			}
 		}
-	}
 
-	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_M))
-	{
-		if (m_doesHaveInputPriority == true)
+		//change sort mode
+		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_L))
 		{
-			m_doesHaveInputPriority = false;
-			theInput->GetMouse()->MouseShowCursor(false);
-			theInput->GetMouse()->SetMouseMode(MOUSE_RELATIVE_MODE);
+			switch (m_activeFlatSortMode)
+			{
+			case TOTAL_PROFILER_SORT_MODE:
+				m_activeFlatSortMode = SELF_PROFILER_SORT_MODE;
+				break;
+			case SELF_PROFILER_SORT_MODE:
+				m_activeFlatSortMode = TOTAL_PROFILER_SORT_MODE;
+				break;
+			}
 		}
-		else
+
+		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_M))
 		{
-			m_doesHaveInputPriority = true;
-			theInput->GetMouse()->MouseShowCursor(true);
-			theInput->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);
-		}	
+			if (m_doesHaveInputPriority == true)
+			{
+				m_doesHaveInputPriority = false;
+				theInput->GetMouse()->MouseShowCursor(false);
+				theInput->GetMouse()->SetMouseMode(MOUSE_RELATIVE_MODE);
+			}
+			else
+			{
+				m_doesHaveInputPriority = true;
+				theInput->GetMouse()->MouseShowCursor(true);
+				theInput->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);
+			}
+		}
 	}
 }
 
 void ProfilerConsole::Update()
 {
-	delete(m_activeReport);
-	m_activeReport = new ProfilerReport();
-
-	switch (m_activeReportType)
+	if (!Profiler::GetInstance()->IsPaused())
 	{
-	case TREE_REPORT_TYPE:
-		m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
-		break;
-	case FLAT_REPORT_TYPE:
-		m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame(), m_activeFlatSortMode);
-	}	
+		delete(m_activeReport);
+		m_activeReport = new ProfilerReport();	
+
+		switch (m_activeReportType)
+		{
+		case TREE_REPORT_TYPE:
+			m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
+			break;
+		case FLAT_REPORT_TYPE:
+			m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame(), m_activeFlatSortMode);
+		}
+	}
 
 	RefreshDynamicWidgets();
 }

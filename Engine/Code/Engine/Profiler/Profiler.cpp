@@ -199,6 +199,11 @@ void Profiler::PauseProfiler()
 	g_isProfilerPausing = true;
 }
 
+bool Profiler::IsPaused()
+{
+	return g_isProfilerPaused;
+}
+
 void Profiler::ResumeProfiler()
 {
 	//when the frame is completed in the next MarkFrame(), the profiler system will be unpause and allow captures again.

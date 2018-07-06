@@ -90,6 +90,8 @@ public:
 	void PauseProfiler();
 	void ResumeProfiler();
 
+	bool IsPaused();
+
 public:
 	ProfileMeasurement* m_stack = nullptr;
 
