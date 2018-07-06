@@ -8,6 +8,13 @@
 #include "Engine\Renderer\RenderScene2D.hpp"
 #include "Engine\Camera\Camera.hpp"
 
+enum ReportTypeView
+{
+	TREE_REPORT_TYPE,
+	FLAT_REPORT_TYPE,
+	NUM_REPORT_TYPES
+};
+
 class ProfilerConsole
 {
 public:
@@ -42,6 +49,7 @@ public:
 	//Widget* m_reportGraph = nullptr;
 
 	ProfilerReport* m_activeReport = nullptr;
+	ReportTypeView m_activeReportType = TREE_REPORT_TYPE;
 
 	//rendering members
 	RenderScene2D* m_profilerRenderScene = nullptr;
@@ -49,5 +57,5 @@ public:
 	Camera* m_profilerCamera = nullptr;
 };
 
-void Open(Command& cmd);
+void OpenToggle(Command& cmd);
 

@@ -11,6 +11,7 @@
 #include "Game\Swarmer.hpp"
 #include "Game\Spawner.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
+#include "Engine\Profiler\ProfilerConsole.hpp"
 
 bool isPlayerAlive = true;
 bool isVictory = false;
@@ -282,50 +283,52 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	InputSystem* theInput = InputSystem::GetInstance();
 
-	//if tank is dead, it no longer has input.
-	if (isPlayerAlive && !isVictory)
+	if (!ProfilerConsole::GetInstance()->m_doesHaveInputPriority)
 	{
-		m_playerTank->UpdateFromInput(deltaSeconds);
-	}
-	else if (m_respawnTimer->HasElapsed())
-	{
-		if(theInput->WasKeyJustPressed(theInput->KEYBOARD_SPACE))
+		//if tank is dead, it no longer has input.
+		if (isPlayerAlive && !isVictory)
 		{
-			isPlayerAlive = true;
-			RespawnTank();
+			m_playerTank->UpdateFromInput(deltaSeconds);
 		}
-	}
-	
-	if (isVictory == true)
-	{
-		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_SPACE))
+		else if (m_respawnTimer->HasElapsed())
 		{
-			isVictory = false;
-			
-			//after you are finished loading
-			GameState* state = GetMenuStateFromGlobalListByType(MAIN_MENU_STATE);
-			GUARANTEE_OR_DIE(state != nullptr, "LOADING STATE TRANSITION: PLAYING STATE NOT FOUND");
-
-			AudioSystem::GetInstance()->StopSound(musicID);
-
-			TransitionMenuStates(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
-		}	
-	}
-
-	//kill all enemies
-	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_K))
-	{
-		for (int spawnerIndex = 0; spawnerIndex < (int)m_spawners.size(); ++spawnerIndex)
-		{
-			m_spawners[spawnerIndex]->m_health = 0;
+			if (theInput->WasKeyJustPressed(theInput->KEYBOARD_SPACE))
+			{
+				isPlayerAlive = true;
+				RespawnTank();
+			}
 		}
 
-		for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
+		if (isVictory == true)
 		{
-			m_swarmers[swarmerIndex]->m_health = 0;
-		}
-	}
+			if (theInput->WasKeyJustPressed(theInput->KEYBOARD_SPACE))
+			{
+				isVictory = false;
 
+				//after you are finished loading
+				GameState* state = GetMenuStateFromGlobalListByType(MAIN_MENU_STATE);
+				GUARANTEE_OR_DIE(state != nullptr, "LOADING STATE TRANSITION: PLAYING STATE NOT FOUND");
+
+				AudioSystem::GetInstance()->StopSound(musicID);
+
+				TransitionMenuStates(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
+			}
+		}
+
+		//kill all enemies
+		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_K))
+		{
+			for (int spawnerIndex = 0; spawnerIndex < (int)m_spawners.size(); ++spawnerIndex)
+			{
+				m_spawners[spawnerIndex]->m_health = 0;
+			}
+
+			for (int swarmerIndex = 0; swarmerIndex < (int)m_swarmers.size(); ++swarmerIndex)
+			{
+				m_swarmers[swarmerIndex]->m_health = 0;
+			}
+		}
+	}	
 
 	//cleanup
 	theInput = nullptr;

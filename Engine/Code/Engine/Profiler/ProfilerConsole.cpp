@@ -9,6 +9,7 @@
 #include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Time\Clock.hpp"
 #include "Engine\Time\Time.hpp"
+#include "Engine\Input\InputSystem.hpp"
 
 static ProfilerConsole* g_theProfilerConsole = nullptr;
 
@@ -45,7 +46,7 @@ ProfilerConsole::~ProfilerConsole()
 void ProfilerConsole::Startup()
 {
 	//register commands	
-	CommandRegister("profiler", CommandRegistration(Open, ": Open/close profiler console", "Profiler toggled!"));
+	CommandRegister("profiler", CommandRegistration(OpenToggle, ": Open/close profiler console", "Profiler toggled!"));
 
 	Renderer* theRenderer = Renderer::GetInstance();
 	Window* theWindow = Window::GetInstance();
@@ -77,6 +78,43 @@ void ProfilerConsole::Shutdown()
 
 void ProfilerConsole::UpdateFromInput()
 {
+	InputSystem* theInput = InputSystem::GetInstance();
+
+	//change data view
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_V))
+	{
+		switch (m_activeReportType)
+		{
+		case TREE_REPORT_TYPE:
+			m_activeReportType = FLAT_REPORT_TYPE;
+			break;
+		case FLAT_REPORT_TYPE:
+			m_activeReportType = TREE_REPORT_TYPE;
+			break;
+		}			
+	}
+
+	//change sort mode
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_L))
+	{
+		
+	}
+
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_M))
+	{
+		if (m_doesHaveInputPriority == true)
+		{
+			m_doesHaveInputPriority = false;
+			theInput->GetMouse()->MouseShowCursor(false);
+			theInput->GetMouse()->SetMouseMode(MOUSE_RELATIVE_MODE);
+		}
+		else
+		{
+			m_doesHaveInputPriority = true;
+			theInput->GetMouse()->MouseShowCursor(true);
+			theInput->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);
+		}	
+	}
 }
 
 void ProfilerConsole::Update()
@@ -84,7 +122,14 @@ void ProfilerConsole::Update()
 	delete(m_activeReport);
 	m_activeReport = new ProfilerReport();
 
-	m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
+	switch (m_activeReportType)
+	{
+	case TREE_REPORT_TYPE:
+		m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
+		break;
+	case FLAT_REPORT_TYPE:
+		m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
+	}	
 
 	RefreshDynamicWidgets();
 }
@@ -220,7 +265,23 @@ void ProfilerConsole::RefreshDynamicWidgets()
 
 
 // console commands =============================================================================
-void Open(Command & cmd)
+void OpenToggle(Command & cmd)
 {
-	ProfilerConsole::GetInstance()->m_isProfilerConsoleOpen = !ProfilerConsole::GetInstance()->m_isProfilerConsoleOpen;
+	ProfilerConsole* console = ProfilerConsole::GetInstance();
+	InputSystem* theInput = InputSystem::GetInstance();
+
+	console->m_isProfilerConsoleOpen = !console->m_isProfilerConsoleOpen;
+
+	//reset states
+	if (!console->m_isProfilerConsoleOpen)
+	{
+		console->m_doesHaveInputPriority = false;
+		theInput->GetMouse()->MouseShowCursor(false);
+		theInput->GetMouse()->SetMouseMode(MOUSE_RELATIVE_MODE);
+	}
+
+	console->m_activeReportType = TREE_REPORT_TYPE;
+
+	theInput = nullptr;
+	console = nullptr;
 }

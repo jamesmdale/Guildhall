@@ -65,6 +65,10 @@ void Mouse::UpdateMousePosition()
 void Mouse::MouseShowCursor( bool show ) 
 {
 	::ShowCursor( show ); 
+	::ShowCursor( show );
+	::ShowCursor( show );
+	::ShowCursor( show );
+	::ShowCursor( show );
 }
 
 

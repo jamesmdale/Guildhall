@@ -170,10 +170,10 @@ float TheApp::UpdateInput(float deltaSeconds)
 	
 	if (!DevConsole::GetInstance()->IsOpen())
 	{
-		if (InputSystem::GetInstance()->WasKeyJustPressed(InputSystem::GetInstance()->KEYBOARD_M))
+		if (InputSystem::GetInstance()->WasKeyJustPressed(InputSystem::GetInstance()->KEYBOARD_M) && !ProfilerConsole::GetInstance()->IsOpen())
 		{
 			AudioSystem::GetInstance()->ToggleMasterMute();
-		}
+		}				
 
 		deltaSeconds = Game::GetInstance()->UpdateInput(deltaSeconds);
 	}
