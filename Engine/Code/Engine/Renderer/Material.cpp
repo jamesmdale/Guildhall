@@ -10,6 +10,7 @@ Material::Material()
 
 Material::~Material()
 {
+	TODO("Delete instanced shaders later");
 	//delete(m_shader);
 	//m_shader = nullptr;
 }

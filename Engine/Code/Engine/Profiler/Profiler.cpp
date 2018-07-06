@@ -228,7 +228,11 @@ void Report(Command& cmd)
 
 	ProfilerReport report;
 
-	report.GenerateReportTreeFromFrame(measurement);
+	if(cmd.GetNextString() == "flat")
+		report.GenerateReportTreeFromFrame(measurement);
+	else
+		report.GenerateReportTreeFromFrame(measurement);	
+		
 	report.PrintReportToDevConsole();
 
 	measurement = nullptr;

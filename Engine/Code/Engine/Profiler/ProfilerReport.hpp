@@ -24,3 +24,5 @@ public:
 	ProfilerReportEntry* m_root = nullptr;
 };
 
+void Report(Command& cmd);
+
