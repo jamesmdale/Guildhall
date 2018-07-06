@@ -17,7 +17,7 @@ Material::~Material()
 Material::Material(const Material* copyMaterial)
 {
 	m_isInstance = copyMaterial->m_isInstance;
-	m_shader = new Shader(copyMaterial->m_shader);
+	m_shader = copyMaterial->m_shader;
 	
 	for (int samplerIndex = 0; samplerIndex < (int)copyMaterial->m_samplers.size(); ++samplerIndex)
 	{

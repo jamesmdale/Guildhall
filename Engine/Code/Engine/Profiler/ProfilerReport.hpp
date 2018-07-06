@@ -9,7 +9,7 @@ class ProfilerReport
 {
 public:
 	ProfilerReport(){};
-	~ProfilerReport(){};
+	~ProfilerReport();
 
 	void GenerateReportTreeFromFrame(ProfileMeasurement* root);
 	void PrintReportToDevConsole();

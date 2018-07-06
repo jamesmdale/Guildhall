@@ -36,8 +36,11 @@ AABB2::AABB2(const AABB2& bounds, const Vector2& minsPercentage, const Vector2& 
 {
 	Vector2 dimensions = bounds.GetDimensions();
 	
-	mins = dimensions * minsPercentage;
-	maxs = dimensions * maxsPercentage;
+	Vector2 minsOffset = dimensions * minsPercentage;
+	Vector2 maxsOffset = dimensions * maxsPercentage;
+
+	mins = minsOffset + bounds.mins;
+	maxs = maxsOffset + bounds.mins;
 }
 
 void AABB2::StretchToIncludePoint(float x, float y)  //expand radius if (x,y) is outside

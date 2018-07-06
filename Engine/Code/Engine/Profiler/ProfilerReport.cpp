@@ -2,6 +2,12 @@
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Time\Time.hpp"
 
+ProfilerReport::~ProfilerReport()
+{
+	delete(m_root);
+	m_root = nullptr;
+}
+
 void ProfilerReport::GenerateReportTreeFromFrame(ProfileMeasurement* root)
 {
 	m_root = new ProfilerReportEntry(root->m_id);

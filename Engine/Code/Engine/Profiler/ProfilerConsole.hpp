@@ -49,3 +49,5 @@ public:
 	Camera* m_profilerCamera = nullptr;
 };
 
+void Open(Command& cmd);
+

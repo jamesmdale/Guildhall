@@ -95,6 +95,12 @@ void TheApp::Update()
 		DebugRender::GetInstance()->Update(deltaSeconds);
 	}
 
+	if (ProfilerConsole::GetInstance()->IsOpen())
+	{
+		ProfilerConsole::GetInstance()->UpdateFromInput();
+		ProfilerConsole::GetInstance()->Update();
+	}
+
 	if(DevConsole::GetInstance()->IsOpen())
 	{
 		DevConsole::GetInstance()->Update(deltaSeconds);
@@ -107,6 +113,11 @@ void TheApp::PreRender()
 	//PROFILER_PUSH();
 
 	Game::GetInstance()->PreRender();
+
+	if (ProfilerConsole::GetInstance()->IsOpen())
+	{
+		ProfilerConsole::GetInstance()->PreRender();
+	}
 }
 
 void TheApp::Render()

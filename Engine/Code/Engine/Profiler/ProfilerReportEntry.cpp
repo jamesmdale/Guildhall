@@ -13,14 +13,14 @@ ProfilerReportEntry::ProfilerReportEntry(const std::string& id)
 
 ProfilerReportEntry::~ProfilerReportEntry()
 {
-	m_parent = nullptr;
-
 	for (int childIndex = 0; childIndex < (int)m_children.size(); ++childIndex)
 	{
 		delete(m_children[childIndex]);
 		m_children[childIndex] = nullptr;
 	}
 	m_children.clear();
+
+	m_parent = nullptr;
 }
 
 void ProfilerReportEntry::PopulateTree(ProfileMeasurement* node)
@@ -45,6 +45,8 @@ void ProfilerReportEntry::PopulateFlat(ProfileMeasurement* node)
 		entry->AccumulateData(node->m_children[childIndex]);
 		entry->CompleteData(node->m_children[childIndex]);
 		PopulateFlat(node->m_children[childIndex]);
+
+		entry = nullptr;
 	}
 }
 
@@ -122,12 +124,18 @@ uint64_t ProfilerReportEntry::GetRootTotalTimeElapsed(ProfileMeasurement* node)
 
 void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entryStrings)
 {
-	std::string rootString = Stringf("ID: %s Call Count: %d Total Perc: %f Total Time: %f Self Perc: %f Self Time: %f \n", 
-		m_id,
+	std::string rootString = Stringf("%s %-22s %-8s %d %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f", 
+		"ID:",
+		m_id.c_str(),
+		"Call#:",
 		m_callCount,
+		"Total\%:",
 		100.0 * m_totalPercentageOfFrame,
+		"Total: ",
 		PerformanceCounterToSeconds(m_totalTime),
+		"Self\%:",
 		100.0 * m_selfPercentageOfFrame,
+		"Self:",
 		PerformanceCounterToSeconds(m_selfTime));
 
 	entryStrings->push_back(rootString);

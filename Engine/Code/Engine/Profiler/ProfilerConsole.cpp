@@ -4,6 +4,11 @@
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Profiler\ProfilerReport.hpp"
+#include "Engine\Core\Command.hpp"
+#include "Engine\Core\DevConsole.hpp"
+#include "Engine\Profiler\Profiler.hpp"
+#include "Engine\Time\Clock.hpp"
+#include "Engine\Time\Time.hpp"
 
 static ProfilerConsole* g_theProfilerConsole = nullptr;
 
@@ -39,6 +44,9 @@ ProfilerConsole::~ProfilerConsole()
 
 void ProfilerConsole::Startup()
 {
+	//register commands	
+	CommandRegister("profiler", CommandRegistration(Open, ": Open/close profiler console", "Profiler toggled!"));
+
 	Renderer* theRenderer = Renderer::GetInstance();
 	Window* theWindow = Window::GetInstance();
 
@@ -53,6 +61,7 @@ void ProfilerConsole::Startup()
 
 	//setup renderscene
 	m_profilerRenderScene = new RenderScene2D();
+	m_profilerRenderScene->AddCamera(m_profilerCamera);
 
 	//create profiler console widgets
 	CreateWidgets();
@@ -72,6 +81,12 @@ void ProfilerConsole::UpdateFromInput()
 
 void ProfilerConsole::Update()
 {
+	delete(m_activeReport);
+	m_activeReport = new ProfilerReport();
+
+	m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
+
+	RefreshDynamicWidgets();
 }
 
 void ProfilerConsole::Render()
@@ -80,8 +95,8 @@ void ProfilerConsole::Render()
 	theRenderer->SetCamera(m_profilerCamera);
 
 	//always do this first at the beginning of the frame's render
-	theRenderer->ClearDepth(1.f);
-	theRenderer->ClearColor(Rgba::BLACK);
+	theRenderer->ClearDepth(1.0f);
+	theRenderer->EnableDepth(ALWAYS_DEPTH_TYPE, true);	
 
 	//render from forward rendering path
 	m_profilerRenderingPath->Render(m_profilerRenderScene);
@@ -91,6 +106,8 @@ void ProfilerConsole::Render()
 
 void ProfilerConsole::PreRender()
 {
+	m_base->PreRender();
+	m_reportContent->PreRender();
 }
 
 
@@ -123,9 +140,6 @@ void ProfilerConsole::CreateWidgets()
 	m_reportContent->m_renderScene = m_profilerRenderScene;
 	m_reportContent->UpdateSortLayer(PROFILER_SORT_LAYER + 1);
 
-	//RefreshDynamicWidgets();
-	
-
 	//cleanup
 	theWindow = nullptr;
 	theRenderer = nullptr;
@@ -137,12 +151,12 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder mb;
 
-	// report content =============================================================================
+	// report content data =============================================================================
 	m_reportContent->DeleteRenderables();
 
 	Renderable2D* reportContentRenderable = new Renderable2D();
 
-	AABB2 contentQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.05f, 0.05f), Vector2(0.95f, 0.7f));
+	AABB2 contentQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.01f, 0.01f), Vector2(0.99f, 0.7f));
 
 	mb.CreateQuad2D(contentQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
 
@@ -151,22 +165,51 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	std::vector<std::string>* reportEntries = m_activeReport->GetEntriesAsFormattedStrings();
 	for (int entryIndex = 0; entryIndex < (int)reportEntries->size(); ++entryIndex)
 	{
-		Vector2 vec2 = Vector2(contentQuad.mins.x, contentQuad.maxs.y);
 		AABB2 textQuad;
-		textQuad.mins = Vector2(contentQuad.mins.x + PROFILER_TEXT_WIDTH_PADDING, contentQuad.maxs.y - (entryIndex * PROFILER_TEXT_CELL_HEIGHT));
-		textQuad.maxs = Vector2(contentQuad.maxs.x - PROFILER_TEXT_WIDTH_PADDING, contentQuad.maxs.y - (entryIndex * PROFILER_TEXT_CELL_HEIGHT));
+		textQuad.mins = Vector2(contentQuad.mins.x + PROFILER_TEXT_WIDTH_PADDING, contentQuad.maxs.y - ((entryIndex + 1) * PROFILER_TEXT_CELL_HEIGHT) - PROFILER_TEXT_HEIGHT_PADDING);
+		textQuad.maxs = Vector2(contentQuad.maxs.x - PROFILER_TEXT_WIDTH_PADDING, contentQuad.maxs.y - (entryIndex * PROFILER_TEXT_CELL_HEIGHT) + PROFILER_TEXT_HEIGHT_PADDING);
 
 		mb.CreateText2DFromPoint(textQuad.mins, PROFILER_TEXT_CELL_HEIGHT, 1.f, reportEntries->at(entryIndex), Rgba::WHITE);
 	}
 
-	//add renderable to widget and scene
+	reportContentRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
+
+	// fps counter content =============================================================================
+
+	//create fps box
+	AABB2 fpsQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.01f, 0.85f), Vector2(0.3f, 0.99f));
+	mb.CreateQuad2D(fpsQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
+	reportContentRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
+
+	std::string fpsAsString = Stringf("FPS: %-4.2f", GetMasterFPS());
+
+	mb.CreateText2DInAABB2(fpsQuad.GetCenter(), fpsQuad.GetDimensions() - Vector2(20.f, 20.f), 4.f/3.f, fpsAsString, Rgba::WHITE);
+	reportContentRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
+
+	//create frame time box
+	AABB2 frameQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.01f, 0.71f), Vector2(0.3f, 0.84f));
+	mb.CreateQuad2D(frameQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
+	reportContentRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
+
+	std::string frameAsString = Stringf("FRAME: %-4.5f", GetMasterDeltaSeconds());
+
+	mb.CreateText2DInAABB2(frameQuad.GetCenter(), frameQuad.GetDimensions() - Vector2(20.f, 20.f), 4.f/3.f, frameAsString, Rgba::WHITE);
+	reportContentRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
+
+	// graph content =============================================================================
+
+	AABB2 graphQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.31f, 0.72f), Vector2(0.99f, 0.99f));
+	mb.CreateQuad2D(graphQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
+	reportContentRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
+
+	// add renderable to widget and scene =============================================================================
 	m_reportContent->AddRenderable(reportContentRenderable);
 	m_profilerRenderScene->AddRenderable(reportContentRenderable);
 
 	delete(reportEntries);
 	reportEntries = nullptr;
-	reportContentRenderable = nullptr;
 
+	reportContentRenderable = nullptr;
 
 	// report content =============================================================================
 
@@ -176,3 +219,8 @@ void ProfilerConsole::RefreshDynamicWidgets()
 }
 
 
+// console commands =============================================================================
+void Open(Command & cmd)
+{
+	ProfilerConsole::GetInstance()->m_isProfilerConsoleOpen = !ProfilerConsole::GetInstance()->m_isProfilerConsoleOpen;
+}
