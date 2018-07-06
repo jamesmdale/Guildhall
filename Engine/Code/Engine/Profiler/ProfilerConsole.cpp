@@ -200,6 +200,11 @@ void ProfilerConsole::CreateWidgets()
 	m_reportContent->m_renderScene = m_profilerRenderScene;
 	m_reportContent->UpdateSortLayer(PROFILER_SORT_LAYER + 1);
 
+	// create report graph widget =============================================================================
+	m_reportGraph = new Graph<ProfilerReportEntry>();
+	m_reportGraph->m_renderScene = m_profilerRenderScene;
+	m_reportGraph->UpdateSortLayer(PROFILER_SORT_LAYER + 1);
+
 	//cleanup
 	theWindow = nullptr;
 	theRenderer = nullptr;
@@ -211,9 +216,10 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder mb;
 
-	// report content data =============================================================================
 	m_reportContent->DeleteRenderables();
+	m_reportGraph->DeleteRenderables();
 
+	// report content data =============================================================================
 	Renderable2D* reportContentRenderable = new Renderable2D();
 
 	AABB2 contentQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.01f, 0.01f), Vector2(0.99f, 0.7f));
@@ -257,6 +263,7 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	reportContentRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
 
 	// graph content =============================================================================
+	Renderable2D* graphRenderable = nullptr;
 
 	AABB2 graphQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.31f, 0.72f), Vector2(0.99f, 0.99f));
 	mb.CreateQuad2D(graphQuad, Rgba::LIGHT_BLUE_TRANSPARENT);

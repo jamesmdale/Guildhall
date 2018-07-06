@@ -8,6 +8,7 @@
 #include "Engine\Renderer\ForwardRenderingPath2D.hpp"
 #include "Engine\Renderer\RenderScene2D.hpp"
 #include "Engine\Camera\Camera.hpp"
+#include "Engine\Utility\Graph.hpp"
 
 enum eReportTypeView
 {
@@ -47,7 +48,7 @@ public:
 	//widgets
 	Widget* m_base = nullptr;
 	Widget* m_reportContent = nullptr;
-	//Widget* m_reportGraph = nullptr;
+	Graph<ProfilerReportEntry>* m_reportGraph = nullptr;
 
 	ProfilerReport* m_activeReport = nullptr;
 	eReportTypeView m_activeReportType = TREE_REPORT_TYPE;
