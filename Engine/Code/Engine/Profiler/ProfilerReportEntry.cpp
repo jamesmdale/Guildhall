@@ -135,7 +135,7 @@ void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entry
 		intentId = "-";
 
 	//std::string rootString = Stringf("%*s %s %-20s %-8s %-3d %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f", 
-	std::string rootString = Stringf("%*s %-20s %-8s %-3d %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f", 
+	std::string rootString = Stringf("%*s %-20s %-8s %-3d %-8s %-6.2f %-8s %-8.6f %-8s %-6.2f %-8s %-8.6f", 
 		2 * depth,
 		intentId.c_str(),
 		m_id.c_str(),
@@ -156,7 +156,6 @@ void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entry
 	{
 		ProfilerReportEntry* index = m_children[childIndex];
 
-		
 		//add child data to string
 		index->GetFormattedDataString(entryStrings, depth + 1);
 

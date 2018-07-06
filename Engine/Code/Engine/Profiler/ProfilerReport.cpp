@@ -14,10 +14,20 @@ void ProfilerReport::GenerateReportTreeFromFrame(ProfileMeasurement* root)
 	m_root->PopulateTree(root);
 }
 
-void ProfilerReport::GenerateReportFlatFromFrame(ProfileMeasurement* root)
+void ProfilerReport::GenerateReportFlatFromFrame(ProfileMeasurement* root, eProfilerFlatReportSortMode mode)
 {
 	m_root = new ProfilerReportEntry(root->m_id);
 	m_root->PopulateFlat(root);
+
+	switch (mode)
+	{
+	case TOTAL_PROFILER_SORT_MODE:
+		SortByTotalTime();
+		break;
+	case SELF_PROFILER_SORT_MODE:
+		SortBySelfTime();
+		break;
+	}
 }
 
 void ProfilerReport::PrintReportToDevConsole()
@@ -49,3 +59,30 @@ std::vector<std::string>* ProfilerReport::GetEntriesAsFormattedStrings()
 	return entryStrings;
 }
 
+void ProfilerReport::SortBySelfTime()
+{
+	for (int i = 0; i < (int)m_root->m_children.size(); i++)
+	{
+		for (int j = i + 1; j < (int)m_root->m_children.size(); j++)
+		{
+			if (m_root->m_children[j]->m_selfTime > m_root->m_children[i]->m_selfTime)
+			{
+				std::swap(m_root->m_children[j], m_root->m_children[i]);
+			}
+		}
+	}
+}
+
+void ProfilerReport::SortByTotalTime()
+{
+	for (int i = 0; i < (int)m_root->m_children.size(); i++)
+	{
+		for (int j = i + 1; j < (int)m_root->m_children.size(); j++)
+		{
+			if (m_root->m_children[j]->m_totalTime > m_root->m_children[i]->m_totalTime)
+			{
+				std::swap(m_root->m_children[j], m_root->m_children[i]);
+			}
+		}
+	}
+}

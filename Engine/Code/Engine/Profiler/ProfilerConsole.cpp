@@ -87,6 +87,7 @@ void ProfilerConsole::UpdateFromInput()
 		{
 		case TREE_REPORT_TYPE:
 			m_activeReportType = FLAT_REPORT_TYPE;
+			m_activeFlatSortMode = TOTAL_PROFILER_SORT_MODE;
 			break;
 		case FLAT_REPORT_TYPE:
 			m_activeReportType = TREE_REPORT_TYPE;
@@ -97,7 +98,15 @@ void ProfilerConsole::UpdateFromInput()
 	//change sort mode
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_L))
 	{
-		
+		switch (m_activeFlatSortMode)
+		{
+		case TOTAL_PROFILER_SORT_MODE:
+			m_activeFlatSortMode = SELF_PROFILER_SORT_MODE;
+			break;
+		case SELF_PROFILER_SORT_MODE:
+			m_activeFlatSortMode = TOTAL_PROFILER_SORT_MODE;
+			break;
+		}
 	}
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_M))
@@ -128,7 +137,7 @@ void ProfilerConsole::Update()
 		m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
 		break;
 	case FLAT_REPORT_TYPE:
-		m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
+		m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame(), m_activeFlatSortMode);
 	}	
 
 	RefreshDynamicWidgets();

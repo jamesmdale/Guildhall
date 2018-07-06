@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine\Profiler\Profiler.hpp"
+#include "Engine\Profiler\ProfilerReport.hpp"
 #include "Engine\Core\Widget.hpp"
 #include <vector>
 #include <string>
@@ -8,7 +9,7 @@
 #include "Engine\Renderer\RenderScene2D.hpp"
 #include "Engine\Camera\Camera.hpp"
 
-enum ReportTypeView
+enum eReportTypeView
 {
 	TREE_REPORT_TYPE,
 	FLAT_REPORT_TYPE,
@@ -49,7 +50,8 @@ public:
 	//Widget* m_reportGraph = nullptr;
 
 	ProfilerReport* m_activeReport = nullptr;
-	ReportTypeView m_activeReportType = TREE_REPORT_TYPE;
+	eReportTypeView m_activeReportType = TREE_REPORT_TYPE;
+	eProfilerFlatReportSortMode m_activeFlatSortMode = TOTAL_PROFILER_SORT_MODE;
 
 	//rendering members
 	RenderScene2D* m_profilerRenderScene = nullptr;

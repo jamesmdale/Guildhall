@@ -5,6 +5,13 @@
 #include <string>
 #include <map>
 
+enum eProfilerFlatReportSortMode
+{
+	SELF_PROFILER_SORT_MODE,
+	TOTAL_PROFILER_SORT_MODE,
+	NUM_PROFILER_SORT_MODES
+};
+
 class ProfilerReport
 {
 public:
@@ -12,7 +19,7 @@ public:
 	~ProfilerReport();
 
 	void GenerateReportTreeFromFrame(ProfileMeasurement* root);
-	void GenerateReportFlatFromFrame(ProfileMeasurement* root);
+	void GenerateReportFlatFromFrame(ProfileMeasurement* root, eProfilerFlatReportSortMode mode = TOTAL_PROFILER_SORT_MODE);
 	void PrintReportToDevConsole();
 
 	std::vector<std::string>* GetEntriesAsFormattedStrings();
@@ -26,4 +33,5 @@ public:
 };
 
 void Report(Command& cmd);
+
 
