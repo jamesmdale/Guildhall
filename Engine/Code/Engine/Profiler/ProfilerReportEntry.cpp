@@ -37,17 +37,23 @@ void ProfilerReportEntry::PopulateTree(ProfileMeasurement* node)
 	CompleteData(node);
 }
 
-void ProfilerReportEntry::PopulateFlat(ProfileMeasurement* node)
+void ProfilerReportEntry::PopulateFlat(ProfileMeasurement* node, ProfilerReportEntry* root)
 {
+	AccumulateData(node);
+	if (root == nullptr)
+	{
+		root = this;
+	}
+
 	for (int childIndex = 0; childIndex < (int)node->m_children.size(); ++childIndex)
 	{
-		ProfilerReportEntry* entry = GetOrCreateChild(node->m_children[childIndex]->m_id);
-		entry->AccumulateData(node->m_children[childIndex]);
-		entry->CompleteData(node->m_children[childIndex]);
-		PopulateFlat(node->m_children[childIndex]);
+		ProfilerReportEntry* entry = root->GetOrCreateChild(node->m_children[childIndex]->m_id);
+		entry->PopulateFlat(node->m_children[childIndex], root);
 
 		entry = nullptr;
 	}
+
+	CompleteData(node);
 }
 
 void ProfilerReportEntry::AccumulateData(ProfileMeasurement* node)
@@ -124,13 +130,13 @@ uint64_t ProfilerReportEntry::GetRootTotalTimeElapsed(ProfileMeasurement* node)
 
 void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entryStrings, int depth)
 {
-	std::string intentId = "ID:";
+	std::string intentId = "";
 	if (depth > 0)
-		intentId = "- ID:";
+		intentId = "-";
 
 	//std::string rootString = Stringf("%*s %s %-20s %-8s %-3d %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f", 
 	std::string rootString = Stringf("%*s %-20s %-8s %-3d %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f", 
-		5 * depth,
+		2 * depth,
 		intentId.c_str(),
 		m_id.c_str(),
 		"Call Num:",

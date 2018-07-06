@@ -14,6 +14,12 @@ void ProfilerReport::GenerateReportTreeFromFrame(ProfileMeasurement* root)
 	m_root->PopulateTree(root);
 }
 
+void ProfilerReport::GenerateReportFlatFromFrame(ProfileMeasurement* root)
+{
+	m_root = new ProfilerReportEntry(root->m_id);
+	m_root->PopulateFlat(root);
+}
+
 void ProfilerReport::PrintReportToDevConsole()
 {
 	std::vector<std::string>* strings = GetEntriesAsFormattedStrings();

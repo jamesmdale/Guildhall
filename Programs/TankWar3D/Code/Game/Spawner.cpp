@@ -2,6 +2,7 @@
 #include "Game\Swarmer.hpp"
 #include "Game\GameCommon.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 
 
 Spawner::Spawner()
@@ -22,6 +23,8 @@ Spawner::~Spawner()
 
 void Spawner::Update(float deltaSeconds)
 {
+	PROFILER_PUSH();
+
 	int val = m_numSwarmers;
 	if (m_spawnTimer->HasElapsed() && m_numSwarmers < g_spawnerMaxSwarmers)
 	{

@@ -2,6 +2,7 @@
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Core\LightObject.hpp"
 #include "Engine\Time\Clock.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 
 ForwardRenderingPath::ForwardRenderingPath()
 {
@@ -29,6 +30,7 @@ ForwardRenderingPath::~ForwardRenderingPath()
 
 void ForwardRenderingPath::Render(RenderScene* scene)
 {
+	PROFILER_PUSH();
 	for (int lightIndex = 0; lightIndex < (int)scene->m_lights.size(); ++lightIndex)
 	{
 		if (scene->m_lights[lightIndex]->m_light->m_isShadowCasting)
@@ -47,6 +49,7 @@ void ForwardRenderingPath::Render(RenderScene* scene)
 
 void ForwardRenderingPath::RenderSceneForCamera(Camera* camera, RenderScene* scene)
 {
+	PROFILER_PUSH();
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	theRenderer->SetCamera(camera);

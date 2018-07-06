@@ -12,6 +12,7 @@ public:
 	~ProfilerReport();
 
 	void GenerateReportTreeFromFrame(ProfileMeasurement* root);
+	void GenerateReportFlatFromFrame(ProfileMeasurement* root);
 	void PrintReportToDevConsole();
 
 	std::vector<std::string>* GetEntriesAsFormattedStrings();

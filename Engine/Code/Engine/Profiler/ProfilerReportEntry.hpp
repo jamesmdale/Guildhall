@@ -11,9 +11,10 @@ public:
 	~ProfilerReportEntry();
 
 	void PopulateTree(ProfileMeasurement* node);
+	void PopulateFlat(ProfileMeasurement* node, ProfilerReportEntry* root = nullptr);
+
 	void AccumulateData(ProfileMeasurement* node);
-	void CompleteData(ProfileMeasurement * node);
-	void PopulateFlat(ProfileMeasurement* node);
+	void CompleteData(ProfileMeasurement * node);	
 
 	ProfilerReportEntry* GetOrCreateChild(const std::string& id);
 	ProfilerReportEntry* FindEntry(const std::string& id);

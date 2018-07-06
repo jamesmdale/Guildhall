@@ -16,6 +16,7 @@
 #include "Engine\Renderer\ShaderLoader.hpp"
 #include "Engine\Renderer\MaterialLoader.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 
 #define LIGHT_BUFFER_BINDING_SLOT (1)
 #define LIGHT_SPECULAR_BUFFER_BINDING_SLORT  (2)
@@ -273,7 +274,7 @@ void Renderer::Shutdown()
 }
 
 
-TODO("Add to endframe")
+TODO("Add to endframe");
 void GLShutdown()
 {
 	wglMakeCurrent( (HDC)gHDC, NULL ); 
@@ -297,6 +298,8 @@ void Renderer::BeginFrame()
 
 void Renderer::EndFrame()
 {
+	PROFILER_PUSH();
+
 	// "Present" the backbuffer by swapping the front (visible) and back (working) screen buffers
 	CopyFrameBuffer(nullptr, &m_currentCamera->m_frameBufferOutput);
 	SwapBuffers( (HDC)gHDC ); // Note: call this once at the end of each frame

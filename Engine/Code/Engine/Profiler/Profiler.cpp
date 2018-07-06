@@ -228,12 +228,23 @@ void Report(Command& cmd)
 
 	ProfilerReport report;
 
-	if(cmd.GetNextString() == "flat")
+	std::string typeParam = cmd.GetNextString();
+	if (typeParam == "flat")
+	{
 		report.GenerateReportTreeFromFrame(measurement);
+		report.PrintReportToDevConsole();
+	}
+	else if (typeParam == "tree")
+	{
+		report.GenerateReportTreeFromFrame(measurement);
+		report.PrintReportToDevConsole();
+	}		
 	else
-		report.GenerateReportTreeFromFrame(measurement);	
+	{
+		DevConsolePrintf(Rgba::RED, "INVALID REPORT TYPE - MUST HAVE EITHER 'tree' or 'flat' parameter");
+	}
 		
-	report.PrintReportToDevConsole();
+	
 
 	measurement = nullptr;
 }

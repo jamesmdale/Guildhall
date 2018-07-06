@@ -22,6 +22,7 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include <vector>
 #include <string>
+#include "Engine\Profiler\Profiler.hpp"
 
 //game instance
 static Game* g_theGame = nullptr;
@@ -115,6 +116,7 @@ void Game::Initialize()
 
 void Game::Update()
 {
+	PROFILER_PUSH();
 	if (GameState::GetTransitionMenuState() != nullptr)	
 		return;
 	
@@ -133,6 +135,7 @@ void Game::PreRender()
 
 void Game::Render()
 {
+	PROFILER_PUSH();
 	if (GameState::GetTransitionMenuState() != nullptr)
 		return;
 

@@ -122,6 +122,7 @@ void TheApp::PreRender()
 
 void TheApp::Render()
 {
+	PROFILER_PUSH();
 	//set up screen
 	Game::GetInstance()->Render();
 
