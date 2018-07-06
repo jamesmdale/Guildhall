@@ -14,6 +14,7 @@ void ProfilerReport::GenerateReportTreeFromFrame(ProfileMeasurement* root)
 	m_root->PopulateTree(root);
 }
 
+//generates a flat report sorted by mode
 void ProfilerReport::GenerateReportFlatFromFrame(ProfileMeasurement* root, eProfilerFlatReportSortMode mode)
 {
 	m_root = new ProfilerReportEntry(root->m_id);
