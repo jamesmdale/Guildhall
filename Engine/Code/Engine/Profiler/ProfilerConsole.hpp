@@ -31,8 +31,12 @@ public:
 	void Render();
 	void PreRender();
 
+	//visual updates
 	void CreateWidgets();
 	void RefreshDynamicWidgets();
+
+	//graph methods
+	double ParseTimesForGraph(ProfileMeasurement* measurement);
 
 	bool IsOpen(){return m_isProfilerConsoleOpen;}
 
@@ -48,7 +52,7 @@ public:
 	//widgets
 	Widget* m_base = nullptr;
 	Widget* m_reportContent = nullptr;
-	Graph<ProfilerReportEntry>* m_reportGraph = nullptr;
+	Graph<ProfileMeasurement>* m_reportGraph = nullptr;
 
 	ProfilerReport* m_activeReport = nullptr;
 	eReportTypeView m_activeReportType = TREE_REPORT_TYPE;

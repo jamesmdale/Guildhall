@@ -136,6 +136,19 @@ void ProfilerConsole::Update()
 		delete(m_activeReport);
 		m_activeReport = new ProfilerReport();	
 
+		//populate graph
+		std::vector<ProfileMeasurement*> history;
+		Profiler::GetInstance()->ProfilerGetPreviousFrames(history);
+
+		m_reportGraph->ClearContent();
+		
+		for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
+		{
+			if(history[historyItem] != nullptr)
+				m_reportGraph->AddDataObject(history[historyItem], ParseTimesForGraph(history[historyItem]));
+		}
+		
+
 		switch (m_activeReportType)
 		{
 		case TREE_REPORT_TYPE:
@@ -168,6 +181,7 @@ void ProfilerConsole::PreRender()
 {
 	m_base->PreRender();
 	m_reportContent->PreRender();
+	m_reportGraph->PreRender();
 }
 
 
@@ -201,9 +215,9 @@ void ProfilerConsole::CreateWidgets()
 	m_reportContent->UpdateSortLayer(PROFILER_SORT_LAYER + 1);
 
 	// create report graph widget =============================================================================
-	m_reportGraph = new Graph<ProfilerReportEntry>();
+	m_reportGraph = new Graph<ProfileMeasurement>();
 	m_reportGraph->m_renderScene = m_profilerRenderScene;
-	m_reportGraph->UpdateSortLayer(PROFILER_SORT_LAYER + 1);
+	m_reportGraph->UpdateSortLayer(PROFILER_SORT_LAYER + 2);
 
 	//cleanup
 	theWindow = nullptr;
@@ -263,26 +277,34 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	reportContentRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
 
 	// graph content =============================================================================
-	Renderable2D* graphRenderable = nullptr;
+	Renderable2D* graphRenderable = new Renderable2D();
 
 	AABB2 graphQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.31f, 0.72f), Vector2(0.99f, 0.99f));
 	mb.CreateQuad2D(graphQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
-	reportContentRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
+	graphRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
 
-	// add renderable to widget and scene =============================================================================
+	// add renderables to widgets and scene =============================================================================
 	m_reportContent->AddRenderable(reportContentRenderable);
+	m_reportGraph->AddRenderable(graphRenderable);
+	m_profilerRenderScene->AddRenderable(graphRenderable);
 	m_profilerRenderScene->AddRenderable(reportContentRenderable);
 
 	delete(reportEntries);
 	reportEntries = nullptr;
 
+	graphRenderable = nullptr;
 	reportContentRenderable = nullptr;
-
-	// report content =============================================================================
 
 	//cleanup
 	theWindow = nullptr;
 	theRenderer = nullptr;
+}
+
+double ProfilerConsole::ParseTimesForGraph(ProfileMeasurement * measurement)
+{
+	uint64_t elapsedHPC = measurement->m_endTime - measurement->m_startTime;
+
+	return PerformanceCounterToSeconds(elapsedHPC);
 }
 
 

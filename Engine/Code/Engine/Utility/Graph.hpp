@@ -38,7 +38,7 @@ public:
 	}*/
 
 	template <class T>
-	void UpdateDataSet(const std::vector<T*> objects, const std::vector<double>& dataPoints)
+	void UpdateDataSet(const std::vector<T*>& objects, const std::vector<double>& dataPoints)
 	{
 		m_dataObjects = objects;
 		m_dataPoints = dataPoints;
@@ -48,13 +48,24 @@ public:
 	void AddDataObject(T* object, const double& dataPoint)
 	{
 		m_dataObjects.push_back(object);
-		m_dataPoints.push_back(dataPoints);
+		m_dataPoints.push_back(dataPoint);
+	}
+
+	void ClearContent()
+	{
+		for (int objectIndex = 0; objectIndex < (int)m_dataObjects.size(); ++objectIndex)
+		{
+			m_dataObjects[objectIndex] = nullptr;
+		}
+
+		m_dataObjects.clear();
+		m_dataPoints.clear();
 	}
 	
 	//void GetMeanDataPoint();
 	//void GetMinimumDataPoint();
 
-public:
+private:
 	std::vector<T*> m_dataObjects;
 	std::vector<double> m_dataPoints; //generalized so easy to cast to and from
 };
