@@ -5,6 +5,8 @@
 #include "Engine\Math\Vector4.hpp"
 
 class Vector4;
+class Vector2;
+
 //-----------------------------------------------------------------------------------------------
 class Vector3
 {
@@ -17,6 +19,7 @@ public:
 	explicit Vector3(const float& uniformSize);
 	explicit Vector3(const IntVector3& vector);
 	explicit Vector3(const Vector4& vector);
+	explicit Vector3(const Vector2& vector);
 
 															// Operators
 	const Vector3 operator+( const Vector3& vecToAdd ) const;		// vec2 + vec2

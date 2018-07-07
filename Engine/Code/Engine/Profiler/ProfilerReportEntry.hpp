@@ -31,11 +31,11 @@ public:
 
 	//total time
 	double m_totalPercentageOfFrame = 0.0;
-	uint64_t m_totalTime = 0.f;
+	uint64_t m_totalTime = 0.0;
 
 	//self time
 	double m_selfPercentageOfFrame = 0.0;
-	uint64_t m_selfTime = 0.f;	
+	uint64_t m_selfTime = 0.0;	
 
 	std::vector<ProfilerReportEntry*> m_children;
 	ProfilerReportEntry* m_parent = nullptr;	

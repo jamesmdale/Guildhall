@@ -109,23 +109,20 @@ ProfileMeasurement* Profiler::ProfileGetPreviousFrame(int skipCount)
 	return m_measurementHistory[returnIndex];
 }
 
-std::vector<ProfileMeasurement*> Profiler::ProfileGetHistory()
+bool Profiler::ProfilerGetPreviousFrames(std::vector<ProfileMeasurement*>& history, int numFrames)
 {
-	std::vector<ProfileMeasurement*> orderedHistory;
 	int currentIndex = m_frameIndex;
 
-	for (int historyIndex = 0; historyIndex < MAX_HISTORY_COUNT; ++historyIndex)
+	for (int historyIndex = 0; historyIndex < numFrames; ++historyIndex)
 	{
 		int actualIndex = Modulus(currentIndex, MAX_HISTORY_COUNT);
-		ProfileMeasurement* measurement = m_measurementHistory[actualIndex];
 
-		orderedHistory.push_back(measurement);
+		history.push_back(m_measurementHistory[actualIndex]);
 
 		currentIndex = Modulus(currentIndex - 1, MAX_HISTORY_COUNT);
-		measurement = nullptr;
 	}
 
-	return orderedHistory;
+	return true;
 }
 
 void Profiler::MarkFrame()

@@ -23,7 +23,6 @@ ForwardRenderingPath::ForwardRenderingPath()
 	m_shadowCamera->SetDepthStencilTarget(m_shadowDepthTarget);
 }
 
-
 ForwardRenderingPath::~ForwardRenderingPath()
 {
 }

@@ -384,6 +384,7 @@
     <ClInclude Include="Profiler\Profiler.hpp" />
     <ClInclude Include="Profiler\ProfilerReportEntry.hpp" />
     <ClInclude Include="Profiler\ProfilerReport.hpp" />
+    <ClInclude Include="Utility\Graph.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

@@ -132,7 +132,7 @@ float GetMasterDeltaSeconds()
 		return std::numeric_limits<float>::min();
 	}
 
-	float deltaSeconds = ClampFloat((float)g_masterClock->m_frame.hpcSeconds, 0.0f, 0.05f);
+	float deltaSeconds = ClampFloat((float)g_masterClock->m_frame.hpcSeconds, 0.0f, 10.f);
 	return deltaSeconds;
 }
 

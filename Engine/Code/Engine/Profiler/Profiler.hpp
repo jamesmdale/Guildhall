@@ -81,7 +81,7 @@ public:
 	void PrintHistory();
 
 	ProfileMeasurement* ProfileGetPreviousFrame(int skipCount = 0);
-	std::vector<ProfileMeasurement*> ProfileGetHistory();
+	bool ProfilerGetPreviousFrames(std::vector<ProfileMeasurement*>& history, int numFrames = MAX_HISTORY_COUNT);
 
 	void MarkFrame();
 	void Push(const char* id);
