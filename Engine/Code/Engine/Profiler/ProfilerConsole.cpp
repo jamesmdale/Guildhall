@@ -146,8 +146,7 @@ void ProfilerConsole::Update()
 		{
 			if(history[historyItem] != nullptr)
 				m_reportGraph->AddDataObject(history[historyItem], ParseTimesForGraph(history[historyItem]));
-		}
-		
+		}		
 
 		switch (m_activeReportType)
 		{
@@ -157,9 +156,17 @@ void ProfilerConsole::Update()
 		case FLAT_REPORT_TYPE:
 			m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame(), m_activeFlatSortMode);
 		}
+
+		//cleanup
+		for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
+		{
+			history[historyItem] = nullptr;
+		}
 	}
 
 	RefreshDynamicWidgets();
+
+
 }
 
 void ProfilerConsole::Render()
@@ -280,8 +287,13 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	Renderable2D* graphRenderable = new Renderable2D();
 
 	AABB2 graphQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.31f, 0.72f), Vector2(0.99f, 0.99f));
-	mb.CreateQuad2D(graphQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
-	graphRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
+	mb.CreateGraph(graphQuad, m_reportGraph, Rgba::LIGHT_BLUE_TRANSPARENT);
+	graphRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
+
+	double maxValueInDataRange = m_reportGraph->GetLargestDataPoint();
+	AABB2 textBounds = AABB2(graphQuad, Vector2(0.8f, 0.8f), Vector2(0.99f, 0.99f));
+	mb.CreateText2DInAABB2(textBounds.GetCenter(), textBounds.GetDimensions(), 1.f, Stringf("Max: %f", maxValueInDataRange), Rgba::WHITE);
+	graphRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
 
 	// add renderables to widgets and scene =============================================================================
 	m_reportContent->AddRenderable(reportContentRenderable);
@@ -300,7 +312,7 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	theRenderer = nullptr;
 }
 
-double ProfilerConsole::ParseTimesForGraph(ProfileMeasurement * measurement)
+double ProfilerConsole::ParseTimesForGraph(ProfileMeasurement* measurement)
 {
 	uint64_t elapsedHPC = measurement->m_endTime - measurement->m_startTime;
 

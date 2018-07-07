@@ -116,12 +116,10 @@ bool Profiler::ProfilerGetPreviousFrames(std::vector<ProfileMeasurement*>& histo
 	for (int historyIndex = 0; historyIndex < numFrames; ++historyIndex)
 	{
 		int actualIndex = Modulus(currentIndex, MAX_HISTORY_COUNT);
-		ProfileMeasurement* measurement = m_measurementHistory[actualIndex];
 
-		history.push_back(measurement);
+		history.push_back(m_measurementHistory[actualIndex]);
 
 		currentIndex = Modulus(currentIndex - 1, MAX_HISTORY_COUNT);
-		measurement = nullptr;
 	}
 
 	return true;

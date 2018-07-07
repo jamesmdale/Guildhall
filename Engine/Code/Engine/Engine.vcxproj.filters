@@ -274,9 +274,6 @@
     <ClCompile Include="Profiler\ProfilerReport.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\Graph.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">

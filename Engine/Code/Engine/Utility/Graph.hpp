@@ -18,24 +18,20 @@ public:
 			m_dataObjects[objectIndex] = nullptr;
 		}
 		m_dataObjects.clear();
-	}
-	
-	/*template <class T>
-	RefreshGraph<T>()
-	{
+		m_dataPoints.clear();
+	}	
 
-	}
-
-	template <class T>
 	double GetLargestDataPoint()
 	{
 		double largestValue = 0.0;
 		for (int dataIndex = 0; dataIndex < (int)m_dataPoints.size(); ++dataIndex)
 		{
 			if(m_dataPoints[dataIndex] > largestValue)
-				return largestValue;
+				largestValue = m_dataPoints[dataIndex];
 		}
-	}*/
+
+		return largestValue;
+	}
 
 	template <class T>
 	void UpdateDataSet(const std::vector<T*>& objects, const std::vector<double>& dataPoints)
@@ -47,8 +43,11 @@ public:
 	template <class T>
 	void AddDataObject(T* object, const double& dataPoint)
 	{
-		m_dataObjects.push_back(object);
-		m_dataPoints.push_back(dataPoint);
+		if (object != nullptr)
+		{
+			m_dataObjects.push_back(object);
+			m_dataPoints.push_back(dataPoint);
+		}	
 	}
 
 	void ClearContent()
@@ -65,7 +64,7 @@ public:
 	//void GetMeanDataPoint();
 	//void GetMinimumDataPoint();
 
-private:
+public:
 	std::vector<T*> m_dataObjects;
 	std::vector<double> m_dataPoints; //generalized so easy to cast to and from
 };
