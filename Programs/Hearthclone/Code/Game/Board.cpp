@@ -54,7 +54,15 @@ void Board::Initialize()
 	CreateBoardMeshesForRenderable(boardRenderable);
 
 	//add textured elements to board
-	CreateBoardTexturedMeshesForRenderable(boardRenderable);
+	CreateBoardTexturedMeshesForRenderable(boardRenderable);	
+
+	//add renderable to scene
+	m_renderables.push_back(boardRenderable);
+
+	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
+	{
+		m_renderScene->AddRenderable(m_renderables[renderableIndex]);
+	}
 
 	//Initialize dynamic widgets
 	m_playerManaWidget = new Widget();
@@ -64,14 +72,6 @@ void Board::Initialize()
 	m_endTurnWidget->m_renderScene = m_renderScene;
 
 	m_endTurnWidget->m_playingState = m_playingState;
-
-	//add renderable to scene
-	m_renderables.push_back(boardRenderable);
-
-	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
-	{
-		m_renderScene->AddRenderable(m_renderables[renderableIndex]);
-	}
 
 	boardRenderable = nullptr;
 	theRenderer = nullptr;
@@ -267,8 +267,13 @@ void Board::RefreshEndTurnWidget()
 
 	m_endTurnWidget->m_dimensionsInPixels = m_endTurnQuad.GetDimensions();
 
+	Rgba endTurnColor = Rgba::GREEN;
+
+	if(m_playingState->m_activePlayer->m_playerId == ENEMY_PLAYER_TYPE)
+		endTurnColor = Rgba::RED;
+
 	// add quads for end turn =========================================================================================
-	mb.CreateQuad2D(Vector2::ZERO, m_endTurnWidget->m_dimensionsInPixels, Rgba::GREEN);
+	mb.CreateQuad2D(Vector2::ZERO, m_endTurnWidget->m_dimensionsInPixels, endTurnColor);
 	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
 
 	renderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), materialInstance);
@@ -288,8 +293,7 @@ void Board::RefreshEndTurnWidget()
 
 	renderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), textInstance);
 
-	m_endTurnWidget->m_renderables.push_back(renderable);
-
+	m_endTurnWidget->AddRenderable(renderable);
 
 	for (int renderableIndex = 0; renderableIndex < (int)m_endTurnWidget->m_renderables.size(); ++renderableIndex)
 	{
@@ -298,6 +302,8 @@ void Board::RefreshEndTurnWidget()
 
 	m_endTurnWidget->UpdateSortLayer(2);
 	m_endTurnWidget->m_transform2D->SetLocalPosition(m_endTurnQuad.GetCenter());
+
+	m_endTurnWidget->UpdateRenderable2DFromTransform();
 
 	// cleanup =========================================================================================
 	materialInstance = nullptr;

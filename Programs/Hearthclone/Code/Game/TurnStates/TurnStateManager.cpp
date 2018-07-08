@@ -210,6 +210,7 @@ void TurnStateManager::TransitionInStartOfTurn()
 	AddActionToRefereeQueue("draw", parameters);
 
 	m_playingState->m_gameBoard->RefreshPlayerManaWidget();
+	m_playingState->m_gameBoard->RefreshEndTurnWidget();
 
 	//transition to next state
 	isFinishedTransitioningIn = true;
