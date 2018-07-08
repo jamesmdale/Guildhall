@@ -141,26 +141,31 @@ void Minion::OnLeftClicked()
 {
 	PlayingState* playingState = (PlayingState*)GameState::GetCurrentGameState();
 
-	if (m_isInputPriority == false)
+	//only allow left clicks on a minion if you are the controller
+	if (playingState->m_activePlayer->m_playerId == m_controller)
 	{
-		m_isInputPriority = true;
-		m_isPositionLocked = false;
-		UpdateSortLayer(g_sortLayerMax);
-
-		AttackEffect* attack = new AttackEffect(this);
-
-		if (m_age > 0 || CheckForTag("charge"));
+		if (m_isInputPriority == false)
 		{
-			AddEffectToEffectQueue(attack);
-		}
+			m_isInputPriority = true;
+			m_isPositionLocked = false;
+			UpdateSortLayer(g_sortLayerMax);
 
-		//cleanup
-		attack = nullptr;
-	}
+			AttackEffect* attack = new AttackEffect(this);
+
+			if (m_age > 0 || CheckForTag("charge"));
+			{
+				AddEffectToEffectQueue(attack);
+			}
+
+			//cleanup
+			attack = nullptr;
+		}
+	}	
 }
 
 void Minion::OnRightClicked()
 {
+	TODO("Draw card renderable temporarily");
 }
 
 bool Minion::CheckForTag(const std::string & tagName)

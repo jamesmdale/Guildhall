@@ -158,51 +158,54 @@ Vector2 Card::GetCardDimensions()
 void Card::OnLeftClicked()
 {
 	PlayingState* playingState = (PlayingState*)GameState::GetCurrentGameState();
-	if (m_isInputPriority == false)
+	if (playingState->m_activePlayer->m_playerId == m_controller)
 	{
-		m_isInputPriority = true;
-		m_isPositionLocked = false;
-		UpdateSortLayer(g_sortLayerMax);
-	}
-	else
-	{
-		m_isInputPriority = false;
-		m_isPositionLocked = true;
-		UpdateSortLayer(g_defaultCardSortLayer);
-
-		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
-
-		//player is playing card.
-		if (mousePosition.y > playingState->m_gameBoard->m_playerHandQuad.maxs.y)
+		if (m_isInputPriority == false)
 		{
-			//determine if card is castable
-			//if(m_)
-
-			//we can cast the card so queue play card action
-
-			//get the new location to cast
-			Vector2 battlefieldLocation = playingState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
-			
-
-			ePlayerType playerType = playingState->m_activePlayer->m_playerId;
-
-			int cardIndexInPlayerHand = 0;
-
-			for (int cardIndex = 0; cardIndex < (int)playingState->m_activePlayer->m_hand.size(); ++cardIndex)
-			{
-				if (playingState->m_activePlayer->m_hand[cardIndex] == this)
-				{
-					cardIndexInPlayerHand = cardIndex;
-					break; 
-				}
-			}
-
-			std::map<std::string, std::string> parameters = {{"target", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", battlefieldLocation.x, battlefieldLocation.y)}};
-			AddActionToRefereeQueue("cast_from_hand", parameters);
+			m_isInputPriority = true;
+			m_isPositionLocked = false;
+			UpdateSortLayer(g_sortLayerMax);
 		}
-		else //return card to hand
+		else
 		{
-			m_transform2D->SetLocalPosition(m_lockPosition);
+			m_isInputPriority = false;
+			m_isPositionLocked = true;
+			UpdateSortLayer(g_defaultCardSortLayer);
+
+			Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
+
+			//player is playing card.
+			if (mousePosition.y > playingState->m_gameBoard->m_playerHandQuad.maxs.y)
+			{
+				//determine if card is castable
+				//if(m_)
+
+				//we can cast the card so queue play card action
+
+				//get the new location to cast
+				Vector2 battlefieldLocation = playingState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
+
+
+				ePlayerType playerType = playingState->m_activePlayer->m_playerId;
+
+				int cardIndexInPlayerHand = 0;
+
+				for (int cardIndex = 0; cardIndex < (int)playingState->m_activePlayer->m_hand.size(); ++cardIndex)
+				{
+					if (playingState->m_activePlayer->m_hand[cardIndex] == this)
+					{
+						cardIndexInPlayerHand = cardIndex;
+						break;
+					}
+				}
+
+				std::map<std::string, std::string> parameters = { {"target", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", battlefieldLocation.x, battlefieldLocation.y)} };
+				AddActionToRefereeQueue("cast_from_hand", parameters);
+			}
+			else //return card to hand
+			{
+				m_transform2D->SetLocalPosition(m_lockPosition);
+			}
 		}
 	}
 }

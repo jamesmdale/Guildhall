@@ -106,9 +106,7 @@ void Player::LoadDeckFromDefinitionName(const std::string& deckName)
 void Player::UpdateDeckCount()
 {
 	if (m_deckCount > 0)
-	{
 		m_deckCount = (int)m_deck.size();
-	}
 }
 
 
@@ -136,14 +134,11 @@ void Player::UpdateHandLockPositions()
 	Board* board = gameState->m_gameBoard;
 
 	AABB2 handQuad;
-	if (m_playerId == 0) //if player is self
-	{
+	if (m_playerId == SELF_PLAYER_TYPE) //if player is self
 		handQuad = board->m_playerHandQuad;
-	}
-	if (m_playerId == 1) //if player is enemy
-	{
+
+	if (m_playerId == ENEMY_PLAYER_TYPE) //if player is enemy
 		handQuad = board->m_enemyHandQuad;
-	}
 
 	float handDockCenterHeight = handQuad.maxs.y - ((handQuad.maxs.y - handQuad.mins.y) * 0.5f);
 	float handDockWidthPerCard = (handQuad.maxs.x - handQuad.mins.x) / (float)(	g_maxHandSize + 1); // + 1 because we include deck image
@@ -176,13 +171,10 @@ void Player::UpdateBoardLockPositions()
 
 	AABB2 battlefieldQuad;
 	if (m_playerId == SELF_PLAYER_TYPE) //if player is self
-	{
 		battlefieldQuad = board->m_playerBattlfieldQuad;
-	}
+
 	if (m_playerId == ENEMY_PLAYER_TYPE) //if player is enemy
-	{
 		battlefieldQuad = board->m_enemyBattlfieldQuad;
-	}
 
 	Vector2 boardCenter = battlefieldQuad.GetCenter();
 	Vector2 dimensions = battlefieldQuad.GetDimensions();

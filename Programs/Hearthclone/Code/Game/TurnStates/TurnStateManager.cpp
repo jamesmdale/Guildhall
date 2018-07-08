@@ -156,11 +156,11 @@ void TurnStateManager::Transition()
 void TurnStateManager::TransitionInStartOfGame()
 {
 	//each player draws 3 cards
-	std::map<std::string, std::string> parameters = {{"target", "player"}, {"amount", "3"}};
+	std::map<std::string, std::string> parameters = {{"target", Stringf("%i", SELF_PLAYER_TYPE)}, {"amount", "3"}};
 	AddActionToRefereeQueue("draw", parameters);
 
 	//each player draws 3 cards
-	parameters = {{"target", "enemy"}, {"amount", "3"}};
+	parameters = {{"target", Stringf("%i", ENEMY_PLAYER_TYPE)}, {"amount", "3"}};
 	AddActionToRefereeQueue("draw", parameters);
 
 	TODO("roll random for who starts first");
@@ -175,12 +175,15 @@ void TurnStateManager::TransitionInStartOfGame()
 
 void TurnStateManager::TransitionInStartOfTurn()
 {
-	TODO("Swap active player");
+	std::string player = "";
+
 	//swap active player
-	/*if (m_playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
+	if (m_playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
 		m_playingState->m_activePlayer = m_playingState->m_enemyPlayer;
-	else
-		m_playingState->m_activePlayer = m_playingState->m_player;*/
+	else	
+		m_playingState->m_activePlayer = m_playingState->m_player;
+	
+		
 
 	// handle start of turn state updates for new active player =========================================================================================
 
@@ -202,8 +205,8 @@ void TurnStateManager::TransitionInStartOfTurn()
 	std::map<std::string, std::string> parameters;
 	AddActionToRefereeQueue("start_turn", parameters);
 
-	//draw a card
-	parameters = {{"target", "player"}, {"amount", "1"}};
+	//draw a card		
+	parameters = {{"target", Stringf("%i", m_playingState->m_activePlayer->m_playerId)}, {"amount", "1"}};
 	AddActionToRefereeQueue("draw", parameters);
 
 	m_playingState->m_gameBoard->RefreshPlayerManaWidget();
@@ -311,7 +314,7 @@ float TurnStateManager::UpdateInputMain(float deltaSeconds)
 	}	
 
 	//left click input is only available to the current player
-	if (theInput->IsKeyPressed(theInput->MOUSE_LEFT_CLICK) && m_playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
+	if (theInput->IsKeyPressed(theInput->MOUSE_LEFT_CLICK))
 	{
 		if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 		{
@@ -353,11 +356,6 @@ float TurnStateManager::UpdateInputMain(float deltaSeconds)
 			if(currentSelectedWidget != nullptr)
 				currentSelectedWidget->OnRightClicked();
 		}
-	}
-	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_1))
-	{
-		std::map<std::string, std::string> parameters = {{"target", "player"}, {"amount", "2"}};
-		AddActionToRefereeQueue("draw", parameters);
 	}
 
 	DebugRender::GetInstance()->CreateDebugText2D(Vector2(Window::GetInstance()->m_clientWidth - 300, Window::GetInstance()->m_clientHeight - 20), 20.f, 1.f, Stringf("%f, %f", mouseCoordinates.x, mouseCoordinates.y).c_str(), Rgba::WHITE, Rgba::WHITE, 0.f, ALWAYS_DEPTH_TYPE);

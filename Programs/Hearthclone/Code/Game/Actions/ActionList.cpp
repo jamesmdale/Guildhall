@@ -31,7 +31,7 @@ int thing2 = atoi(parameters.find("thing2")->second.c_str());
 void DrawAction(const std::map<std::string, std::string>& parameters)
 {
 	// get parameters =============================================================================
-	std::string player = parameters.find("target")->second;
+	ePlayerType playerType = (ePlayerType)ConvertStringToInt(parameters.find("target")->second);
 	int drawAmount = atoi(parameters.find("amount")->second.c_str());
 
 	// process function =============================================================================
@@ -40,7 +40,7 @@ void DrawAction(const std::map<std::string, std::string>& parameters)
 
 	AABB2 deckQuad;
 	AABB2 handQuad;
-	if (player == "enemy")
+	if (playerType == ENEMY_PLAYER_TYPE)
 	{
 		targetPlayer = gameState->m_enemyPlayer;	
 		deckQuad = gameState->m_gameBoard->m_enemyDeckQuad;
@@ -91,7 +91,7 @@ void DrawAction(const std::map<std::string, std::string>& parameters)
 void AttackAction(const std::map<std::string, std::string>& parameters)
 {
 	// Get Parameters =============================================================================
-	std::string attackTarget = parameters.find("target")->second;
+//	std::string attackTarget = parameters.find("target")->second;
 
 	// Process Function =============================================================================		
 
@@ -105,14 +105,14 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 	Vector2 battlefieldLocation = ConvertStringToVector2(parameters.find("newLocation")->second);
 
 	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
-	Player* player = nullptr;
+	Player* playerCasting = nullptr;
 	
 	if (playerType == SELF_PLAYER_TYPE)
-		player = gameState->m_player;
+		playerCasting = gameState->m_player;
 	else
-		player = gameState->m_enemyPlayer;
+		playerCasting = gameState->m_enemyPlayer;
 
-	Card* cardToCast = player->m_hand[cardIndex];	
+	Card* cardToCast = playerCasting->m_hand[cardIndex];	
 
 	// Process Function =============================================================================	
 	if (cardToCast->m_definition->m_type == MINION_TYPE)
@@ -120,13 +120,13 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 		TODO("Cast triggers here");
 
 		//if we have max minions in play or not enough mana to cast, we can't cast card. return.
-		if ((int)player->m_minions.size() >= g_maxMinionCount || player->m_manaCount < cardToCast->m_definition->m_cost)
+		if ((int)playerCasting->m_minions.size() >= g_maxMinionCount || playerCasting->m_manaCount < cardToCast->m_definition->m_cost)
 		{
 			cardToCast->OnRightClicked(); //handles input priority
 
 			//cleanup and return
 			gameState = nullptr;
-			player = nullptr;
+			playerCasting = nullptr;
 			cardToCast = nullptr;
 			return;
 		}
@@ -135,16 +135,16 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 		cardToCast->m_transform2D->SetLocalPosition(battlefieldLocation);
 		cardToCast->m_lockPosition = battlefieldLocation;
 
-		player->m_manaCount -= cardToCast->m_cost;
+		playerCasting->m_manaCount -= cardToCast->m_cost;
 
 		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 		
 		int castPosition = 0;
 
 		//determine minion spawn location by reording array position (minions on battlefield are ordered left to right)
-		for (int minionIndex = 0; minionIndex < (int)player->m_minions.size(); ++minionIndex)
+		for (int minionIndex = 0; minionIndex < (int)playerCasting->m_minions.size(); ++minionIndex)
 		{
-			Vector2 minionPosition = player->m_minions[minionIndex]->m_transform2D->GetLocalPosition();
+			Vector2 minionPosition = playerCasting->m_minions[minionIndex]->m_transform2D->GetLocalPosition();
 			if (mousePosition.x < minionPosition.x)
 			{
 				castPosition = minionIndex;
@@ -157,37 +157,36 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 		newMinion->m_renderScene = g_currentState->m_renderScene2D;
 		
 		//add minon to battlefield
-		std::vector<Minion*>::iterator minionIterator = player->m_minions.begin();
-		player->m_minions.insert(minionIterator + castPosition, newMinion);
+		std::vector<Minion*>::iterator minionIterator = playerCasting->m_minions.begin();
+		playerCasting->m_minions.insert(minionIterator + castPosition, newMinion);
 
 		//remove card from hand
-		player->RemoveCardFromHand(cardIndex);
+		playerCasting->RemoveCardFromHand(cardIndex);
 
 		newMinion->RefreshRenderables();
 		
 		//update dynamic renderables
-		player->UpdateBoardLockPositions();
-		player->UpdateHandLockPositions();
-		player->UpdateDeckCount();
+		playerCasting->UpdateBoardLockPositions();
+		playerCasting->UpdateHandLockPositions();
+		playerCasting->UpdateDeckCount();
 
 		gameState->m_gameBoard->RefreshPlayerManaWidget();
 
-
 		newMinion->m_transform2D->SetLocalPosition(newMinion->m_lockPosition);
 
-		if ((int)player->m_hand.size() > 0)
+		if ((int)playerCasting->m_hand.size() > 0)
 		{
-			float timeForEffect = 0.25f / (float)player->m_hand.size();
-			ReorganizeHandEffect* handEffect = new ReorganizeHandEffect(timeForEffect, SELF_PLAYER_TYPE);
+			float timeForEffect = 0.25f / (float)playerCasting->m_hand.size();
+			ReorganizeHandEffect* handEffect = new ReorganizeHandEffect(timeForEffect, playerType);
 			AddEffectToEffectQueue(handEffect);
 
 			handEffect = nullptr;
 		}		
 
-		if ((int)player->m_minions.size() > 0)
+		if ((int)playerCasting->m_minions.size() > 0)
 		{
-			float timeForEffect = 0.25f / (float)player->m_minions.size();
-			ReorganizeMinionsEffect* minionEffect = new ReorganizeMinionsEffect(timeForEffect, SELF_PLAYER_TYPE);
+			float timeForEffect = 0.25f / (float)playerCasting->m_minions.size();
+			ReorganizeMinionsEffect* minionEffect = new ReorganizeMinionsEffect(timeForEffect, playerType);
 			AddEffectToEffectQueue(minionEffect);
 
 			minionEffect = nullptr;
@@ -205,7 +204,7 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 	// cleanup =============================================================================
 
 	cardToCast = nullptr;
-	player = nullptr;
+	playerCasting = nullptr;
 	gameState = nullptr;
 }
 
