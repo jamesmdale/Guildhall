@@ -14,6 +14,7 @@
 #include "Game\Entity\Minion.hpp"
 #include "Game\TurnStates\TurnStateManager.hpp"
 #include "Game\Board.hpp"
+#include "Game\Entity\Hero.hpp"
 
 PlayingState::~PlayingState()
 {
@@ -267,6 +268,33 @@ Character* PlayingState::GetSelectedCharacter(const std::vector<Character*>& wid
 
 	// return =========================================================================================
 	return selectedWidget;
+}
+
+Character* PlayingState::GetCharacterById(int characterId)
+{
+	TODO("Add player hero to list");
+	/*if(m_player->m_hero->m_characterId == characterId)
+		return m_player->m_hero;
+
+	if(m_enemyPlayer->m_hero->m_characterId == characterId)
+		return m_enemyPlayer->m_hero;*/
+
+	//search player's battlefields for character index
+	for (int minionIndex = 0; minionIndex < (int)m_player->m_minions.size(); ++minionIndex)
+	{
+		if(m_player->m_minions[minionIndex]->m_characterId == characterId)
+			return m_player->m_minions[minionIndex];
+	}
+
+	//search enemy player
+	for (int minionIndex = 0; minionIndex < (int)m_enemyPlayer->m_minions.size(); ++minionIndex)
+	{
+		if (m_enemyPlayer->m_minions[minionIndex]->m_characterId == characterId)
+			return m_enemyPlayer->m_minions[minionIndex];
+	}
+
+	//if we didn't find the character return nullptr
+	return nullptr;
 }
 
 

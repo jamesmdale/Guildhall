@@ -8,7 +8,7 @@
 #include "Game\Board.hpp"
 #include "Game\Actions\Action.hpp"
 #include "Game\Effects\Effect.hpp"
-#include "Game\Effects\DerivedEffects\AttackEffect.hpp"
+#include "Game\Effects\DerivedEffects\TargetEffect.hpp"
 #include "Engine\Core\StringUtils.hpp"
 
 Minion::Minion()
@@ -130,6 +130,7 @@ void Minion::RefreshRenderables()
 	theRenderer = nullptr;
 
 	UpdateSortLayer(GetSortLayer());
+
 }
 
 Vector2 Minion::GetMinionDimensions()
@@ -150,15 +151,15 @@ void Minion::OnLeftClicked()
 			m_isPositionLocked = false;
 			UpdateSortLayer(g_sortLayerMax);
 
-			AttackEffect* attack = new AttackEffect(this);
+			TargetEffect* attackTarget = new TargetEffect(this);
 
 			if (m_age > 0 || CheckForTag("charge"));
 			{
-				AddEffectToEffectQueue(attack);
+				AddEffectToEffectQueue(attackTarget);
 			}
 
 			//cleanup
-			attack = nullptr;
+			attackTarget = nullptr;
 		}
 	}	
 }

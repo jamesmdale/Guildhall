@@ -13,6 +13,7 @@
 #include "Game\Board.hpp"
 #include "Game\TurnStates\TurnStateManager.hpp"
 #include "Game\Effects\DerivedEffects\TurnChangeEffect.hpp"
+#include "Game\Effects\DerivedEffects\AttackEffect.hpp"
 
 // actions =============================================================================
 
@@ -90,11 +91,43 @@ void DrawAction(const std::map<std::string, std::string>& parameters)
 
 void AttackAction(const std::map<std::string, std::string>& parameters)
 {
-	// Get Parameters =============================================================================
-//	std::string attackTarget = parameters.find("target")->second;
+	int attackerIndex = ConvertStringToInt(parameters.find("attackerId")->second);
+	int targetIndex = ConvertStringToInt(parameters.find("targetId")->second);
 
-	// Process Function =============================================================================		
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
 
+	Character* attackingCharacter = gameState->GetCharacterById(attackerIndex);
+	Character* targetCharacter =  gameState->GetCharacterById(targetIndex);
+
+	std::map<std::string, std::string> damageParameters;
+
+	//deal damage to target
+	if (targetCharacter->m_attack > 0)
+	{
+		damageParameters = { {"targetId", Stringf("%i", attackerIndex)}, {"amount", Stringf("%i", targetCharacter->m_attack)} };
+		AddActionToRefereeQueue("damage", damageParameters);
+	}
+		
+	//deal damage to attacking character
+	if (attackingCharacter->m_attack > 0)
+	{
+		damageParameters = { {"targetId", Stringf("%i", targetIndex)}, {"amount", Stringf("%i", attackingCharacter->m_attack)} };
+		AddActionToRefereeQueue("damage", damageParameters);
+	}
+
+	//add attack effect to queue
+	AttackEffect* effect = new AttackEffect(attackingCharacter, 1.f, attackingCharacter->m_lockPosition, targetCharacter->m_lockPosition);
+	AddEffectToEffectQueue(effect);
+
+	TODO("damage queue");
+	 
+	TODO("Damage triggers");
+	TODO("Death triggers");
+	TODO("Attack Effect");
+
+	targetCharacter = nullptr;	
+	attackingCharacter = nullptr;
+	gameState = nullptr;
 }
 
 void CastFromHandAction(const std::map<std::string, std::string>& parameters)
@@ -232,5 +265,21 @@ void StartTurnAction(const std::map<std::string, std::string>& parameters)
 	TurnChangeEffect* turnChangeEffect = new TurnChangeEffect(gameState->m_activePlayer->m_playerId, 1.5f, gameState->m_renderScene2D);
 
 	AddEffectToEffectQueue(turnChangeEffect);
+}
+
+void DamageAction(const std::map<std::string, std::string>& parameters)
+{
+	int targetId = ConvertStringToInt(parameters.find("targetId")->second);
+	int damageAmount = ConvertStringToInt(parameters.find("amount")->second);
+
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+
+	Character* targetCharacter = gameState->GetCharacterById(targetId);
+	targetCharacter->m_health -= damageAmount;
+
+	targetCharacter->RefreshRenderables();
+	targetCharacter->UpdateRenderable2DFromTransform();
+
+	gameState = nullptr;
 }
 

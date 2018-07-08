@@ -17,7 +17,7 @@ public:
 
 	virtual void Initialize() override;
 	virtual void Update(float deltaSeconds) override;
-	void RefreshRenderables();
+	virtual void RefreshRenderables() override;
 	Vector2 GetMinionDimensions();
 
 	virtual void OnLeftClicked() override;
@@ -31,8 +31,6 @@ public:
 
 	Texture* m_minionLayoutImage = nullptr;
 	Texture* m_minionImage = nullptr;
-
-	ePlayerType m_controller;
 
 	std::vector<std::string> m_tags;
 

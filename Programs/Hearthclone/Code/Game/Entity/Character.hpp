@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+enum ePlayerType;
 class Character : public Widget
 {
 public:
@@ -13,12 +14,16 @@ public:
 	}
 	virtual ~Character() override;
 
+	virtual void RefreshRenderables();
+
 	static int GenerateNewCharacterId();
 	static void ResetCharacterIndexer();
 public:
 	int m_characterId;
 	int m_health;
 	int m_attack;
+
+	ePlayerType m_controller;
 
 	std::vector<std::string> m_tags;
 

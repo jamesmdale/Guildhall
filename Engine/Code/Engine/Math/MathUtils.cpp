@@ -441,6 +441,11 @@ float SmoothStep3( float t )
 	return Crossfade(SmoothStart2(t), SmoothStop2(t), t);
 }
 
+float SmoothStartArch3(float t)
+{
+	return (t * (1-t)) * t;
+}
+
 //equivalent to GLSL smoothstep
 float GLSLSmoothStep(float edge0, float edge1, float x)
 {

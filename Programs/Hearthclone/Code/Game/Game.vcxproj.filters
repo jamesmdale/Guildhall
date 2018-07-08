@@ -94,6 +94,9 @@
     <ClCompile Include="Effects\DerivedEffects\TurnChangeEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Effects\DerivedEffects\TargetEffect.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
     <ClCompile Include="Effects\DerivedEffects\AttackEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
@@ -135,6 +138,7 @@
     <ClInclude Include="TurnStates\TurnStateManager.hpp" />
     <ClInclude Include="Entity\EndTurnButton.hpp" />
     <ClInclude Include="Effects\DerivedEffects\TurnChangeEffect.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\TargetEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\AttackEffect.hpp" />
   </ItemGroup>
 </Project>

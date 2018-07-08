@@ -31,6 +31,8 @@ public:
 	std::vector<Character*>* GetCharacterWidgets();
 	Character * GetSelectedCharacter(const std::vector<Character*>& widgets);
 
+	Character* GetCharacterById(int characterId);
+
 public:
 	Board* m_gameBoard = nullptr;
 
