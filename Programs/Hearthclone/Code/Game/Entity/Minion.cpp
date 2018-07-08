@@ -106,17 +106,16 @@ void Minion::RefreshRenderables()
 	Material* minionLayoutMaterial = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
 	minionLayoutMaterial->SetTexture(0, m_minionLayoutImage);
 	
-	minionRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), minionLayoutMaterial);
+	minionRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), minionLayoutMaterial);
 	minionLayoutMaterial = nullptr;
 
 	//add health and attack
 	mb.CreateText2DInAABB2(minionBottomRight + (m_dimensionsInPixels * g_minionAttackCenterRatio), m_dimensionsInPixels * g_minionAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
 	mb.CreateText2DInAABB2(minionBottomRight + (m_dimensionsInPixels * g_minionHealthCenterRatio), m_dimensionsInPixels * g_minionHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
-	Material* minionText = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
-	minionText = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+	Material* minionText = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
 	minionText->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
 
-	minionRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), minionText);
+	minionRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), minionText);
 	minionText = nullptr;
 
 	m_renderables.push_back(minionRenderable);

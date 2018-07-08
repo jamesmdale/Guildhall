@@ -13,6 +13,7 @@
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include <minwindef.h>
+#include "Game\EngineBuildPreferences.hpp"
 
 
 bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam ) 
@@ -126,16 +127,7 @@ void Initialize()
 	g_theApp = new TheApp();
 	CreateOpenGLWindow( CLIENT_ASPECT );
 
-	RenderStartup();
-
-	Renderer::CreateInstance();
-	Renderer::GetInstance()->PostStartup();
-
-	DevConsole::CreateInstance();
-	DevConsole::GetInstance()->Startup();
-
-	DebugRender::CreateInstance();
-	DebugRender::GetInstance()->Initialize();
+	EngineStartup();
 
 	g_theApp->Initialize();
 }

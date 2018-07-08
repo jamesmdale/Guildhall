@@ -28,6 +28,7 @@ AttackEffect::AttackEffect(Character* attackingWidget)
 
 AttackEffect::~AttackEffect()
 {
+	delete(m_targetWidget);
 	m_targetWidget = nullptr;
 }
 
