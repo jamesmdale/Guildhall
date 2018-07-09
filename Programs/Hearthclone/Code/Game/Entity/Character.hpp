@@ -27,6 +27,8 @@ public:
 	int m_health;
 	int m_attack;
 
+	bool m_hasAttackedThisTurn = false;
+
 	ePlayerType m_controller;
 
 	std::vector<std::string> m_tags;

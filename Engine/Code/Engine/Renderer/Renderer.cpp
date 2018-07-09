@@ -298,7 +298,7 @@ void Renderer::BeginFrame()
 
 void Renderer::EndFrame()
 {
-	PROFILER_PUSH();
+	//PROFILER_PUSH();
 
 	// "Present" the backbuffer by swapping the front (visible) and back (working) screen buffers
 	CopyFrameBuffer(nullptr, &m_currentCamera->m_frameBufferOutput);

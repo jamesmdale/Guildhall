@@ -25,11 +25,11 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
-	std::vector<Widget*>* GetInteractableWidgets();	
+	bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);
 	Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);
 
-	std::vector<Character*>* GetCharacterWidgets();
-	Character * GetSelectedCharacter(const std::vector<Character*>& widgets);
+	bool GetCharacterWidgets(std::vector<Character*>& outCharacters);
+	Character* GetSelectedCharacter(const std::vector<Character*>& widgets);
 
 	Character* GetCharacterById(int characterId);
 

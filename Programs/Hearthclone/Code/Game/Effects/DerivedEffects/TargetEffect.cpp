@@ -59,8 +59,9 @@ void TargetEffect::UpdateInput()
 	}
 	else if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 	{
-		std::vector<Character*>* targetableWidgets = playingState->GetCharacterWidgets();
-		Character* selectedWidget = playingState->GetSelectedCharacter(*targetableWidgets);
+		std::vector<Character*> targetableWidgets;
+		playingState->GetCharacterWidgets(targetableWidgets);
+		Character* selectedWidget = playingState->GetSelectedCharacter(targetableWidgets);
 
 		if (selectedWidget != nullptr)
 		{
@@ -76,9 +77,12 @@ void TargetEffect::UpdateInput()
 				m_isComplete = true;
 			}
 			minion = nullptr;
-		}		
-		//cleanup
-		targetableWidgets = nullptr;		
+		}
+
+		for(int targetIndex = 0; targetIndex < (int)targetableWidgets.size(); ++targetIndex)
+			targetableWidgets[targetIndex] = nullptr;
+
+		targetableWidgets.clear();
 	}
 
 	playingState = nullptr;

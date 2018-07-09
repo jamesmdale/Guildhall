@@ -100,6 +100,8 @@ void AttackAction(const std::map<std::string, std::string>& parameters)
 	Character* attackingCharacter = gameState->GetCharacterById(attackerIndex);
 	Character* targetCharacter =  gameState->GetCharacterById(targetIndex);
 
+	attackingCharacter->m_hasAttackedThisTurn = true;
+
 	std::map<std::string, std::string> damageParameters;
 
 	//deal damage to target

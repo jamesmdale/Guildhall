@@ -31,6 +31,5 @@ public:
 	Texture* m_minionImage = nullptr;
 
 	int m_age = 0;
-	bool m_hasAttackedThisTurn = false;
 };
 
