@@ -92,6 +92,7 @@ float SmoothStop2( float t ); // 2nd-degree smooth start (a.k.a. “quadratic ease
 float SmoothStop3( float t ); // 3rd-degree smooth start (a.k.a. “cubic ease out”)
 float SmoothStop4( float t ); // 4th-degree smooth start (a.k.a. “quartic ease out”)
 float SmoothStep3( float t ); // 3rd-degree smooth start/stop (a.k.a. “smoothstep”)
+float SmoothStartArch3(float t);
 float GLSLSmoothStep(float edge0, float edge1, float x);
 float Crossfade(float a, float b, float t);
 

@@ -316,7 +316,7 @@ float TurnStateManager::UpdateInputMain(float deltaSeconds)
 
 	//left click input is only available to the current player
 	if (theInput->IsKeyPressed(theInput->MOUSE_LEFT_CLICK))
-	{
+	{		
 		if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 		{
 			if (currentSelectedWidget == nullptr)
@@ -331,7 +331,6 @@ float TurnStateManager::UpdateInputMain(float deltaSeconds)
 					currentSelectedWidget = m_playingState->GetSelectedWidget(interactableWidgets);
 				}
 			}
-
 
 			if(currentSelectedWidget != nullptr)
 				currentSelectedWidget->OnLeftClicked();

@@ -443,7 +443,7 @@ float SmoothStep3( float t )
 
 float SmoothStartArch3(float t)
 {
-	return (t * (1-t)) * t;
+	return (t * t * (1-t));
 }
 
 //equivalent to GLSL smoothstep

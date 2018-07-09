@@ -47,16 +47,18 @@ void TargetEffect::UpdateInput()
 {
 	InputSystem* theInput = InputSystem::GetInstance();
 	Vector2 mouseCoordinates = theInput->GetMouse()->GetInvertedMouseClientPosition();
-	
+
+	PlayingState* playingState = (PlayingState*)g_currentState;	
+
 	//player cancelled attack
 	if (theInput->WasKeyJustPressed(theInput->MOUSE_RIGHT_CLICK))
 	{
+		m_attackingWidget->m_isInputPriority = false;
+		playingState->m_currentSelectedWidget = nullptr;
 		m_isComplete = true;
 	}
 	else if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
 	{
-		PlayingState* playingState = (PlayingState*)g_currentState;	
-
 		std::vector<Character*>* targetableWidgets = playingState->GetCharacterWidgets();
 		Character* selectedWidget = playingState->GetSelectedCharacter(*targetableWidgets);
 
@@ -74,13 +76,12 @@ void TargetEffect::UpdateInput()
 				m_isComplete = true;
 			}
 			minion = nullptr;
-		}
-		
+		}		
 		//cleanup
-		targetableWidgets = nullptr;
-		playingState = nullptr;
+		targetableWidgets = nullptr;		
 	}
 
+	playingState = nullptr;
 	theInput = nullptr;
 }
 

@@ -62,7 +62,8 @@ void Minion::Update(float deltaSeconds)
 	//{
 	//	m_transform2D->SetLocalPosition(m_lockPosition);
 	//}
-	m_transform2D->SetLocalPosition(m_lockPosition);
+	if(m_isPositionLocked)
+		m_transform2D->SetLocalPosition(m_lockPosition);
 }
 
 void Minion::RefreshRenderables()
@@ -147,19 +148,19 @@ void Minion::OnLeftClicked()
 	{
 		if (m_isInputPriority == false)
 		{
-			m_isInputPriority = true;
-			m_isPositionLocked = false;
-			UpdateSortLayer(g_sortLayerMax);
-
-			TargetEffect* attackTarget = new TargetEffect(this);
-
-			if (m_age > 0 || CheckForTag("charge"));
+			bool hasTag = CheckForTag("charge");
+			if (m_age > 0 || hasTag)
 			{
-				AddEffectToEffectQueue(attackTarget);
-			}
+				m_isInputPriority = true;
+				m_isPositionLocked = false;
+				UpdateSortLayer(g_sortLayerMax);
 
-			//cleanup
-			attackTarget = nullptr;
+				TargetEffect* attackTarget = new TargetEffect(this);
+				AddEffectToEffectQueue(attackTarget);
+
+				//cleanup
+				attackTarget = nullptr;
+			}
 		}
 	}	
 }

@@ -33,7 +33,9 @@ void AttackEffect::Update(float deltaSeconds)
 		m_stopWatch->SetTimer(m_totalEffectTime);
 	}
 
-	Vector2 position = EvaluateCubicBezier(m_startPosition, m_targetPosition, m_targetPosition, m_startPosition, (float)m_stopWatch->GetNormalizedElapsedTimeInSeconds());
+	float elapsedTime = (float)m_stopWatch->GetNormalizedElapsedTimeInSeconds();
+
+	Vector2 position = Interpolate(m_startPosition, m_targetPosition, SmoothStart3(elapsedTime));
 
 	m_targetWidget->m_transform2D->SetLocalPosition(position);
 
