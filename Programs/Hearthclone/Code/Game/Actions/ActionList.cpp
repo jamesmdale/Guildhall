@@ -167,21 +167,17 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 			return;
 		}
 
-		//set card position
-		cardToCast->m_transform2D->SetLocalPosition(battlefieldLocation);
-		cardToCast->m_lockPosition = battlefieldLocation;
-
+		//pay mana cost
 		playerCasting->m_manaCount -= cardToCast->m_cost;
-
-		Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 		
-		int castPosition = 0;
-
 		//determine minion spawn location by reording array position (minions on battlefield are ordered left to right)
-		for (int minionIndex = 0; minionIndex < (int)playerCasting->m_minions.size(); ++minionIndex)
+		int numMinions = (int)playerCasting->m_minions.size();
+		int castPosition = numMinions;
+		
+		for (int minionIndex = 0; minionIndex < numMinions; ++minionIndex)
 		{
 			Vector2 minionPosition = playerCasting->m_minions[minionIndex]->m_transform2D->GetLocalPosition();
-			if (mousePosition.x < minionPosition.x)
+			if (battlefieldLocation.x < minionPosition.x)
 			{
 				castPosition = minionIndex;
 				break;
@@ -196,15 +192,15 @@ void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 		std::vector<Minion*>::iterator minionIterator = playerCasting->m_minions.begin();
 		playerCasting->m_minions.insert(minionIterator + castPosition, newMinion);
 
+		newMinion->RefreshRenderables();
+
 		//remove card from hand
 		playerCasting->RemoveCardFromHand(cardIndex);
-
-		newMinion->RefreshRenderables();
 		
 		//update dynamic renderables
 		playerCasting->UpdateBoardLockPositions();
 		playerCasting->UpdateHandLockPositions();
-		playerCasting->UpdateDeckCount();
+		playerCasting->UpdateDeckCount();		
 
 		gameState->m_gameBoard->RefreshPlayerManaWidget();
 

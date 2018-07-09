@@ -177,14 +177,7 @@ void Card::OnLeftClicked()
 			//player is playing card.
 			if (mousePosition.y > playingState->m_gameBoard->m_playerHandQuad.maxs.y)
 			{
-				//determine if card is castable
-				//if(m_)
-
 				//we can cast the card so queue play card action
-
-				//get the new location to cast
-				Vector2 battlefieldLocation = playingState->m_gameBoard->m_playerBattlfieldQuad.GetCenter();
-
 
 				ePlayerType playerType = playingState->m_activePlayer->m_playerId;
 
@@ -199,7 +192,7 @@ void Card::OnLeftClicked()
 					}
 				}
 
-				std::map<std::string, std::string> parameters = { {"target", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", battlefieldLocation.x, battlefieldLocation.y)} };
+				std::map<std::string, std::string> parameters = { {"target", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", mousePosition.x, mousePosition.y)} };
 				AddActionToRefereeQueue("cast_from_hand", parameters);
 			}
 			else //return card to hand
