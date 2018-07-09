@@ -15,9 +15,11 @@ Minion::Minion()
 {
 	m_characterId = Character::GenerateNewCharacterId();
 	UpdateSortLayer(g_defaultCardSortLayer);
+
+	AddTag("minion");
 }
 
-Minion::Minion(const Card* fromCard)
+Minion::Minion(Card* fromCard)
 {
 	m_characterId = Character::GenerateNewCharacterId();
 	UpdateSortLayer(g_defaultCardSortLayer);
@@ -31,6 +33,8 @@ Minion::Minion(const Card* fromCard)
 	m_minionImage = fromCard->m_cardImage;
 
 	m_minionLayoutImage = Renderer::GetInstance()->CreateOrGetTexture("Data/Images/Template/Image_Circle_Drop_Frame.png");
+
+	AddTag("minion");
 }
 
 Minion::~Minion()
@@ -168,15 +172,4 @@ void Minion::OnLeftClicked()
 void Minion::OnRightClicked()
 {
 	TODO("Draw card renderable temporarily");
-}
-
-bool Minion::CheckForTag(const std::string & tagName)
-{
-	for (int tagIndex = 0; tagIndex < (int)m_tags.size(); ++tagIndex)
-	{
-		if(m_tags[tagIndex] == tagName)
-			return true;		
-	}
-
-	return false;
 }

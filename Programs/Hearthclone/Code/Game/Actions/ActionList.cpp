@@ -14,6 +14,7 @@
 #include "Game\TurnStates\TurnStateManager.hpp"
 #include "Game\Effects\DerivedEffects\TurnChangeEffect.hpp"
 #include "Game\Effects\DerivedEffects\AttackEffect.hpp"
+#include "Game\Effects\DerivedEffects\DeathEffect.hpp"
 
 // actions =============================================================================
 
@@ -267,6 +268,11 @@ void StartTurnAction(const std::map<std::string, std::string>& parameters)
 	TurnChangeEffect* turnChangeEffect = new TurnChangeEffect(gameState->m_activePlayer->m_playerId, 1.5f, gameState->m_renderScene2D);
 
 	AddEffectToEffectQueue(turnChangeEffect);
+
+	//cleanup
+
+	turnChangeEffect = nullptr;
+	gameState = nullptr;
 }
 
 void DamageAction(const std::map<std::string, std::string>& parameters)
@@ -279,9 +285,19 @@ void DamageAction(const std::map<std::string, std::string>& parameters)
 	Character* targetCharacter = gameState->GetCharacterById(targetId);
 	targetCharacter->m_health -= damageAmount;
 
-	targetCharacter->RefreshRenderables();
-	targetCharacter->UpdateRenderable2DFromTransform();
+	if (targetCharacter->m_health <= 0)
+	{
+		if (targetCharacter->CheckForTag("minion"))
+		{
+			DeathEffect* deathEffect = new DeathEffect((Minion*)targetCharacter, 0.5f);
+			AddEffectToEffectQueue(deathEffect);
+		}			
+	}
 
+	targetCharacter->RefreshRenderables();
+	targetCharacter->UpdateRenderable2DFromTransform();		
+
+	targetCharacter = nullptr;
 	gameState = nullptr;
 }
 

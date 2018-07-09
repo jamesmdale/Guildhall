@@ -37,6 +37,10 @@ public:
 
 	//hand utilities
 	void RemoveCardFromHand(int cardIndex);
+	//void MoveCardToGraveyard(int cardIndex);
+
+	//battlefield utilities
+	void MoveMinionToGraveyard(Minion * minion);
 
 public:
 	std::vector<Card*> m_deck;

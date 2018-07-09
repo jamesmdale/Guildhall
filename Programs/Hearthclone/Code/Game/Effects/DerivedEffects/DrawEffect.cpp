@@ -51,6 +51,7 @@ void DrawEffect::Update(float deltaSeconds)
 			gameState->m_player->UpdateDeckCount();
 		}			
 
+		gameState = nullptr;
 		m_isComplete = true;
 	}
 }

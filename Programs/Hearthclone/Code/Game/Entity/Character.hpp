@@ -16,8 +16,12 @@ public:
 
 	virtual void RefreshRenderables();
 
+	void AddTag(const std::string & tagName);
+	bool CheckForTag(const std::string& tagName);
+
 	static int GenerateNewCharacterId();
 	static void ResetCharacterIndexer();
+	
 public:
 	int m_characterId;
 	int m_health;

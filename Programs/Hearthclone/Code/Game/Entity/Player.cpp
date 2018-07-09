@@ -224,3 +224,28 @@ void Player::RemoveCardFromHand(int cardIndex)
 	m_hand.erase(cardIterator + cardIndex);
 	card = nullptr;
 }
+
+void Player::MoveMinionToGraveyard(Minion* minion)
+{
+	std::vector<Minion*>::iterator cardIterator = m_minions.begin();
+
+	int minionIndex = 0;
+
+	for (minionIndex; minionIndex < (int)m_minions.size(); ++minionIndex)
+	{
+		if(m_minions[minionIndex] == minion)
+			break;
+	}	
+
+	//add minion's card reference to graveyard
+	m_graveyard.push_back(minion->m_cardReference);
+
+	//remove minion from list
+	m_minions.erase(cardIterator + minionIndex);
+
+	minion->DeleteRenderables();
+
+	//delete minion
+	delete(minion);
+	minion = nullptr;
+}

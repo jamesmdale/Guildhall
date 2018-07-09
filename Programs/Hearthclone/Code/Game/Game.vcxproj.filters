@@ -100,6 +100,9 @@
     <ClCompile Include="Effects\DerivedEffects\AttackEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Effects\DerivedEffects\DeathEffect.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -140,5 +143,6 @@
     <ClInclude Include="Effects\DerivedEffects\TurnChangeEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\TargetEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\AttackEffect.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\DeathEffect.hpp" />
   </ItemGroup>
 </Project>
