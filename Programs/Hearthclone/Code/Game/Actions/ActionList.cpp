@@ -18,16 +18,14 @@
 
 // actions =============================================================================
 
-//template
-/*	TEMPLATE
+/*	example
 void DoStuff(const std::map<std::string, std::string>& parameters)
 {
-// Get Parameters =============================================================================
-std::string thing1 = parameters.find("thing")->second;
-int thing2 = atoi(parameters.find("thing2")->second.c_str());
-
-// Process Function =============================================================================		
+	// Get Parameters =============================================================================
+	std::string thing1 = parameters.find("thing")->second;
+	int thing2 = atoi(parameters.find("thing2")->second.c_str());
 }
+// Process Function =============================================================================		
 */
 
 void DrawAction(const std::map<std::string, std::string>& parameters)

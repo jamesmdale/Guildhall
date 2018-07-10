@@ -152,8 +152,7 @@ void Minion::OnLeftClicked()
 	{
 		if (m_isInputPriority == false)
 		{
-			bool hasTag = CheckForTag("charge");
-			if ((m_age > 0 || hasTag) && m_hasAttackedThisTurn == false)
+			if ((m_age > 0 || CheckForTag("charge")) && m_hasAttackedThisTurn == false && m_attack > 0)
 			{
 				m_isInputPriority = true;
 				m_isPositionLocked = false;
