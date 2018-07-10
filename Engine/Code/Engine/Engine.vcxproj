@@ -70,6 +70,7 @@
     <ClCompile Include="Renderer\RenderScene2D.cpp" />
     <ClCompile Include="Core\Terrain.cpp" />
     <ClCompile Include="Math\Segment3.cpp" />
+    <ClCompile Include="Async\Threading.cpp" />
     <ClCompile Include="Time\Stopwatch.cpp" />
     <ClCompile Include="Time\Clock.cpp" />
     <ClCompile Include="Time\Time.cpp" />
@@ -117,6 +118,7 @@
     <ClCompile Include="Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Async\Threading.hpp" />
     <ClInclude Include="Utility\Graph.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
     <ClInclude Include="Audio\AudioSystem.hpp" />

@@ -274,6 +274,9 @@
     <ClCompile Include="Profiler\ProfilerReport.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Async\Threading.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -385,6 +388,7 @@
     <ClInclude Include="Profiler\ProfilerReportEntry.hpp" />
     <ClInclude Include="Profiler\ProfilerReport.hpp" />
     <ClInclude Include="Utility\Graph.hpp" />
+    <ClInclude Include="Async\Threading.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />
