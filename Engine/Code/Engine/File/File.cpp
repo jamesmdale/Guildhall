@@ -30,7 +30,7 @@ void* FileReadToNewBuffer( char const *filename )
 	return buffer; 
 }
 
-bool WriteToFile(const char* fileName, std::vector<std::string> outputs)
+bool WriteToFile(const char* fileName, const std::vector<std::string>& outputs)
 {
 	FILE* fp;
 	fopen_s(&fp, fileName, "w+");
@@ -45,6 +45,22 @@ bool WriteToFile(const char* fileName, std::vector<std::string> outputs)
 	}
 	fputs("*************************************************************", fp);
 	
+	fclose(fp);
+
+	return true;
+}
+
+bool WriteToFile(const char* fileName, const std::string& output)
+{
+	FILE* fp;
+	fopen_s(&fp, fileName, "w+");
+	
+	int success = fputs((Stringf("%s%s", output.c_str(), "\n")).c_str(), fp);
+	if (success < 0)
+	{
+		return false;
+	}
+
 	fclose(fp);
 
 	return true;

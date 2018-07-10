@@ -15,6 +15,9 @@
 #include "Engine\Audio\AudioSystem.hpp"
 #include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Profiler\ProfilerConsole.hpp"
+#include "Engine\File\File.hpp"
+#include "Engine\Async\Threading.hpp"
+#include "Engine\Time\Stopwatch.hpp"
 
 TheApp* g_theApp = nullptr;
 
@@ -57,6 +60,8 @@ void TheApp::Initialize()
 {
 	//register app commands
 	CommandRegister("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
+	CommandRegister("non_threaded_test", CommandRegistration(NoThreadTest, ": use to test if the thread works", "Processing.."));
+	CommandRegister("threaded_test", CommandRegistration(ThreadTest, ": use to test if the thread works", "Processing.."));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -187,4 +192,25 @@ void Quit(Command &cmd)
 {
 	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
 	g_isQuitting = true;
+}
+
+void NoThreadTest(Command &cmd)
+{
+	ThreadTestWork(nullptr);
+}
+
+void ThreadTest(Command &cmd)
+{
+	ThreadCreateAndDetach(ThreadTestWork, nullptr);
+}
+
+void ThreadTestWork(void* arguments)
+{
+	for (int writeIndex = 0; writeIndex < 12000; ++writeIndex)
+	{
+		int randomInt = GetRandomIntInRange(1, 10);
+		WriteToFile("Data/garbage.dat", Stringf("%i", randomInt));
+	}	
+
+	DevConsolePrintf(Stringf("Finished thread work in").c_str());
 }

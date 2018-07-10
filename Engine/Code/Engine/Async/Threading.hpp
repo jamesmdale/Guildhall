@@ -18,6 +18,7 @@ void ThreadSleep(int milliseconds);
 void ThreadYield();
 
 std::thread* GetThreadByHandle(ThreadHandle handle);
+void RemoveThreadByHandle(ThreadHandle handle);
 
 static std::map<ThreadHandle, std::thread*> s_threads;
 

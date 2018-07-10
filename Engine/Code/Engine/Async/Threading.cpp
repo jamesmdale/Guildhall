@@ -27,8 +27,11 @@ void ThreadDetach(ThreadHandle handle)
 	std::thread* thread = GetThreadByHandle(handle);
 
 	if (thread != nullptr)
+	{		
 		thread->detach();
-
+		RemoveThreadByHandle(handle);
+	}
+		
 	thread = nullptr;
 }
 
@@ -63,4 +66,16 @@ std::thread* GetThreadByHandle(ThreadHandle handle)
 	}
 
 	return nullptr;
+}
+
+void RemoveThreadByHandle(ThreadHandle handle)
+{
+	std::map<ThreadHandle, std::thread*>::iterator threadIterator;
+	threadIterator = s_threads.find(handle);
+
+	if (threadIterator != s_threads.end())
+	{
+		threadIterator->second = nullptr;
+		s_threads.erase(threadIterator);
+	}
 }

@@ -18,6 +18,10 @@ public:
 };
 
 void Quit(Command &cmd);
+void NoThreadTest(Command &cmd);
+void ThreadTest(Command &cmd);
+
+void ThreadTestWork(void* arguments = nullptr);
 
 extern TheApp* g_theApp;
 
