@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\LogSystem.cpp" />
     <ClCompile Include="Math\AABB3.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
     <ClCompile Include="Camera\Camera.cpp" />
@@ -119,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Async\Threading.hpp" />
+    <ClInclude Include="Core\LogSystem.hpp" />
     <ClInclude Include="Utility\Graph.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
@@ -221,6 +223,8 @@
     <ClInclude Include="Renderer\UniformBuffer.hpp" />
     <ClInclude Include="Core\Transform2D.hpp" />
     <ClInclude Include="Core\Widget.hpp" />
+    <ClInclude Include="Utility\SpinLock.hpp" />
+    <ClInclude Include="Utility\ThreadSafeQueue.hpp" />
     <ClInclude Include="Window\Window.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@
 #include <chrono>
 #include <ctime>
 #include "Engine\Core\StringUtils.hpp"
+#include <fstream>
 
 void* FileReadToNewBuffer( char const *filename )
 {
@@ -32,38 +33,29 @@ void* FileReadToNewBuffer( char const *filename )
 
 bool WriteToFile(const char* fileName, const std::vector<std::string>& outputs)
 {
-	FILE* fp;
-	fopen_s(&fp, fileName, "w+");
-	fputs("*************************************************************", fp);
+	std::ofstream writer("garbage.dat");
+	if (!writer.is_open())
+		return false;
+
 	for(int outputIndex = 0; outputIndex < (int)outputs.size(); outputIndex++)
 	{
-		int success = fputs((Stringf("%s%s", outputs[outputIndex].c_str(), "\n")).c_str(), fp);
-		if(success < 0)
-		{
-			return false;
-		}
-	}
-	fputs("*************************************************************", fp);
-	
-	fclose(fp);
+		writer << Stringf("%i\n", outputIndex);
+	}	
+	writer.close();
 
-	return true;
+	return true;	
 }
 
 bool WriteToFile(const char* fileName, const std::string& output)
 {
-	FILE* fp;
-	fopen_s(&fp, fileName, "w+");
-	
-	int success = fputs((Stringf("%s%s", output.c_str(), "\n")).c_str(), fp);
-	if (success < 0)
-	{
-		return false;
-	}
+	std::ofstream writer("garbage.dat");
 
-	fclose(fp);
+	if (!writer.is_open())
+		return false;	
 
-	return true;
+	writer << Stringf("%i\n", output);
+	writer.close();
+	return true;		
 }
 
 std::string ReturnFullPath(const char* fileName)

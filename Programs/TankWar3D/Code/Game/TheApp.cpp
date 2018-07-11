@@ -16,21 +16,23 @@
 #include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Profiler\ProfilerConsole.hpp"
 #include "Engine\File\File.hpp"
-#include "Engine\Async\Threading.hpp"
-#include "Engine\Time\Stopwatch.hpp"
+#include <thread>
 
 TheApp* g_theApp = nullptr;
 
+//  =============================================================================
 TheApp::TheApp()
 { 
 	Game::CreateInstance();
 }
 
+//  =============================================================================
 TheApp::~TheApp()
 {
 	TODO("DELETE SYSTEMS AND NULL OUT");
 }
 
+//  =============================================================================
 void TheApp::RunFrame()
 {
 	//start profiler for frame
@@ -56,6 +58,7 @@ void TheApp::RunFrame()
 	TODO("Need to add sleep function to release CPU cycles and reduce system demand");
 }
 
+//  =============================================================================
 void TheApp::Initialize()
 {
 	//register app commands
@@ -82,6 +85,7 @@ void TheApp::Initialize()
 	Game::GetInstance()->Initialize();
 }
 
+//  =============================================================================
 void TheApp::Update()
 {
 	PROFILER_PUSH();
@@ -113,6 +117,7 @@ void TheApp::Update()
 
 }
 
+//  =============================================================================
 void TheApp::PreRender()
 {
 	//PROFILER_PUSH();
@@ -125,6 +130,7 @@ void TheApp::PreRender()
 	}
 }
 
+//  =============================================================================
 void TheApp::Render()
 {
 	PROFILER_PUSH();
@@ -147,12 +153,13 @@ void TheApp::Render()
 	}	
 }
 
+//  =============================================================================
 void TheApp::PostRender()
 {
 	Game::GetInstance()->PostRender();
 }
 
-
+//  =============================================================================
 float TheApp::UpdateInput(float deltaSeconds)
 {
 	if(InputSystem::GetInstance()->WasKeyJustPressed((InputSystem::GetInstance()->KEYBOARD_TILDE)))
@@ -188,22 +195,27 @@ float TheApp::UpdateInput(float deltaSeconds)
 
 // command callbacks =========================================================================================
 
+//  =============================================================================
 void Quit(Command &cmd)
 {
 	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
 	g_isQuitting = true;
 }
 
+//  =============================================================================
 void NoThreadTest(Command &cmd)
 {
 	ThreadTestWork(nullptr);
 }
 
+//  =============================================================================
 void ThreadTest(Command &cmd)
 {
-	ThreadCreateAndDetach(ThreadTestWork, nullptr);
+	std::thread threadObject(ThreadTestWork, nullptr);
+	threadObject.detach();
 }
 
+//  =============================================================================
 void ThreadTestWork(void* arguments)
 {
 	for (int writeIndex = 0; writeIndex < 12000; ++writeIndex)
@@ -212,5 +224,5 @@ void ThreadTestWork(void* arguments)
 		WriteToFile("Data/garbage.dat", Stringf("%i", randomInt));
 	}	
 
-	DevConsolePrintf(Stringf("Finished thread work in").c_str());
+	DevConsolePrintf(Stringf("Finished thread work").c_str());
 }
