@@ -4,6 +4,7 @@
 #include "Engine\Math\MathUtils.hpp"
 #include "Engine\Profiler\ProfilerConsole.hpp"
 #include "Engine\Profiler\ProfilerReport.hpp"
+#include "Game\EngineBuildPreferences.hpp"
 
 static Profiler* g_theProfiler = nullptr;
 bool g_isProfilerPaused = false;
@@ -33,16 +34,16 @@ Profiler* Profiler::GetInstance()
 	return g_theProfiler;
 }
 
+
+
 void Profiler::Startup()
 {
-	#if defined(PROFILING_ENABLED)
-
+#ifdef PROFILER_ENABLED
 	CommandRegister("profiler_pause", CommandRegistration(Pause, ": Pauses profiler capturing", "Profiler Paused!"));
 	CommandRegister("profiler_resume", CommandRegistration(Resume, ": Resume profiler capturing", "Profiler resumed!"));
 	CommandRegister("profiler_history", CommandRegistration(LogHistory, ": Print all history items in the profile history capture", "Profiler printing history.."));
 	CommandRegister("profiler_report", CommandRegistration(Report, ": Capture profiler report for last frame", "Profile printing report..."));
-
-	#endif
+#endif
 }
 
 void Profiler::Shutdown()
@@ -52,6 +53,8 @@ void Profiler::Shutdown()
 }
 
 // utility methods =========================================================================================
+
+#ifdef PROFILER_ENABLED
 ProfileMeasurement* Profiler::CreateMeasurement(const char* id)
 {
 	ProfileMeasurement* measure = new ProfileMeasurement();
@@ -246,7 +249,60 @@ void Report(Command& cmd)
 		DevConsolePrintf(Rgba::RED, "INVALID REPORT TYPE - MUST HAVE EITHER 'tree' or 'flat' parameter");
 	}
 		
-	
-
 	measurement = nullptr;
 }
+#else
+ProfileMeasurement* Profiler::CreateMeasurement(const char* id)
+{
+	UNUSED(id);
+	return nullptr;
+}
+void Profiler::DestroyMeasurementTreeRecurssive(){}
+void Profiler::PrintHistory(){}
+
+ProfileMeasurement* Profiler::ProfileGetPreviousFrame(int skipCount)
+{
+	UNUSED(skipCount);
+	return nullptr;
+}
+bool Profiler::ProfilerGetPreviousFrames(std::vector<ProfileMeasurement*>& history, int numFrames)
+{
+	UNUSED(history);
+	UNUSED(numFrames);
+	return false;
+}
+
+void Profiler::MarkFrame(){}
+void Profiler::Push(const char* id){UNUSED(id);}
+void Profiler::Pop(){}
+
+void Profiler::PauseProfiler(){}
+void Profiler::ResumeProfiler(){}
+
+bool Profiler::IsPaused(){return false;}
+
+void Pause(Command& cmd)
+{
+	UNUSED(cmd);
+	DevConsolePrintf("Profiler disabled\n");
+}
+
+void Resume(Command& cmd)
+{
+	UNUSED(cmd);
+	DevConsolePrintf("Profiler disabled\n");
+}
+
+void LogHistory(Command& cmd)
+{
+	UNUSED(cmd);
+	DevConsolePrintf("Profiler disabled\n");
+}
+
+void Report(Command& cmd)
+{
+	UNUSED(cmd);
+	DevConsolePrintf("Profiler disabled\n");
+	
+}
+#endif
