@@ -40,6 +40,7 @@ public:
 
 	bool IsOpen(){return m_isProfilerConsoleOpen;}
 
+
 public:
 	static ProfilerConsole* GetInstance();
 	static ProfilerConsole* CreateInstance();

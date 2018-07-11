@@ -10,6 +10,7 @@
 #include "Engine\Time\Clock.hpp"
 #include "Engine\Time\Time.hpp"
 #include "Engine\Input\InputSystem.hpp"
+#include "Game\EngineBuildPreferences.hpp"
 
 static ProfilerConsole* g_theProfilerConsole = nullptr;
 
@@ -43,8 +44,13 @@ ProfilerConsole::~ProfilerConsole()
 	m_activeReport = nullptr;
 }
 
+
+
 void ProfilerConsole::Startup()
 {
+
+#ifdef PROFILER_ENABLED
+
 	//register commands	
 	CommandRegister("profiler", CommandRegistration(OpenToggle, ": Open/close profiler console", "Profiler toggled!"));
 
@@ -70,11 +76,19 @@ void ProfilerConsole::Startup()
 	//cleanup
 	theWindow = nullptr;
 	theRenderer = nullptr;
+
+#endif
 }
 
 void ProfilerConsole::Shutdown()
 {
+	delete(g_theProfilerConsole);
+	g_theProfilerConsole = nullptr;
 }
+
+
+#ifdef PROFILER_ENABLED
+
 
 void ProfilerConsole::UpdateFromInput()
 {
@@ -324,6 +338,7 @@ double ProfilerConsole::ParseTimesForGraph(ProfileMeasurement* measurement)
 }
 
 
+
 // console commands =============================================================================
 void OpenToggle(Command & cmd)
 {
@@ -343,5 +358,31 @@ void OpenToggle(Command & cmd)
 	console->m_activeReportType = TREE_REPORT_TYPE;
 
 	theInput = nullptr;
-	console = nullptr;
+	console = nullptr;	
 }
+
+#else
+
+void ProfilerConsole::UpdateFromInput(){}
+void ProfilerConsole::Update(){}
+void ProfilerConsole::Render(){}
+void ProfilerConsole::PreRender(){}
+
+//visual updates
+void ProfilerConsole::CreateWidgets(){}
+void ProfilerConsole::RefreshDynamicWidgets(){}
+
+//graph methods
+double ProfilerConsole::ParseTimesForGraph(ProfileMeasurement* measurement)
+{
+	UNUSED(measurement);
+	return 0.0;
+}
+
+void OpenToggle(Command & cmd)
+{
+	UNUSED(cmd);
+	DevConsolePrintf("Profiler disabled\n");
+}
+
+#endif
