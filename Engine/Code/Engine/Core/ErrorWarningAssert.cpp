@@ -14,6 +14,7 @@
 #include "Engine/Core/StringUtils.hpp"
 #include <stdarg.h>
 #include <iostream>
+#include "Engine\Core\LogSystem.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -59,6 +60,7 @@ void DebuggerPrintf( const char* messageFormat, ... )
 	}
 #endif
 
+	LogSystem::GetInstance()->LogTaggedPrint("debug", messageFormat, variableArgumentList);
 	std::cout << messageLiteral;
 }
 

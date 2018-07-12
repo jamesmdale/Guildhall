@@ -46,9 +46,6 @@
     <ClCompile Include="Entity\Minion.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\HeroClass.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="Entity\Character.cpp">
       <Filter>General</Filter>
     </ClCompile>
@@ -94,13 +91,19 @@
     <ClCompile Include="Effects\DerivedEffects\TurnChangeEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Effects\DerivedEffects\TargetEffect.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="Effects\DerivedEffects\AttackEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Effects\DerivedEffects\DeathEffect.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Powers\Fireblast.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Effects\DerivedEffects\AttackTargetEffect.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Effects\DerivedEffects\AbilityTargetEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
@@ -126,7 +129,6 @@
     <ClInclude Include="Entity\Player.hpp" />
     <ClInclude Include="Entity\Card.hpp" />
     <ClInclude Include="Entity\Minion.hpp" />
-    <ClInclude Include="Entity\HeroClass.hpp" />
     <ClInclude Include="Entity\Character.hpp" />
     <ClInclude Include="Entity\Hero.hpp" />
     <ClInclude Include="Definitions\CardDefinition.hpp" />
@@ -141,8 +143,11 @@
     <ClInclude Include="TurnStates\TurnStateManager.hpp" />
     <ClInclude Include="Entity\EndTurnButton.hpp" />
     <ClInclude Include="Effects\DerivedEffects\TurnChangeEffect.hpp" />
-    <ClInclude Include="Effects\DerivedEffects\TargetEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\AttackEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\DeathEffect.hpp" />
+    <ClInclude Include="Entity\Powers\Fireblast.hpp" />
+    <ClInclude Include="Entity\Powers\HeroPower.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\AttackTargetEffect.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\AbilityTargetEffect.hpp" />
   </ItemGroup>
 </Project>

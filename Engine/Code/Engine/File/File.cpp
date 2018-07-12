@@ -6,6 +6,76 @@
 #include "Engine\Core\StringUtils.hpp"
 #include <fstream>
 
+
+//  =============================================================================
+File::File(const char* fileName)
+{
+	m_fileName = fileName;
+	m_file = new std::ofstream(fileName);
+}
+
+//  =============================================================================
+File::~File()
+{
+	delete(m_fileName);
+	m_fileName = nullptr;
+
+	delete(m_file);
+	m_file = nullptr;
+}
+
+//  =============================================================================
+void File::Open()
+{
+	if(!IsOpen())
+		m_file->open(m_fileName);
+}
+
+//  =============================================================================
+void File::Close()
+{
+	if(IsOpen())
+		m_file->close();
+}
+
+//  =============================================================================
+bool File::WriteToFile(const std::string& output)
+{
+	if (!IsOpen())
+		return false;
+		
+	*m_file << Stringf("%s\n", output);
+	
+	return true;
+}
+
+//  =============================================================================
+bool File::WriteToFile(const std::vector<std::string>& outputStrings)
+{
+	if (!IsOpen())
+		return false;
+
+	for(int outputIndex = 0; outputIndex < (int)outputStrings.size(); ++outputIndex)
+	*m_file << Stringf("%s\n", outputStrings[outputIndex]);
+
+	return true;
+}
+
+//std::string File::ReadLineFromFile()
+//{
+//	//return false;
+//	return "";
+//}
+//
+//bool File::CanReadFromFile()
+//{
+//	//return this->get()
+//	return 
+//}
+
+//  =============================================================================
+// Static Functions  =============================================================================
+//  =============================================================================
 void* FileReadToNewBuffer( char const *filename )
 {
 	FILE *fp = nullptr;
@@ -31,7 +101,8 @@ void* FileReadToNewBuffer( char const *filename )
 	return buffer; 
 }
 
-bool WriteToFile(const char* fileName, const std::vector<std::string>& outputs)
+//  =============================================================================
+bool WriteToFileImmediate(const char* fileName, const std::vector<std::string>& outputs)
 {
 	std::ofstream writer("garbage.dat");
 	if (!writer.is_open())
@@ -46,9 +117,10 @@ bool WriteToFile(const char* fileName, const std::vector<std::string>& outputs)
 	return true;	
 }
 
-bool WriteToFile(const char* fileName, const std::string& output)
+//  =============================================================================
+bool WriteToFileImmediate(const char* fileName, const std::string& output)
 {
-	std::ofstream writer("garbage.dat");
+	std::ofstream writer(fileName);
 
 	if (!writer.is_open())
 		return false;	
@@ -58,6 +130,7 @@ bool WriteToFile(const char* fileName, const std::string& output)
 	return true;		
 }
 
+//  =============================================================================
 std::string ReturnFullPath(const char* fileName)
 {
 	const int fileLength = 512;
@@ -93,3 +166,4 @@ std::string ReturnFullPath(const char* fileName)
 
 	return filepath;
 }
+

@@ -7,6 +7,12 @@
 #include <queue>
 #include "Engine\Math\IntRange.hpp"
 
+
+#define PROFILE_LOG_SCOPE(tag) ProfileLogScoped __timer_ ##__LINE__ ## (tag)
+#define PROFILE_LOG_SCOPE_FUNCTION() ProfileLogScoped __timer_ ##__LINE__ ##__FUNCTION__( __FUNCTION__)
+
+#define PROFILER_PUSH() ProfilerScoped __timer_ ##__LINE__ ##__FUNCTION__( __FUNCTION__)
+
 constexpr int MAX_HISTORY_COUNT = 256;
 
 class ProfilerReport;
@@ -142,8 +148,3 @@ public:
 		Profiler::GetInstance()->Pop();
 	}
 };
-
-#define PROFILE_LOG_SCOPE(tag) ProfileLogScoped __timer_ ##__LINE__ ## (tag)
-#define PROFILE_LOG_SCOPE_FUNCTION() ProfileLogScoped __timer_ ##__LINE__ ##__FUNCTION__( __FUNCTION__)
-
-#define PROFILER_PUSH() ProfilerScoped __timer_ ##__LINE__ ##__FUNCTION__( __FUNCTION__)

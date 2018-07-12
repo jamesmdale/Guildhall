@@ -1,7 +1,7 @@
 #pragma once
 #include "Game\Entity\Powers\HeroPower.hpp"
 
-class Fireblast : HeroPower
+class Fireblast : public HeroPower
 {
 public:
 	Fireblast();

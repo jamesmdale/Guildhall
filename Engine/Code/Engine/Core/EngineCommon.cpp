@@ -1,16 +1,22 @@
 #include "Engine\Core\EngineCommon.hpp"
-#include "Engine\Renderer\Renderer.hpp"
+#include "Engine\Core\LogSystem.hpp"
 #include "Engine\Core\DevConsole.hpp"
+#include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
 #include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Profiler\ProfilerConsole.hpp"
 
+
 Blackboard g_gameConfigBlackboard;
 
+//  =============================================================================
 void EngineStartup()
 {
 	RenderStartup();
+
+	LogSystem::CreateInstance();
+	LogSystem::GetInstance()->Startup();
 
 	Renderer::CreateInstance();
 	Renderer::GetInstance()->PostStartup();
@@ -31,6 +37,7 @@ void EngineStartup()
 	ProfilerConsole::GetInstance()->Startup();
 }
 
+//  =============================================================================
 void EngineShutdown()
 {
 	ProfilerConsole::GetInstance()->Shutdown();
@@ -44,5 +51,7 @@ void EngineShutdown()
 	DevConsole::GetInstance()->Shutdown();
 
 	Renderer::GetInstance()->Shutdown();
+
+	LogSystem::GetInstance()->Shutdown();
 }
 	

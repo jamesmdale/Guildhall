@@ -10,8 +10,9 @@
 #include "Engine\Input\InputSystem.hpp"
 #include "Engine\Renderer\Shader.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
+#include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Core\EngineCommon.hpp"
 
-const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;
 static DevConsole* g_theDevConsole = nullptr;
 
 bool DevConsoleMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam ) 
@@ -408,7 +409,7 @@ bool DevConsole::SaveSessionLog(std::string fileName)
 		consoleInputText.push_back(m_inputHistoryStack[itemIndex].m_printText);
 	}
 
-	bool didSucceed = WriteToFile(filePath.c_str(), consoleInputText);
+	bool didSucceed = WriteToFileImmediate(filePath.c_str(), consoleInputText);
 
 	return didSucceed;
 }

@@ -295,11 +295,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Effects\DerivedEffects\AbilityTargetEffect.cpp" />
     <ClCompile Include="Actions\Action.cpp" />
     <ClCompile Include="Actions\ActionList.cpp" />
     <ClCompile Include="Effects\DerivedEffects\AttackEffect.cpp" />
     <ClCompile Include="Effects\DerivedEffects\DeathEffect.cpp" />
-    <ClCompile Include="Effects\DerivedEffects\TargetEffect.cpp" />
+    <ClCompile Include="Effects\DerivedEffects\AttackTargetEffect.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Definitions\DeckDefinition.cpp" />
     <ClCompile Include="Definitions\CardDefinition.cpp" />
@@ -334,10 +335,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Effects\DerivedEffects\AbilityTargetEffect.hpp" />
     <ClInclude Include="Actions\Action.hpp" />
     <ClInclude Include="Effects\DerivedEffects\AttackEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\DeathEffect.hpp" />
-    <ClInclude Include="Effects\DerivedEffects\TargetEffect.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\AttackTargetEffect.hpp" />
     <ClInclude Include="Board.hpp" />
     <ClInclude Include="Definitions\DeckDefinition.hpp" />
     <ClInclude Include="Definitions\CardDefinition.hpp" />

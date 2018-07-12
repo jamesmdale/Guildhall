@@ -9,19 +9,12 @@
 #include "Game\GameCommon.hpp"
 #include "Game\EngineBuildPreferences.hpp"
 
-#include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Core\EngineCommon.hpp"
-#include "Engine\Core\DevConsole.hpp"
-#include "Engine\Debug\DebugRender.hpp"
-#include "Engine\Audio\AudioSystem.hpp"
-#include "Engine\Profiler\Profiler.hpp"
-#include "Engine\Profiler\ProfilerConsole.hpp"
 
 #include <minwindef.h>
 
-
-
+//  =============================================================================
 bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam ) 
 {
 	UNUSED(lParam); //set this for now to prevent annoying warnings.
@@ -58,7 +51,7 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 		break;
 	}
 
-	// handle mouse movement =========================================================================================
+	// handle mouse movement
 	case WM_ACTIVATE:
 	{
 		bool is_active = (WA_INACTIVE != LOWORD( wParam ));
@@ -84,7 +77,7 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 		}
 	}
 
-	// handle left mouse button =========================================================================================
+	// handle left mouse button
 	case WM_LBUTTONDOWN:
 	{
 		InputSystem::GetInstance()->ProcessMouseButtons(wParam);
@@ -97,7 +90,7 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 		break;
 	}
 
-	// handle right mouse button =========================================================================================
+	// handle right mouse button
 
 	case WM_RBUTTONDOWN:
 	{
@@ -111,7 +104,7 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 		break;
 	}
 
-	// handle double clicks =========================================================================================
+	// handle double clicks
 	case WM_LBUTTONDBLCLK:
 	{
 		InputSystem::GetInstance()->GetMouse()->m_doubleClickLeft = true;
@@ -128,7 +121,7 @@ bool AppMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam
 	return true; 
 }
 
-//-----------------------------------------------------------------------------------------------
+//  =============================================================================
 void CreateOpenGLWindow(float clientAspect )
 {
 	Window::CreateInstance( APP_NAME, clientAspect ); 
@@ -137,6 +130,7 @@ void CreateOpenGLWindow(float clientAspect )
 	Window::GetInstance()->AddHandler( AppMessageHandler );
 }
 
+//  =============================================================================
 void Initialize()
 {
 	CreateOpenGLWindow( CLIENT_ASPECT );
@@ -148,12 +142,13 @@ void Initialize()
 }
 
 
+//  =============================================================================
 void RunFrame()
 {
 	g_theApp->RunFrame();
 }
 
-
+//  =============================================================================
 void Shutdown()
 {
 	EngineShutdown();
@@ -164,7 +159,7 @@ void Shutdown()
 	g_theApp = nullptr;
 }
 
-
+//  =============================================================================
 //-----------------------------------------------------------------------------------------------
 int WINAPI WinMain( HINSTANCE applicationInstanceHandle, HINSTANCE, LPSTR commandLineString, int )
  {

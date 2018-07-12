@@ -193,8 +193,8 @@ float TheApp::UpdateInput(float deltaSeconds)
 	return deltaSeconds;
 }
 
+//  =============================================================================
 // command callbacks =========================================================================================
-
 //  =============================================================================
 void Quit(Command &cmd)
 {
@@ -216,12 +216,40 @@ void ThreadTest(Command &cmd)
 }
 
 //  =============================================================================
+void LogThreadTest(Command & cmd)
+{
+	std::string sourceFileName = cmd.GetNextString();
+	int threadCount = cmd.GetNextInt();
+
+	LogTest(sourceFileName.c_str(), threadCount);
+
+	DevConsolePrintf("Log thread test success!");
+}
+
+//  =============================================================================
+void LogTest(const char* sourceFile, int threadCount)
+{
+	for (int threadIndex = 0; threadIndex < threadCount; ++threadIndex)
+	{
+		std::thread object(LogTestWork, nullptr);
+		object.detach();
+	}
+}
+
+//  =============================================================================
+void LogTestWork(void* arguments)
+{
+	std::ifstream stream ()
+
+}
+
+//  =============================================================================
 void ThreadTestWork(void* arguments)
 {
 	for (int writeIndex = 0; writeIndex < 12000; ++writeIndex)
 	{
 		int randomInt = GetRandomIntInRange(1, 10);
-		WriteToFile("Data/garbage.dat", Stringf("%i", randomInt));
+		WriteToFileImmediate("Data/garbage.dat", Stringf("%i", randomInt));
 	}	
 
 	DevConsolePrintf(Stringf("Finished thread work").c_str());

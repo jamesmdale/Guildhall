@@ -135,10 +135,11 @@ void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entry
 		intentId = "-";
 
 	//std::string rootString = Stringf("%*s %s %-20s %-8s %-3d %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f %-8s %-6.2f", 
-	std::string rootString = Stringf("%*s %-20s %-8s %-3d %-8s %-6.2f %-8s %-8.6f %-8s %-6.2f %-8s %-8.6f", 
+	std::string rootString = Stringf("%-*s %-*s %-8s %-3d %-8s %-6.2f %-8s %-8.6f %-8s %-6.2f %-8s %-8.6f", 
 		2 * depth,
-		intentId.c_str(),
-		m_id.c_str(),
+		"",
+		50 - (2 * depth),
+		Stringf("%s %s ", "-", m_id.c_str()).c_str(),
 		"Call Num:",
 		m_callCount,
 		"Total_Perc:",

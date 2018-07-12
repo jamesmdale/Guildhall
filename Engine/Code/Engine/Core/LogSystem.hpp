@@ -13,11 +13,11 @@ struct LogEntry
 
 struct LogHook
 {
-	std::function<void(const LogEntry*, void*)> m_hookCallback;
+	LogCallback m_hookCallback;
 	void* m_userArguments;
 };
 
-typedef void(*LogCallback)(const LogEntry& log);
+typedef void(*LogCallback)(const LogEntry& log, void* arguments);
 
 class LogSystem
 {
@@ -30,7 +30,6 @@ public:
 	static LogSystem* CreateInstance();
 
 	void Startup();
-
 	void Shutdown();
 
 	static void LogThreadWorker(void*);
@@ -57,7 +56,7 @@ public:
 
 	//utility functions
 	bool IsRunning(){return m_isRunning;}
-	bool StopLogger(){m_isRunning = false;}
+	void StopLogger(){m_isRunning = false;}
 
 	//message queue flush
 	void FlushMessages();

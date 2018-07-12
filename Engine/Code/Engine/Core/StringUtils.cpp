@@ -4,11 +4,11 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include <string.h>
 
-//-----------------------------------------------------------------------------------------------
+//  =============================================================================
 const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;
 
 
-//-----------------------------------------------------------------------------------------------
+//  =============================================================================
 const std::string Stringf( const char* format, ... )
 {
 	char textLiteral[ STRINGF_STACK_LOCAL_TEMP_LENGTH ];
@@ -22,7 +22,7 @@ const std::string Stringf( const char* format, ... )
 }
 
 
-//-----------------------------------------------------------------------------------------------
+//  =============================================================================
 const std::string Stringf( const int maxLength, const char* format, ... )
 {
 	char textLiteralSmall[ STRINGF_STACK_LOCAL_TEMP_LENGTH ];
@@ -43,6 +43,7 @@ const std::string Stringf( const int maxLength, const char* format, ... )
 	return returnValue;
 }
 
+//  =============================================================================
 const std::vector<std::string> SplitStringOnCharacter(const std::string str, const char splitChar)
 {
 	std::stringstream stream(str);
@@ -57,6 +58,7 @@ const std::vector<std::string> SplitStringOnCharacter(const std::string str, con
 	return splitString;
 }
 
+//  =============================================================================
 std::string SplitStringOnFirstWord(const std::string& inputString)
 {
 	std::string returnString = "";
@@ -67,13 +69,13 @@ std::string SplitStringOnFirstWord(const std::string& inputString)
 	return returnString;
 }
 
-
-
+//  =============================================================================
 void RemoveEmptyStrings(std::vector<std::string>& outStrings)
 {
 	RemoveMatchingStrings(outStrings, "");
 }
 
+//  =============================================================================
 void ReplaceCharacterOccurances(std::string& outString, const char characterToReplace, const char replacementCharacter)
 {
 	for (int stringIndex = 0; stringIndex < (int)outString.size(); stringIndex++)
@@ -85,6 +87,7 @@ void ReplaceCharacterOccurances(std::string& outString, const char characterToRe
 	}
 }
 
+//  =============================================================================
 void RemoveMatchingStrings(std::vector<std::string>& outStrings, const std::string& matchingString)
 {
 	for(int stringIndex = 0; stringIndex < (int)outStrings.size(); stringIndex++)
@@ -97,6 +100,7 @@ void RemoveMatchingStrings(std::vector<std::string>& outStrings, const std::stri
 	}
 }
 
+//  =============================================================================
 void RemoveStringsStartingWithString(std::vector<std::string>& outStrings, const std::string& startingString )
 {
 	size_t stringLength = startingString.length();
@@ -113,8 +117,7 @@ void RemoveStringsStartingWithString(std::vector<std::string>& outStrings, const
 }
 
 
-// conversions =========================================================================================
-
+//  =============================================================================
 int ConvertStringToInt(const std::string& convertString)
 {
 	int returnVal = stoi(convertString);
@@ -137,6 +140,7 @@ float ConvertStringToFloat(const std::string& convertString)
 	return NULL;
 }
 
+//  =============================================================================
 bool ConvertStringToBool(const std::string& convertString)
 {
 	if(convertString != "")
@@ -155,6 +159,7 @@ bool ConvertStringToBool(const std::string& convertString)
 	return NULL;
 }
 
+//  =============================================================================
 Vector2 ConvertStringToVector2(const std::string & convertString)
 {
 	std::vector<std::string> floats = SplitStringOnCharacter(convertString, ',');
@@ -167,6 +172,7 @@ Vector2 ConvertStringToVector2(const std::string & convertString)
 	return Vector2(x, y);
 }
 
+//  =============================================================================
 Rgba ConvertStringToRGBA(const std::string& convertString)
 {
 	std::string str(convertString);	
@@ -246,6 +252,7 @@ Rgba ConvertStringToRGBA(const std::string& convertString)
 	return Rgba(r,g,b,a);	
 }
 
+//  =============================================================================
 void ToLower(std::string& convertString)
 {
 	for(int charIndex = 0; charIndex < (int)convertString.size(); charIndex++)
@@ -257,6 +264,7 @@ void ToLower(std::string& convertString)
 	}
 }
 
+//  =============================================================================
 std::string ToLowerAsNew(const std::string& converString)
 {
 	std::string convertedString = converString;
@@ -272,6 +280,7 @@ std::string ToLowerAsNew(const std::string& converString)
 	return convertedString;
 }
 
+//  =============================================================================
 std::string TrimStringToDecimalPlace(std::string stringToTrim)
 {
 	TODO("This is a janky way of doing this.");
@@ -291,6 +300,7 @@ std::string TrimStringToDecimalPlace(std::string stringToTrim)
 	return stringToTrim;
 }
 
+//  =============================================================================
 //void ToLower(std::string convertString)
 //{
 //	for(int charIndex = 0; charIndex < (int)convertString.size(); charIndex++)

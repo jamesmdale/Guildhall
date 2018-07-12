@@ -145,42 +145,37 @@ void ProfilerConsole::UpdateFromInput()
 
 void ProfilerConsole::Update()
 {
-	if (!Profiler::GetInstance()->IsPaused())
-	{
-		delete(m_activeReport);
-		m_activeReport = new ProfilerReport();	
+	delete(m_activeReport);
+	m_activeReport = new ProfilerReport();	
 
-		//populate graph
-		std::vector<ProfileMeasurement*> history;
-		Profiler::GetInstance()->ProfilerGetPreviousFrames(history);
+	//populate graph
+	std::vector<ProfileMeasurement*> history;
+	Profiler::GetInstance()->ProfilerGetPreviousFrames(history);
 
-		m_reportGraph->ClearContent();
+	m_reportGraph->ClearContent();
 		
-		for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
-		{
-			if(history[historyItem] != nullptr)
-				m_reportGraph->AddDataObject(history[historyItem], ParseTimesForGraph(history[historyItem]));
-		}		
+	for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
+	{
+		if(history[historyItem] != nullptr)
+			m_reportGraph->AddDataObject(history[historyItem], ParseTimesForGraph(history[historyItem]));
+	}		
 
-		switch (m_activeReportType)
-		{
-		case TREE_REPORT_TYPE:
-			m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
-			break;
-		case FLAT_REPORT_TYPE:
-			m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame(), m_activeFlatSortMode);
-		}
-
-		//cleanup
-		for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
-		{
-			history[historyItem] = nullptr;
-		}
+	switch (m_activeReportType)
+	{
+	case TREE_REPORT_TYPE:
+		m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
+		break;
+	case FLAT_REPORT_TYPE:
+		m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame(), m_activeFlatSortMode);
 	}
 
+	//cleanup
+	for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
+	{
+		history[historyItem] = nullptr;
+	}	
+
 	RefreshDynamicWidgets();
-
-
 }
 
 void ProfilerConsole::Render()

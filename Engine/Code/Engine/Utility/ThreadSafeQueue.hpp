@@ -7,6 +7,7 @@ template <typename T>
 class ThreadSafeQueue
 {
 public:
+
 	void enqueue(const T& value)
 	{
 		m_lock.Enter();
@@ -26,6 +27,11 @@ public:
 		if (hasItem)
 		{
 			*outValue = m_data.front();
+
+			//cleanup
+			delete(m_data.front());
+			m_data.front() = nullptr;
+
 			m_data.pop_front();
 		}
 

@@ -19,6 +19,9 @@ constexpr float PROFILER_TEXT_CELL_HEIGHT = 11.f; //in pixels
 constexpr float PROFILER_TEXT_WIDTH_PADDING = 20.f; //in pixels
 constexpr float PROFILER_TEXT_HEIGHT_PADDING = 10.f;
 
+//stringf stack local
+const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;
+
 // DEFINITIONS =============================================================================
 #define UNUSED(x) (void)(x);
 
