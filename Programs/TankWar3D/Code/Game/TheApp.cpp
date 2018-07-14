@@ -16,6 +16,7 @@
 #include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Profiler\ProfilerConsole.hpp"
 #include "Engine\File\File.hpp"
+#include "Engine\Core\LogSystem.hpp"
 #include <thread>
 
 TheApp* g_theApp = nullptr;
@@ -83,6 +84,8 @@ void TheApp::Initialize()
 
 	Game::CreateInstance();
 	Game::GetInstance()->Initialize();
+
+	LogTest("", 1);
 }
 
 //  =============================================================================
@@ -239,8 +242,12 @@ void LogTest(const char* sourceFile, int threadCount)
 //  =============================================================================
 void LogTestWork(void* arguments)
 {
-	std::ifstream stream ()
-
+	int count = 0;
+	while (count < 100000)
+	{
+		LogSystem::GetInstance()->LogTaggedPrintf("test", "%s", "this is a test");
+		count++;
+	}		
 }
 
 //  =============================================================================

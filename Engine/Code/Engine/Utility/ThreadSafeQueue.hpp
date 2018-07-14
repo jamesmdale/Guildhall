@@ -13,7 +13,7 @@ public:
 		m_lock.Enter();
 
 		//I AM THE ONLY PERSON HERE
-		m_data.push_back(value);
+		m_data.push(value);
 
 		m_lock.Leave();
 		//no longer true
@@ -29,13 +29,13 @@ public:
 			*outValue = m_data.front();
 
 			//cleanup
-			delete(m_data.front());
-			m_data.front() = nullptr;
+			/*delete(m_data.front());
+			m_data.front() = nullptr;*/
 
-			m_data.pop_front();
+			m_data.pop();
 		}
 
-		m_lock.exit();
+		m_lock.Leave();
 
 		//success
 		return hasItem; 

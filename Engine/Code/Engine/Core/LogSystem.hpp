@@ -4,6 +4,7 @@
 #include "Engine\File\File.hpp"
 #include <thread>
 #include <string>
+#include <fstream>
 
 struct LogEntry
 {
@@ -11,13 +12,13 @@ struct LogEntry
 	std::string m_text;
 };
 
+typedef void(*LogCallback)(const LogEntry& log, void* arguments);
+
 struct LogHook
 {
 	LogCallback m_hookCallback;
 	void* m_userArguments;
 };
-
-typedef void(*LogCallback)(const LogEntry& log, void* arguments);
 
 class LogSystem
 {
@@ -67,3 +68,4 @@ public:
 	std::thread* m_logThread = nullptr;
 };
 
+void WriteToFile(const LogEntry& log, void* filePointer);

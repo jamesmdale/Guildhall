@@ -3,7 +3,7 @@
 #include <stdarg.h>
 
 static LogSystem* g_theLogSystem = nullptr;
-std::ofstream* g_logFile = nullptr;
+static std::ofstream* g_logFile = new std::ofstream("Data/Log/log.dat");
 
 std::vector<LogHook*> s_registeredLogHooks;
 
@@ -42,10 +42,12 @@ LogSystem* LogSystem::CreateInstance()
 //  =============================================================================
 void LogSystem::Startup()
 {
-	m_logThread = new std::thread(LogThreadWorker, nullptr);
+	m_isRunning = true;
+	m_logThread = new std::thread(LogThreadWorker, nullptr);	
 
 	//clear and register file to system
 	std::remove("Data/Log/log.dat");
+
 	g_logFile = new std::ofstream("Data/Log/log.dat");
 
 	if(g_logFile->is_open())
@@ -57,6 +59,8 @@ void LogSystem::Startup()
 //  =============================================================================
 void LogSystem::Shutdown()
 {
+	g_logFile->close();
+
 	g_theLogSystem->StopLogger();
 	m_logThread->join();
 
@@ -74,12 +78,25 @@ void LogSystem::Shutdown()
 //  =============================================================================
 void LogSystem::FlushMessages()
 {
-	bool isFlushing = true;
-
-	while (isFlushing)
+	while (m_isRunning)
 	{
 		LogEntry* entry = nullptr;
-		isFlushing = m_logQueue.dequeue(&entry);
+		bool hasItem = m_logQueue.dequeue(&entry);
+
+		if (hasItem)
+		{
+			for(int hookIndex = 0; hookIndex < (int)s_registeredLogHooks.size(); ++hookIndex)
+			{
+				s_registeredLogHooks[hookIndex]->m_hookCallback(*entry, s_registeredLogHooks[hookIndex]->m_userArguments);
+			}
+		}
+		
+
+		if (entry != nullptr)
+		{
+			delete(entry);
+			entry = nullptr;
+		}		
 	}
 }
 
@@ -223,7 +240,8 @@ void LogSystem::HookIntoLog(LogCallback callback, void* userArguments)
 
 
 //  =============================================================================
-void WriteToFile(const LogHook& log, void* filePointer)
+void WriteToFile(const LogEntry& log, void* filePointer)
 {
-
+	std::string output = Stringf("%s: %s", log.m_tag.c_str(), log.m_text.c_str());
+	*g_logFile << output << "\n";
 }

@@ -5,10 +5,6 @@
 #include <string.h>
 
 //  =============================================================================
-const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;
-
-
-//  =============================================================================
 const std::string Stringf( const char* format, ... )
 {
 	char textLiteral[ STRINGF_STACK_LOCAL_TEMP_LENGTH ];
@@ -116,7 +112,6 @@ void RemoveStringsStartingWithString(std::vector<std::string>& outStrings, const
 	}
 }
 
-
 //  =============================================================================
 int ConvertStringToInt(const std::string& convertString)
 {
@@ -129,6 +124,7 @@ int ConvertStringToInt(const std::string& convertString)
 	return NULL;
 }
 
+//  =============================================================================
 float ConvertStringToFloat(const std::string& convertString)
 {
 	float returnVal = stof(convertString);

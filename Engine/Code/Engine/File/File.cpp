@@ -11,7 +11,7 @@
 File::File(const char* fileName)
 {
 	m_fileName = fileName;
-	m_file = new std::ofstream(fileName);
+	m_file = new std::fstream(fileName);
 }
 
 //  =============================================================================
