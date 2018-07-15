@@ -84,3 +84,5 @@ public:
 
 void WriteToFile(const LogEntry& log, void* filePointer);
 
+bool IsEntryFilteredOut(const LogEntry & log);
+

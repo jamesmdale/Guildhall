@@ -117,14 +117,10 @@ void DevConsole::Startup()
 	CommandRegister("log_flush", CommandRegistration(FlushLog,": force flushes log messages", "Log flushed!"));
 	CommandRegister("log_enable", CommandRegistration(EnableLogOuputToDevConsole, ": prints contents to devconsole from log", "Showing log output!"));
 	CommandRegister("log_disable", CommandRegistration(DisableLogOuputToDevConsole, ": discontinues prints of content to devconsole from log", "Hiding log output!"));
-	CommandRegister("log_enable", CommandRegistration(EnableLogOuputToDevConsole, ": prints contents to devconsole from log", "Showing log output!"));
-	CommandRegister("log_disable", CommandRegistration(DisableLogOuputToDevConsole, ": discontinues prints of content to devconsole from log", "Hiding log output!"));
 	CommandRegister("log_blacklist", CommandRegistration(LogBlacklistMode, ": only prints items that don't match tags in list"));
 	CommandRegister("log_whitelist", CommandRegistration(LogWhiteListMode, ": only prints items that match tags in list"));
 	CommandRegister("log_show_tag", CommandRegistration(LogShowTag, ": adds tags to be shown in print"));
 	CommandRegister("log_hide_tag", CommandRegistration(LogHideTag, ": adds tags to be hidden in print"));
-
-	LogSystem::GetInstance()->HookIntoLog(WriteLogToDevconsole, nullptr);
 
 	//set camera info
 	m_consoleCamera = new Camera();
@@ -652,7 +648,7 @@ void LogBlacklistMode(Command & cmd)
 //  =========================================================================================
 void LogWhiteListMode(Command & cmd)
 {
-	LogSystem::GetInstance()->LogBlacklistTags();
+	LogSystem::GetInstance()->LogWhitelistTags();
 	DevConsolePrintf("Enabled whitelist mode for log tags (Only shows items that match tags in list)");
 	DevConsolePrintf("Clearing tag list...");
 }
@@ -677,8 +673,7 @@ void LogShowTag(Command & cmd)
 	else
 	{
 		DevConsolePrintf(Rgba::RED, "Tag required (ex: log_hide_tag TAGNAME)");
-	}
-	
+	}	
 }
 
 //  =========================================================================================

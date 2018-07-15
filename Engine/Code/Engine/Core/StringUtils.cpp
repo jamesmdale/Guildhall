@@ -115,11 +115,14 @@ void RemoveStringsStartingWithString(std::vector<std::string>& outStrings, const
 //  =============================================================================
 int ConvertStringToInt(const std::string& convertString)
 {
-	int returnVal = stoi(convertString);
-	if(returnVal != NULL)
+	if (convertString != "")
 	{
-		return returnVal;
-	}
+		int returnVal = stoi(convertString);
+		if (returnVal != NULL)
+		{
+			return returnVal;
+		}
+	}	
 	
 	return NULL;
 }

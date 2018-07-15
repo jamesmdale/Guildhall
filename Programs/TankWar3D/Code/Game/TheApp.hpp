@@ -15,6 +15,8 @@ public:
 	void Initialize();
 	void RunFrame();
 	float UpdateInput(float deltaSeconds);
+
+
 };
 
 void Quit(Command &cmd);
@@ -26,9 +28,15 @@ void ThreadTest(Command& cmd);
 //log with thread test
 void LogThreadTest(Command& cmd);
 
-void LogTest(const char* sourceFile, int threadCount);
-void LogTestWork(void * arguments);
+void LogTagThreadTest(Command & cmd);
+
 void ThreadTestWork(void* arguments = nullptr);
+
+void LogTest(const char* sourceFile, int threadCount);
+void LogTestWork(void* arguments);
+
+void LogTagTestWork(void * arguments);
+
 
 extern TheApp* g_theApp;
 

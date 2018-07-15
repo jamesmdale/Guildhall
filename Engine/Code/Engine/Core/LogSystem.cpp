@@ -106,10 +106,13 @@ void LogSystem::FlushMessages()
 
 	if (hasItem)
 	{
-		for (int hookIndex = 0; hookIndex < (int)g_registeredLogHooks.size(); ++hookIndex)
+		if (!IsEntryFilteredOut(*entry))
 		{
-			g_registeredLogHooks[hookIndex]->m_hookCallback(*entry, g_registeredLogHooks[hookIndex]->m_userArguments);
-		}
+				for (int hookIndex = 0; hookIndex < (int)g_registeredLogHooks.size(); ++hookIndex)
+			{
+				g_registeredLogHooks[hookIndex]->m_hookCallback(*entry, g_registeredLogHooks[hookIndex]->m_userArguments);
+			}
+		}		
 	}
 
 	if (entry != nullptr)
@@ -317,42 +320,43 @@ void WriteToFile(const LogEntry& log, void* filePointer)
 
 	bool doesPrint = true;
 
+	*g_logFile << output << "\n";
+	*g_datedLogFile << output << "\n";
+}
+
+//  =========================================================================================
+
+bool IsEntryFilteredOut(const LogEntry& log)
+{
 	switch (g_tagMode)
 	{
-		case TAG_MODE_BLACKLIST:
+	case TAG_MODE_BLACKLIST:
+	{
+		for (int tagIndex = 0; tagIndex < (int)g_logTags.size(); ++tagIndex)
 		{
-			bool doesPrint = true;
-			for (int tagIndex = 0; tagIndex < (int)g_logTags.size(); ++tagIndex)
+			if (log.m_tag == g_logTags[tagIndex])
 			{
-				if (log.m_tag == g_logTags[tagIndex])
-				{
-					doesPrint = false;
-					break;
-				}
+				return true;
 			}
-
-			if (doesPrint)
-			{
-				*g_logFile << output << "\n";
-				*g_datedLogFile << output << "\n";
-			}		
-
-			break;
 		}
 
-		case TAG_MODE_WHITELIST:
-		{
-			for (int tagIndex = 0; tagIndex < (int)g_logTags.size(); ++tagIndex)
-			{
-				if (log.m_tag == g_logTags[tagIndex])
-				{
-					*g_logFile << output << "\n";
-					*g_datedLogFile << output << "\n";
-					break;
-				}
-			}
-
-			break;
-		}
+		return false;
+		break;
 	}
+
+	case TAG_MODE_WHITELIST:
+	{
+		for (int tagIndex = 0; tagIndex < (int)g_logTags.size(); ++tagIndex)
+		{
+			if (log.m_tag == g_logTags[tagIndex])
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+	}
+
+	return false;
 }
