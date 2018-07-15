@@ -66,6 +66,7 @@ void TheApp::Initialize()
 	CommandRegister("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
 	CommandRegister("non_threaded_test", CommandRegistration(NoThreadTest, ": use to test if the thread works", "Processing.."));
 	CommandRegister("threaded_test", CommandRegistration(ThreadTest, ": use to test if the thread works", "Processing.."));
+	CommandRegister("log_test", CommandRegistration(LogThreadTest, ": use to test if the logging through devconsole works", "Processing.."));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -222,9 +223,9 @@ void ThreadTest(Command &cmd)
 void LogThreadTest(Command & cmd)
 {
 	std::string sourceFileName = cmd.GetNextString();
-	int threadCount = cmd.GetNextInt();
+	//int threadCount = cmd.GetNextInt();
 
-	LogTest(sourceFileName.c_str(), threadCount);
+	LogTest(sourceFileName.c_str(), 1);
 
 	DevConsolePrintf("Log thread test success!");
 }
@@ -243,7 +244,7 @@ void LogTest(const char* sourceFile, int threadCount)
 void LogTestWork(void* arguments)
 {
 	int count = 0;
-	while (count < 100000)
+	while (count < 10000)
 	{
 		LogSystem::GetInstance()->LogTaggedPrintf("test", "%s", "this is a test");
 		count++;

@@ -2,10 +2,19 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Utility\ThreadSafeQueue.hpp"
 #include "Engine\File\File.hpp"
+#include "Engine\Core\Command.hpp"
 #include <thread>
 #include <string>
 #include <fstream>
 
+enum eLogTagMode
+{
+	TAG_MODE_BLACKLIST,
+	TAG_MODE_WHITELIST,
+	NONE_TAG_MODE
+};
+
+class DevConsole;
 struct LogEntry
 {
 	std::string m_tag;
@@ -46,19 +55,24 @@ public:
 	void LogErrorf(const char* format, ...);
 
 	//log hide/show
-	void LogShowAll();
-	void LogHideAll();
+	eLogTagMode GetLogMode();
+	void LogBlacklistTags();
+	void LogWhitelistTags();
 	void LogShowTag(const char* tag);
 	void LogHideTag(const char* tag);
 
 	//hook functions
 	void HookIntoLog(LogCallback callback, void* userArguments);
+	void UnhookIntoLog(LogCallback callback, void * userArguments);
 	//void UnhookIntoLog(LogCallback callback, void* userArguments);
 
 	//utility functions
 	bool IsRunning(){return m_isRunning;}
 	void StopLogger(){m_isRunning = false;}
 
+	//flushes while log system is running
+	void FlushLoop();
+	
 	//message queue flush
 	void FlushMessages();
 
@@ -69,3 +83,4 @@ public:
 };
 
 void WriteToFile(const LogEntry& log, void* filePointer);
+

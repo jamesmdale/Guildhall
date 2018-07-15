@@ -1,11 +1,17 @@
 #include "Engine\Core\LogSystem.hpp"
+#include "Engine\Core\DevConsole.hpp"
+#include <ctime>
 #include <fstream>
 #include <stdarg.h>
 
 static LogSystem* g_theLogSystem = nullptr;
-static std::ofstream* g_logFile = new std::ofstream("Data/Log/log.dat");
+static std::ofstream* g_logFile = nullptr;
+static std::ofstream* g_datedLogFile = nullptr;
 
-std::vector<LogHook*> s_registeredLogHooks;
+std::vector<LogHook*> g_registeredLogHooks;
+std::vector<std::string> g_logTags;
+
+eLogTagMode g_tagMode = TAG_MODE_BLACKLIST;
 
 //  =============================================================================
 LogSystem::LogSystem()
@@ -48,9 +54,17 @@ void LogSystem::Startup()
 	//clear and register file to system
 	std::remove("Data/Log/log.dat");
 
-	g_logFile = new std::ofstream("Data/Log/log.dat");
+	//std::time_t t = std::time(0);   // get time now
+	//std::tm* now = std::localtime_s(&t);
 
-	if(g_logFile->is_open())
+	struct tm newTime;
+	std::time_t now = std::time(0);
+	localtime_s(&newTime, &now);
+
+	g_logFile = new std::ofstream("Data/Log/log.txt");
+	g_datedLogFile = new std::ofstream(Stringf("Data/Log/log_%i_%i_%i_%i_%i_%i.txt", newTime.tm_mday, newTime.tm_mon, newTime.tm_year, newTime.tm_hour, newTime.tm_min, newTime.tm_sec).c_str());
+
+	if(g_logFile->is_open() && g_datedLogFile->is_open())
 		HookIntoLog(WriteToFile, g_logFile);
 
 	LogPrintf("%s\n", "******************************************************************************************************************************");
@@ -65,10 +79,10 @@ void LogSystem::Shutdown()
 	m_logThread->join();
 
 	//clear registered lsit
-	for (int hookIndex = 0; hookIndex < s_registeredLogHooks.size(); ++hookIndex)
+	for (int hookIndex = 0; hookIndex < g_registeredLogHooks.size(); ++hookIndex)
 	{
-		delete(s_registeredLogHooks[hookIndex]);
-		s_registeredLogHooks[hookIndex] = nullptr;
+		delete(g_registeredLogHooks[hookIndex]);
+		g_registeredLogHooks[hookIndex] = nullptr;
 	}
 
 	delete(g_theLogSystem);
@@ -76,27 +90,32 @@ void LogSystem::Shutdown()
 }
 
 //  =============================================================================
-void LogSystem::FlushMessages()
+void LogSystem::FlushLoop()
 {
 	while (m_isRunning)
 	{
-		LogEntry* entry = nullptr;
-		bool hasItem = m_logQueue.dequeue(&entry);
+		FlushMessages();
+	}
+}
 
-		if (hasItem)
+//  =========================================================================================
+void LogSystem::FlushMessages()
+{
+	LogEntry* entry = nullptr;
+	bool hasItem = m_logQueue.dequeue(&entry);
+
+	if (hasItem)
+	{
+		for (int hookIndex = 0; hookIndex < (int)g_registeredLogHooks.size(); ++hookIndex)
 		{
-			for(int hookIndex = 0; hookIndex < (int)s_registeredLogHooks.size(); ++hookIndex)
-			{
-				s_registeredLogHooks[hookIndex]->m_hookCallback(*entry, s_registeredLogHooks[hookIndex]->m_userArguments);
-			}
+			g_registeredLogHooks[hookIndex]->m_hookCallback(*entry, g_registeredLogHooks[hookIndex]->m_userArguments);
 		}
-		
+	}
 
-		if (entry != nullptr)
-		{
-			delete(entry);
-			entry = nullptr;
-		}		
+	if (entry != nullptr)
+	{
+		delete(entry);
+		entry = nullptr;
 	}
 }
 
@@ -106,14 +125,14 @@ void LogSystem::LogThreadWorker(void*)
 	while (g_theLogSystem->IsRunning())
 	{
 		//flush the message queue
-		g_theLogSystem->FlushMessages();
+		g_theLogSystem->FlushLoop();
 
 		//sleep the thread for 10ms
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 
 	//flush one more time before shutting down
-	g_theLogSystem->FlushMessages();
+	g_theLogSystem->FlushLoop();
 }
 
 //  =============================================================================
@@ -198,33 +217,72 @@ void LogSystem::LogErrorf(const char* format, ...)
 	LogSystem::GetInstance()->m_logQueue.enqueue(entry);
 }
 
-//  =============================================================================
-void LogSystem::LogShowAll()
+eLogTagMode LogSystem::GetLogMode()
 {
+	return g_tagMode;
 }
 
 //  =============================================================================
-void LogSystem::LogHideAll()
+void LogSystem::LogBlacklistTags()
 {
+	g_logTags.clear();
+	g_tagMode = TAG_MODE_BLACKLIST;
+}
+
+//  =============================================================================
+void LogSystem::LogWhitelistTags()
+{
+	g_logTags.clear();
+	g_tagMode = TAG_MODE_WHITELIST;
 }
 
 //  =============================================================================
 void LogSystem::LogShowTag(const char * tag)
 {
+	if (g_tagMode == TAG_MODE_WHITELIST)
+	{
+		g_logTags.push_back(tag);
+	}	
+	else if (g_tagMode == TAG_MODE_BLACKLIST)
+	{
+		for (int tagIndex = 0; tagIndex < (int)g_logTags.size(); ++tagIndex)
+		{
+			if (g_logTags[tagIndex] == tag)
+			{
+				g_logTags.erase(g_logTags.begin() + tagIndex);
+				return;
+			}
+		}
+	}		
 }
 
 //  =============================================================================
 void LogSystem::LogHideTag(const char * tag)
 {
+	if (g_tagMode == TAG_MODE_BLACKLIST)
+	{
+		g_logTags.push_back(tag);
+	}
+	else if (g_tagMode == TAG_MODE_WHITELIST)
+	{
+		for (int tagIndex = 0; tagIndex < (int)g_logTags.size(); ++tagIndex)
+		{
+			if (g_logTags[tagIndex] == tag)
+			{
+				g_logTags.erase(g_logTags.begin() + tagIndex);
+				return;
+			}
+		}
+	}
 }
 
 //  =============================================================================
 void LogSystem::HookIntoLog(LogCallback callback, void* userArguments)
 {
 	//check if callback is already registered
-	for (int hookIndex = 0; hookIndex < (int)s_registeredLogHooks.size(); ++hookIndex)
+	for (int hookIndex = 0; hookIndex < (int)g_registeredLogHooks.size(); ++hookIndex)
 	{
-		if (s_registeredLogHooks[hookIndex]->m_hookCallback == callback)
+		if (g_registeredLogHooks[hookIndex]->m_hookCallback == callback)
 		{
 			return;
 		}
@@ -235,7 +293,20 @@ void LogSystem::HookIntoLog(LogCallback callback, void* userArguments)
 	hook->m_hookCallback = callback;
 	hook->m_userArguments = userArguments;
 
-	s_registeredLogHooks.push_back(hook);
+	g_registeredLogHooks.push_back(hook);
+}
+
+void LogSystem::UnhookIntoLog(LogCallback callback, void* userArguments)
+{
+	//check if callback is already registered
+	for (int hookIndex = 0; hookIndex < (int)g_registeredLogHooks.size(); ++hookIndex)
+	{
+		if (g_registeredLogHooks[hookIndex]->m_hookCallback == callback)
+		{
+			g_registeredLogHooks[hookIndex] = nullptr;
+			g_registeredLogHooks.erase(g_registeredLogHooks.begin() + hookIndex);
+		}
+	}
 }
 
 
@@ -243,5 +314,45 @@ void LogSystem::HookIntoLog(LogCallback callback, void* userArguments)
 void WriteToFile(const LogEntry& log, void* filePointer)
 {
 	std::string output = Stringf("%s: %s", log.m_tag.c_str(), log.m_text.c_str());
-	*g_logFile << output << "\n";
+
+	bool doesPrint = true;
+
+	switch (g_tagMode)
+	{
+		case TAG_MODE_BLACKLIST:
+		{
+			bool doesPrint = true;
+			for (int tagIndex = 0; tagIndex < (int)g_logTags.size(); ++tagIndex)
+			{
+				if (log.m_tag == g_logTags[tagIndex])
+				{
+					doesPrint = false;
+					break;
+				}
+			}
+
+			if (doesPrint)
+			{
+				*g_logFile << output << "\n";
+				*g_datedLogFile << output << "\n";
+			}		
+
+			break;
+		}
+
+		case TAG_MODE_WHITELIST:
+		{
+			for (int tagIndex = 0; tagIndex < (int)g_logTags.size(); ++tagIndex)
+			{
+				if (log.m_tag == g_logTags[tagIndex])
+				{
+					*g_logFile << output << "\n";
+					*g_datedLogFile << output << "\n";
+					break;
+				}
+			}
+
+			break;
+		}
+	}
 }

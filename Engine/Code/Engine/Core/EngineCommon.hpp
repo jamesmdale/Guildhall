@@ -19,10 +19,11 @@ constexpr float PROFILER_TEXT_CELL_HEIGHT = 11.f; //in pixels
 constexpr float PROFILER_TEXT_WIDTH_PADDING = 20.f; //in pixels
 constexpr float PROFILER_TEXT_HEIGHT_PADDING = 10.f;
 
-constexpr char* LOGGER_DATA_FILE = "Data/Log/log.dat";
+constexpr char* LOGGER_DATA_FILE = "Data/Log/log.txt";
 
 //stringf stack local
 const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;
+const int MAX_MAX_CONSOLE_SIZE = 100;
 
 // DEFINITIONS =============================================================================
 #define UNUSED(x) (void)(x);

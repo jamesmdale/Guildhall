@@ -1,11 +1,12 @@
 #pragma once
-#include <vector>
-#include <string>
 #include "Engine\Core\Rgba.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\Command.hpp"
 #include "Engine\Camera\Camera.hpp"
-
+#include "Engine\Core\LogSystem.hpp"
+#include "Engine\Utility\ThreadSafeQueue.hpp"
+#include <vector>
+#include <string>
 
 struct HistoryItem
 {
@@ -46,9 +47,11 @@ public:
 	bool IsOpen(){return m_isDevConsoleOpen;}; 
 	std::string GetCurrentInput(){return m_currentInput;};
 	void AppendCharacterToInput(unsigned char asKey);
+
 	void ClearInput();
 	void ClearHistory();
 	void ExecuteInput();
+
 	void RemoveCharacterAtIndex();
 	void RemoveCharacterAtNextIndex();
 	void UpdateCursorTimer(float deltaSeconds);
@@ -56,7 +59,8 @@ public:
 	void IncrementCursorPosition();
 	void SetAllowableCharacters();
 	bool CheckIfValidInput(int asKey);
-	void AddNewHistoryItem(HistoryItem item);
+
+	void AddNewHistoryItem(const HistoryItem& item);
 	bool SaveSessionLog(std::string fileName);
 
 	void Startup();
@@ -66,11 +70,17 @@ public:
 	void PopulateWithNextMostRecentHistoryItem(); //decrements the m_currentHistoryItemIndex vector and sets the item to the current input
 	void PopulateWithPreviousHistoryItem(); //increments the m_currentHistoryItemIndex vector and sets the item to the current input
 
+	void FlushConsoleQueue();
+	void QueueMessage(const HistoryItem& item);
+
 private: 
 	bool m_isDevConsoleOpen = false;
 	std::vector<HistoryItem> m_inputHistoryStack;
 	std::string m_currentInput;
 	std::vector<int> m_allowableCharacters;
+
+	//message queue
+	ThreadSafeQueue<HistoryItem> m_messageQueue;
 
 	//cursor data
 	int m_cursorPosition = 0;
@@ -90,9 +100,28 @@ public:
 void DevConsolePrintf( Rgba const &color, char const* format, ...); 
 
 // Same as previous, be defaults to a color visible easily on your console
-void DevConsolePrintf( char const* format, ...); 
+void DevConsolePrintf( char const* format, ...);
+void DevConsolePrint(const Rgba & color, const std::string & formattedString);
 
-void Help(Command &cmd);
-void Clear(Command &cmd);
-void SaveLog(Command &cmd);
-void EchoWithColor(Command &cmd);
+
+//commands
+void Help(Command& cmd);
+void Clear(Command& cmd);
+void SaveLog(Command& cmd);
+void EchoWithColor(Command& cmd);
+
+
+//log commands
+void FlushLog(Command& cmd);
+void EnableLogOuputToDevConsole(Command& cmd);
+void DisableLogOuputToDevConsole(Command& cmd);
+void LogBlacklistMode(Command& cmd);
+void LogWhiteListMode(Command& cmd);
+void LogShowTag(Command& cmd);
+void LogHideTag(Command& cmd);
+
+//log system hooks
+void WriteLogToDevconsole(const LogEntry& log, void* filePointer);
+
+
+

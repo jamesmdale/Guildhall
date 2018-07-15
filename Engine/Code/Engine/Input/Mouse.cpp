@@ -124,6 +124,7 @@ void Mouse::SetMousePosition( Vector2 clientPosition )
 
 void Mouse::SetMouseMode(MouseMode mode)
 {
+	SetMousePosition(Window::GetInstance()->GetCenterOfClientWindow());
 	m_currentMouseMode = mode;
 }
 

@@ -4,17 +4,20 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\Command.hpp"
 #include "Engine\File\File.hpp"
-#include <ctime>
-#include <stdarg.h>
+#include "Engine\Core\LogSystem.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Input\InputSystem.hpp"
 #include "Engine\Renderer\Shader.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Core\LogSystem.hpp"
+#include <ctime>
+#include <stdarg.h>
 
 static DevConsole* g_theDevConsole = nullptr;
 
+//  =========================================================================================
 bool DevConsoleMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t lParam ) 
 {
 	UNUSED(lParam);
@@ -93,6 +96,7 @@ bool DevConsoleMessageHandler( unsigned int wmMessageCode, size_t wParam, size_t
 	return true;	
 }
 
+//  =========================================================================================
 DevConsole::DevConsole()
 {
 	SetAllowableCharacters();
@@ -100,12 +104,27 @@ DevConsole::DevConsole()
 	Window::GetInstance()->AddHandler( DevConsoleMessageHandler ); 
 }
 
+//  =========================================================================================
 void DevConsole::Startup()
 {
+	//register commands
 	CommandRegister("help", CommandRegistration(Help, ": Use to show all supported commands", "All commands displayed!"));
 	CommandRegister("clear", CommandRegistration(Clear, ": Use to delete all dev console input history", "History cleared!"));
-	CommandRegister("save_log", CommandRegistration(SaveLog, ": Use to save current console session to Data/Log", "Session logged!"));
+	CommandRegister("log_console_session", CommandRegistration(SaveLog, ": Use to save current console session to Data/Log", "Session logged!"));
 	CommandRegister("echo_with_color", CommandRegistration(EchoWithColor, ": Use to print supplied text with chosen color in console", "ECHOED! Echoed! echoed...trails off"));
+
+	//log registrations
+	CommandRegister("log_flush", CommandRegistration(FlushLog,": force flushes log messages", "Log flushed!"));
+	CommandRegister("log_enable", CommandRegistration(EnableLogOuputToDevConsole, ": prints contents to devconsole from log", "Showing log output!"));
+	CommandRegister("log_disable", CommandRegistration(DisableLogOuputToDevConsole, ": discontinues prints of content to devconsole from log", "Hiding log output!"));
+	CommandRegister("log_enable", CommandRegistration(EnableLogOuputToDevConsole, ": prints contents to devconsole from log", "Showing log output!"));
+	CommandRegister("log_disable", CommandRegistration(DisableLogOuputToDevConsole, ": discontinues prints of content to devconsole from log", "Hiding log output!"));
+	CommandRegister("log_blacklist", CommandRegistration(LogBlacklistMode, ": only prints items that don't match tags in list"));
+	CommandRegister("log_whitelist", CommandRegistration(LogWhiteListMode, ": only prints items that match tags in list"));
+	CommandRegister("log_show_tag", CommandRegistration(LogShowTag, ": adds tags to be shown in print"));
+	CommandRegister("log_hide_tag", CommandRegistration(LogHideTag, ": adds tags to be hidden in print"));
+
+	LogSystem::GetInstance()->HookIntoLog(WriteLogToDevconsole, nullptr);
 
 	//set camera info
 	m_consoleCamera = new Camera();
@@ -115,16 +134,21 @@ void DevConsole::Startup()
 	m_consoleCamera->SetView(Matrix44::IDENTITY);
 }
 
+//  =========================================================================================
 void DevConsole::Shutdown()
 {
 	delete(g_theDevConsole);
 	g_theDevConsole = nullptr;
 }
 
+//  =========================================================================================
 void DevConsole::PopulateWithNextMostRecentHistoryItem()
 {
 	int tempHistoryIndex = m_currentHistoryItemIndex;
 	tempHistoryIndex--;
+
+	if(m_currentHistoryItemIndex < 0)
+		return;
 
 	for(int historyIndex = tempHistoryIndex; historyIndex > -1; historyIndex--)
 	{
@@ -151,6 +175,7 @@ void DevConsole::PopulateWithNextMostRecentHistoryItem()
 	}
 }
 
+//  =========================================================================================
 void DevConsole::PopulateWithPreviousHistoryItem()
 {
 	int tempHistoryIndex = m_currentHistoryItemIndex;
@@ -181,13 +206,34 @@ void DevConsole::PopulateWithPreviousHistoryItem()
 	}
 }
 
-// Handles all input
+// add queued messages to console =========================================================================================
+void DevConsole::FlushConsoleQueue()
+{
+	HistoryItem entry;
+
+	//console queue will flush 500 max at a time.
+	int maxflush = (int)m_messageQueue.GetSize() > 500 ? 500 : (int)m_messageQueue.GetSize();
+	
+	for(int flushIndex = 0; flushIndex < maxflush; ++flushIndex)
+	{		
+		m_messageQueue.dequeue(&entry);
+		AddNewHistoryItem(entry);
+	}
+}
+
+void DevConsole::QueueMessage(const HistoryItem & item)
+{
+	m_messageQueue.enqueue(item);
+}
+
+// Handles all input =========================================================================================
 void DevConsole::Update(float deltaSeconds)
 {
 	UpdateCursorTimer(deltaSeconds);
+	FlushConsoleQueue();
 }
 
-// Renders the display
+// renders all to display =========================================================================================
 void DevConsole::Render()
 {
 	Window* theWindow = Window::GetInstance();
@@ -247,6 +293,7 @@ void DevConsole::Render()
 	theRenderer = nullptr;
 }
 
+// =========================================================================================
 void DevConsole::Open()
 {
 	m_isDevConsoleOpen = true;
@@ -256,6 +303,7 @@ void DevConsole::Open()
 	ResetHistoryIndex();
 }
 
+// =========================================================================================
 void DevConsole::Close()
 {
 	m_isDevConsoleOpen = false;
@@ -266,6 +314,7 @@ void DevConsole::Close()
 	ResetHistoryIndex();
 }
 
+// =========================================================================================
 DevConsole* DevConsole::CreateInstance() 
 {
 	if (g_theDevConsole == nullptr) 
@@ -275,13 +324,13 @@ DevConsole* DevConsole::CreateInstance()
 	return g_theDevConsole; 
 }
 
+// =========================================================================================
 DevConsole* DevConsole::GetInstance()
 {
 	return g_theDevConsole; 
 }
 
-
-// Should add a line of coloured text to the output 
+// Should add a line of coloured text to the output =========================================================================================
 void DevConsolePrintf( Rgba const &color, char const* format, ...)
 {
 	char textLiteral[ STRINGF_STACK_LOCAL_TEMP_LENGTH ];
@@ -291,10 +340,10 @@ void DevConsolePrintf( Rgba const &color, char const* format, ...)
 	va_end( variableArgumentList );
 	textLiteral[ STRINGF_STACK_LOCAL_TEMP_LENGTH - 1 ] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
 
-	g_theDevConsole->AddNewHistoryItem( HistoryItem(color, std::string(textLiteral), false));
+	g_theDevConsole->QueueMessage( HistoryItem(color, std::string(textLiteral), false));
 }
 
-// Same as previous, be defaults to a color visible easily on your console
+// Same as previous, be defaults to a color visible easily on your console =========================================================================================
 void DevConsolePrintf( char const *format,  ...)
 {
 	char textLiteral[ STRINGF_STACK_LOCAL_TEMP_LENGTH ];
@@ -304,14 +353,26 @@ void DevConsolePrintf( char const *format,  ...)
 	va_end( variableArgumentList );
 	textLiteral[ STRINGF_STACK_LOCAL_TEMP_LENGTH - 1 ] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
 
-	g_theDevConsole->AddNewHistoryItem( HistoryItem(Rgba::WHITE, std::string(textLiteral), false));
+	g_theDevConsole->QueueMessage( HistoryItem(Rgba::WHITE, std::string(textLiteral), false));
 }
 
-void DevConsole::AddNewHistoryItem(HistoryItem item)
+void DevConsolePrint(const Rgba& color, const std::string& formattedString)
 {
+	g_theDevConsole->QueueMessage( HistoryItem(Rgba::WHITE, formattedString, false));
+}
+
+//  =========================================================================================
+void DevConsole::AddNewHistoryItem(const HistoryItem& item)
+{
+	if ((int)m_inputHistoryStack.size() > MAX_MAX_CONSOLE_SIZE)
+	{
+		m_inputHistoryStack.erase(m_inputHistoryStack.end() - 1);
+	}
+
 	m_inputHistoryStack.insert(m_inputHistoryStack.begin(), item);
 }
 
+//  =========================================================================================
 void DevConsole::AppendCharacterToInput(unsigned char asKey)
 {	
 	m_currentInput.insert(m_cursorPosition, Stringf("%c", asKey));	
@@ -320,6 +381,7 @@ void DevConsole::AppendCharacterToInput(unsigned char asKey)
 	ResetHistoryIndex();
 }
 
+//  =========================================================================================
 void DevConsole::ExecuteInput()
 {
 	if(m_currentInput != "")
@@ -331,6 +393,7 @@ void DevConsole::ExecuteInput()
 	}
 }
 
+//  =========================================================================================
 void DevConsole::RemoveCharacterAtIndex()
 {
 	if((int)m_currentInput.size() != 0 && m_cursorPosition > 0)
@@ -348,6 +411,7 @@ void DevConsole::RemoveCharacterAtIndex()
 	ResetHistoryIndex();
 }
 
+//  =========================================================================================
 void DevConsole::RemoveCharacterAtNextIndex()
 {
 	if((int)m_currentInput.size() != 0 && (int)m_currentInput.size() > m_cursorPosition)
@@ -358,6 +422,7 @@ void DevConsole::RemoveCharacterAtNextIndex()
 	m_currentInput.shrink_to_fit(); //makes sure the string size is correct after removal	
 }
 
+//  =========================================================================================
 void DevConsole::ClearInput()
 {
 	m_currentInput = "";
@@ -365,12 +430,14 @@ void DevConsole::ClearInput()
 	ResetHistoryIndex();
 }
 
+//  =========================================================================================
 void DevConsole::ClearHistory()
 {
 	m_inputHistoryStack.clear();
 	ResetHistoryIndex();
 }
 
+//  =========================================================================================
 void DevConsole::UpdateCursorTimer(float deltaSeconds)
 {
 	m_cursorCooldown += deltaSeconds;
@@ -381,6 +448,7 @@ void DevConsole::UpdateCursorTimer(float deltaSeconds)
 	}
 }
 
+//  =========================================================================================
 void DevConsole::DecrementCursorPosition()
 {
 	if(m_cursorPosition > 0)
@@ -397,6 +465,7 @@ void DevConsole::IncrementCursorPosition()
 	}
 }
 
+//  =========================================================================================
 bool DevConsole::SaveSessionLog(std::string fileName)
 {
 	TODO("Update with time and date.  Could also allow user to input filepath and name if that is useful later");
@@ -414,7 +483,7 @@ bool DevConsole::SaveSessionLog(std::string fileName)
 	return didSucceed;
 }
 
-
+//  =========================================================================================
 void DevConsole::SetAllowableCharacters()
 {
 	//add numerics
@@ -439,6 +508,7 @@ void DevConsole::SetAllowableCharacters()
 	m_allowableCharacters.push_back(95);//_
 }
 
+//  =========================================================================================
 bool DevConsole::CheckIfValidInput(int asKey)
 {
 	for(int characterIndex = 0; characterIndex < (int)m_allowableCharacters.size(); characterIndex++) 
@@ -452,7 +522,11 @@ bool DevConsole::CheckIfValidInput(int asKey)
 	return false;
 }
 
-//Devconsole related commands
+//  =========================================================================================
+// Devconsole related commands =========================================================================================
+//  =========================================================================================
+
+//  =========================================================================================
 void Help(Command &cmd)
 {
 	if(!cmd.IsCorrectNumberOfParameters(0))
@@ -471,6 +545,7 @@ void Help(Command &cmd)
 	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
 }
 
+//  =========================================================================================
 void Clear(Command &cmd)
 {
 	//used if you care about having correct parameter numbers
@@ -484,6 +559,7 @@ void Clear(Command &cmd)
 	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
 }
 
+//  =========================================================================================
 void SaveLog(Command &cmd)
 {
 	if(!cmd.IsCorrectNumberOfParameters(1))
@@ -511,6 +587,7 @@ void SaveLog(Command &cmd)
 	}
 }
 
+//  =========================================================================================
 void EchoWithColor(Command &cmd)
 {
 	if(!cmd.IsCorrectNumberOfParameters(2))
@@ -540,4 +617,114 @@ void EchoWithColor(Command &cmd)
 
 	DevConsolePrintf(color, message.c_str());
 }
+
+//  =========================================================================================
+void FlushLog(Command& cmd)
+{
+	LogSystem::GetInstance()->FlushLoop();
+	DevConsolePrintf("Log cleared!");
+}
+
+//  =========================================================================================
+void EnableLogOuputToDevConsole(Command& cmd)
+{
+	//register
+	LogSystem::GetInstance()->HookIntoLog(WriteLogToDevconsole, nullptr);
+	DevConsolePrintf("Printing log to console!");
+}
+
+//  =========================================================================================
+void DisableLogOuputToDevConsole(Command& cmd)
+{
+	//register
+	LogSystem::GetInstance()->UnhookIntoLog(WriteLogToDevconsole, nullptr);
+	DevConsolePrintf("Hiding log print from console!");
+}
+
+//  =========================================================================================
+void LogBlacklistMode(Command & cmd)
+{
+	LogSystem::GetInstance()->LogBlacklistTags();
+	DevConsolePrintf("Enabled blacklist mode for log tags. (Exclued items that match tags in list)");
+	DevConsolePrintf("Clearing tag list...");
+}
+
+//  =========================================================================================
+void LogWhiteListMode(Command & cmd)
+{
+	LogSystem::GetInstance()->LogBlacklistTags();
+	DevConsolePrintf("Enabled whitelist mode for log tags (Only shows items that match tags in list)");
+	DevConsolePrintf("Clearing tag list...");
+}
+
+//  =========================================================================================
+void LogShowTag(Command & cmd)
+{
+	std::string tag = cmd.GetNextString();
+
+	if (tag != "")
+	{
+		LogSystem::GetInstance()->LogShowTag(tag.c_str());
+
+		eLogTagMode mode = LogSystem::GetInstance()->GetLogMode();
+		
+		if(mode == TAG_MODE_BLACKLIST)
+			DevConsolePrintf("Removed tag from blacklist!");
+
+		if (mode == TAG_MODE_WHITELIST)
+			DevConsolePrintf("Added tag to whitelist!");
+	}
+	else
+	{
+		DevConsolePrintf(Rgba::RED, "Tag required (ex: log_hide_tag TAGNAME)");
+	}
+	
+}
+
+//  =========================================================================================
+void LogHideTag(Command & cmd)
+{
+	std::string tag = cmd.GetNextString();
+
+	if (tag != "")
+	{
+		LogSystem::GetInstance()->LogHideTag(tag.c_str());
+
+		eLogTagMode mode = LogSystem::GetInstance()->GetLogMode();
+
+		if (mode == TAG_MODE_WHITELIST)
+			DevConsolePrintf("Removed tag from blacklist!");
+
+		if (mode == TAG_MODE_BLACKLIST)
+			DevConsolePrintf("Added tag to whitelist!");
+	}
+	else
+	{
+		DevConsolePrintf(Rgba::RED, "Tag required (ex: log_hide_tag TAGNAME)");
+	}
+}
+
+
+//  =========================================================================================
+//  Log System Hooks =========================================================================================
+//  =========================================================================================
+void WriteLogToDevconsole(const LogEntry& log, void * filePointer)
+{
+	if(DevConsole::GetInstance()->IsOpen())
+	{
+		std::string tag = ToLowerAsNew(log.m_tag.c_str());
+
+		Rgba messageColor = Rgba::WHITE;
+
+		if(tag == "error")
+			messageColor = Rgba::RED;
+		else if (tag == "warning")
+			messageColor = Rgba::YELLOW;
+	
+		std::string output = Stringf("%s: %s", tag.c_str(), log.m_text.c_str());
+		DevConsolePrint(messageColor, output);
+		//DevConsolePrintf(messageColor, "Logger - %s: %s", tag, log.m_text.c_str());
+	}
+}
+
 

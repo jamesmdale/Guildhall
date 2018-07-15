@@ -41,6 +41,11 @@ public:
 		return hasItem; 
 	}
 
+	size_t GetSize()
+	{
+		return m_data.size();
+	}
+
 public:
 	std::queue<T> m_data;
 	SpinLock m_lock;
