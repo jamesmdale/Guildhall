@@ -32,8 +32,8 @@ public:
 	
 public:
 	int m_characterId;
-	int m_health;
-	int m_attack;
+	int m_health = 0;
+	int m_attack = 0;
 
 	bool m_hasAttackedThisTurn = false;
 

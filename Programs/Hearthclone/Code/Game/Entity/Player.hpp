@@ -22,6 +22,8 @@ public:
 	Player();
 	~Player();
 
+	void Initialize();
+
 	void Update(float deltaSeconds);
 
 	void LoadDeckFromDefinitionName(const std::string& deckName);

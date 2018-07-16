@@ -26,6 +26,11 @@ struct ActionData
 		callback = GetActionDataFromRegisteredListByName(callbackFunction);
 	}
 
+	~ActionData()
+	{
+		callback = nullptr;
+	}
+
 	ActionCallback GetActionCallback() {return callback;}
 	std::string GetName() {return actionName;}
 	std::map<std::string, std::string> GetParameters() {return parameters;}

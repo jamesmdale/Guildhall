@@ -56,12 +56,14 @@ void PlayingState::Initialize()
 	m_player->m_playerId = SELF_PLAYER_TYPE;
 	m_player->m_gameState = this;
 	m_player->LoadDeckFromDefinitionName("All Yetis");
+	m_player->Initialize();
 
 	//load their decks
 	m_enemyPlayer = new Player();
 	m_enemyPlayer->m_playerId = ENEMY_PLAYER_TYPE;
 	m_enemyPlayer->m_gameState = this;
 	m_enemyPlayer->LoadDeckFromDefinitionName("All Yetis Warlock");	
+	m_enemyPlayer->Initialize();
 
 	//start game time
 	m_gameTime = new Stopwatch();

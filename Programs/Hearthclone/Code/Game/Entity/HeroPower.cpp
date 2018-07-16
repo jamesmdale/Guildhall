@@ -20,7 +20,7 @@ void HeroPower::OnLeftClicked()
 	PlayingState* playingState = (PlayingState*)GameState::GetCurrentGameState();
 
 	//only allow left clicks on a minion if you are the controller
-	if (playingState->m_activePlayer->m_playerId == m_controller->m_playerId)
+	if (playingState->m_activePlayer->m_playerId == m_controller)
 	{
 		if (m_isInputPriority == false && m_usedThisTurn == false)
 		{
@@ -46,4 +46,15 @@ void HeroPower::OnLeftClicked()
 void HeroPower::OnRightClicked()
 {
 	TODO("Display info");
+}
+
+//  =========================================================================================
+void HeroPower::Initialize()
+{
+	RefreshRenderables();
+}
+
+//  =========================================================================================
+void HeroPower::RefreshRenderables()
+{
 }

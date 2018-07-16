@@ -7,12 +7,12 @@
 #include "Game\Entity\Hero.hpp"
 #include "Game\Board.hpp"
 
-
+//  =========================================================================================
 Player::Player()
 {
 }
 
-
+//  =========================================================================================
 Player::~Player()
 {
 	m_hero = nullptr;
@@ -44,6 +44,13 @@ Player::~Player()
 	m_minions.clear();
 }
 
+//  =========================================================================================
+void Player::Initialize()
+{
+	m_hero->Initialize();
+}
+
+//  =========================================================================================
 void Player::Update(float deltaSeconds)
 {
 	//update hand
@@ -59,6 +66,7 @@ void Player::Update(float deltaSeconds)
 	}
 }
 
+//  =========================================================================================
 void Player::PreRender()
 {
 	//update hand
@@ -72,13 +80,17 @@ void Player::PreRender()
 	{
 		m_minions[minionIndex]->PreRender();
 	}
+
+	m_hero->PreRender();
+	m_hero->m_heroPower->PreRender();
 }
 
+//  =========================================================================================
 void Player::LoadDeckFromDefinitionName(const std::string& deckName)
 {
-	DeckDefinition* deck = DeckDefinition::GetDefinitionByName(deckName);
+	DeckDefinition* deckDefinition = DeckDefinition::GetDefinitionByName(deckName);
 
-	// clear contents of current deck =============================================================================
+	// clear contents of current deck
 	if ((int)m_deck.size() > 0)
 	{
 		for (int cardIndex = 0; cardIndex < (int)m_deck.size(); ++cardIndex)
@@ -89,29 +101,32 @@ void Player::LoadDeckFromDefinitionName(const std::string& deckName)
 		m_deck.shrink_to_fit();
 	}
 	
-	// load deck =============================================================================
-	for (int cardIndex = 0; cardIndex < (int)deck->m_cardNames.size(); ++cardIndex)
+	// load deck
+	for (int cardIndex = 0; cardIndex < (int)deckDefinition->m_cardNames.size(); ++cardIndex)
 	{
-		Card* cardToAdd = new Card(CardDefinition::GetDefinitionByName(deck->m_cardNames[cardIndex]));
+		Card* cardToAdd = new Card(CardDefinition::GetDefinitionByName(deckDefinition->m_cardNames[cardIndex]));
 		cardToAdd->m_controller = m_playerId;
 		cardToAdd->m_renderScene = m_gameState->m_renderScene2D;
 		m_deck.push_back(cardToAdd);
 		cardToAdd = nullptr;
 	}
 
-//	m_hero = new Hero(deck->m_class);
+	//load hero from deck
+	m_hero = new Hero(deckDefinition->m_heroDefinition, m_playerId);
+	m_hero->m_renderScene = m_gameState->m_renderScene2D;
 
-	deck = nullptr;
+	deckDefinition = nullptr;
 	UpdateDeckCount();
 }
 
+//  =========================================================================================
 void Player::UpdateDeckCount()
 {
 	if (m_deckCount > 0)
 		m_deckCount = (int)m_deck.size();
 }
 
-
+//  =========================================================================================
 void Player::ShuffleDeck()
 {
 	//not totally random would need to revisit this, but will do for now.
@@ -121,7 +136,7 @@ void Player::ShuffleDeck()
 		int swapVal2 = GetRandomIntInRange(0, (int)m_deck.size() - 1);
 		Card* tempCard = nullptr;
 
-		// swap cards around in array =============================================================================
+		// swap cards around in array
 		tempCard = m_deck[swapVal];
 		m_deck[swapVal] = m_deck[swapVal2];
 		m_deck[swapVal2] = tempCard;
@@ -130,6 +145,8 @@ void Player::ShuffleDeck()
 	}	
 }
 
+
+//  =========================================================================================
 void Player::UpdateHandLockPositions()
 {
 	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
@@ -156,11 +173,13 @@ void Player::UpdateHandLockPositions()
 		m_hand[cardIndex]->m_lockPosition = Vector2(handDockWidthPerCard * (cardIndex + 1), handDockCenterHeight);	
 	}
 
-	// cleanup =============================================================================
+	// cleanup
 	gameState = nullptr;
 	board = nullptr;
 }
 
+
+//  =========================================================================================
 void Player::UpdateBoardLockPositions()
 {
 	if (m_minions.size() == 0)
@@ -196,12 +215,13 @@ void Player::UpdateBoardLockPositions()
 		m_minions[minionIndex]->m_lockPosition = Vector2(adjustedBattlefieldQuad.mins.x + ((minionDimensionsX * 0.5f) * (float)((minionIndex * 2) + 1)), battlefieldDockCenterHeight);	
 	}
 
-	// cleanup =============================================================================
+	// cleanup
 	gameState = nullptr;
 	board = nullptr;
 }
 
 
+//  =========================================================================================
 void Player::RemoveCardFromHand(int cardIndex)
 {
 	std::vector<Card*>::iterator cardIterator = m_hand.begin();
@@ -227,6 +247,7 @@ void Player::RemoveCardFromHand(int cardIndex)
 	card = nullptr;
 }
 
+//  =========================================================================================
 void Player::MoveMinionToGraveyard(Minion* minion)
 {
 	std::vector<Minion*>::iterator cardIterator = m_minions.begin();
