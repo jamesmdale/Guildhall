@@ -76,8 +76,8 @@ void Hero::RefreshRenderables()
 	materialInstance = nullptr;
 	
 	// create hero attack/health =========================================================================================
-	mb.CreateText2DInAABB2(heroBottomRight + (m_dimensionsInPixels * g_cardAttackCenterRatio), m_dimensionsInPixels * g_cardAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
-	mb.CreateText2DInAABB2(heroBottomRight + (m_dimensionsInPixels * g_cardHealthCenterRatio), m_dimensionsInPixels * g_cardHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
+	mb.CreateText2DInAABB2(heroBottomRight + (m_dimensionsInPixels * g_heroPortraitAttackCenterRatio), m_dimensionsInPixels * g_heroPortraitAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
+	mb.CreateText2DInAABB2(heroBottomRight + (m_dimensionsInPixels * g_heroPortraitHealthCenterRatio), m_dimensionsInPixels * g_heroPortraitHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
 	materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
 	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
 

@@ -96,6 +96,20 @@ const Vector2 g_heroPortraitPercentageOfClientWindow = Vector2(0.1f, 0.1f);
 const Vector2 g_heroAbilityPercentageOfClientWindow = Vector2(0.075f, 0.075f);
 const Vector2 g_heroWeaponPercentageOfClientWindow = Vector2(0.075f, 0.075f);
 
+//hero portrait
+const Vector2 g_heroPortraitSize = Vector2(317.f, 206.f);
+
+const Vector2 g_heroPortraitAttackCenterRatio = Vector2(35.f / g_heroPortraitSize.x, (g_heroPortraitSize.y - 173.f) / g_heroPortraitSize.y);
+const Vector2 g_heroPortraitAttackDimensionsRatio = Vector2(Vector2(50.f, 45.f) / g_heroPortraitSize);
+
+const Vector2 g_heroPortraitHealthCenterRatio = Vector2(287.f / g_heroPortraitSize.x, (g_heroPortraitSize.y - 173.f) / g_heroPortraitSize.y);
+const Vector2 g_heroPortraitHealthDimensionsRatio = Vector2(Vector2(50.f, 45.f) / g_heroPortraitSize);
+
+//hero power
+const Vector2 g_heroPowerSize = Vector2(312.f, 206.f);
+const Vector2 g_heroPowerManaCostCenterRatio = Vector2(0.5f, (g_heroPowerSize.y - 50.f) / g_heroPowerSize.y);
+const Vector2 g_heroPowerManaCostDimensionsRatio = Vector2(Vector2(40.f, 30.f) / g_heroPowerSize);
+
 //other
 const Vector2 g_manaPercentageOfClientWindow = Vector2(0.1f, 0.1f);
 const Vector2 g_endTurnButtonPercentageOfClientWindow = Vector2(0.1f, 0.1f);
