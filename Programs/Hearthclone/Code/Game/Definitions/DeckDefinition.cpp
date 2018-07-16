@@ -1,4 +1,5 @@
 #include "Game\Definitions\DeckDefinition.hpp"
+#include "Game\GameCommon.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\StringUtils.hpp"
 
@@ -8,6 +9,15 @@ std::map<std::string, DeckDefinition*> DeckDefinition::s_deckDefinitions;
 DeckDefinition::DeckDefinition(const tinyxml2::XMLElement& element)
 {
 	m_deckName = ParseXmlAttribute(element, "deckName", m_deckName);
+
+	const tinyxml2::XMLElement* heroElement = element.FirstChildElement("Hero");
+	if (heroElement)
+	{
+		std::string heroName = "";
+		heroName = ParseXmlAttribute(*heroElement, "name", heroName);
+		
+		m_heroDefinition = HeroDefinition::GetDefinitionByName(heroName);
+	}
 
 	const tinyxml2::XMLElement* cardsElement = element.FirstChildElement("Cards");
 	if (cardsElement)
@@ -46,4 +56,5 @@ DeckDefinition* DeckDefinition::GetDefinitionByName(const std::string& deckName)
 		return mapIterator->second;
 	}
 }
+
 

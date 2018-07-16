@@ -24,24 +24,27 @@
 #include "Game\Definitions\DeckDefinition.hpp"
 #include "Game\Actions\Action.hpp"
 #include "Game\Effects\Effect.hpp"
+#include "Game\Definitions\HeroDefinition.hpp"
 
 //game instance
 static Game* g_theGame = nullptr;
 
 bool m_isPaused = false;
 
+//  =========================================================================================
 Game::Game()
 {
 	m_forwardRenderingPath2D = new ForwardRenderingPath2D();
 }
 
+//  =========================================================================================
 Game::~Game()
 {
-	// delete render members =============================================================================
+	// delete render members
 	delete(m_forwardRenderingPath2D);
 	m_forwardRenderingPath2D = nullptr;
 
-	// delete camera members =============================================================================
+	// delete camera members
 	delete(m_gameCamera);
 	m_gameCamera = nullptr;
 
@@ -53,11 +56,13 @@ Game::~Game()
 	//add any other data to cleanup
 }
 
+//  =========================================================================================
 Game* Game::GetInstance()
 {
 	return g_theGame;
 }
 
+//  =========================================================================================
 Game* Game::CreateInstance()
 {
 	if (g_theGame == nullptr)
@@ -68,6 +73,7 @@ Game* Game::CreateInstance()
 	return g_theGame;
 }
 
+//  =========================================================================================
 void Game::Initialize()
 {
 	Window* theWindow = Window::GetInstance();
@@ -77,34 +83,36 @@ void Game::Initialize()
 
 	m_gameClock = new Clock(GetMasterClock());
 
-	// add cameras =============================================================================
+	// add cameras
 	m_gameCamera = new Camera();
 	m_gameCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
 	m_gameCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
 	m_gameCamera->SetView(Matrix44::IDENTITY);
 
-	// add menu states =============================================================================
+	// add menu states
 	TODO("Add other menu states");
 	GameState::AddGameState(new MainMenuState(m_gameCamera));
 	GameState::AddGameState(new LoadingState(m_gameCamera));
 	GameState::AddGameState(new PlayingState(m_gameCamera));
 
-	// set to initial menu =============================================================================
+	// set to initial menu
 	GameState::TransitionGameStatesImmediate(GameState::GetGameStateFromGlobalListByType(MAIN_MENU_GAME_STATE));
 	GameState::UpdateGlobalGameState(0.f);
 
-	// load definitions =============================================================================
-	CardDefinition::Initialize("Data/Definitions/Cards/cards.xml");
-	DeckDefinition::Initialize("Data/Definitions/Decks/decks.xml");
-
-	//register actions ==============================================================================
+	//register actions
 	RegisterAllActions();
 
-	// cleanup =============================================================================
+	// load definitions
+	CardDefinition::Initialize("Data/Definitions/Cards/cards.xml");
+	HeroDefinition::Initialize("Data/Definitions/Heroes/heroes.xml");
+	DeckDefinition::Initialize("Data/Definitions/Decks/decks.xml");
+
+	// cleanup
 	theRenderer = nullptr;
 	theWindow = nullptr;
 }
 
+//  =========================================================================================
 void Game::Update()
 {
 	float deltaSeconds = m_gameClock->GetDeltaSeconds();
@@ -115,21 +123,25 @@ void Game::Update()
 	GameState::GetCurrentGameState()->Update(deltaSeconds);
 }
 
+//  =========================================================================================
 void Game::PreRender()
 {
 	GameState::GetCurrentGameState()->PreRender();
 }
 
+//  =========================================================================================
 void Game::Render()
 {
 	GameState::GetCurrentGameState()->Render();
 }
 
+//  =========================================================================================
 void Game::PostRender()
 {
 	GameState::GetCurrentGameState()->PostRender();
 }
 
+//  =========================================================================================
 float Game::UpdateInput(float deltaSeconds)
 {
 	deltaSeconds = GameState::GetCurrentGameState()->UpdateFromInput(deltaSeconds);

@@ -14,23 +14,22 @@
 #include "Engine\core\StringUtils.hpp"
 
 
-
 AbilityTargetEffect::AbilityTargetEffect(Widget* sourceWidget)
 {
 	m_sourceWidget = sourceWidget;
 	m_sourceWidget->UpdateSortLayer(g_sortLayerMax - 1);
 
 	//create target widget
-	m_targetWidget = new Widget();
-	m_targetWidget->m_renderScene = m_sourceWidget->m_renderScene;
-	m_targetWidget->UpdateSortLayer(g_sortLayerMax);
+	m_targetReticleWidget = new Widget();
+	m_targetReticleWidget->m_renderScene = m_sourceWidget->m_renderScene;
+	m_targetReticleWidget->UpdateSortLayer(g_sortLayerMax);
 	RefreshTargetRenderable();
 }
 
 AbilityTargetEffect::~AbilityTargetEffect()
 {
 	m_sourceWidget = nullptr;
-	m_targetWidget = nullptr;
+	m_targetReticleWidget = nullptr;
 	m_renderScene = nullptr;
 
 	for (int actionIndex = 0; actionIndex < (int)m_actions.size(); ++actionIndex)
@@ -44,10 +43,10 @@ void AbilityTargetEffect::Update(float deltaSeconds)
 {
 	InputSystem* theInput = InputSystem::GetInstance();
 	Vector2 mouseCoordinates = theInput->GetMouse()->GetInvertedMouseClientPosition();
-	m_targetWidget->m_transform2D->SetLocalPosition(mouseCoordinates);
+	m_targetReticleWidget->m_transform2D->SetLocalPosition(mouseCoordinates);
 	theInput = nullptr;
 
-	m_targetWidget->PreRender();
+	m_targetReticleWidget->PreRender();
 	UpdateInput();	
 }
 
@@ -78,7 +77,7 @@ void AbilityTargetEffect::UpdateInput()
 			{
 				std::map<std::string, std::string>::iterator paramIterator = m_actions[actionIndex]->parameters.begin();
 
-				paramIterator = m_actions[actionIndex]->parameters.find("explicit_target");
+				paramIterator = m_actions[actionIndex]->parameters.find("targetId");
 				if (paramIterator != m_actions[actionIndex]->parameters.end())
 				{
 					paramIterator->second = Stringf("%i", selectedWidget->m_characterId);
@@ -109,9 +108,9 @@ void AbilityTargetEffect::RefreshTargetRenderable()
 	MeshBuilder mb;
 
 	//delete renderables from scene
-	m_targetWidget->DeleteRenderables();
+	m_targetReticleWidget->DeleteRenderables();
 
-	m_targetWidget->m_transform2D->SetLocalPosition(mouseCoordinates);
+	m_targetReticleWidget->m_transform2D->SetLocalPosition(mouseCoordinates);
 
 	//create new renderable
 	Renderable2D* targetRenderable = new Renderable2D();
@@ -126,11 +125,11 @@ void AbilityTargetEffect::RefreshTargetRenderable()
 	targetMaterial->SetTexture(0, theRenderer->CreateOrGetTexture("Data/Images/Target.png"));
 
 	targetRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), targetMaterial);
-	m_targetWidget->m_renderables.push_back(targetRenderable);
+	m_targetReticleWidget->m_renderables.push_back(targetRenderable);
 
 	m_sourceWidget->m_renderScene->AddRenderable(targetRenderable);
 
-	m_targetWidget->UpdateSortLayer(m_targetWidget->GetSortLayer());
+	m_targetReticleWidget->UpdateSortLayer(m_targetReticleWidget->GetSortLayer());
 
 	//cleanup
 	targetMaterial = nullptr;

@@ -3,6 +3,8 @@
 #include "Game\GameStates\GameState.hpp"
 #include "Game\GameStates\PlayingState.hpp"
 #include "Game\Effects\Effect.hpp"
+#include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Core\StringUtils.hpp"
 #include <stdlib.h>
 #include <queue>
 
@@ -19,6 +21,7 @@ void RegisterAllActions()
 	RegisterAction("end_turn", EndTurnAction);
 	RegisterAction("start_turn", StartTurnAction);
 	RegisterAction("damage", DamageAction);
+	RegisterAction("hero_power", UseHeroPowerAction);
 }
 
 void RegisterAction(std::string name, ActionCallback action)
@@ -42,6 +45,9 @@ ActionCallback GetActionDataFromRegisteredListByName(const std::string & actionN
 {
 	std::map<std::string, ActionCallback>::iterator iterator = s_registeredActions.find(actionName);
 
+	//if we didn't find the callback in the list we have an error
+	GUARANTEE_OR_DIE(iterator != s_registeredActions.end(), Stringf("%s not found in list of registered action callbacks!", actionName).c_str());
+
 	return iterator->second;
 }
 
@@ -56,7 +62,7 @@ void ProcessRefereeQueue()
 		while (RefereeQueue.size() > 0)
 		{
 			ActionData action = RefereeQueue.front();
-			action.callback(action.parameters);
+			action.ExecuteCallback();
 			RefereeQueue.pop();
 		}
 	}	
@@ -75,9 +81,4 @@ void AddActionToRefereeQueue(ActionData action)
 void AddActionToRefereeQueue(const std::string& callbackName, const std::map<std::string, std::string> parameters)
 {
 	AddActionToRefereeQueue(ActionData(callbackName, parameters));
-}
-
-void AddActionToRefereeQueue(ActionCallback callback, std::map<std::string, std::string> parameters)
-{
-	AddActionToRefereeQueue(ActionData(callback, parameters));
 }

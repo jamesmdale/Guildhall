@@ -7,6 +7,8 @@
 #include "Game\GameCommon.hpp"
 #include <string>
 #include <vector>
+#include "Game\GameCommon.hpp"
+#include "Game\Definitions\HeroDefinition.hpp"
 
 class DeckDefinition
 {
@@ -18,6 +20,7 @@ public:
 public :
 	std::string m_deckName;
 	std::vector<std::string> m_cardNames;
+	HeroDefinition* m_heroDefinition = nullptr;
 
 public:
 	static std::map<std::string, DeckDefinition*> s_deckDefinitions;

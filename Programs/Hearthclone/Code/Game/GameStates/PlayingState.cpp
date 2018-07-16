@@ -61,7 +61,7 @@ void PlayingState::Initialize()
 	m_enemyPlayer = new Player();
 	m_enemyPlayer->m_playerId = ENEMY_PLAYER_TYPE;
 	m_enemyPlayer->m_gameState = this;
-	m_enemyPlayer->LoadDeckFromDefinitionName("All Yetis");	
+	m_enemyPlayer->LoadDeckFromDefinitionName("All Yetis Warlock");	
 
 	//start game time
 	m_gameTime = new Stopwatch();

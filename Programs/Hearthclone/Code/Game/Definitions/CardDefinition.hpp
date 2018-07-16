@@ -17,13 +17,13 @@ public:
 
 public :
 	eCardType ConvertTypeToCardTypeEnum(std::string cardType);
-	eCardClass ConvertClassToCardClassEnum(std::string cardClass);
+	eClass ConvertClassToCardClassEnum(std::string cardClass);
 
 public:
 	std::string m_name = "";
 	eCardType m_type = SPELL_TYPE;
 	std::string m_subType = "";
-	eCardClass m_class = NEUTRAL_CLASS;
+	eClass m_class = NEUTRAL_CLASS;
 	std::string m_text = "";
 
 	std::string m_imagePath = "";

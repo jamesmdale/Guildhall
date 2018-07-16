@@ -99,6 +99,8 @@ void Player::LoadDeckFromDefinitionName(const std::string& deckName)
 		cardToAdd = nullptr;
 	}
 
+//	m_hero = new Hero(deck->m_class);
+
 	deck = nullptr;
 	UpdateDeckCount();
 }

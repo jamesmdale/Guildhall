@@ -1,36 +1,74 @@
 <DeckDefinitions>
-    <DeckDefinition deckName="All Yetis">
-        <Cards>
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-            <Card name="Chillwind Yeti" />
-        </Cards>
-    </DeckDefinition>
+  <DeckDefinition deckName="All Yetis">
+    <Hero name="Jaina Proudmoore" />
+    <Cards>
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+        <Card name="Chillwind Yeti" />
+    </Cards>
+  </DeckDefinition>
+
+  <DeckDefinition deckName="All Yetis Warlock">
+    <Hero name="Gul'dan" />
+    <Cards>
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+      <Card name="Chillwind Yeti" />
+    </Cards>
+  </DeckDefinition>
+  
 </DeckDefinitions>

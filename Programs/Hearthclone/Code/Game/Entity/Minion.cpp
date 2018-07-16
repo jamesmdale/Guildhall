@@ -8,15 +8,14 @@
 #include "Game\Board.hpp"
 #include "Game\Actions\Action.hpp"
 #include "Game\Effects\Effect.hpp"
-#include "Game\Effects\DerivedEffects\TargetEffect.hpp"
+#include "Game\Effects\DerivedEffects\AttackTargetEffect.hpp"
 #include "Engine\Core\StringUtils.hpp"
 
 Minion::Minion()
 {
 	m_characterId = Character::GenerateNewCharacterId();
 	UpdateSortLayer(g_defaultCardSortLayer);
-
-	AddTag("minion");
+	m_type = CHARACTER_TYPE_MINION;
 }
 
 Minion::Minion(Card* fromCard)
@@ -34,7 +33,7 @@ Minion::Minion(Card* fromCard)
 
 	m_minionLayoutImage = Renderer::GetInstance()->CreateOrGetTexture("Data/Images/Template/Image_Circle_Drop_Frame.png");
 
-	AddTag("minion");
+	m_type = CHARACTER_TYPE_MINION;
 }
 
 Minion::~Minion()
@@ -158,7 +157,7 @@ void Minion::OnLeftClicked()
 				m_isPositionLocked = false;
 				UpdateSortLayer(g_sortLayerMax);
 
-				TargetEffect* attackTarget = new TargetEffect(this);
+				AttackTargetEffect* attackTarget = new AttackTargetEffect(this);
 				AddEffectToEffectQueue(attackTarget);
 
 				//cleanup

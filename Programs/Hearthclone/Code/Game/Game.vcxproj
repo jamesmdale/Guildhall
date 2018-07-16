@@ -309,7 +309,7 @@
     <ClCompile Include="Entity\EndTurnButton.cpp" />
     <ClCompile Include="Entity\Character.cpp" />
     <ClCompile Include="Entity\Card.cpp" />
-    <ClCompile Include="Entity\Powers\Fireblast.cpp" />
+    <ClCompile Include="Entity\HeroPower.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCommon.cpp" />
     <ClCompile Include="GameStates\LoadingState.cpp" />
@@ -349,7 +349,6 @@
     <ClInclude Include="Entity\Character.hpp" />
     <ClInclude Include="Entity\Card.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
-    <ClInclude Include="Entity\Powers\Fireblast.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
     <ClInclude Include="GameStates\LoadingState.hpp" />
@@ -363,7 +362,7 @@
     <ClInclude Include="Definitions\HeroDefinition.hpp" />
     <ClInclude Include="Effects\DerivedEffects\ReorganizeHandEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\ReorganizeMinionsEffect.hpp" />
-    <ClInclude Include="Entity\Powers\HeroPower.hpp" />
+    <ClInclude Include="Entity\HeroPower.hpp" />
     <ClInclude Include="TheApp.hpp" />
     <ClInclude Include="Triggers\Trigger.hpp" />
     <ClInclude Include="Effects\DerivedEffects\TurnChangeEffect.hpp" />

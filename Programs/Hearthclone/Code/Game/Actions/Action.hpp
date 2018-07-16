@@ -6,7 +6,6 @@
 typedef void (*ActionCallback)(const std::map<std::string, std::string>& parameters);
 
 /*	EXAMPLE : action function layout
-	
 	void Func(const std::map<std::string, std::string>& pararmeters);
 */
 
@@ -19,20 +18,24 @@ ActionCallback GetActionDataFromRegisteredListByName(const std::string& actionNa
 struct ActionData
 {
 	ActionData() {};
-	ActionData(const ActionCallback callbackFunction, const std::map<std::string, std::string> functionParameters)
-	{
-		parameters = functionParameters;
-		callback = callbackFunction;
-	}
 
 	ActionData(const std::string& callbackFunction, const std::map<std::string, std::string> functionParameters)
 	{
 		parameters = functionParameters;
+		actionName = callbackFunction;
 		callback = GetActionDataFromRegisteredListByName(callbackFunction);
 	}
 
-	std::map<std::string, std::string> parameters;
-	ActionCallback callback;
+	ActionCallback GetActionCallback() {return callback;}
+	std::string GetName() {return actionName;}
+	std::map<std::string, std::string> GetParameters() {return parameters;}
+
+	void ExecuteCallback(){callback(parameters);};
+
+public:
+	ActionCallback callback = nullptr;
+	std::string actionName;
+	std::map<std::string, std::string> parameters;	
 };
 
 // RefereeQueue functions =========================================================================================
@@ -40,11 +43,10 @@ void ProcessRefereeQueue();
 int GetRefereeQueueCount();
 void AddActionToRefereeQueue(ActionData action);
 void AddActionToRefereeQueue(const std::string& callbackName, const std::map<std::string, std::string> parameters);
-void AddActionToRefereeQueue(ActionCallback callback, std::map<std::string, std::string> parameters);
 
-// action list =============================================================================
 
-//template
+
+//EXAMPLE
 /*	TEMPLATE
 void DoStuff(const std::map<std::string, std::string>& parameters)
 {
@@ -56,6 +58,7 @@ int thing2 = atoi(parameters.find("thing2")->second.c_str());
 }
 */
 
+// action list =============================================================================
 void DrawAction(const std::map<std::string, std::string>& parameters);
 
 void AttackAction(const std::map<std::string, std::string>& parameters);
@@ -67,6 +70,8 @@ void EndTurnAction(const std::map<std::string, std::string>& parameters);
 void StartTurnAction(const std::map<std::string, std::string>& parameters);
 
 void DamageAction(const std::map<std::string, std::string>& parameters);
+
+void UseHeroPowerAction(const std::map<std::string, std::string>& paramters);
 
 
 

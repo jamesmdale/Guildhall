@@ -4,7 +4,7 @@
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Input\InputSystem.hpp"
 
-enum eCardClass
+enum eClass
 {
 	DRUID_CLASS,
 	HUNTER_CLASS,
@@ -112,6 +112,8 @@ extern int g_defaultCardSortLayer;
 extern int g_sortLayerMax;
 
 // methods =========================================================================================
-Rgba GetCardColorByClass(eCardClass cardClass);
+Rgba GetCardColorByClass(eClass cardClass);
+
+eClass GetClassByName(const std::string & className);
 
 

@@ -10,6 +10,7 @@ public:
 	Minion();
 	Minion(const std::string& name) : Character(name)
 	{
+		m_type = CHARACTER_TYPE_MINION;
 		//board creation
 	}
 	Minion(Card* fromCard);

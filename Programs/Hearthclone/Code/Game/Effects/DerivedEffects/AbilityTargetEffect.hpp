@@ -12,12 +12,6 @@
 //explicit target is filled on player target decision for each ActionData object that has that parameter in it's map
 /************************************************************************/
 
-struct ActionInformation
-{
-	std::string actionName;
-	std::map<std::string, std::string> parameters;
-};
-
 class AbilityTargetEffect : public Effect
 {
 public:
@@ -33,10 +27,10 @@ public:
 
 public:
 	Widget* m_sourceWidget = nullptr;
-	Widget* m_targetWidget = nullptr;
+	Widget* m_targetReticleWidget = nullptr;
 	RenderScene2D* m_renderScene = nullptr;
 
 	//abilities are called in order they were put in the list
-	std::vector<ActionInformation*> m_actions;
+	std::vector<ActionData*> m_actions;
 };
 

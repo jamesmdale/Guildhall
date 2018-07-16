@@ -15,6 +15,8 @@
 #include "Game\Effects\DerivedEffects\TurnChangeEffect.hpp"
 #include "Game\Effects\DerivedEffects\AttackEffect.hpp"
 #include "Game\Effects\DerivedEffects\DeathEffect.hpp"
+#include "Game\Entity\Hero.hpp"
+#include "Game\Entity\HeroPower.hpp"
 
 // actions =============================================================================
 
@@ -296,4 +298,16 @@ void DamageAction(const std::map<std::string, std::string>& parameters)
 	targetCharacter = nullptr;
 	gameState = nullptr;
 }
+
+void UseHeroPowerAction(const std::map<std::string, std::string>& parameters)
+{
+	std::string powerAction = parameters.find("action")->second;
+
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+	
+	gameState->m_activePlayer->m_hero->m_heroPower->m_usedThisTurn = true;
+
+	AddActionToRefereeQueue(powerAction, parameters);
+}
+
 

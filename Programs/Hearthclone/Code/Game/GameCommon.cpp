@@ -22,7 +22,8 @@ int g_defaultBoardSortLayer = 0;
 int g_defaultCardSortLayer = 1;
 int g_sortLayerMax = 999;
 
-Rgba GetCardColorByClass(eCardClass cardClass)
+//  =========================================================================================
+Rgba GetCardColorByClass(eClass cardClass)
 {
 	Rgba color;
 	switch (cardClass)
@@ -60,4 +61,41 @@ Rgba GetCardColorByClass(eCardClass cardClass)
 	}
 
 	return color;
+}
+
+//  =========================================================================================
+eClass GetClassByName(const std::string& className)
+{
+	if (className == "druid")
+		return DRUID_CLASS;
+
+	else if (className == "hunter")
+		return HUNTER_CLASS;
+
+	else if (className == "mage")
+		return MAGE_CLASS;
+
+	else if (className == "paladin")
+		return PALADIN_CLASS;
+
+	else if (className == "priest")
+		return PRIEST_CLASS;
+
+	else if (className == "rogue")
+		return ROGUE_CLASS;
+
+	else if (className == "shaman")
+		return SHAMAN_CLASS;
+
+	else if (className == "warlock")
+		return WARLOCK_CLASS;
+
+	else if (className == "warrior")
+		return WARRIOR_CLASS;
+
+	else if (className == "neutral")
+		return NEUTRAL_CLASS;
+
+	//was none of the above
+	return NUM_CARD_CLASSES;
 }

@@ -3,6 +3,14 @@
 #include <vector>
 #include <string>
 
+enum eCharacterType
+{
+	CHARACTER_TYPE_HERO,
+	CHARACTER_TYPE_MINION,
+	NUM_CHARACTER_TYPES
+};
+
+
 enum ePlayerType;
 class Character : public Widget
 {
@@ -30,6 +38,8 @@ public:
 	bool m_hasAttackedThisTurn = false;
 
 	ePlayerType m_controller;
+
+	eCharacterType m_type;
 
 	std::vector<std::string> m_tags;
 

@@ -93,7 +93,7 @@ eCardType CardDefinition::ConvertTypeToCardTypeEnum(std::string cardType)
 		return SPELL_TYPE;
 }
 
-eCardClass CardDefinition::ConvertClassToCardClassEnum(std::string cardClass)
+eClass CardDefinition::ConvertClassToCardClassEnum(std::string cardClass)
 {
 	if (cardClass == "druid")
 		return DRUID_CLASS;
