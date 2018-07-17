@@ -33,7 +33,7 @@ void DoStuff(const std::map<std::string, std::string>& parameters)
 void DrawAction(const std::map<std::string, std::string>& parameters)
 {
 	// get parameters =============================================================================
-	ePlayerType playerType = (ePlayerType)ConvertStringToInt(parameters.find("target")->second);
+	int characterId = ConvertStringToInt(parameters.find("targetId")->second);
 	int drawAmount = atoi(parameters.find("amount")->second.c_str());
 
 	// process function =============================================================================
@@ -42,13 +42,13 @@ void DrawAction(const std::map<std::string, std::string>& parameters)
 
 	AABB2 deckQuad;
 	AABB2 handQuad;
-	if (playerType == ENEMY_PLAYER_TYPE)
+	if (gameState->m_enemyPlayer->m_hero->m_characterId == characterId)
 	{
 		targetPlayer = gameState->m_enemyPlayer;	
 		deckQuad = gameState->m_gameBoard->m_enemyDeckQuad;
 		handQuad = gameState->m_gameBoard->m_enemyHandQuad;
 	}
-	else
+	if (gameState->m_player->m_hero->m_characterId == characterId)
 	{
 		targetPlayer = gameState->m_player;
 		deckQuad = gameState->m_gameBoard->m_playerDeckQuad;
@@ -138,7 +138,7 @@ void AttackAction(const std::map<std::string, std::string>& parameters)
 void CastFromHandAction(const std::map<std::string, std::string>& parameters)
 {
 	// Get Parameters =============================================================================
-	ePlayerType playerType = (ePlayerType)ConvertStringToInt(parameters.find("target")->second);
+	ePlayerType playerType = (ePlayerType)ConvertStringToInt(parameters.find("targetPlayer")->second);
 	int cardIndex = ConvertStringToInt(parameters.find("handIndex")->second);
 	Vector2 battlefieldLocation = ConvertStringToVector2(parameters.find("newLocation")->second);
 
@@ -285,7 +285,7 @@ void DamageAction(const std::map<std::string, std::string>& parameters)
 
 	if (targetCharacter->m_health <= 0)
 	{
-		if (targetCharacter->CheckForTag("minion"))
+		if (targetCharacter->m_type == CHARACTER_TYPE_MINION)
 		{
 			DeathEffect* deathEffect = new DeathEffect((Minion*)targetCharacter, 0.5f);
 			AddEffectToEffectQueue(deathEffect);
@@ -301,13 +301,18 @@ void DamageAction(const std::map<std::string, std::string>& parameters)
 
 void UseHeroPowerAction(const std::map<std::string, std::string>& parameters)
 {
-	std::string powerAction = parameters.find("action")->second;
+	int actionCost = ConvertStringToInt(parameters.find("cost")->second);;
 
 	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
 	
-	gameState->m_activePlayer->m_hero->m_heroPower->m_usedThisTurn = true;
+	gameState->m_activePlayer->m_heroPower->m_usedThisTurn = true;
+	gameState->m_activePlayer->m_manaCount -= actionCost;
 
-	AddActionToRefereeQueue(powerAction, parameters);
+	gameState->m_activePlayer->m_manaCount = ClampInt(gameState->m_activePlayer->m_manaCount, 0, 10);
+
+	gameState->m_activePlayer->m_heroPower->m_isInputPriority = false;
+
+	gameState->m_gameBoard->RefreshPlayerManaWidget();
 }
 
 

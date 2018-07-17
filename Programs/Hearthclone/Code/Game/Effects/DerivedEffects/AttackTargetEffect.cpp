@@ -14,7 +14,7 @@
 #include "Engine\core\StringUtils.hpp"
 
 
-
+//  =============================================================================
 AttackTargetEffect::AttackTargetEffect(Character* attackingWidget)
 {
 	m_attackingWidget = attackingWidget;
@@ -27,12 +27,17 @@ AttackTargetEffect::AttackTargetEffect(Character* attackingWidget)
 	RefreshTargetRenderable();
 }
 
+//  =============================================================================
 AttackTargetEffect::~AttackTargetEffect()
 {
+	m_attackingWidget = nullptr;
+	m_renderScene = nullptr;
+
 	delete(m_targetWidget);
-	m_targetWidget = nullptr;
+	m_targetWidget = nullptr;	
 }
 
+//  =============================================================================
 void AttackTargetEffect::Update(float deltaSeconds)
 {
 	InputSystem* theInput = InputSystem::GetInstance();
@@ -44,6 +49,7 @@ void AttackTargetEffect::Update(float deltaSeconds)
 	UpdateInput();	
 }
 
+//  =============================================================================
 void AttackTargetEffect::UpdateInput()
 {
 	InputSystem* theInput = InputSystem::GetInstance();
@@ -89,6 +95,7 @@ void AttackTargetEffect::UpdateInput()
 	theInput = nullptr;
 }
 
+//  =============================================================================
 void AttackTargetEffect::RefreshTargetRenderable()
 {
 	Renderer* theRenderer = Renderer::GetInstance();

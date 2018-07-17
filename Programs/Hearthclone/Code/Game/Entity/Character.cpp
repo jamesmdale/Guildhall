@@ -5,6 +5,7 @@ int Character::s_characterIndexer = 0;
 
 Character::Character()
 {
+	m_characterId = GenerateNewCharacterId();
 }
 
 

@@ -23,6 +23,7 @@ public:
 	
 	std::string m_powerName = "";
 	int m_powerCost = 0;
+	bool m_doesTarget = false;
 
 	std::vector<ActionData*> m_actionPowers; 
 

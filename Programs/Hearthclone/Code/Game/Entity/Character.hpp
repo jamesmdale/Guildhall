@@ -18,7 +18,7 @@ public:
 	Character();
 	Character(const std::string& name) : Widget(name)
 	{
-		//board creation
+		m_characterId = GenerateNewCharacterId();
 	}
 	virtual ~Character() override;
 

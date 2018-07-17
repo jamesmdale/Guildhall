@@ -6,6 +6,7 @@
 class Card;
 class Minion;
 class Hero;
+class HeroPower;
 
 enum ePlayerType
 {
@@ -52,6 +53,7 @@ public:
 	int m_manaCount = 0;
 	int m_maxManaCount = 0;
 	Hero* m_hero = nullptr;
+	HeroPower* m_heroPower = nullptr;
 
 	PlayingState* m_gameState = nullptr;
 

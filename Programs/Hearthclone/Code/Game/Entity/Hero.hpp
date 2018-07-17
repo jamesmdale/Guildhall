@@ -15,21 +15,13 @@ public:
 		m_controller = controller;
 		m_name = m_heroDefinition->m_heroName;
 
-		m_heroPower = new HeroPower();
-		m_heroPower->m_name = m_heroDefinition->m_powerName;
-		m_heroPower->m_cost = m_heroDefinition->m_powerCost;
-		m_heroPower->m_actions = m_heroDefinition->m_actionPowers;
-		m_heroPower->m_controller = m_controller;
-
-		//m_heroPower->Initialize();
-
 		m_type = CHARACTER_TYPE_HERO;
 	}
 
 	virtual ~Hero() override
 	{
-		delete(m_heroPower);
-		m_heroPower = nullptr;
+		m_heroDefinition = nullptr;
+		m_heroImage = nullptr;
 	}
 
 	virtual void Initialize() override;
@@ -37,7 +29,6 @@ public:
 
 public:
 	int m_armor = 0;
-	HeroPower* m_heroPower = nullptr;	
 	HeroDefinition* m_heroDefinition = nullptr;
 
 	Texture* m_heroImage = nullptr;

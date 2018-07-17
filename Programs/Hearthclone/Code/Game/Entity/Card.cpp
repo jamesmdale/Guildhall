@@ -192,7 +192,7 @@ void Card::OnLeftClicked()
 					}
 				}
 
-				std::map<std::string, std::string> parameters = { {"target", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", mousePosition.x, mousePosition.y)} };
+				std::map<std::string, std::string> parameters = { {"targetPlayer", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", mousePosition.x, mousePosition.y)} };
 				AddActionToRefereeQueue("cast_from_hand", parameters);
 			}
 			else //return card to hand

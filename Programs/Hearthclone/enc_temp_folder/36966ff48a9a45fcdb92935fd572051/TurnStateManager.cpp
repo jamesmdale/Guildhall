@@ -299,7 +299,7 @@ float TurnStateManager::UpdateInputMain(float deltaSeconds)
 	std::vector<Widget*> interactableWidgets;
 	m_playingState->GetInteractableWidgets(interactableWidgets);
 
-	Widget* ` = m_playingState->m_currentSelectedWidget;
+	Widget* currentSelectedWidget = m_playingState->m_currentSelectedWidget;
 
 	//basically does nothing
 	if (theInput->WasKeyJustReleased(theInput->MOUSE_LEFT_CLICK))

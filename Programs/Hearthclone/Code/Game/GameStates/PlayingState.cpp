@@ -16,6 +16,7 @@
 #include "Game\Board.hpp"
 #include "Game\Entity\Hero.hpp"
 
+//  =============================================================================
 PlayingState::~PlayingState()
 {
 	delete(m_turnStateManager);
@@ -38,6 +39,7 @@ PlayingState::~PlayingState()
 	m_renderScene2D = nullptr;		
 }
 
+//  =============================================================================
 void PlayingState::Initialize()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
@@ -79,6 +81,7 @@ void PlayingState::Initialize()
 	theRenderer = nullptr;	
 }
 
+//  =============================================================================
 void PlayingState::Update(float deltaSeconds)
 { 
 	//process queues
@@ -100,6 +103,7 @@ void PlayingState::Update(float deltaSeconds)
 
 }
 
+//  =============================================================================
 void PlayingState::PreRender()
 {
 	//pre render for turn widget
@@ -112,6 +116,7 @@ void PlayingState::PreRender()
 	m_player->PreRender();	
 }
 
+//  =============================================================================
 void PlayingState::Render()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
@@ -121,12 +126,13 @@ void PlayingState::Render()
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void PlayingState::PostRender()
 {
 	//post render steps here.
 }
 
-
+//  =============================================================================
 float PlayingState::UpdateFromInput(float deltaSeconds)
 {
 	m_turnStateManager->UpdateFromInput(deltaSeconds);	
@@ -135,9 +141,10 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	return deltaSeconds; //new deltaSeconds
 }
 
+//  =============================================================================
 bool PlayingState::GetInteractableWidgets(std::vector<Widget*>& outWidgets)
 {
-	// player =========================================================================================
+	// player 
 	//add widgets from player's hand
 	for (int widgetIndex = 0; widgetIndex < (int)m_player->m_hand.size(); ++widgetIndex)
 	{
@@ -150,12 +157,12 @@ bool PlayingState::GetInteractableWidgets(std::vector<Widget*>& outWidgets)
 		outWidgets.push_back(m_player->m_minions[widgetIndex]);
 	}
 	
-	TODO("Add hero input update");
 	//add hero widget
-	//interactableWidgets.push_back(m_player->m_hero);
+	outWidgets.push_back(m_player->m_hero);
+	outWidgets.push_back(m_player->m_heroPower);
 
 
-	// enemy player =========================================================================================
+	// enemy player 
 	//add widgets from enemy player's hand
 	for (int widgetIndex = 0; widgetIndex < (int)m_enemyPlayer->m_hand.size(); ++widgetIndex)
 	{
@@ -168,26 +175,28 @@ bool PlayingState::GetInteractableWidgets(std::vector<Widget*>& outWidgets)
 		outWidgets.push_back(m_enemyPlayer->m_minions[widgetIndex]);
 	}
 
-	TODO("Add hero input update");
 	//add hero widget
-	//interactableWidgets.push_back(m_enemyPlayer->m_hero);
+	outWidgets.push_back(m_enemyPlayer->m_hero);
+	outWidgets.push_back(m_enemyPlayer->m_heroPower);
 
-	TODO("Add gameboard update");
-	// game board =========================================================================================
+	// game board 
 	outWidgets.push_back(m_gameBoard->m_endTurnWidget);
 
 	//return success
 	return true;
 }
 
+//  =============================================================================
 bool PlayingState::GetCharacterWidgets(std::vector<Character*>& outCharacters)
 {
-	// add minions =========================================================================================	
 	//add friendly minions
 	for (int minionIndex = 0; minionIndex < (int)m_player->m_minions.size(); ++minionIndex)
 	{
 		outCharacters.push_back(m_player->m_minions[minionIndex]);
 	}
+
+	//add player hero
+	outCharacters.push_back(m_player->m_hero);
 
 	//add enemy minions
 	for (int minionIndex = 0; minionIndex < (int)m_enemyPlayer->m_minions.size(); ++minionIndex)
@@ -195,12 +204,14 @@ bool PlayingState::GetCharacterWidgets(std::vector<Character*>& outCharacters)
 		outCharacters.push_back(m_enemyPlayer->m_minions[minionIndex]);
 	}
 	
-	TODO("Add player hero widget");
+	//add enemy hero
+	outCharacters.push_back(m_enemyPlayer->m_hero);
 
 	//return success
 	return true;
 }
 
+//  =============================================================================
 Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& widgets)
 {
 	Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
@@ -230,11 +241,11 @@ Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& widgets)
 		widget = nullptr;
 	}
 
-	// return =========================================================================================
+	// return 
 	return selectedWidget;
 }
 
-
+//  =============================================================================
 Character* PlayingState::GetSelectedCharacter(const std::vector<Character*>& widgets)
 {
 	Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
@@ -264,19 +275,13 @@ Character* PlayingState::GetSelectedCharacter(const std::vector<Character*>& wid
 		widget = nullptr;
 	}
 
-	// return =========================================================================================
+	// return 
 	return selectedWidget;
 }
 
+//  =============================================================================
 Character* PlayingState::GetCharacterById(int characterId)
 {
-	TODO("Add player hero to list");
-	/*if(m_player->m_hero->m_characterId == characterId)
-		return m_player->m_hero;
-
-	if(m_enemyPlayer->m_hero->m_characterId == characterId)
-		return m_enemyPlayer->m_hero;*/
-
 	//search player's battlefields for character index
 	for (int minionIndex = 0; minionIndex < (int)m_player->m_minions.size(); ++minionIndex)
 	{
@@ -284,12 +289,19 @@ Character* PlayingState::GetCharacterById(int characterId)
 			return m_player->m_minions[minionIndex];
 	}
 
+	if(m_player->m_hero->m_characterId == characterId)
+		return m_player->m_hero;
+
+
 	//search enemy player
 	for (int minionIndex = 0; minionIndex < (int)m_enemyPlayer->m_minions.size(); ++minionIndex)
 	{
 		if (m_enemyPlayer->m_minions[minionIndex]->m_characterId == characterId)
 			return m_enemyPlayer->m_minions[minionIndex];
 	}
+
+	if(m_enemyPlayer->m_hero->m_characterId == characterId)
+		return m_enemyPlayer->m_hero;
 
 	//if we didn't find the character return nullptr
 	return nullptr;

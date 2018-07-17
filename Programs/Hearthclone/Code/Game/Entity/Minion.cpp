@@ -13,14 +13,12 @@
 
 Minion::Minion()
 {
-	m_characterId = Character::GenerateNewCharacterId();
 	UpdateSortLayer(g_defaultCardSortLayer);
 	m_type = CHARACTER_TYPE_MINION;
 }
 
 Minion::Minion(Card* fromCard)
 {
-	m_characterId = Character::GenerateNewCharacterId();
 	UpdateSortLayer(g_defaultCardSortLayer);
 
 	m_cardReference = fromCard;

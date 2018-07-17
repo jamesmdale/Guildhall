@@ -5,6 +5,7 @@
 #include "Game\Entity\Card.hpp"
 #include "Game\Entity\Minion.hpp"
 #include "Game\Entity\Hero.hpp"
+#include "Game\Entity\HeroPower.hpp"
 #include "Game\Board.hpp"
 
 //  =========================================================================================
@@ -15,9 +16,13 @@ Player::Player()
 //  =========================================================================================
 Player::~Player()
 {
+	delete(m_hero);
 	m_hero = nullptr;
-	m_gameState = nullptr;
 
+	delete(m_heroPower);
+	m_heroPower = nullptr;
+
+	m_gameState = nullptr;
 	
 	for (int cardIndex = 0; cardIndex < (int)m_deck.size(); ++cardIndex)
 	{
@@ -48,6 +53,7 @@ Player::~Player()
 void Player::Initialize()
 {
 	m_hero->Initialize();
+	m_heroPower->Initialize();
 }
 
 //  =========================================================================================
@@ -82,7 +88,7 @@ void Player::PreRender()
 	}
 
 	m_hero->PreRender();
-	m_hero->m_heroPower->PreRender();
+	m_heroPower->PreRender();
 }
 
 //  =========================================================================================
@@ -114,6 +120,9 @@ void Player::LoadDeckFromDefinitionName(const std::string& deckName)
 	//load hero from deck
 	m_hero = new Hero(deckDefinition->m_heroDefinition, m_playerId);
 	m_hero->m_renderScene = m_gameState->m_renderScene2D;
+
+	m_heroPower = new HeroPower(deckDefinition->m_heroDefinition, m_playerId);
+	m_heroPower->m_renderScene = m_gameState->m_renderScene2D;
 
 	deckDefinition = nullptr;
 	UpdateDeckCount();

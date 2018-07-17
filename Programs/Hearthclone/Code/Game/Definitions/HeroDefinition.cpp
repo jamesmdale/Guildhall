@@ -21,6 +21,7 @@ HeroDefinition::HeroDefinition(const tinyxml2::XMLElement& element)
 	{
 		m_powerName = ParseXmlAttribute(*powerElement, "name", m_powerName);
 		m_powerCost = ParseXmlAttribute(*powerElement, "cost", m_powerCost);
+		m_doesTarget = ParseXmlAttribute(*powerElement, "doesTarget", m_doesTarget);
 
 		for (const tinyxml2::XMLElement* actionNode = powerElement->FirstChildElement(); actionNode; actionNode = actionNode->NextSiblingElement())
 		{

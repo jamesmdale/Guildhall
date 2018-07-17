@@ -18,10 +18,7 @@ void Hero::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	m_health = 20;
 
- 	RefreshRenderables();
-
-	m_heroPower->m_renderScene = m_renderScene;
-	m_heroPower->Initialize();
+ 	RefreshRenderables();	
 }
 
 void Hero::RefreshRenderables()

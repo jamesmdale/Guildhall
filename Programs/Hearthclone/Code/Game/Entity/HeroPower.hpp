@@ -1,13 +1,14 @@
 #pragma once
 #include "Engine\Core\Widget.hpp"
 #include "Game\Actions\Action.hpp"
+#include "Game\Definitions\HeroDefinition.hpp"
 
 enum ePlayerType;
 class HeroPower : public Widget
 {
 public:
 	HeroPower(){};
-	//HeroPower(eClass classType);
+	HeroPower(HeroDefinition* heroDefinition, ePlayerType controllerId);
 
 	virtual ~HeroPower() override
 	{
@@ -30,5 +31,6 @@ public:
 	bool m_usedThisTurn = false;
 	std::string m_name = "";
 
+	bool m_doesTarget = false;
 	std::vector<ActionData*> m_actions; 
 };

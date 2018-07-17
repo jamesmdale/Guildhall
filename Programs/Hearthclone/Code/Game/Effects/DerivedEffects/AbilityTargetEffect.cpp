@@ -29,7 +29,6 @@ AbilityTargetEffect::AbilityTargetEffect(Widget* sourceWidget)
 AbilityTargetEffect::~AbilityTargetEffect()
 {
 	m_sourceWidget = nullptr;
-	m_targetReticleWidget = nullptr;
 	m_renderScene = nullptr;
 
 	for (int actionIndex = 0; actionIndex < (int)m_actions.size(); ++actionIndex)
@@ -37,6 +36,9 @@ AbilityTargetEffect::~AbilityTargetEffect()
 		delete(m_actions[actionIndex]);
 		m_actions[actionIndex] = nullptr;
 	}
+
+	delete(m_targetReticleWidget);
+	m_targetReticleWidget = nullptr;	
 }
 
 void AbilityTargetEffect::Update(float deltaSeconds)
@@ -85,6 +87,9 @@ void AbilityTargetEffect::UpdateInput()
 
 				AddActionToRefereeQueue(m_actions[actionIndex]->actionName, m_actions[actionIndex]->parameters);
 			}			
+
+			m_sourceWidget->m_isInputPriority = false;
+			playingState->m_currentSelectedWidget = nullptr;
 
 			m_isComplete = true;
 		}
