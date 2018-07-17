@@ -64,6 +64,27 @@ void DebuggerPrintf( const char* messageFormat, ... )
 	std::cout << messageLiteral;
 }
 
+void DebuggerPrintf(const char* tagOverride, const char* messageFormat, ...)
+{
+	const int MESSAGE_MAX_LENGTH = 2048;
+	char messageLiteral[MESSAGE_MAX_LENGTH];
+	va_list variableArgumentList;
+	va_start(variableArgumentList, messageFormat);
+	vsnprintf_s(messageLiteral, MESSAGE_MAX_LENGTH, _TRUNCATE, messageFormat, variableArgumentList);
+	va_end(variableArgumentList);
+	messageLiteral[MESSAGE_MAX_LENGTH - 1] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
+
+#if defined( PLATFORM_WINDOWS )
+	if (IsDebuggerAvailable())
+	{
+		OutputDebugStringA(messageLiteral);
+	}
+#endif
+
+	LogSystem::GetInstance()->LogTaggedPrint(tagOverride, messageFormat, variableArgumentList);
+	std::cout << messageLiteral;
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Converts a SeverityLevel to a Windows MessageBox icon type (MB_etc)
@@ -219,10 +240,10 @@ __declspec( noreturn ) void FatalError( const char* filePath, const char* functi
 			lineNum, fileName, functionName );
 	}
 
-	DebuggerPrintf( "\n==============================================================================\n" );
-	DebuggerPrintf( "RUN-TIME FATAL ERROR on line %i of %s, in %s()\n", lineNum, fileName, functionName );
-	DebuggerPrintf( "%s(%d): %s\n", filePath, lineNum, errorMessage.c_str() ); // Use this specific format so Visual Studio users can double-click to jump to file-and-line of error
-	DebuggerPrintf( "==============================================================================\n\n" );
+	DebuggerPrintf( "ERROR", "\n==============================================================================\n" );
+	DebuggerPrintf( "ERROR","RUN-TIME FATAL ERROR on line %i of %s, in %s()\n", lineNum, fileName, functionName );
+	DebuggerPrintf( "ERROR","%s(%d): %s\n", filePath, lineNum, errorMessage.c_str() ); // Use this specific format so Visual Studio users can double-click to jump to file-and-line of error
+	DebuggerPrintf( "ERROR","==============================================================================\n\n" );
 
 	if( isDebuggerPresent )
 	{
@@ -283,10 +304,10 @@ void RecoverableWarning( const char* filePath, const char* functionName, int lin
 			lineNum, fileName, functionName );
 	}
 
-	DebuggerPrintf( "\n------------------------------------------------------------------------------\n" );
-	DebuggerPrintf( "RUN-TIME RECOVERABLE WARNING on line %i of %s, in %s()\n", lineNum, fileName, functionName );
-	DebuggerPrintf( "%s(%d): %s\n", filePath, lineNum, errorMessage.c_str() ); // Use this specific format so Visual Studio users can double-click to jump to file-and-line of error
-	DebuggerPrintf( "------------------------------------------------------------------------------\n\n" );
+	DebuggerPrintf( "WARNING","\n------------------------------------------------------------------------------\n" );
+	DebuggerPrintf( "WARNING","RUN-TIME RECOVERABLE WARNING on line %i of %s, in %s()\n", lineNum, fileName, functionName );
+	DebuggerPrintf( "WARNING","%s(%d): %s\n", filePath, lineNum, errorMessage.c_str() ); // Use this specific format so Visual Studio users can double-click to jump to file-and-line of error
+	DebuggerPrintf( "WARNING","------------------------------------------------------------------------------\n\n" );
 
 	if( isDebuggerPresent )
 	{
