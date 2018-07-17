@@ -72,18 +72,18 @@ void AttackTargetEffect::UpdateInput()
 
 		if (selectedWidget != nullptr)
 		{
-			Minion* minion = (Minion*)selectedWidget;
-			if (minion->m_controller != m_attackingWidget->m_controller)
+			if (selectedWidget->m_controller != m_attackingWidget->m_controller)
 			{
 				TODO("HANDLE TAUNT CONDITIONS");
 
-				std::map<std::string, std::string> parameters = { {"attackerId", Stringf("%i", m_attackingWidget->m_characterId)}, {"targetId", Stringf("%i", minion->m_characterId)} };
+				std::map<std::string, std::string> parameters = { {"attackerId", Stringf("%i", m_attackingWidget->m_characterId)}, {"targetId", Stringf("%i", selectedWidget->m_characterId)} };
 				AddActionToRefereeQueue("attack", parameters);
 
 				m_isComplete = true;
 			}
-			minion = nullptr;
 		}
+
+		selectedWidget = nullptr;
 
 		for(int targetIndex = 0; targetIndex < (int)targetableWidgets.size(); ++targetIndex)
 			targetableWidgets[targetIndex] = nullptr;

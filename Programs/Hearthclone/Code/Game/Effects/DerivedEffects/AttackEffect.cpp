@@ -6,7 +6,7 @@
 #include "Engine\Math\CubicSpline.hpp"
 
 
-AttackEffect::AttackEffect(Widget * targetWidget, float effectTime, const Vector2 & startPosition, const Vector2 & targetPosition)
+AttackEffect::AttackEffect(Widget* targetWidget, float effectTime, const Vector2& startPosition, const Vector2& targetPosition)
 {
 	m_targetWidget = targetWidget;
 	m_totalEffectTime = effectTime;

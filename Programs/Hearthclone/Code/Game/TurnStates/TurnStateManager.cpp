@@ -199,6 +199,9 @@ void TurnStateManager::TransitionInStartOfTurn()
 	TODO("This isn't always true (Overload as an example)");
 	m_playingState->m_activePlayer->m_manaCount = m_playingState->m_activePlayer->m_maxManaCount;
 
+	//reset hero power
+	m_playingState->m_activePlayer->m_heroPower->m_usedThisTurn = false;
+
 	//update minion age
 	for (int minionIndex = 0; minionIndex < (int)m_playingState->m_activePlayer->m_minions.size(); ++minionIndex)
 	{
@@ -299,7 +302,7 @@ float TurnStateManager::UpdateInputMain(float deltaSeconds)
 	std::vector<Widget*> interactableWidgets;
 	m_playingState->GetInteractableWidgets(interactableWidgets);
 
-	Widget* ` = m_playingState->m_currentSelectedWidget;
+	Widget* currentSelectedWidget = m_playingState->m_currentSelectedWidget;
 
 	//basically does nothing
 	if (theInput->WasKeyJustReleased(theInput->MOUSE_LEFT_CLICK))

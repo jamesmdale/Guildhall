@@ -33,7 +33,6 @@ AbilityTargetEffect::~AbilityTargetEffect()
 
 	for (int actionIndex = 0; actionIndex < (int)m_actions.size(); ++actionIndex)
 	{
-		delete(m_actions[actionIndex]);
 		m_actions[actionIndex] = nullptr;
 	}
 

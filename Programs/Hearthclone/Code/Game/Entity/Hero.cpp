@@ -37,17 +37,19 @@ void Hero::RefreshRenderables()
 		case SELF_PLAYER_TYPE:
 		{
 			portraitQuad = gameState->m_gameBoard->m_playerHeroPortraitQuad;
-			m_transform2D->SetLocalPosition(portraitQuad.GetCenter());
 			break;
 		}
 
 		case ENEMY_PLAYER_TYPE:
 		{
-			portraitQuad = gameState->m_gameBoard->m_enemyHeroPortraitQuad;
-			m_transform2D->SetLocalPosition(portraitQuad.GetCenter());
+			portraitQuad = gameState->m_gameBoard->m_enemyHeroPortraitQuad;		
 			break;
 		}
 	}
+
+	//set position
+	m_lockPosition = portraitQuad.GetCenter();
+	m_transform2D->SetLocalPosition(m_lockPosition);
 
 	m_dimensionsInPixels = portraitQuad.GetDimensions();
 	Vector2 heroBottomRight = Vector2(Vector2::ZERO.x - (m_dimensionsInPixels.x * 0.5f), Vector2::ZERO.y - (m_dimensionsInPixels.y * 0.5f));

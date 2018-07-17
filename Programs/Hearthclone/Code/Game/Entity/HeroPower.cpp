@@ -138,17 +138,19 @@ void HeroPower::RefreshRenderables()
 	case SELF_PLAYER_TYPE:
 	{
 		powerQuad = gameState->m_gameBoard->m_playerHeroAbilityQuad;
-		m_transform2D->SetLocalPosition(powerQuad.GetCenter());
 		break;
 	}
 
 	case ENEMY_PLAYER_TYPE:
 	{
-		powerQuad = gameState->m_gameBoard->m_enemyHeroAbilityQuad;
-		m_transform2D->SetLocalPosition(powerQuad.GetCenter());
+		powerQuad = gameState->m_gameBoard->m_enemyHeroAbilityQuad;	
 		break;
 	}
 	}
+
+	//set position
+	m_lockPosition = powerQuad.GetCenter();
+	m_transform2D->SetLocalPosition(m_lockPosition);
 
 	m_dimensionsInPixels = powerQuad.GetDimensions();
 	Vector2 abilityBottomRight = Vector2(Vector2::ZERO.x - (m_dimensionsInPixels.x * 0.5f), Vector2::ZERO.y - (m_dimensionsInPixels.y * 0.5f));
