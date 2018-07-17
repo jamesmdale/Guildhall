@@ -15,27 +15,66 @@ CardDefinition::CardDefinition(const tinyxml2::XMLElement& element)
 
 	m_subType = ParseXmlAttribute(element, "subtype", m_subType);
 
-	std::string nameFormatted = ToLowerAsNew(m_name);
-	ReplaceCharacterOccurances(nameFormatted, ' ', '_');
-	m_imagePath = Stringf("Data/Images/Cards/%s.png", nameFormatted.c_str());
+	//get image value
+	const tinyxml2::XMLElement* imageElement = element.FirstChildElement("Image");
+	if (imageElement)
+	{
+		std::string fileName = "";
+		fileName = ParseXmlAttribute(*imageElement, "file", fileName);
 
+		m_imagePath = Stringf("Data/Images/Cards/%s", fileName.c_str());
+	}
+
+	//add card attributes
 	const tinyxml2::XMLElement* attributesElement = element.FirstChildElement("Attributes");
 	if (attributesElement)
 	{
 		m_cost = ParseXmlAttribute(*attributesElement, "cost", m_cost);
 		m_attack = ParseXmlAttribute(*attributesElement, "attack", m_attack);
 		m_health = ParseXmlAttribute(*attributesElement, "health", m_health);
+		m_doesTarget = ParseXmlAttribute(*attributesElement, "doesTarget", m_doesTarget);
 		
 	}
 
+	//add card class
 	const tinyxml2::XMLElement* classElement = element.FirstChildElement("Class");
 	if (classElement)
 	{
 		std::string cardClass = "";
-		cardClass = ParseXmlAttribute(element, "class", cardClass);
+		cardClass = ParseXmlAttribute(*classElement, "class", cardClass);
 		m_class = ConvertClassToCardClassEnum(cardClass);
 	}
 
+	//add card actions
+	const tinyxml2::XMLElement* actionsElement = element.FirstChildElement("Actions");
+	if (actionsElement)
+	{
+		for (const tinyxml2::XMLElement* actionNode = actionsElement->FirstChildElement(); actionNode; actionNode = actionNode->NextSiblingElement())
+		{
+			std::string actionName = "";
+			actionName = ParseXmlAttribute(*actionNode, "name", actionName);		
+
+			std::map<std::string, std::string> parameters;
+		
+			for (const tinyxml2::XMLElement* parameterNode = actionNode->FirstChildElement(); parameterNode; parameterNode = parameterNode->NextSiblingElement())
+			{
+				std::string keyValue = "";
+				std::string value = "";
+
+				keyValue = ParseXmlAttribute(*parameterNode, "key", keyValue);
+				value = ParseXmlAttribute(*parameterNode, "value", value);
+
+				parameters.insert(std::pair<std::string, std::string>(keyValue, value));
+			}
+
+			ActionData* data = new ActionData(actionName, parameters);
+			m_actions.push_back(data);
+
+			data = nullptr;
+		}
+	}
+
+	//add card tags
 	const tinyxml2::XMLElement* tagsElement = element.FirstChildElement("Tags");
 	if (tagsElement)
 	{	
@@ -47,12 +86,22 @@ CardDefinition::CardDefinition(const tinyxml2::XMLElement& element)
 		}
 	}
 
-	const tinyxml2::XMLElement* textElement = element.FirstChildElement("text");
+	//add card text
+	const tinyxml2::XMLElement* textElement = element.FirstChildElement("Text");
 	if (textElement)
-	{		
-		m_text = ParseXmlAttribute(element, "text", m_text);
-	}
+	{	
+		m_text = ParseXmlAttribute(*textElement, "text", m_text);
 
+		for (const tinyxml2::XMLElement* textParameterNode = tagsElement->FirstChildElement(); textParameterNode; textParameterNode = textParameterNode->NextSiblingElement())
+		{
+			CardTextElement parameter;
+
+			parameter.actionNameReference = ParseXmlAttribute(*textParameterNode, "actionName", parameter.actionNameReference);
+			parameter.actionKeyReference = ParseXmlAttribute(*textParameterNode, "actionKey", parameter.actionKeyReference);
+
+			m_textParameters.push_back(parameter);
+		}
+	}
 }
 
 void CardDefinition::Initialize(const std::string& filePath)

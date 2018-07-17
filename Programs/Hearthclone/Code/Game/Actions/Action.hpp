@@ -68,13 +68,17 @@ void DrawAction(const std::map<std::string, std::string>& parameters);
 
 void AttackAction(const std::map<std::string, std::string>& parameters);
 
-void CastFromHandAction(const std::map<std::string, std::string>& parameters);
+void CastMinionFromHandAction(const std::map<std::string, std::string>& parameters);
+
+void CastSpellFromHandAction(const std::map<std::string, std::string>& parameters);
 
 void EndTurnAction(const std::map<std::string, std::string>& parameters);
 
 void StartTurnAction(const std::map<std::string, std::string>& parameters);
 
 void DamageAction(const std::map<std::string, std::string>& parameters);
+
+void HealAction(const std::map<std::string, std::string>& parameters);
 
 void UseHeroPowerAction(const std::map<std::string, std::string>& paramters);
 

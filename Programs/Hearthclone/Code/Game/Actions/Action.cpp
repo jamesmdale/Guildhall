@@ -17,10 +17,11 @@ void RegisterAllActions()
 {
 	RegisterAction("draw", DrawAction);
 	RegisterAction("attack", AttackAction);
-	RegisterAction("cast_from_hand", CastFromHandAction);
+	RegisterAction("cast_minion_from_hand", CastMinionFromHandAction);
 	RegisterAction("end_turn", EndTurnAction);
 	RegisterAction("start_turn", StartTurnAction);
 	RegisterAction("damage", DamageAction);
+	RegisterAction("heal", HealAction);
 	RegisterAction("hero_power", UseHeroPowerAction);
 }
 

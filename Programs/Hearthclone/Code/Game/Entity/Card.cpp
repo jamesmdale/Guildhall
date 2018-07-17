@@ -12,11 +12,13 @@
 
 bool isPreviewing = false;
 
+//  =========================================================================================
 Card::Card()
 {
 	UpdateSortLayer(g_defaultCardSortLayer);
 }
 
+//  =========================================================================================
 Card::Card(const CardDefinition* definition)
 {
 	UpdateSortLayer(g_defaultCardSortLayer);
@@ -47,7 +49,7 @@ Card::Card(const CardDefinition* definition)
 	}
 }
 
-
+//  =========================================================================================
 Card::~Card()
 {
 	m_definition = nullptr;
@@ -55,6 +57,7 @@ Card::~Card()
 	m_cardLayoutImage = nullptr;
 }
 
+//  =========================================================================================
 void Card::Initialize()
 {
 	RefreshCardRenderables();
@@ -63,6 +66,7 @@ void Card::Initialize()
 	//other intialization data goes here.
 }
 
+//  =========================================================================================
 void Card::Update(float deltaSeconds)
 {
 	UNUSED(deltaSeconds);
@@ -82,12 +86,13 @@ void Card::Update(float deltaSeconds)
 	}
 }
 
+//  =========================================================================================
 void Card::RefreshCardRenderables()
 {
 	//remove renderables from scene
 	DeleteRenderables();	
 
-	// create card layout =============================================================================
+	// create card layout
 	Renderer* theRenderer = Renderer::GetInstance();
 	Window* clientWindow = Window::GetInstance();
 	MeshBuilder mb;
@@ -101,34 +106,36 @@ void Card::RefreshCardRenderables()
 	m_dimensionsInPixels = Vector2(cardWidth, cardHeight);
 	Vector2 cardBottomRight = Vector2(Vector2::ZERO.x - (cardWidth * 0.5f), Vector2::ZERO.y - (cardHeight * 0.5f));
 
-	// create background =========================================================================================
+	// create background
 	Renderable2D* cardRenderable = new Renderable2D();
 
 	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels * 0.99f, GetCardColorByClass(m_definition->m_class)); //make it slightly smaller
 	cardRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
 
-	// create card template overlay renderable =========================================================================================
-
+	// create card template overlay renderable
 	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels, Rgba::WHITE);
 	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
 	materialInstance->SetTexture(0, m_cardLayoutImage);
 
 	cardRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), materialInstance);
 
-	// create card image renderable =========================================================================================
-
+	// create card image renderable
 	mb.CreateQuad2D(cardBottomRight + (m_dimensionsInPixels * g_cardImageCenterRatio), m_dimensionsInPixels * g_cardImageDimensionsRatio, Rgba::WHITE);
 	materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
 	materialInstance->SetTexture(0, m_cardImage);
 
 	cardRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
 
-	// create card image renderable =========================================================================================
-
+	// create card text renderable 
 	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardNameCenterRatio), m_dimensionsInPixels * g_cardNameDimensionsRatio, 4.f / 3.f, m_name, Rgba::WHITE); //name
 	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardManaCenterRatio), m_dimensionsInPixels * g_cardManaDimensionsRatio, 1.f, Stringf("%i", m_cost), Rgba::WHITE); //mana
-	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardAttackCenterRatio), m_dimensionsInPixels * g_cardAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
-	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardHealthCenterRatio), m_dimensionsInPixels * g_cardHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
+
+	if (m_definition->m_type == MINION_TYPE)
+	{
+		mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardAttackCenterRatio), m_dimensionsInPixels * g_cardAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
+		mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardHealthCenterRatio), m_dimensionsInPixels * g_cardHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
+	}
+	
 	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardTextCenterRatio), m_dimensionsInPixels * g_cardTextDimensionsRatio, 4.f / 3.f, m_text, Rgba::WHITE); //Text
 	
 	materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
@@ -137,7 +144,7 @@ void Card::RefreshCardRenderables()
 
 	m_renderables.push_back(cardRenderable);
 
-	// add renderables to scene =========================================================================================
+	// add renderables to scene
 	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
 	{
 		m_renderScene->AddRenderable(m_renderables[renderableIndex]);
@@ -150,11 +157,13 @@ void Card::RefreshCardRenderables()
 	theRenderer = nullptr;
 }
 
+//  =========================================================================================
 Vector2 Card::GetCardDimensions()
 {
 	return m_dimensionsInPixels;
 }
 
+//  =========================================================================================
 void Card::OnLeftClicked()
 {
 	PlayingState* playingState = (PlayingState*)GameState::GetCurrentGameState();
@@ -174,11 +183,22 @@ void Card::OnLeftClicked()
 
 			Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
 
+			//determine if the click position is in the castable areas for each player type
+			bool isPlayingCard = false;
+
+			if (playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE && mousePosition.y > playingState->m_gameBoard->m_playerHandQuad.maxs.y)
+			{
+				isPlayingCard = true;
+			}
+			else if (playingState->m_activePlayer->m_playerId == ENEMY_PLAYER_TYPE && mousePosition.y < playingState->m_gameBoard->m_enemyHandQuad.mins.y)
+			{
+				isPlayingCard = true;
+			}
+
 			//player is playing card.
-			if (mousePosition.y > playingState->m_gameBoard->m_playerHandQuad.maxs.y)
+			if (isPlayingCard == true)
 			{
 				//we can cast the card so queue play card action
-
 				ePlayerType playerType = playingState->m_activePlayer->m_playerId;
 
 				int cardIndexInPlayerHand = 0;
@@ -192,8 +212,25 @@ void Card::OnLeftClicked()
 					}
 				}
 
-				std::map<std::string, std::string> parameters = { {"targetPlayer", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"newLocation", Stringf("%f,%f", mousePosition.x, mousePosition.y)} };
-				AddActionToRefereeQueue("cast_from_hand", parameters);
+				switch (m_definition->m_type)
+				{
+					case MINION_TYPE:
+					{
+						std::map<std::string, std::string> parameters = { {"targetPlayer", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"castLocation", Stringf("%f,%f", mousePosition.x, mousePosition.y)} };
+						AddActionToRefereeQueue("cast_minion_from_hand", parameters);
+						break;
+					}		
+
+					case SPELL_TYPE:
+					{
+						std::map<std::string, std::string> parameters{ {"targetPlayer", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"castLocation", Stringf("%f,%f", mousePosition.x, mousePosition.y)}};
+						AddActionToRefereeQueue("cast_spell_from_hand", parameters);
+						laksdflkjasf
+						break;
+					}
+					
+				}
+				
 			}
 			else //return card to hand
 			{
@@ -203,6 +240,7 @@ void Card::OnLeftClicked()
 	}
 }
 
+//  =========================================================================================
 void Card::OnRightClicked()
 {
 	m_isInputPriority = true;

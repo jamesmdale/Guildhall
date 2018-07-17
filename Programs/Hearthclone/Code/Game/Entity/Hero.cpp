@@ -17,6 +17,7 @@ void Hero::Initialize()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
 	m_health = 20;
+	m_startingHealth = 20;
 
  	RefreshRenderables();	
 }

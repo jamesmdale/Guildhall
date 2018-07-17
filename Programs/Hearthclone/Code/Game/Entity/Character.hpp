@@ -35,6 +35,10 @@ public:
 	int m_health = 0;
 	int m_attack = 0;
 
+
+	int m_startingHealth = 0;
+	int m_startingAttack = 0;
+
 	bool m_hasAttackedThisTurn = false;
 
 	ePlayerType m_controller;

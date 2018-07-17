@@ -23,12 +23,19 @@ Minion::Minion(Card* fromCard)
 
 	m_cardReference = fromCard;
 	m_controller = fromCard->m_controller;
+
+	//health
 	m_health = fromCard->m_health;
 	m_attack = fromCard->m_attack;
+
+	m_startingHealth = m_health;
+	m_startingAttack = m_startingAttack;
+
+	//tags
 	m_tags = fromCard->m_tags;
 	
+	//image
 	m_minionImage = fromCard->m_cardImage;
-
 	m_minionLayoutImage = Renderer::GetInstance()->CreateOrGetTexture("Data/Images/Template/Image_Circle_Drop_Frame.png");
 
 	m_type = CHARACTER_TYPE_MINION;
