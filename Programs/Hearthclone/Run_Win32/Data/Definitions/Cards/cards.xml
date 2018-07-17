@@ -12,7 +12,7 @@
 
     <CardDefinition name="Fireball" type="spell" subtype="">
       <Image file="Fireball.jpg" />
-      <Attributes cost="4" doesTarget="true"/>
+      <Attributes cost="1" doesTarget="true"/>
       <Class class="mage" />
       <Actions>
         <Action name="damage">
@@ -30,7 +30,7 @@
 
     <CardDefinition name="Drain Life" type="spell" subtype="">
       <Image file="Drain Life.jpg" />
-      <Attributes cost="3" doesTarget="true"/>
+      <Attributes cost="1" doesTarget="true"/>
       <Class class="warlock" />      
       <Actions>        
         <Action name="damage">

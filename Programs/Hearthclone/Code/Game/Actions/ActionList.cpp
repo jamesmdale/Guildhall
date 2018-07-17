@@ -17,6 +17,7 @@
 #include "Game\Effects\DerivedEffects\DeathEffect.hpp"
 #include "Game\Entity\Hero.hpp"
 #include "Game\Entity\HeroPower.hpp"
+#include "Game\Effects\DerivedEffects\CastTargetEffect.hpp"
 
 // actions =============================================================================
 
@@ -161,7 +162,8 @@ void CastMinionFromHandAction(const std::map<std::string, std::string>& paramete
 	//if we have max minions in play or not enough mana to cast, we can't cast card. return.
 	if ((int)playerCasting->m_minions.size() >= g_maxMinionCount || playerCasting->m_manaCount < cardToCast->m_definition->m_cost)
 	{
-		cardToCast->OnRightClicked(); //handles input priority
+		//trigger right click
+		cardToCast->OnRightClicked();
 
 		//cleanup and return
 		gameState = nullptr;
@@ -169,10 +171,7 @@ void CastMinionFromHandAction(const std::map<std::string, std::string>& paramete
 		cardToCast = nullptr;
 		return;
 	}
-
-	//pay mana cost
-	playerCasting->m_manaCount -= cardToCast->m_cost;
-		
+	
 
 	int numMinions = (int)playerCasting->m_minions.size();
 	int castPosition = numMinions;
@@ -199,6 +198,17 @@ void CastMinionFromHandAction(const std::map<std::string, std::string>& paramete
 
 	newMinion->m_transform2D->SetLocalPosition(newMinion->m_lockPosition);
 
+	//add cast action to referee queue
+	for (int actionIndex = 0; actionIndex < (int)cardToCast->m_definition->m_actions.size(); actionIndex++)
+	{
+		AddActionToRefereeQueue(*cardToCast->m_definition->m_actions[actionIndex]);
+	}
+
+	//pay mana cost last
+	std::map<std::string, std::string> actionParameters = { {"targetPlayer", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndex)}, {"cost", Stringf("%i", cardToCast->m_cost)}};
+	ActionData data = ActionData("cast", actionParameters);
+	AddActionToRefereeQueue(data);
+
 	if ((int)playerCasting->m_minions.size() > 0)
 	{
 		float timeForEffect = 0.25f / (float)playerCasting->m_minions.size();
@@ -208,11 +218,92 @@ void CastMinionFromHandAction(const std::map<std::string, std::string>& paramete
 		minionEffect = nullptr;
 	}
 
-	newMinion = nullptr;
+	cardToCast = nullptr;
+	playerCasting = nullptr;
+	gameState = nullptr;
+}
+
+//  =========================================================================================
+void CastSpellFromHandAction(const std::map<std::string, std::string>& parameters)
+{
+	//Get Parameters 
+	ePlayerType playerType = (ePlayerType)ConvertStringToInt(parameters.find("targetPlayer")->second);
+	int cardIndex = ConvertStringToInt(parameters.find("handIndex")->second);
+	Vector2 battlefieldLocation = ConvertStringToVector2(parameters.find("castLocation")->second);
+
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+	Player* playerCasting = nullptr;
+
+	if (playerType == SELF_PLAYER_TYPE)
+		playerCasting = gameState->m_player;
+	else
+		playerCasting = gameState->m_enemyPlayer;
+
+	Card* cardToCast = playerCasting->m_hand[cardIndex];	
+
+	// Process Function 
+	TODO("Cast triggers here");
+
+	//if we can't afforrd the cast, don't cast
+	if (playerCasting->m_manaCount < cardToCast->m_cost)
+	{
+		//trigger right click
+		cardToCast->OnRightClicked();
+
+		//cleanup and return
+		gameState = nullptr;
+		playerCasting = nullptr;
+		cardToCast = nullptr;
+		return;
+	}
+
+	if (cardToCast->m_definition->m_doesTarget)
+	{
+		CastTargetEffect* effect = new CastTargetEffect(cardToCast, playerCasting, cardIndex);
+		AddEffectToEffectQueue(effect);
+		effect = nullptr;
+	}
+	else
+	{
+		for (int actionIndex = 0; actionIndex < (int)cardToCast->m_definition->m_actions.size(); actionIndex++)
+		{
+			AddActionToRefereeQueue(*cardToCast->m_definition->m_actions[actionIndex]);
+		}
+
+		//pay mana cost last
+		std::map<std::string, std::string> parameters = { {"targetPlayer", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndex)}, {"cost", Stringf("%i", cardToCast->m_cost)}};
+		ActionData data = ActionData("cast", parameters);
+		AddActionToRefereeQueue(data);
+	}
+
+	cardToCast = nullptr;
+	playerCasting = nullptr;
+	gameState = nullptr;
+}
+
+void CastAction(const std::map<std::string, std::string>& parameters)
+{
+	//Get Parameters 
+	ePlayerType playerType = (ePlayerType)ConvertStringToInt(parameters.find("targetPlayer")->second);
+	int cardIndex = ConvertStringToInt(parameters.find("handIndex")->second);
+	int cardCost = ConvertStringToInt(parameters.find("cost")->second);
+
+	PlayingState* gameState = (PlayingState*)GameState::GetCurrentGameState();
+	Player* playerCasting = nullptr;
+
+	//get the player casting by type
+	if (playerType == SELF_PLAYER_TYPE)
+		playerCasting = gameState->m_player;
+	else
+		playerCasting = gameState->m_enemyPlayer;
+
+	//reduce player mana by cost
+	playerCasting->m_manaCount -= cardCost;
 
 	//remove card from hand
-	playerCasting->RemoveCardFromHand(cardIndex);
-		
+	if(cardIndex >= 0)
+		playerCasting->RemoveCardFromHand(cardIndex);
+
 	//update dynamic renderables
 	playerCasting->UpdateBoardLockPositions();
 	playerCasting->UpdateHandLockPositions();
@@ -227,26 +318,11 @@ void CastMinionFromHandAction(const std::map<std::string, std::string>& paramete
 		AddEffectToEffectQueue(handEffect);
 
 		handEffect = nullptr;
-	}		
-	
+	}	
 
-	//if (cardToCast->m_definition->m_type == SPELL_TYPE)
-	//{
-
-	//}
-	TODO("Weapon type");
-
-	// cleanup
-
-	cardToCast = nullptr;
+	//cleanup
 	playerCasting = nullptr;
 	gameState = nullptr;
-}
-
-//  =========================================================================================
-void CastSpellFromHandAction(const std::map<std::string, std::string>& parameters)
-{
-
 }
 
 //  =========================================================================================

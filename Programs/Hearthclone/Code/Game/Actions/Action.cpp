@@ -18,11 +18,13 @@ void RegisterAllActions()
 	RegisterAction("draw", DrawAction);
 	RegisterAction("attack", AttackAction);
 	RegisterAction("cast_minion_from_hand", CastMinionFromHandAction);
+	RegisterAction("cast_spell_from_hand", CastSpellFromHandAction);
 	RegisterAction("end_turn", EndTurnAction);
 	RegisterAction("start_turn", StartTurnAction);
 	RegisterAction("damage", DamageAction);
 	RegisterAction("heal", HealAction);
 	RegisterAction("hero_power", UseHeroPowerAction);
+	RegisterAction("cast", CastAction);
 }
 
 void RegisterAction(std::string name, ActionCallback action)

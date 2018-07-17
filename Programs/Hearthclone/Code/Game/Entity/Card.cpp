@@ -225,7 +225,6 @@ void Card::OnLeftClicked()
 					{
 						std::map<std::string, std::string> parameters{ {"targetPlayer", Stringf("%i", playerType)}, {"handIndex", Stringf("%i", cardIndexInPlayerHand)}, {"castLocation", Stringf("%f,%f", mousePosition.x, mousePosition.y)}};
 						AddActionToRefereeQueue("cast_spell_from_hand", parameters);
-						laksdflkjasf
 						break;
 					}
 					
