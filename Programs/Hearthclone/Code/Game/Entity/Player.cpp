@@ -180,13 +180,15 @@ void Player::UpdateHandLockPositions()
 		}
 		
 		m_hand[cardIndex]->m_lockPosition = Vector2(handDockWidthPerCard * (cardIndex + 1), handDockCenterHeight);	
+		
 	}
+
+	RefreshHandRenderables();
 
 	// cleanup
 	gameState = nullptr;
 	board = nullptr;
 }
-
 
 //  =========================================================================================
 void Player::UpdateBoardLockPositions()
@@ -280,4 +282,20 @@ void Player::MoveMinionToGraveyard(Minion* minion)
 	//delete minion
 	delete(minion);
 	minion = nullptr;
+}
+
+//  =============================================================================
+void Player::RefreshHandRenderables()
+{
+	for (int cardIndex = 0; cardIndex < (int)m_hand.size(); ++cardIndex)
+	{	
+		Vector2 lockPosition = m_hand[cardIndex]->m_lockPosition;
+		
+		m_hand[cardIndex]->m_renderScene = g_currentState->m_renderScene2D;
+		m_hand[cardIndex]->RefreshCardRenderables();
+
+		m_hand[cardIndex]->m_lockPosition = lockPosition;
+		m_hand[cardIndex]->m_transform2D->SetLocalPosition(m_hand[cardIndex]->m_lockPosition);
+		m_hand[cardIndex]->UpdateRenderable2DFromTransform();
+	}
 }

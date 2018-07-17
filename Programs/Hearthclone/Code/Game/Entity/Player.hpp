@@ -45,6 +45,8 @@ public:
 	//battlefield utilities
 	void MoveMinionToGraveyard(Minion * minion);
 
+	void RefreshHandRenderables();
+
 public:
 	std::vector<Card*> m_deck;
 	std::vector<Card*> m_graveyard;

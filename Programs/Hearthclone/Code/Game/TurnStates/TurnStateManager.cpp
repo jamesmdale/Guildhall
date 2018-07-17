@@ -186,8 +186,6 @@ void TurnStateManager::TransitionInStartOfTurn()
 	else	
 		m_playingState->m_activePlayer = m_playingState->m_player;
 	
-		
-
 	// handle start of turn state updates for new active player =========================================================================================
 
 	//add one mana crystal if below max
@@ -215,6 +213,7 @@ void TurnStateManager::TransitionInStartOfTurn()
 	parameters = {{"targetId", Stringf("%i", m_playingState->m_activePlayer->m_hero->m_characterId)}, {"amount", "1"}};
 	AddActionToRefereeQueue("draw", parameters);
 
+	//refresh visuals
 	m_playingState->m_gameBoard->RefreshPlayerManaWidget();
 	m_playingState->m_gameBoard->RefreshEndTurnWidget();
 

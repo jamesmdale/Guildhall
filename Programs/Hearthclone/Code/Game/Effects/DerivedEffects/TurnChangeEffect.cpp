@@ -74,6 +74,12 @@ void TurnChangeEffect::Update(float deltaSeconds)
 	// finished logic =========================================================================================
 	if (m_stopWatch->HasElapsed())
 	{
+		PlayingState* gameState = (PlayingState*)g_currentState;
+		gameState->m_player->RefreshHandRenderables();
+		gameState->m_enemyPlayer->RefreshHandRenderables();
+
 		m_isComplete = true;
+
+		gameState = nullptr;
 	}
 }

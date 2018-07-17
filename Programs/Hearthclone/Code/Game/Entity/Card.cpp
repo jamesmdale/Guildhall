@@ -109,40 +109,55 @@ void Card::RefreshCardRenderables()
 	// create background
 	Renderable2D* cardRenderable = new Renderable2D();
 
-	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels * 0.99f, GetCardColorByClass(m_definition->m_class)); //make it slightly smaller
-	cardRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
+	Material* materialInstance = nullptr;
 
-	// create card template overlay renderable
-	mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels, Rgba::WHITE);
-	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
-	materialInstance->SetTexture(0, m_cardLayoutImage);
-
-	cardRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), materialInstance);
-
-	// create card image renderable
-	mb.CreateQuad2D(cardBottomRight + (m_dimensionsInPixels * g_cardImageCenterRatio), m_dimensionsInPixels * g_cardImageDimensionsRatio, Rgba::WHITE);
-	materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
-	materialInstance->SetTexture(0, m_cardImage);
-
-	cardRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
-
-	// create card text renderable 
-	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardNameCenterRatio), m_dimensionsInPixels * g_cardNameDimensionsRatio, 4.f / 3.f, m_name, Rgba::WHITE); //name
-	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardManaCenterRatio), m_dimensionsInPixels * g_cardManaDimensionsRatio, 1.f, Stringf("%i", m_cost), Rgba::WHITE); //mana
-
-	if (m_definition->m_type == MINION_TYPE)
+	PlayingState* gameState = (PlayingState*)g_currentState;
+	if (gameState->m_activePlayer->m_playerId != m_controller)
 	{
-		mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardAttackCenterRatio), m_dimensionsInPixels * g_cardAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
-		mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardHealthCenterRatio), m_dimensionsInPixels * g_cardHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
+		mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels, Rgba::WHITE);
+		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
+		materialInstance->SetTexture(0, theRenderer->CreateOrGetTexture("Data/Images/Cards/card_back.png"));
+
+		cardRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
+	}
+	else
+	{
+		mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels * 0.99f, GetCardColorByClass(m_definition->m_class)); //make it slightly smaller
+		cardRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
+
+		// create card template overlay renderable
+		mb.CreateQuad2D(Vector2::ZERO, m_dimensionsInPixels, Rgba::WHITE);
+		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
+		materialInstance->SetTexture(0, m_cardLayoutImage);
+
+		cardRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), materialInstance);
+
+		// create card image renderable
+		mb.CreateQuad2D(cardBottomRight + (m_dimensionsInPixels * g_cardImageCenterRatio), m_dimensionsInPixels * g_cardImageDimensionsRatio, Rgba::WHITE);
+		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
+		materialInstance->SetTexture(0, m_cardImage);
+
+		cardRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), materialInstance);
+
+		// create card text renderable 
+		mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardNameCenterRatio), m_dimensionsInPixels * g_cardNameDimensionsRatio, 4.f / 3.f, m_name, Rgba::WHITE); //name
+		mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardManaCenterRatio), m_dimensionsInPixels * g_cardManaDimensionsRatio, 1.f, Stringf("%i", m_cost), Rgba::WHITE); //mana
+
+		if (m_definition->m_type == MINION_TYPE)
+		{
+			mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardAttackCenterRatio), m_dimensionsInPixels * g_cardAttackDimensionsRatio, 1.f, Stringf("%i", m_attack), Rgba::WHITE); //attack
+			mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardHealthCenterRatio), m_dimensionsInPixels * g_cardHealthDimensionsRatio, 1.f, Stringf("%i", m_health), Rgba::WHITE); //health
+		}
+
+		mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardTextCenterRatio), m_dimensionsInPixels * g_cardTextDimensionsRatio, 4.f / 3.f, m_text, Rgba::WHITE); //Text
+
+		materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
+		materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
+		cardRenderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);	
 	}
 	
-	mb.CreateText2DInAABB2(cardBottomRight + (m_dimensionsInPixels * g_cardTextCenterRatio), m_dimensionsInPixels * g_cardTextDimensionsRatio, 4.f / 3.f, m_text, Rgba::WHITE); //Text
-	
-	materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("text"));
-	materialInstance->SetProperty("TINT", Rgba::ConvertToVector4(Rgba::WHITE));
-	cardRenderable->AddRenderableData(3, mb.CreateMesh<VertexPCU>(), materialInstance);	
-
 	m_renderables.push_back(cardRenderable);
+	materialInstance = nullptr;
 
 	// add renderables to scene
 	for (int renderableIndex = 0; renderableIndex < (int)m_renderables.size(); ++renderableIndex)
