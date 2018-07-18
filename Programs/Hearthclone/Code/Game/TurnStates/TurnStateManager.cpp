@@ -158,16 +158,29 @@ void TurnStateManager::Transition()
 
 void TurnStateManager::TransitionInStartOfGame()
 {
+	int randomStart = GetRandomFloatInRange(0.f, 1.f);
+	int playerStartingCards = 0;
+	int enemyStartingCards = 0;
+	if (randomStart >= 0.5f)
+	{
+		m_playingState->m_activePlayer = m_playingState->m_player;
+		playerStartingCards = 3;
+		enemyStartingCards = 4;
+	}
+	else
+	{
+		m_playingState->m_activePlayer = m_playingState->m_enemyPlayer;
+		playerStartingCards = 4;
+		enemyStartingCards = 3;
+	}
+
 	//each player draws 3 cards
-	std::map<std::string, std::string> parameters = {{"targetId", Stringf("%i", m_playingState->m_player->m_hero->m_characterId)}, {"amount", "3"}};
+	std::map<std::string, std::string> parameters = {{"targetId", Stringf("%i", m_playingState->m_player->m_hero->m_characterId)}, {"amount", Stringf("%i", playerStartingCards).c_str()}};
 	AddActionToRefereeQueue("draw", parameters);
 
 	//each player draws 3 cards
-	parameters = {{"targetId", Stringf("%i", m_playingState->m_enemyPlayer->m_hero->m_characterId)}, {"amount", "3"}};
+	parameters = {{"targetId", Stringf("%i", m_playingState->m_enemyPlayer->m_hero->m_characterId)}, {"amount", Stringf("%i", playerStartingCards).c_str()}};
 	AddActionToRefereeQueue("draw", parameters);
-
-	TODO("roll random for who starts first");
-	m_playingState->m_activePlayer = m_playingState->m_player;
 
 	isFinishedTransitioningIn = true;
 	m_currentState = m_transitionState;
@@ -179,14 +192,17 @@ void TurnStateManager::TransitionInStartOfGame()
 void TurnStateManager::TransitionInStartOfTurn()
 {
 	std::string player = "";
-
-	//swap active player
-	if (m_playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
-		m_playingState->m_activePlayer = m_playingState->m_enemyPlayer;
-	else	
-		m_playingState->m_activePlayer = m_playingState->m_player;
 	
-	// handle start of turn state updates for new active player =========================================================================================
+	if (m_playingState->m_turnCount != 0)
+	{
+		//swap active player
+		if (m_playingState->m_activePlayer->m_playerId == SELF_PLAYER_TYPE)
+			m_playingState->m_activePlayer = m_playingState->m_enemyPlayer;
+		else
+			m_playingState->m_activePlayer = m_playingState->m_player;
+	}	
+	
+	// handle start of turn state updates for new active player 
 
 	//add one mana crystal if below max
 	if (m_playingState->m_activePlayer->m_maxManaCount < 10)
@@ -221,6 +237,8 @@ void TurnStateManager::TransitionInStartOfTurn()
 	isFinishedTransitioningIn = true;
 	m_currentState = m_transitionState;
 	m_transitionState = NUM_PLAY_STATES;
+
+	m_playingState->m_turnCount++;
 
 	TransitionToState(MAIN_PLAY_STATE);
 }
