@@ -330,6 +330,7 @@
     <ClCompile Include="Triggers\Trigger.cpp" />
     <ClCompile Include="Effects\DerivedEffects\TurnChangeEffect.cpp" />
     <ClCompile Include="TurnStates\TurnStateManager.cpp" />
+    <ClCompile Include="Effects\DerivedEffects\VictoryEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engine\Code\Engine\Engine.vcxproj">
@@ -371,6 +372,7 @@
     <ClInclude Include="Triggers\Trigger.hpp" />
     <ClInclude Include="Effects\DerivedEffects\TurnChangeEffect.hpp" />
     <ClInclude Include="TurnStates\TurnStateManager.hpp" />
+    <ClInclude Include="Effects\DerivedEffects\VictoryEffect.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

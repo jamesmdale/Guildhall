@@ -458,6 +458,59 @@ void MeshBuilder::CreateQuad2D(const Vector2& center, const Vector2& dimensions,
 	CreateQuad3D(Vector3(center.x, center.y, 0.f), dimensions, tint);
 }
 
+void MeshBuilder::CreateLine2D(const Vector2 & startPosition, const Vector2 & endPosition, float width, const Rgba & tint)
+{
+	//get direction to draw
+	Vector2 lineVector = startPosition - endPosition;
+	lineVector.GetLength();
+	float halfWidth = width * 0.5f;
+
+	Vector2 bottomLeft = Vector2(startPosition.x - halfWidth, startPosition.y);
+	Vector2 bottomRight = Vector2(endPosition.x + halfWidth, startPosition.y);
+
+	Vector2 topRight = Vector2(endPosition.x + halfWidth, endPosition.y);
+	Vector2 topLeft = Vector2(startPosition.x - halfWidth, endPosition.y);
+
+	int vertSize = GetVertexCount();	
+
+	SetColor(tint);
+	SetUV(Vector2(0, 0));
+	PushVertex(Vector3(bottomLeft.x, bottomLeft.y, 0));
+
+	SetColor(tint);
+	SetUV(Vector2(1.f, 0.f));
+	PushVertex(Vector3(bottomRight.x, bottomRight.y, 0));
+
+	SetColor(tint);
+	SetUV(Vector2(1.f, 1.f));
+	PushVertex(Vector3(topRight.x, topRight.y, 0));
+
+	SetColor(tint);
+	SetUV(Vector2(0.f, 1.f));
+	PushVertex(Vector3(topLeft.x, topLeft.y, 0));
+
+	AddQuadIndices(vertSize, vertSize + 1, vertSize + 2, vertSize + 3);
+
+
+	//SetColor(tint);
+	//SetUV(Vector2(0, 0));
+	//PushVertex(Vector3(0 - halfWidth, 0 - halfWidth, 0));
+
+	//SetColor(tint);
+	//SetUV(Vector2(1.f, 0.f));
+	//PushVertex(Vector3(lineVector.x + halfWidth, 0 - halfWidth, 0));
+
+	//SetColor(tint);
+	//SetUV(Vector2(1.f, 1.f));
+	//PushVertex(Vector3(lineVector.x + halfWidth, lineVector.y + halfWidth, 0));
+
+	//SetColor(tint);
+	//SetUV(Vector2(0.f, 1.f));
+	//PushVertex(Vector3(0 - halfWidth, lineVector.y + halfWidth, 0));
+
+	//AddQuadIndices(vertSize, vertSize + 1, vertSize + 2, vertSize + 3);
+}
+
 void MeshBuilder::CreateQuad2D(const AABB2& drawBounds, const Rgba& tint)
 {
 	Vector2 center = drawBounds.GetCenter();

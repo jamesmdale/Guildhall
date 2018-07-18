@@ -19,6 +19,7 @@
 #include "Game\Entity\HeroPower.hpp"
 #include "Game\Effects\DerivedEffects\CastTargetEffect.hpp"
 #include "Game\Effects\DerivedEffects\DamageEffect.hpp"
+#include "Game\Effects\DerivedEffects\VictoryEffect.hpp"
 
 // actions =============================================================================
 
@@ -381,7 +382,20 @@ void DamageAction(const std::map<std::string, std::string>& parameters)
 			DeathEffect* deathEffect = new DeathEffect((Minion*)targetCharacter, 0.5f);
 			AddEffectToEffectQueue(deathEffect);
 			deathEffect = nullptr;
-		}			
+		}		
+
+		if (targetCharacter->m_type == CHARACTER_TYPE_HERO)
+		{
+			Hero* losingHero = (Hero*)targetCharacter;
+			losingHero->m_controller;
+
+			VictoryEffect* victoryEffect = new VictoryEffect(losingHero->m_controller, targetCharacter->m_renderScene);
+			AddEffectToEffectQueue(victoryEffect);
+			
+			losingHero = nullptr;
+			victoryEffect = nullptr;
+
+		}
 	}
 
 	targetCharacter->RefreshRenderables();

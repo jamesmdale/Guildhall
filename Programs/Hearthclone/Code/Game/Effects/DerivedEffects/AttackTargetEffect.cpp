@@ -42,7 +42,10 @@ void AttackTargetEffect::Update(float deltaSeconds)
 {
 	InputSystem* theInput = InputSystem::GetInstance();
 	Vector2 mouseCoordinates = theInput->GetMouse()->GetInvertedMouseClientPosition();
+	RefreshTargetRenderable();
 	m_targetWidget->m_transform2D->SetLocalPosition(mouseCoordinates);
+	m_targetWidget->UpdateRenderable2DFromTransform();
+	
 	theInput = nullptr;
 
 	m_targetWidget->PreRender();
@@ -117,11 +120,20 @@ void AttackTargetEffect::RefreshTargetRenderable()
 
 	AABB2 quadAABB = AABB2(Vector2::ZERO, targetingDimensions.x, targetingDimensions.y);
 
+	//add target quad
 	mb.CreateQuad2D(quadAABB, Rgba::WHITE);
 	Material* targetMaterial = Material::Clone(theRenderer->CreateOrGetMaterial("alpha"));
 	targetMaterial->SetTexture(0, theRenderer->CreateOrGetTexture("Data/Images/Target.png"));
 
-	targetRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), targetMaterial);
+	targetRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), targetMaterial);
+
+	//add target line
+	/*mb.CreateLine2D(m_attackingWidget->m_transform2D->GetLocalPosition(), m_targetWidget->m_transform2D->GetLocalPosition(), 10.f, Rgba::RED);
+	targetMaterial = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
+	targetMaterial->SetTexture(0, theRenderer->CreateOrGetTexture("default"));*/
+
+	/*targetRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), targetMaterial);*/
+
 	m_targetWidget->m_renderables.push_back(targetRenderable);
 
 	m_attackingWidget->m_renderScene->AddRenderable(targetRenderable);
