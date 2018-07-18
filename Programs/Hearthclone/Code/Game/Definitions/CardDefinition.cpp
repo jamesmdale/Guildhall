@@ -67,10 +67,8 @@ CardDefinition::CardDefinition(const tinyxml2::XMLElement& element)
 				parameters.insert(std::pair<std::string, std::string>(keyValue, value));
 			}
 
-			ActionData* data = new ActionData(actionName, parameters);
+			ActionData data = ActionData(actionName, parameters);
 			m_actions.push_back(data);
-
-			data = nullptr;
 		}
 	}
 

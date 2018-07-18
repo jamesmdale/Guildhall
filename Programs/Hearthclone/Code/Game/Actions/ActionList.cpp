@@ -18,6 +18,7 @@
 #include "Game\Entity\Hero.hpp"
 #include "Game\Entity\HeroPower.hpp"
 #include "Game\Effects\DerivedEffects\CastTargetEffect.hpp"
+#include "Game\Effects\DerivedEffects\DamageEffect.hpp"
 
 // actions =============================================================================
 
@@ -201,7 +202,7 @@ void CastMinionFromHandAction(const std::map<std::string, std::string>& paramete
 	//add cast action to referee queue
 	for (int actionIndex = 0; actionIndex < (int)cardToCast->m_definition->m_actions.size(); actionIndex++)
 	{
-		AddActionToRefereeQueue(*cardToCast->m_definition->m_actions[actionIndex]);
+		AddActionToRefereeQueue(cardToCast->m_actions[actionIndex]);
 	}
 
 	//pay mana cost last
@@ -267,7 +268,7 @@ void CastSpellFromHandAction(const std::map<std::string, std::string>& parameter
 	{
 		for (int actionIndex = 0; actionIndex < (int)cardToCast->m_definition->m_actions.size(); actionIndex++)
 		{
-			AddActionToRefereeQueue(*cardToCast->m_definition->m_actions[actionIndex]);
+			AddActionToRefereeQueue(cardToCast->m_actions[actionIndex]);
 		}
 
 		//pay mana cost last
@@ -369,12 +370,17 @@ void DamageAction(const std::map<std::string, std::string>& parameters)
 	Character* targetCharacter = gameState->GetCharacterById(targetId);
 	targetCharacter->m_health -= damageAmount;
 
+	DamageEffect* damageEffect = new DamageEffect(targetCharacter, 0.5f, damageAmount);
+	AddEffectToEffectQueue(damageEffect);
+	damageEffect = nullptr;
+
 	if (targetCharacter->m_health <= 0)
 	{
 		if (targetCharacter->m_type == CHARACTER_TYPE_MINION)
 		{
 			DeathEffect* deathEffect = new DeathEffect((Minion*)targetCharacter, 0.5f);
 			AddEffectToEffectQueue(deathEffect);
+			deathEffect = nullptr;
 		}			
 	}
 

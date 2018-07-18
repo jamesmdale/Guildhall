@@ -40,7 +40,7 @@ public:
 	bool m_doesTarget = false;
 	
 	std::vector<std::string> m_tags;
-	std::vector<ActionData*> m_actions;
+	std::vector<ActionData> m_actions;
 
 	std::string m_text = "";
 	std::vector<CardTextElement> m_textParameters;

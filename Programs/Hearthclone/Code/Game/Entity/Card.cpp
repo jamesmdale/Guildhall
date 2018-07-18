@@ -32,6 +32,7 @@ Card::Card(const CardDefinition* definition)
 
 	m_tags = definition->m_tags;
 	m_text = definition->m_text;
+	m_actions = definition->m_actions;
 	
 	switch (m_definition->m_type)
 	{

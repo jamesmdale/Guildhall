@@ -3,6 +3,7 @@
 #include "Game\GameStates\GameState.hpp"
 #include "Engine\Time\Clock.hpp"
 #include "Engine\Math\MathUtils.hpp"
+#include "Game\GameStates\GameState.hpp"
 
 
 DeathEffect::DeathEffect(Minion* targetMinion, float effectTime)
@@ -15,6 +16,7 @@ DeathEffect::DeathEffect(Minion* targetMinion, float effectTime)
 
 DeathEffect::~DeathEffect()
 {
+	m_targetMinion->DeleteRenderables();
 	m_targetMinion = nullptr;
 }
 
@@ -46,7 +48,9 @@ void DeathEffect::Update(float deltaSeconds)
 			owner = gameState->m_enemyPlayer;
 
 		owner->MoveMinionToGraveyard(m_targetMinion);	
-		owner->UpdateBoardLockPositions();
+		gameState->m_enemyPlayer->UpdateBoardLockPositions();
+		gameState->m_player->UpdateBoardLockPositions();
+
 
 		gameState = nullptr;
 		m_isComplete = true;

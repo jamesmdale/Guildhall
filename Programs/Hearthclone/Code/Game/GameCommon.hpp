@@ -57,6 +57,7 @@ const int g_maxMinionCount = 7;
 const int g_maxBattlefieldSize = 11;
 
 const float g_targetingPercentageOfClientWindowHeight = 0.05f;
+const float g_damagePercentageOfClientWindowHeight = 0.03f;
 
 //used to calculate center positions of all elements on a card
 const Vector2 g_cardSize = Vector2(370.f, 512.f);

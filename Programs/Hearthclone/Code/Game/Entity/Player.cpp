@@ -224,6 +224,8 @@ void Player::UpdateBoardLockPositions()
 		m_minions[minionIndex]->RefreshRenderables();		
 
 		m_minions[minionIndex]->m_lockPosition = Vector2(adjustedBattlefieldQuad.mins.x + ((minionDimensionsX * 0.5f) * (float)((minionIndex * 2) + 1)), battlefieldDockCenterHeight);	
+		m_minions[minionIndex]->m_transform2D->SetLocalPosition(m_minions[minionIndex]->m_lockPosition);
+		m_minions[minionIndex]->UpdateRenderable2DFromTransform();
 	}
 
 	// cleanup

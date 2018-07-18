@@ -86,19 +86,19 @@ void CastTargetEffect::UpdateInput()
 		if (selectedWidget != nullptr)
 		{
 			//update explicit target parameter for each action attached to the ability
-			for (int actionIndex = 0; actionIndex < m_cardWidget->m_definition->m_actions.size(); ++actionIndex)
+			for (int actionIndex = 0; actionIndex < m_cardWidget->m_actions.size(); ++actionIndex)
 			{
-				std::map<std::string, std::string>::iterator paramIterator = m_cardWidget->m_definition->m_actions[actionIndex]->parameters.begin();
+				std::map<std::string, std::string>::iterator paramIterator = m_cardWidget->m_actions[actionIndex].parameters.begin();
 
-				paramIterator = m_cardWidget->m_definition->m_actions[actionIndex]->parameters.find("targetId");
-				if (paramIterator != m_cardWidget->m_definition->m_actions[actionIndex]->parameters.end())
+				paramIterator = m_cardWidget->m_actions[actionIndex].parameters.find("targetId");
+				if (paramIterator != m_cardWidget->m_actions[actionIndex].parameters.end())
 				{
 					//if the targetId isn't already defined we should set it. (THIS SHOULD ALWAYS BE THE CASE WITHIN THIS FUNCTION)
 					if(paramIterator->second == "")
 						paramIterator->second = Stringf("%i", selectedWidget->m_characterId);
 				}
 
-				AddActionToRefereeQueue(m_cardWidget->m_definition->m_actions[actionIndex]->actionName, m_cardWidget->m_definition->m_actions[actionIndex]->parameters);
+				AddActionToRefereeQueue(m_cardWidget->m_actions[actionIndex].actionName, m_cardWidget->m_actions[actionIndex].parameters);
 			}	
 
 			//pay mana cost last

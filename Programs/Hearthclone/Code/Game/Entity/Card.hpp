@@ -37,6 +37,7 @@ public:
 
 	ePlayerType m_controller;
 
+	std::vector<ActionData> m_actions;
 	std::vector<std::string> m_tags;
 	std::string m_text;	
 
