@@ -38,7 +38,7 @@
           <Parameter key="amount" value="2" />
         </Action>        
         <Action name="heal">
-          <Parameter key="targetId" value="self"/>
+          <Parameter key="targetId" value="2"/>
           <Parameter key="amount" value="2" />
         </Action>        
       </Actions>      

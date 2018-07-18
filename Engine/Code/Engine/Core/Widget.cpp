@@ -81,7 +81,8 @@ void Widget::DeleteRenderables()
 			m_renderables[renderableIndex] = nullptr;
 		}
 	}
-	if(m_renderables.size() > 0)
+
+	if (m_renderables.size() > 0)
 		m_renderables.clear();
 }
 
