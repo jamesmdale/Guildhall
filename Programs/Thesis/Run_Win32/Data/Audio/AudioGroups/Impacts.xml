@@ -1,0 +1,6 @@
+<AudioGroup name="impact" path="Data/Audio/Impact/">
+    <Sound name="Hit_GunButt_PistolWhip1.wav" />
+    <Sound name="Hit_GunButt_PistolWhip2.wav" />
+    <Sound name="Hit_GunButt_PistolWhip3.wav" />
+    <Sound name="Hit_GunButt_PistolWhip4.wav" />
+</AudioGroup>

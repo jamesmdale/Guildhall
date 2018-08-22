@@ -1,0 +1,7 @@
+<material name="rallyfighter">
+	<shader name="lit" />
+	<textures>
+		<texture bind="0" file="Data\Model\claire_car\RallyFighter_ALB.png" />
+		<texture bind="1" file="Data\Model\claire_car\RallyFighter_NRM.png" />	
+	</textures>
+</material>
