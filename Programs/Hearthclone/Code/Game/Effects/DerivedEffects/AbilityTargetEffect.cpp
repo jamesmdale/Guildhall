@@ -82,8 +82,7 @@ void AbilityTargetEffect::UpdateInput()
 				if (paramIterator != m_actions[actionIndex]->parameters.end())
 				{
 					//if the targetId isn't already defined we should set it. (THIS SHOULD ALWAYS BE THE CASE WITHIN THIS FUNCTION)
-					if(paramIterator->second == "")
-						paramIterator->second = Stringf("%i", selectedWidget->m_characterId);
+					paramIterator->second = Stringf("%i", selectedWidget->m_characterId);
 				}
 
 				AddActionToRefereeQueue(m_actions[actionIndex]->actionName, m_actions[actionIndex]->parameters);

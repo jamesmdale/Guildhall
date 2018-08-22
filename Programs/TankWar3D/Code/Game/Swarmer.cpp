@@ -24,8 +24,9 @@ Swarmer::~Swarmer()
 	m_gameState = nullptr;
 }
 
-// udpate methods =========================================================================================
-
+//  =============================================================================
+// update methods =========================================================================================
+//  =============================================================================
 void Swarmer::Update(float deltaSeconds)
 {
 	//change orientation and height from terrain
@@ -38,9 +39,10 @@ void Swarmer::Update(float deltaSeconds)
 	SwarmerToTankCollision();
 }
 
+//  =============================================================================
 void Swarmer::UpdateSwarmerFromTerrain()
 {
-	// update from terrain =========================================================================================
+	// update from terrain
 	Vector3 basePosition = m_transform->GetWorldPosition();
 
 	//get height and normal from terrain
@@ -60,6 +62,7 @@ void Swarmer::UpdateSwarmerFromTerrain()
 	m_transform->SetLocalPosition(Vector3(basePosition.x, basePosition.y, basePosition.z));
 }
 
+//  =============================================================================
 void Swarmer::UpdateSwarmerMovement(float deltaSeconds)
 {
 	Vector3 position = m_transform->GetWorldPosition();
@@ -91,6 +94,7 @@ void Swarmer::UpdateSwarmerMovement(float deltaSeconds)
 	m_transform->SetLocalPosition(swarmerWorld.GetPosition());	
 }
 
+//  =============================================================================
 void Swarmer::SwarmerToTankCollision()
 {
 	// swarmer to player collision =========================================================================================
@@ -107,6 +111,7 @@ void Swarmer::SwarmerToTankCollision()
 	playerTank = nullptr;
 }
 
+//  =============================================================================
 Vector3 Swarmer::Flock(float deltaSeconds)
 {
 	Vector3 separateSteer = SeparateWithNeighbors(deltaSeconds);
@@ -127,6 +132,7 @@ Vector3 Swarmer::Flock(float deltaSeconds)
 	return newDirection;
 }
 
+//  =============================================================================
 Vector3 Swarmer::SeparateWithNeighbors(float deltaSeconds)
 {
 	Vector3 currentPosition = m_transform->GetWorldPosition();
@@ -176,6 +182,7 @@ Vector3 Swarmer::SeparateWithNeighbors(float deltaSeconds)
 	return steerDir;
 }
 
+//  =============================================================================
 Vector3 Swarmer::AlignWithNeighbors(float deltaSeconds)
 {
 	Vector3 currentPosition = m_transform->GetWorldPosition();
@@ -213,6 +220,7 @@ Vector3 Swarmer::AlignWithNeighbors(float deltaSeconds)
 	return steerDir;
 }
 
+//  =============================================================================
 Vector3 Swarmer::CenterTowardsNeighbors(float deltaSeconds)
 {
 	Vector3 currentPosition = m_transform->GetWorldPosition();
@@ -262,6 +270,7 @@ Vector3 Swarmer::CenterTowardsNeighbors(float deltaSeconds)
 	return steerDir;
 }
 
+//  =============================================================================
 Vector3 Swarmer::SeekTarget(float deltaSeconds, const Vector3& targetPosition)
 {
 	Vector3 steerDir = Vector3::ZERO;
@@ -275,7 +284,6 @@ Vector3 Swarmer::SeekTarget(float deltaSeconds, const Vector3& targetPosition)
 
 
 // initialization method =========================================================================================
-
 void Swarmer::Initialize()
 {
 	//update transforms

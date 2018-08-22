@@ -6,6 +6,7 @@
 #include "Engine\Audio\AudioSystem.hpp"
 #include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Profiler\ProfilerConsole.hpp"
+#include "Engine\Net\Net.hpp"
 
 
 Blackboard g_gameConfigBlackboard;
@@ -13,10 +14,10 @@ Blackboard g_gameConfigBlackboard;
 //  =============================================================================
 void EngineStartup()
 {
-	RenderStartup();
-
 	LogSystem::CreateInstance();
 	LogSystem::GetInstance()->Startup();
+
+	RenderStartup();
 
 	Renderer::CreateInstance();
 	Renderer::GetInstance()->PostStartup();
@@ -35,6 +36,9 @@ void EngineStartup()
 
 	ProfilerConsole::CreateInstance();
 	ProfilerConsole::GetInstance()->Startup();
+
+	Net::Startup();
+
 }
 
 //  =============================================================================

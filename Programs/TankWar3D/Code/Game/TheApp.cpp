@@ -268,11 +268,11 @@ void LogTest(const char* sourceFile, int threadCount)
 {
 	for (int threadIndex = 0; threadIndex < threadCount; ++threadIndex)
 	{
-		LogTestInfo info;
-		info.filePath = sourceFile;
-		info.threadId = threadIndex + 1;
+		LogTestInfo* info = new LogTestInfo();
+		info->filePath = sourceFile;
+		info->threadId = threadIndex + 1;
 
-		std::thread object(LogTestWork, (void*)&info);
+		std::thread object(LogTestWork, (void*)info);
 		object.detach();
 	}
 }

@@ -243,34 +243,7 @@ Vector3 Tank::UpdateTarget(float deltaSeconds)
 	
 	Vector3 rotation = Vector3(lookAtInTankSpace.GetRotation().x, lookAtInTankSpace.GetRotation().y, 0.f);
 	m_turret->m_transform->SetFromMatrix(lookAtInTankSpace);
-	//m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
 
-	//// update tank turret to look at to result location =========================================================================================
-	//Matrix44 turretWorld = m_turret->m_transform->GetWorldMatrix();
-	//Vector3 turretWorldUp = turretWorld.GetUp();
-
-	//Matrix44 turretLookAt = turretWorld.LookAt(turretWorld.GetPosition(), raycastResult.position, m_transform->GetWorldUp());
-
-	////Matrix44 lerpLookAt = turretWorld.TurnToward(turretLookAt, 0.1f);
-
-	//Matrix44 worldToTank = m_transform->GetWorldMatrix().GetInverse();
-
-	////worldToTank.Append(lerpLookAt);
-	//worldToTank.Append(turretLookAt);
-
-
-	//Vector3 rotation = Vector3(worldToTank.GetRotation().x, worldToTank.GetRotation().y, 0.f);
-	//m_turret->m_transform->SetLocalRotation(rotation); //this is the final turret look at
-
-
-	// render debug position =========================================================================================
-	//Vector3 raycastRenderStartPosition = m_transform->GetLocalPosition() + (m_transform->GetWorldUp());
-
-	//turret forward debug line
-	//DebugRender::GetInstance()->CreateDebugLine(m_turret->m_transform->GetWorldPosition(), raycastResult.position, Rgba::ORANGE, Rgba::ORANGE, 0.f, 1, m_camera);
-
-	////tank forward debug line
-	//DebugRender::GetInstance()->CreateDebugLine(m_transform->GetWorldPosition(), raycastResult.position, Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
 	DebugRender::GetInstance()->CreateDebugCube(raycastResult.position, Vector3(1.f, 1.f, 1.f), Rgba::RED, Rgba::RED, 0.f, 1, m_camera);
 
 	return raycastResult.position;

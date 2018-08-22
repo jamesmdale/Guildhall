@@ -280,6 +280,15 @@
     <ClCompile Include="Core\LogSystem.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Net\Net.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\NetAddress.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\TCPSocket.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -395,6 +404,9 @@
     <ClInclude Include="Core\LogSystem.hpp" />
     <ClInclude Include="Utility\ThreadSafeQueue.hpp" />
     <ClInclude Include="Utility\SpinLock.hpp" />
+    <ClInclude Include="Net\Net.hpp" />
+    <ClInclude Include="Net\NetAddress.hpp" />
+    <ClInclude Include="Net\TCPSocket.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

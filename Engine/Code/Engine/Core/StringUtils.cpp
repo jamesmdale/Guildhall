@@ -65,6 +65,21 @@ std::string SplitStringOnFirstWord(const std::string& inputString)
 	return returnString;
 }
 
+bool IsStringNullOrEmpty(const char* inputString)
+{
+	std::string input = std::string(inputString);
+	return IsStringNullOrEmpty(input);
+}
+
+//  =============================================================================
+bool IsStringNullOrEmpty(const std::string & inputString)
+{
+	if(inputString.empty || inputString == "")
+		return true;
+
+	return false;
+}
+
 //  =============================================================================
 void RemoveEmptyStrings(std::vector<std::string>& outStrings)
 {

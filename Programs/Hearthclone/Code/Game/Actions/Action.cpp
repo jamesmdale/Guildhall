@@ -11,7 +11,7 @@
 std::map<std::string, ActionCallback> s_registeredActions;
 std::queue<ActionData> RefereeQueue;
 
-// genereal functions =============================================================================
+// general functions =============================================================================
 
 void RegisterAllActions()
 {

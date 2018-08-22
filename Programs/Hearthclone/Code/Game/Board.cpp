@@ -162,12 +162,12 @@ void Board::CreateBoardMeshesForRenderable(Renderable2D* renderable)
 	Vector2 playerWeaponCenter = Vector2((clientWindowDimensions.x * 0.5f) - (heroPortraitDimensions.x * 0.5f) - (heroWeaponDimensions.x * 0.5f)
 		, (heroAbilityDimensions.y * 0.5f) + handDimensions.y);
 
-	//store off hero portrait quads
+	//store off hero weapon quads
 	m_enemyHeroWeaponQuad = AABB2(enemyWeaponCenter, heroWeaponDimensions.x * 0.5f, heroWeaponDimensions.y * 0.5f);
 	m_playerHeroWeaponQuad = AABB2(playerWeaponCenter, heroWeaponDimensions.x * 0.5f, heroWeaponDimensions.y * 0.5f);
 
-	mb.CreateQuad2D(enemyWeaponCenter, heroWeaponDimensions, Rgba::WHITE);
-	mb.CreateQuad2D(playerWeaponCenter, heroWeaponDimensions, Rgba::WHITE);
+	/*mb.CreateQuad2D(enemyWeaponCenter, heroWeaponDimensions, Rgba::WHITE);
+	mb.CreateQuad2D(playerWeaponCenter, heroWeaponDimensions, Rgba::WHITE);*/
 
 	// create quad for battlefield divider =========================================================================================
 	Vector2 enemyManaCenter = Vector2(clientWindowDimensions.x - (manaDimensions.x * 0.5f)

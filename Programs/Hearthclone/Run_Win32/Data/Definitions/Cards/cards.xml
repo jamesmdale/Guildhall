@@ -5,7 +5,6 @@
       <Attributes cost="1" attack="4" health="5" />
       <Class class="neutral" />
       <Tags>
-          <!--> <Tag tag="battlecry" /><-->
       </Tags>
       <Text text="" />
     </CardDefinition>
@@ -21,7 +20,6 @@
         </Action>
       </Actions>
       <Tags>
-          <!--> <Tag tag="battlecry" /><-->
       </Tags>
       <Text text="Deal {1} damage.">
         <Parameter actionName="damage" actionKey="amount" />
@@ -43,7 +41,6 @@
         </Action>        
       </Actions>      
       <Tags>
-        <!--> <Tag tag="battlecry" /><-->
       </Tags>      
       <Text text="Deal {1} damage. Restore {2} health to your hero.">
         <Parameter actionName="damage" actionKey="amount" />

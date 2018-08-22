@@ -53,14 +53,14 @@ void AddActionToRefereeQueue(const std::string& callbackName, const std::map<std
 
 //EXAMPLE
 /*	TEMPLATE
-void DoStuff(const std::map<std::string, std::string>& parameters)
-{
-// get parameters =============================================================================
-std::string thing1 = parameters.find("thing")->second;
-int thing2 = atoi(parameters.find("thing2")->second.c_str());
+	void DoStuff(const std::map<std::string, std::string>& parameters)
+	{
+	// get parameters =============================================================================
+	std::string thing1 = parameters.find("thing")->second;
+	int thing2 = atoi(parameters.find("thing2")->second.c_str());
 
-// Do Stuff =============================================================================		
-}
+	// Do Stuff =============================================================================		
+	}
 */
 
 // action list =============================================================================

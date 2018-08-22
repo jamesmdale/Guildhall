@@ -45,6 +45,8 @@
     <ClCompile Include="Debug\DebugRender.cpp" />
     <ClCompile Include="Core\GameObject.cpp" />
     <ClCompile Include="Math\Plane.cpp" />
+    <ClCompile Include="Net\NetAddress.cpp" />
+    <ClCompile Include="Net\Net.cpp" />
     <ClCompile Include="Profiler\ProfilerReport.cpp" />
     <ClCompile Include="Profiler\ProfilerReportEntry.cpp" />
     <ClCompile Include="Profiler\Profiler.cpp" />
@@ -72,6 +74,7 @@
     <ClCompile Include="Core\Terrain.cpp" />
     <ClCompile Include="Math\Segment3.cpp" />
     <ClCompile Include="Async\Threading.cpp" />
+    <ClCompile Include="Net\TCPSocket.cpp" />
     <ClCompile Include="Time\Stopwatch.cpp" />
     <ClCompile Include="Time\Clock.cpp" />
     <ClCompile Include="Time\Time.cpp" />
@@ -121,6 +124,9 @@
   <ItemGroup>
     <ClInclude Include="Async\Threading.hpp" />
     <ClInclude Include="Core\LogSystem.hpp" />
+    <ClInclude Include="Net\NetAddress.hpp" />
+    <ClInclude Include="Net\Net.hpp" />
+    <ClInclude Include="Net\TCPSocket.hpp" />
     <ClInclude Include="Utility\Graph.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
