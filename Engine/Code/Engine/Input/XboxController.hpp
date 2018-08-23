@@ -1,6 +1,5 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
-#include <windows.h>			// #include this (massive, platform-specific) header in very few places
+#include "Engine\Core\WindowsCommon.hpp"
 #include "engine\input\KeyButtonState.hpp"
 #include <Xinput.h>
 #pragma comment(lib, "xinput9_1_0")

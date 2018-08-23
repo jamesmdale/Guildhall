@@ -51,6 +51,7 @@ const int MAX_MAX_CONSOLE_SIZE = 100;
 // TYPEDEFS =============================================================================
 typedef unsigned char byte_t;
 typedef unsigned int uint;
+typedef unsigned char uint8;
 typedef unsigned short uint16;
 
 

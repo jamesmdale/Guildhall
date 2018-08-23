@@ -103,13 +103,11 @@ void DevConsolePrintf( Rgba const &color, char const* format, ...);
 void DevConsolePrintf( char const* format, ...);
 void DevConsolePrint(const Rgba & color, const std::string & formattedString);
 
-
 //commands
 void Help(Command& cmd);
 void Clear(Command& cmd);
 void SaveLog(Command& cmd);
 void EchoWithColor(Command& cmd);
-
 
 //log commands
 void FlushLog(Command& cmd);

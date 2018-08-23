@@ -407,6 +407,8 @@
     <ClInclude Include="Net\Net.hpp" />
     <ClInclude Include="Net\NetAddress.hpp" />
     <ClInclude Include="Net\TCPSocket.hpp" />
+    <ClInclude Include="Core\Header.h" />
+    <ClInclude Include="Core\WindowsCommon.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

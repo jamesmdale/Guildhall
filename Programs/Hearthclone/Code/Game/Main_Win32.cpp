@@ -1,5 +1,4 @@
-#define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
-#include <windows.h>			// #include this (massive, platform-specific) header in very few places
+#include "Engine\Core\WindowsCommon.hpp"
 #include <math.h>
 #include <cassert>
 #include <crtdbg.h>

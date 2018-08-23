@@ -3,9 +3,8 @@
 //	
 
 //-----------------------------------------------------------------------------------------------
-#include "Engine/Time/Time.hpp"
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include "Engine\Time\Time.hpp"
+#include "Engine\Core\WindowsCommon.hpp"
 
 
 ////-----------------------------------------------------------------------------------------------

@@ -11,19 +11,26 @@
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\File\ObjectFileLoader.hpp"
+#include "Engine\Net\NetAddress.hpp"
 
 TheApp* g_theApp = nullptr;
 
+
+//  =============================================================================
 TheApp::TheApp()
 { 
 	Game::CreateInstance();
 }
 
+
+//  =============================================================================
 TheApp::~TheApp()
 {
 	TODO("Cleanup (delete and null out) input system and renderer");
 }
 
+
+//  =============================================================================
 void TheApp::RunFrame()
 {
 	Renderer::GetInstance()->BeginFrame();	
@@ -44,10 +51,13 @@ void TheApp::RunFrame()
 
 }
 
+
+//  =============================================================================
 void TheApp::Initialize()
 {
 	//register app commands
 	CommandRegister("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
+	CommandRegister("net_print_local_ip", CommandRegistration(PrintLocalIP, ":Use to print local ip", ""));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -67,6 +77,8 @@ void TheApp::Initialize()
 	Game::GetInstance()->Initialize();
 }
 
+
+//  =============================================================================
 void TheApp::Update() 
 {
 	float deltaSeconds = GetMasterDeltaSeconds();
@@ -85,11 +97,15 @@ void TheApp::Update()
 	}
 }
 
+
+//  =============================================================================
 void TheApp::PreRender()
 {
 	Game::GetInstance()->PreRender();
 }
 
+
+//  =============================================================================
 void TheApp::Render()
 {
 	//set up screen
@@ -106,13 +122,13 @@ void TheApp::Render()
 	}	
 }
 
+//  =============================================================================
 void TheApp::PostRender()
 {
 	Game::GetInstance()->PostRender();
 }
 
-
-
+//  =============================================================================
 float TheApp::UpdateInput(float deltaSeconds)
 {
 	UNUSED(deltaSeconds); //remove if deltaSeconds needed
@@ -140,10 +156,34 @@ float TheApp::UpdateInput(float deltaSeconds)
 
 	return deltaSeconds;
 }
-
-
-void Quit(Command &cmd)
+//  =============================================================================
+//	CONSOLE COMMANDS
+//  =============================================================================
+void Quit(Command& cmd)
 {
 	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
 	g_isQuitting = true;
 }
+
+//  =============================================================================
+void Connect(Command& cmd)
+{
+
+}
+
+//  =============================================================================
+void PrintLocalIP(Command& cmd)
+{
+	NetAddress addr;
+	addr.GetMyHostAddress();
+
+	std::string ip = addr.ToString();
+
+	DevConsolePrintf(ip.c_str());
+}
+
+//  =============================================================================
+void Disconnect(Command& cmd)
+{
+}
+

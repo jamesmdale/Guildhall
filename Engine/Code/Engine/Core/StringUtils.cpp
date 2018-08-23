@@ -74,7 +74,7 @@ bool IsStringNullOrEmpty(const char* inputString)
 //  =============================================================================
 bool IsStringNullOrEmpty(const std::string & inputString)
 {
-	if(inputString.empty || inputString == "")
+	if(inputString.empty() || inputString == "")
 		return true;
 
 	return false;
