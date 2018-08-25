@@ -174,10 +174,15 @@ void Connect(Command& cmd)
 //  =============================================================================
 void PrintLocalIP(Command& cmd)
 {
-	NetAddress addr;
-	addr.GetMyHostAddress();
+	NetAddress netAddr;
 
-	std::string ip = addr.ToString();
+	sockaddr addr;
+	int addrLength = 0;
+	netAddr.GetMyHostAddress(&addr, &addrLength);
+
+	netAddr.FromSockAddr(&addr);
+
+	std::string ip = netAddr.ToString();
 
 	DevConsolePrintf(ip.c_str());
 }

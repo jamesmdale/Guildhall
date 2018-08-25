@@ -86,7 +86,7 @@ const std::string NetAddress::ToString()
 }
 
 //  =============================================================================
-void NetAddress::GetMyHostAddress()
+void NetAddress::GetMyHostAddress(sockaddr* outAddress, int* outAddrlen)
 {   // first, get the name of my machine
 	char myName[256]; 
 	if (SOCKET_ERROR == ::gethostname( myName, 256 ))
@@ -129,9 +129,9 @@ void NetAddress::GetMyHostAddress()
 
 			// if you look at the bytes - you can "see" the address, but backwards... we'll get to that
 			// (port too)
-			char out[256]; 
-			inet_ntop( ipv4->sin_family, &(ipv4->sin_addr), out, 256 ); 
-			LogSystem::GetInstance()->LogTaggedPrintf( "net", "My Address: %s", out ); 
+			memcpy(outAddress, ipv4, sizeof(sockaddr_in));
+			*outAddrlen = sizeof(sockaddr_in);
+			LogSystem::GetInstance()->LogTaggedPrintf( "net", "My Address: %s", outAddress ); 
 		}
 		iter = iter->ai_next; 
 	}

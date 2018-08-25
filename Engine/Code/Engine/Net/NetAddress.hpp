@@ -29,7 +29,7 @@ public:
 
 public:
 	//static NetAddress GetLocal();
-	static void GetMyHostAddress();
+	static void GetMyHostAddress(sockaddr* outAddress, int* outAddrlen);
 	static bool GetAddressForHost(sockaddr* outAddress, int* outAddrlen, const char* hostName, const char* service);
 
 
