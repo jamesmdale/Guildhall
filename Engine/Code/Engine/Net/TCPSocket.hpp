@@ -2,6 +2,8 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Net\NetAddress.hpp"
 
+typedef UINT_PTR SOCKET_T;
+
 class TCPSocket
 {
 public:
@@ -19,15 +21,15 @@ public:
 	void CloseConnection();
 
 	//returns how much sent
-	size_t Send(const void* data, const size_t dataByteSize);
+	size_t Send(const void* data);
 
 	//returns how much received
-	size_t Receive(void* buffer, const size_t maxByteSize);
+	size_t Receive(void* outBuffer, const size_t maxByteSize);
 
 	bool IsClosed() const;
 
 public:
-	void* m_socketHandle; //must cast to SOCKET
+	SOCKET_T m_socketHandle; //must cast to SOCKET
 
 	//if listening, the address is YOUR address.
 	//if you are connecting (or socket is from an accept)

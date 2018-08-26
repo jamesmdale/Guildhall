@@ -18,10 +18,10 @@ public:
 	NetAddress(const char* string);
 	NetAddress(const sockaddr* address);
 
-	bool ToSockAddr(const sockaddr* addr, size_t* outSize);
+	bool ToSockAddr(const sockaddr* addr, size_t* outSize) const;
 	bool FromSockAddr(const sockaddr* sa);
 
-	const std::string ToString();
+	std::string ToString() const;
 
 public:
 	uint m_Ipv4Address;

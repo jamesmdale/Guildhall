@@ -62,6 +62,8 @@ public:
 
 	void AddNewHistoryItem(const HistoryItem& item);
 	bool SaveSessionLog(std::string fileName);
+	bool SaveCommandInputHistory(std::string fileName);
+	bool LoadPreviousConsoleSession(std::string fileName);
 
 	void Startup();
 	void Shutdown();
@@ -75,6 +77,7 @@ public:
 
 private: 
 	bool m_isDevConsoleOpen = false;
+	std::vector<HistoryItem> m_historyStack;
 	std::vector<HistoryItem> m_inputHistoryStack;
 	std::string m_currentInput;
 	std::vector<int> m_allowableCharacters;

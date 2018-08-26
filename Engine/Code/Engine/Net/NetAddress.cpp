@@ -25,8 +25,8 @@ NetAddress::NetAddress(const char* string)
 	if (strings.size() > 2)
 		return;
 
-	const char* serviceString = strings[0].c_str();
-	const char* hostString = strings[1].c_str();
+	const char* hostString = strings[0].c_str();
+	const char* serviceString = strings[1].c_str();
 
 	if (IsStringNullOrEmpty(serviceString))
 		serviceString = DEFAULT_SERVICE_PORT;
@@ -44,7 +44,7 @@ NetAddress::NetAddress(const sockaddr* address)
 }
 
 //  =============================================================================
-bool NetAddress::ToSockAddr(const sockaddr* addr, size_t* outSize)
+bool NetAddress::ToSockAddr(const sockaddr* addr, size_t* outSize) const
 {
 	*outSize = sizeof(sockaddr_in);
 	sockaddr_in* ipv4 = (sockaddr_in*)addr;
@@ -73,7 +73,7 @@ bool NetAddress::FromSockAddr(const sockaddr* addr)
 }
 
 //  =============================================================================
-const std::string NetAddress::ToString()
+std::string NetAddress::ToString() const 
 {
 	uint8* array = (uint8*)&m_Ipv4Address;
 

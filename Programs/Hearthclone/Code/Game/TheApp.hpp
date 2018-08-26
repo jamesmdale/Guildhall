@@ -20,7 +20,7 @@ public:
 void Quit(Command &cmd);
 
 //net tests
-void Connect(Command& cmd);
+void ConnectAndSend(Command& cmd);
 void PrintLocalIP(Command& cmd);
 void Disconnect(Command& cmd);
 

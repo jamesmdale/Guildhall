@@ -6,11 +6,11 @@
 #include "Engine\Math\Vector2.hpp"
 
 
-//-----------------------------------------------------------------------------------------------
 const std::string Stringf( const char* format, ... );
 const std::string Stringf( const int maxLength, const char* format, ... );
 const std::vector<std::string> SplitStringOnCharacter(const std::string inputString, const char splitChar);
 std::string SplitStringOnFirstWord(const std::string& inputString);
+size_t GetStringSize(const std::string& inputString);
 
 bool IsStringNullOrEmpty(const char* inputString);
 bool IsStringNullOrEmpty(const std::string& inputString);

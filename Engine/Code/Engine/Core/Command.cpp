@@ -60,7 +60,7 @@ std::string Command::ParseCommandStringForValidFormatting()
 	bool isCurrentStringQuoted = false;
 	bool isCurrentStringParenthesis = false;
 
-	if((int)m_commandString.size() > 60)
+	if((int)m_commandString.size() > 100)
 	{
 		return std::string("INVALID: Command input too long");
 	}

@@ -128,11 +128,17 @@ void DevConsole::Startup()
 
 	m_consoleCamera->SetOrtho(0.f, Window::GetInstance()->m_clientWidth, 0.f, Window::GetInstance()->m_clientHeight, -1.f, 1.f);
 	m_consoleCamera->SetView(Matrix44::IDENTITY);
+
+	//load history of command commands from previous session
+	LoadPreviousConsoleSession("history");
 }
 
 //  =========================================================================================
 void DevConsole::Shutdown()
 {
+	//on shutdown write out the history to a file so it can be used on the next session
+	SaveCommandInputHistory("history");
+
 	delete(g_theDevConsole);
 	g_theDevConsole = nullptr;
 }
@@ -148,9 +154,9 @@ void DevConsole::PopulateWithNextMostRecentHistoryItem()
 
 	for(int historyIndex = tempHistoryIndex; historyIndex > -1; historyIndex--)
 	{
-		if(m_inputHistoryStack[historyIndex].m_isCommand)
+		if(m_historyStack[historyIndex].m_isCommand)
 		{
-			m_currentInput = m_inputHistoryStack[historyIndex].m_printText;
+			m_currentInput = m_historyStack[historyIndex].m_printText;
 			m_currentHistoryItemIndex = historyIndex;
 			m_cursorPosition = (int)m_currentInput.length();
 			return;
@@ -159,11 +165,11 @@ void DevConsole::PopulateWithNextMostRecentHistoryItem()
 	 
 	//if we got here nothing was found.  let's put the current history index to the max size of the list and loop again over the ones we missed just in case.
 	//if we still don't find anything, there are no legitimate commands in the list.
-	for(int historyIndex = (int)m_inputHistoryStack.size(); historyIndex > tempHistoryIndex; historyIndex--)
+	for(int historyIndex = (int)m_historyStack.size() - 1; historyIndex > tempHistoryIndex; historyIndex--)
 	{
-		if(m_inputHistoryStack[historyIndex].m_isCommand)
+		if(m_historyStack[historyIndex].m_isCommand)
 		{
-			m_currentInput = m_inputHistoryStack[historyIndex].m_printText;
+			m_currentInput = m_historyStack[historyIndex].m_printText;
 			m_currentHistoryItemIndex = historyIndex;
 			m_cursorPosition = (int)m_currentInput.length();
 			return;
@@ -177,11 +183,11 @@ void DevConsole::PopulateWithPreviousHistoryItem()
 	int tempHistoryIndex = m_currentHistoryItemIndex;
 	tempHistoryIndex++;
 
-	for(int historyIndex = tempHistoryIndex; historyIndex < (int)m_inputHistoryStack.size(); historyIndex++)
+	for(int historyIndex = tempHistoryIndex; historyIndex < (int)m_historyStack.size(); historyIndex++)
 	{
-		if(m_inputHistoryStack[historyIndex].m_isCommand)
+		if(m_historyStack[historyIndex].m_isCommand)
 		{
-			m_currentInput = m_inputHistoryStack[historyIndex].m_printText;
+			m_currentInput = m_historyStack[historyIndex].m_printText;
 			m_currentHistoryItemIndex = historyIndex;
 			m_cursorPosition = (int)m_currentInput.length();
 			return;
@@ -192,9 +198,9 @@ void DevConsole::PopulateWithPreviousHistoryItem()
 	//if we still don't find anything, there are no legitimate commands in the list.
 	for(int historyIndex = 0; historyIndex < tempHistoryIndex; historyIndex++)
 	{
-		if(m_inputHistoryStack[historyIndex].m_isCommand)
+		if(m_historyStack[historyIndex].m_isCommand)
 		{
-			m_currentInput = m_inputHistoryStack[historyIndex].m_printText;
+			m_currentInput = m_historyStack[historyIndex].m_printText;
 			m_currentHistoryItemIndex = historyIndex;
 			m_cursorPosition = (int)m_currentInput.length();
 			return;
@@ -273,7 +279,7 @@ void DevConsole::Render()
 
 	theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, 0.f), modifiedInputWithCursor, TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 
-	for(int historyIndex = 0; historyIndex < (int)m_inputHistoryStack.size(); historyIndex++)
+	for(int historyIndex = 0; historyIndex < (int)m_historyStack.size(); historyIndex++)
 	{
 		if(historyIndex > maxIndexToRender)
 		{
@@ -281,7 +287,7 @@ void DevConsole::Render()
 		}		
 
 		float currentCellStartPosition = (float)(historyIndex + 1.f) * (TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y);
-		theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, currentCellStartPosition), m_inputHistoryStack[historyIndex].m_printText, 15.f, m_inputHistoryStack[historyIndex].m_printColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, currentCellStartPosition), m_historyStack[historyIndex].m_printText, 15.f, m_historyStack[historyIndex].m_printColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 	}
 
 	theRenderer->m_defaultShader->DisableBlending();
@@ -293,21 +299,14 @@ void DevConsole::Render()
 void DevConsole::Open()
 {
 	m_isDevConsoleOpen = true;
-	m_currentInput = "";
-	m_cursorPosition = 0;
-	m_inputHistoryStack.clear();
-	ResetHistoryIndex();
+	ClearInput();
 }
 
 // =========================================================================================
 void DevConsole::Close()
 {
 	m_isDevConsoleOpen = false;
-	m_currentInput = "";
-	m_cursorPosition = 0;
-	m_inputHistoryStack.clear();
-
-	ResetHistoryIndex();
+	ClearInput();
 }
 
 // =========================================================================================
@@ -360,12 +359,12 @@ void DevConsolePrint(const Rgba& color, const std::string& formattedString)
 //  =========================================================================================
 void DevConsole::AddNewHistoryItem(const HistoryItem& item)
 {
-	if ((int)m_inputHistoryStack.size() > MAX_MAX_CONSOLE_SIZE)
+	if ((int)m_historyStack.size() > MAX_MAX_CONSOLE_SIZE)
 	{
-		m_inputHistoryStack.erase(m_inputHistoryStack.end() - 1);
+		m_historyStack.erase(m_historyStack.end() - 1);
 	}
 
-	m_inputHistoryStack.insert(m_inputHistoryStack.begin(), item);
+	m_historyStack.insert(m_historyStack.begin(), item);
 }
 
 //  =========================================================================================
@@ -383,7 +382,8 @@ void DevConsole::ExecuteInput()
 	if(m_currentInput != "")
 	{			
 		bool isValidCommand = CommandRun(m_currentInput.c_str());
-		g_theDevConsole->AddNewHistoryItem(HistoryItem(Rgba::WHITE, m_currentInput, isValidCommand));
+		g_theDevConsole->AddNewHistoryItem(HistoryItem(Rgba::YELLOW, m_currentInput, isValidCommand));
+
 		ClearInput();
 		ResetHistoryIndex();
 	}
@@ -429,7 +429,7 @@ void DevConsole::ClearInput()
 //  =========================================================================================
 void DevConsole::ClearHistory()
 {
-	m_inputHistoryStack.clear();
+	m_historyStack.clear();
 	ResetHistoryIndex();
 }
 
@@ -453,6 +453,7 @@ void DevConsole::DecrementCursorPosition()
 	}
 }
 
+//  =========================================================================================
 void DevConsole::IncrementCursorPosition()
 {
 	if(m_cursorPosition < m_currentInput.size())
@@ -469,14 +470,72 @@ bool DevConsole::SaveSessionLog(std::string fileName)
 	std::string filePath = Stringf("%s%s%s", "Data\\ConsoleLogs\\", fileName.c_str(), ".txt");
 	std::vector<std::string> consoleInputText;
 
-	for(int itemIndex = 0; itemIndex < (int)m_inputHistoryStack.size(); itemIndex++)
+	for(int itemIndex = 0; itemIndex < (int)m_historyStack.size(); itemIndex++)
 	{
-		consoleInputText.push_back(m_inputHistoryStack[itemIndex].m_printText);
+		consoleInputText.push_back(m_historyStack[itemIndex].m_printText);
 	}
 
 	bool didSucceed = WriteToFileImmediate(filePath.c_str(), consoleInputText);
 
 	return didSucceed;
+}
+
+//  =========================================================================================
+bool DevConsole::SaveCommandInputHistory(std::string fileName)
+{
+	std::string filePath = Stringf("%s%s%s", "Data\\ConsoleLogs\\", fileName.c_str(), ".txt");
+	std::vector<std::string> consoleInputText;
+
+	for (int itemIndex = 0; itemIndex < (int)m_historyStack.size(); itemIndex++)
+	{
+		if(m_historyStack[itemIndex].m_isCommand)
+			consoleInputText.push_back(m_historyStack[itemIndex].m_printText);
+	}
+	
+	int deleteSuccess = remove(filePath.c_str());
+	GUARANTEE_OR_DIE(deleteSuccess != 0, "COULD NOT DELETE CONSOLE INPUT LOG FILE!");
+
+	bool didSucceed = WriteToFileImmediate(filePath.c_str(), consoleInputText);
+
+	return didSucceed;
+}
+
+bool DevConsole::LoadPreviousConsoleSession(std::string fileName)
+{
+	std::string filePath = Stringf("%s%s%s", "Data\\ConsoleLogs\\", fileName.c_str(), ".txt");
+	std::vector<HistoryItem> previousHistory;
+
+	ClearHistory();
+	ClearInput();
+
+	FILE *fp = nullptr;
+	errno_t errorVal = fopen_s(&fp, filePath.c_str(), "r");
+	UNUSED(errorVal); //useful when step-debugging just to check error code
+
+	if (fp == nullptr) {
+		return false;
+	}
+
+	std::string buffer = (const char*) FileReadToNewBuffer(filePath.c_str());
+
+	if(IsStringNullOrEmpty(buffer))
+		return false;
+
+	std::vector<std::string> lines = SplitStringOnCharacter(buffer, '\n');
+
+	for (int lineIndex = 0; lineIndex < (int)lines.size(); ++lineIndex)
+	{
+		HistoryItem newItem;
+		newItem.m_isCommand = true;
+		newItem.m_printColor = Rgba::YELLOW;
+		newItem.m_printText = lines[lineIndex];
+
+		previousHistory.push_back(newItem);
+	}
+
+	m_historyStack = previousHistory;
+
+	return true;
 }
 
 //  =========================================================================================
@@ -502,6 +561,7 @@ void DevConsole::SetAllowableCharacters()
 	m_allowableCharacters.push_back(44);//,
 	m_allowableCharacters.push_back(46);//.
 	m_allowableCharacters.push_back(95);//_
+	m_allowableCharacters.push_back(58);//:
 }
 
 //  =========================================================================================

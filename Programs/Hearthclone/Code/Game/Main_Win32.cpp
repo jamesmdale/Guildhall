@@ -141,6 +141,7 @@ void RunFrame()
 
 void Shutdown()
 {
+	EngineShutdown();
 	GLShutdown();
 
 	// Destroy the global App instance	

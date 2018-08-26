@@ -104,13 +104,13 @@ void* FileReadToNewBuffer( char const *filename )
 //  =============================================================================
 bool WriteToFileImmediate(const char* fileName, const std::vector<std::string>& outputs)
 {
-	std::ofstream writer("garbage.dat");
+	std::ofstream writer(fileName);
 	if (!writer.is_open())
 		return false;
 
 	for(int outputIndex = 0; outputIndex < (int)outputs.size(); outputIndex++)
 	{
-		writer << Stringf("%i\n", outputIndex);
+		writer << Stringf("%s\n", outputs[outputIndex].c_str());
 	}	
 	writer.close();
 
@@ -125,7 +125,7 @@ bool WriteToFileImmediate(const char* fileName, const std::string& output)
 	if (!writer.is_open())
 		return false;	
 
-	writer << Stringf("%i\n", output);
+	writer << Stringf("%s\n", output.c_str());
 	writer.close();
 	return true;		
 }

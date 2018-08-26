@@ -65,6 +65,11 @@ std::string SplitStringOnFirstWord(const std::string& inputString)
 	return returnString;
 }
 
+size_t GetStringSize(const std::string & inputString)
+{
+	return inputString.size();
+}
+
 bool IsStringNullOrEmpty(const char* inputString)
 {
 	std::string input = std::string(inputString);

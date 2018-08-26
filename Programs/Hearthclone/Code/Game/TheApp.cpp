@@ -12,6 +12,7 @@
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\File\ObjectFileLoader.hpp"
 #include "Engine\Net\NetAddress.hpp"
+#include "Engine\Net\TCPSocket.hpp"
 
 TheApp* g_theApp = nullptr;
 
@@ -58,6 +59,7 @@ void TheApp::Initialize()
 	//register app commands
 	CommandRegister("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
 	CommandRegister("net_print_local_ip", CommandRegistration(PrintLocalIP, ":Use to print local ip", ""));
+	CommandRegister("connect_and_send", CommandRegistration(ConnectAndSend, ":Insert IP and Port to connect with an a message you wish to send.", ""));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -83,9 +85,8 @@ void TheApp::Update()
 {
 	float deltaSeconds = GetMasterDeltaSeconds();
 	deltaSeconds = UpdateInput(deltaSeconds);
-
-	Game::GetInstance()->Update();
-
+	
+	
 	if(DebugRender::GetInstance()->IsEnabled())
 	{
 		DebugRender::GetInstance()->Update(deltaSeconds);
@@ -94,6 +95,10 @@ void TheApp::Update()
 	if(DevConsole::GetInstance()->IsOpen())
 	{
 		DevConsole::GetInstance()->Update(deltaSeconds);
+	}
+	else
+	{
+		Game::GetInstance()->Update();
 	}
 }
 
@@ -144,7 +149,8 @@ float TheApp::UpdateInput(float deltaSeconds)
 			DevConsole::GetInstance()->Close();
 		}		
 	}
-	else
+	
+	if (!DevConsole::GetInstance()->IsOpen())
 	{
 		Game::GetInstance()->UpdateInput(deltaSeconds);
 	}
@@ -166,9 +172,42 @@ void Quit(Command& cmd)
 }
 
 //  =============================================================================
-void Connect(Command& cmd)
+void ConnectAndSend(Command& cmd)
 {
+	std::string addrString = cmd.GetNextString();
+	std::string messageString = cmd.GetNextString();
 
+	if (IsStringNullOrEmpty(addrString) || IsStringNullOrEmpty(messageString))
+	{
+		DevConsolePrintf(Rgba::RED, "Invalid inputs! Inputs must be \"hostname:service_name\" \"msg\"");
+		return;
+	}
+
+	TCPSocket socket;
+
+	NetAddress netAddr = NetAddress(addrString.c_str());
+
+	bool success = socket.Connect(netAddr);	
+
+	if (!success)
+	{
+		DevConsolePrintf(Rgba::RED,"Could not connect to %s", addrString.c_str());
+		return;
+	}	
+	else
+	{
+		DevConsolePrintf("Successfully connected to %s", netAddr.ToString().c_str());
+
+		socket.Send((void*)&messageString);
+
+		char payload[256];
+		socket.Receive((void*)payload, 256 - 1U);
+		
+		DevConsolePrintf("Received: %s", std::string(payload).c_str());
+	}
+	
+	socket.CloseConnection();
+	
 }
 
 //  =============================================================================
