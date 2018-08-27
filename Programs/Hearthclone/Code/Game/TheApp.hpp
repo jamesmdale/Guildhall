@@ -32,6 +32,7 @@ void ServiceClient(TCPSocket* clientSocket);
 void ConnectAndSend(Command& cmd);
 void PrintLocalIP(Command& cmd);
 void Disconnect(Command& cmd);
+std::string GetLocalIP();
 void HostConnection(Command& cmd);
 
 extern TheApp* g_theApp;

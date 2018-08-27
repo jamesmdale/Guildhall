@@ -141,11 +141,6 @@ void NetAddress::GetMyHostAddress(sockaddr* outAddress, int* outAddrlen, const c
 //  =============================================================================
 bool NetAddress::GetAddressForHost(sockaddr* outAddress, int* outAddrlen, const char* hostName, const char* service = "80")
 {
-	if (SOCKET_ERROR == ::gethostname( (char*)hostName, 256 ))
-		return false; 
-
-//	char const *service = "80"; // service is like "http" or "ftp", which translates to a port (80 or 21).  We'll just use port 80 for this example;
-
 								// no host name - can't resolve; 
 	if (IsStringNullOrEmpty(hostName)) {
 		return false; 

@@ -87,6 +87,9 @@ bool TCPSocket::Connect(const NetAddress& addr)
 
 	if (result == SOCKET_ERROR || !success)
 	{
+		int errorCode = WSAGetLastError();
+		UNUSED(errorCode);
+
 		std::string addrAsString = addr.ToString();
 		DebuggerPrintf("Could not connect to address: %s", addrAsString);
 		return false;

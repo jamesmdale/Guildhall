@@ -16,7 +16,7 @@
 
 TheApp* g_theApp = nullptr;
 TCPSocket* host = nullptr;
-bool isRunning = false;
+static bool isRunning = false;
 
 
 //  =============================================================================
@@ -83,8 +83,6 @@ void TheApp::Initialize()
 	std::vector<Vector3> normals;
 
 	Game::GetInstance()->Initialize();
-
-	//m_hostThread = new std::thread(ProcessHost, nullptr);	
 }
 
 
@@ -94,7 +92,7 @@ void TheApp::Update()
 	float deltaSeconds = GetMasterDeltaSeconds();
 	deltaSeconds = UpdateInput(deltaSeconds);
 
-	ProcessHost(nullptr);	
+	//ProcessHost(nullptr);	
 	
 	if(DebugRender::GetInstance()->IsEnabled())
 	{
@@ -178,9 +176,15 @@ bool StartTestServer(uint port)
 	host = new TCPSocket();
 	bool success = host->Listen(port, 16);
 
-	if(success)
+	if (success)
+	{
 		isRunning = true;
+		g_theApp->m_hostThread = new std::thread(ProcessHost, nullptr);	
 
+		//DevConsolePrintf("Hosting on: %s:%d", GetLocalIP(),port);
+	}
+		
+	
 	return success;
 }
 
@@ -295,6 +299,20 @@ void PrintLocalIP(Command& cmd)
 }
 
 //  =============================================================================
+std::string GetLocalIP()
+{
+	NetAddress netAddr;
+
+	sockaddr addr;
+	int addrLength = 0;
+	netAddr.GetMyHostAddress(&addr, &addrLength);
+
+	netAddr.FromSockAddr(&addr);
+
+	return netAddr.ToString();
+}
+
+//  =============================================================================
 void HostConnection(Command& cmd)
 {
 	int port = cmd.GetNextInt();
@@ -310,7 +328,11 @@ void HostConnection(Command& cmd)
 	if(!success)
 		DevConsolePrintf(Rgba::RED, "Could not listen on port!");
 	else
-		DevConsolePrintf(Rgba::GREEN, "Hosting connection on port %i", port);
+	{
+		std::string ip = GetLocalIP();
+		DevConsolePrintf(Rgba::GREEN, "Hosting connection on port %s", ip.c_str());
+	}
+	
 }
 
 

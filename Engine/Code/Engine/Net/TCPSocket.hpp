@@ -28,7 +28,6 @@ public:
 
 	bool IsClosed() const;
 
-
 public:
 	SOCKET_T m_socketHandle; //must cast to SOCKET
 
