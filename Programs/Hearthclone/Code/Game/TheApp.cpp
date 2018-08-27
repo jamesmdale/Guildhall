@@ -15,6 +15,8 @@
 #include "Engine\Net\TCPSocket.hpp"
 
 TheApp* g_theApp = nullptr;
+TCPSocket* host = nullptr;
+bool isRunning = false;
 
 
 //  =============================================================================
@@ -27,6 +29,8 @@ TheApp::TheApp()
 //  =============================================================================
 TheApp::~TheApp()
 {
+	if(m_hostThread != nullptr)
+		m_hostThread->join();
 	TODO("Cleanup (delete and null out) input system and renderer");
 }
 
@@ -60,6 +64,8 @@ void TheApp::Initialize()
 	CommandRegister("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
 	CommandRegister("net_print_local_ip", CommandRegistration(PrintLocalIP, ":Use to print local ip", ""));
 	CommandRegister("connect_and_send", CommandRegistration(ConnectAndSend, ":Insert IP and Port to connect with an a message you wish to send.", ""));
+	CommandRegister("host_connection", CommandRegistration(HostConnection, ":Insert port to listen on.", ""));
+
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -77,6 +83,8 @@ void TheApp::Initialize()
 	std::vector<Vector3> normals;
 
 	Game::GetInstance()->Initialize();
+
+	//m_hostThread = new std::thread(ProcessHost, nullptr);	
 }
 
 
@@ -85,7 +93,8 @@ void TheApp::Update()
 {
 	float deltaSeconds = GetMasterDeltaSeconds();
 	deltaSeconds = UpdateInput(deltaSeconds);
-	
+
+	ProcessHost(nullptr);	
 	
 	if(DebugRender::GetInstance()->IsEnabled())
 	{
@@ -162,6 +171,65 @@ float TheApp::UpdateInput(float deltaSeconds)
 
 	return deltaSeconds;
 }
+
+//  =========================================================================================
+bool StartTestServer(uint port)
+{
+	host = new TCPSocket();
+	bool success = host->Listen(port, 16);
+
+	if(success)
+		isRunning = true;
+
+	return success;
+}
+
+//  =========================================================================================
+void ProcessHost(void*)
+{
+	while (isRunning)
+	{
+		TCPSocket* client = host->AcceptConnection();
+		if (client != nullptr)
+		{
+			ServiceClient(client);
+		}
+
+		delete(client);
+		client = nullptr;
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+	}
+}
+
+//  =========================================================================================
+void CloseHost()
+{
+	host->CloseConnection();
+
+	isRunning = false;
+
+	delete(host);
+	host = nullptr;
+}
+
+//  =========================================================================================
+void ServiceClient(TCPSocket* clientSocket)
+{
+	unsigned char buffer[256];
+	int received = clientSocket->Receive(&buffer, 256 - 1U);
+	if (received > 0) 
+	{
+		buffer[received] = NULL;
+		DevConsolePrintf("Receieved: %s", buffer);
+
+		std::string response = "gotcha";
+		clientSocket->Send((void*)&response);
+	}
+
+	clientSocket->CloseConnection();
+}
+
 //  =============================================================================
 //	CONSOLE COMMANDS
 //  =============================================================================
@@ -179,7 +247,7 @@ void ConnectAndSend(Command& cmd)
 
 	if (IsStringNullOrEmpty(addrString) || IsStringNullOrEmpty(messageString))
 	{
-		DevConsolePrintf(Rgba::RED, "Invalid inputs! Inputs must be \"hostname:service_name\" \"msg\"");
+		DevConsolePrintf(Rgba::RED, "Invalid connect and send inputs! Inputs must be \"hostname:service_name\" \"msg\"");
 		return;
 	}
 
@@ -227,7 +295,22 @@ void PrintLocalIP(Command& cmd)
 }
 
 //  =============================================================================
-void Disconnect(Command& cmd)
+void HostConnection(Command& cmd)
 {
+	int port = cmd.GetNextInt();
+
+	if (port < 0 || port > 65535)
+	{
+		DevConsolePrintf(Rgba::RED, "Invalid port!");
+		return;
+	}
+
+	bool success = StartTestServer(port);
+
+	if(!success)
+		DevConsolePrintf(Rgba::RED, "Could not listen on port!");
+	else
+		DevConsolePrintf(Rgba::GREEN, "Hosting connection on port %i", port);
 }
+
 

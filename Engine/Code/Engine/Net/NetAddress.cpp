@@ -86,13 +86,11 @@ std::string NetAddress::ToString() const
 }
 
 //  =============================================================================
-void NetAddress::GetMyHostAddress(sockaddr* outAddress, int* outAddrlen)
+void NetAddress::GetMyHostAddress(sockaddr* outAddress, int* outAddrlen, const char* service)
 {   // first, get the name of my machine
 	char myName[256]; 
 	if (SOCKET_ERROR == ::gethostname( myName, 256 ))
 		return; 
-	
-	const char* service = "80"; // service is like "http" or "ftp", which translates to a port (80 or 21).  We'll just use port 80 for this example;
 
 	// no host name - can't resolve; 
 	if (IsStringNullOrEmpty(myName))
@@ -141,9 +139,8 @@ void NetAddress::GetMyHostAddress(sockaddr* outAddress, int* outAddrlen)
 }
 
 //  =============================================================================
-bool NetAddress::GetAddressForHost(sockaddr* outAddress, int* outAddrlen, const char* hostName, const char* service = "12345")
+bool NetAddress::GetAddressForHost(sockaddr* outAddress, int* outAddrlen, const char* hostName, const char* service = "80")
 {
-	// first, get the name of my machine
 	if (SOCKET_ERROR == ::gethostname( (char*)hostName, 256 ))
 		return false; 
 

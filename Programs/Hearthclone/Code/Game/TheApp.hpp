@@ -2,6 +2,8 @@
 #include "Engine\Core\Command.hpp"
 #include "Game\GameCommon.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Net\TCPSocket.hpp"
+#include <thread>
 
 class TheApp
 {
@@ -15,14 +17,24 @@ public:
 	void Initialize();
 	void RunFrame();
 	float UpdateInput(float timeDelta);
+
+	std::thread* m_hostThread = nullptr;
 };
 
 void Quit(Command &cmd);
 
-//net tests
+//tests for network
+bool StartTestServer(uint port);
+void ProcessHost(void*);
+void CloseHost();
+void ServiceClient(TCPSocket* clientSocket);
+
 void ConnectAndSend(Command& cmd);
 void PrintLocalIP(Command& cmd);
 void Disconnect(Command& cmd);
+void HostConnection(Command& cmd);
 
 extern TheApp* g_theApp;
+extern TCPSocket* host;
+
 
