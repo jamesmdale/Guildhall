@@ -34,24 +34,6 @@
     <ClCompile Include="Menu\ReadyState.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Tank.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="Turret.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="TankUI.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="Bullet.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="Spawner.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="Swarmer.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -71,11 +53,5 @@
     <ClInclude Include="Menu\LoadingState.hpp" />
     <ClInclude Include="Menu\PlayingState.hpp" />
     <ClInclude Include="Menu\ReadyState.hpp" />
-    <ClInclude Include="Tank.hpp" />
-    <ClInclude Include="Turret.hpp" />
-    <ClInclude Include="TankUI.hpp" />
-    <ClInclude Include="Bullet.hpp" />
-    <ClInclude Include="Spawner.hpp" />
-    <ClInclude Include="Swarmer.hpp" />
   </ItemGroup>
 </Project>
