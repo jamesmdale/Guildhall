@@ -17,6 +17,7 @@
 #include "Engine\Profiler\ProfilerConsole.hpp"
 #include "Engine\File\File.hpp"
 #include "Engine\Core\LogSystem.hpp"
+#include "Engine\File\CSVWriter.hpp"
 #include <thread>
 #include <fstream>
 
@@ -65,10 +66,6 @@ void TheApp::Initialize()
 {
 	//register app commands
 	CommandRegister("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
-	CommandRegister("non_threaded_test", CommandRegistration(NoThreadTest, ": use to test if the thread works", "Processing.."));
-	CommandRegister("threaded_test", CommandRegistration(ThreadTest, ": use to test if the thread works", "Processing.."));
-	CommandRegister("log_test", CommandRegistration(LogThreadTest, ": use to test if the logging through devconsole works", "Processing.."));
-	CommandRegister("log_tag_test", CommandRegistration(LogTagThreadTest, ": use to test multiple tags to test filtering..."));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -87,6 +84,8 @@ void TheApp::Initialize()
 
 	Game::CreateInstance();
 	Game::GetInstance()->Initialize();
+
+	WriteTestCSV();
 }
 
 //  =============================================================================
@@ -206,120 +205,22 @@ void Quit(Command &cmd)
 	g_isQuitting = true;
 }
 
-//  =============================================================================
-void NoThreadTest(Command &cmd)
-{
-	ThreadTestWork(nullptr);
-}
-
-//  =============================================================================
-void ThreadTest(Command &cmd)
-{
-	std::thread threadObject(ThreadTestWork, nullptr);
-	threadObject.detach();
-}
-
-//  =============================================================================
-void ThreadTestWork(void* arguments)
-{
-	for (int writeIndex = 0; writeIndex < 12000; ++writeIndex)
-	{
-		int randomInt = GetRandomIntInRange(1, 10);
-		WriteToFileImmediate("Data/garbage.dat", Stringf("%i", randomInt));
-	}
-
-	DevConsolePrintf(Stringf("Finished thread work").c_str());
-}
-
-//  =============================================================================
-void LogThreadTest(Command& cmd)
-{
-	std::string sourceFileName = cmd.GetNextString();
-	int threadCount = cmd.GetNextInt();
-
-	if (threadCount == NULL || sourceFileName == "")
-	{
-		DevConsolePrintf(Rgba::RED, "Log thread not initiated! Invalid thread count. Source file must be in Data/Log/! (default name should be 'Holmes.text')");
-		DevConsolePrintf(Rgba::RED, "Follow format: 'log_test FILEPATH THREADCOUNT'");
-	}
-	else
-	{
-		LogTest(Stringf("Data/Log/%s", sourceFileName.c_str()).c_str(), threadCount);
-		DevConsolePrintf("Log thread test success!");
-	}
-}
-
-//  =============================================================================
-void LogTagThreadTest(Command& cmd)
-{
-	std::thread threadObject(LogTagTestWork, nullptr);
-	threadObject.detach();
-}
-
 //  =========================================================================================
-struct LogTestInfo
+void WriteTestCSV()
 {
-	const char* filePath = "";
-	int threadId = 0;
-};
+	CSVWriter writer;
 
-//  =============================================================================
-void LogTest(const char* sourceFile, int threadCount)
-{
-	for (int threadIndex = 0; threadIndex < threadCount; ++threadIndex)
-	{
-		LogTestInfo* info = new LogTestInfo();
-		info->filePath = sourceFile;
-		info->threadId = threadIndex + 1;
+	writer.AddCell("Cell A1");
+	writer.AddCell("Cell A2");
+	writer.AddNewLine();
+	writer.AddCell("Cell B1");
+	writer.AddCell("Cell B2");
+	writer.AddCell("Cell B3");
+	writer.AddCell("Cell B4");
+	writer.AddNewLine();
+	writer.AddNewLine();
+	writer.AddCell("Cell D1, Test");
+	writer.AddCell("Cell D2");
 
-		std::thread object(LogTestWork, (void*)info);
-		object.detach();
-	}
+	bool success = writer.WriteToFile("Data\\ConsoleLogs\\CSVTest.csv");
 }
-
-//  =============================================================================
-void LogTestWork(void* arguments)
-{
-	LogTestInfo* info = (LogTestInfo*)arguments;
-
-	std::string filePath = info->filePath;
-	int threadId = info->threadId;
-
-	std::ifstream streamObj(filePath);
-
-	LogSystem* theLogSystem = LogSystem::GetInstance();
-
-	std::string currentLine;
-
-	int lineNumber = 1;
-	if (streamObj.is_open())
-	{
-		while (streamObj.good())
-		{
-			getline (streamObj, currentLine);
-
-			theLogSystem->LogPrintf("%i:%i %s", threadId, lineNumber, currentLine.c_str());
-			lineNumber++;
-		}
-		streamObj.close();
-	}
-
-	info = nullptr;
-	theLogSystem = nullptr;
-}
-
-//  =============================================================================
-void LogTagTestWork(void* arguments)
-{
-	int count = 0;
-	while (count < 200)
-	{
-		LogSystem::GetInstance()->LogTaggedPrintf("rock", "%s", "This beats scissors");
-		LogSystem::GetInstance()->LogTaggedPrintf("paper", "%s", "This beats rock");
-		LogSystem::GetInstance()->LogTaggedPrintf("scissors", "%s", "This is beats paper");
-
-		count++;
-	}
-}
-
-

@@ -6,12 +6,16 @@
 #include "Engine\Core\StringUtils.hpp"
 #include <fstream>
 
+//  =============================================================================
+File::File()
+{
+}
 
 //  =============================================================================
 File::File(const char* fileName)
 {
 	m_fileName = fileName;
-	m_file = new std::fstream(fileName);
+	m_file = std::ofstream(fileName);
 }
 
 //  =============================================================================
@@ -19,23 +23,20 @@ File::~File()
 {
 	delete(m_fileName);
 	m_fileName = nullptr;
-
-	delete(m_file);
-	m_file = nullptr;
 }
 
 //  =============================================================================
 void File::Open()
 {
 	if(!IsOpen())
-		m_file->open(m_fileName);
+		m_file.open(m_fileName);
 }
 
 //  =============================================================================
 void File::Close()
 {
 	if(IsOpen())
-		m_file->close();
+		m_file.close();
 }
 
 //  =============================================================================
@@ -44,7 +45,7 @@ bool File::WriteToFileNewline(const std::string& output)
 	if (!IsOpen())
 		return false;
 		
-	*m_file << Stringf("%s\n", output);
+	m_file << Stringf("%s\n", output);
 	
 	return true;
 }
@@ -56,7 +57,7 @@ bool File::WriteToFileNewline(const std::vector<std::string>& outputStrings)
 		return false;
 
 	for(int outputIndex = 0; outputIndex < (int)outputStrings.size(); ++outputIndex)
-	*m_file << Stringf("%s\n", outputStrings[outputIndex]);
+	m_file << Stringf("%s\n", outputStrings[outputIndex]);
 
 	return true;
 }
@@ -67,7 +68,7 @@ bool File::WriteToFile(const std::string & output)
 	if (!IsOpen())
 		return false;
 
-	*m_file << Stringf("%s", output);
+	m_file << Stringf("%s", output);
 
 	return true;
 }
@@ -79,7 +80,7 @@ bool File::WriteToFile(const std::vector<std::string>& outputStrings)
 		return false;
 
 	for (int outputIndex = 0; outputIndex < (int)outputStrings.size(); ++outputIndex)
-		*m_file << Stringf("%s", outputStrings[outputIndex]);
+		m_file << Stringf("%s", outputStrings[outputIndex]);
 
 	return true;
 }

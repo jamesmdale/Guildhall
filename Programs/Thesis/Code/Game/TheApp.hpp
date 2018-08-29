@@ -21,22 +21,7 @@ public:
 
 void Quit(Command &cmd);
 
-//thread test
-void NoThreadTest(Command& cmd);
-void ThreadTest(Command& cmd);
-
-//log with thread test
-void LogThreadTest(Command& cmd);
-
-void LogTagThreadTest(Command & cmd);
-
-void ThreadTestWork(void* arguments = nullptr);
-
-void LogTest(const char* sourceFile, int threadCount);
-void LogTestWork(void* arguments);
-
-void LogTagTestWork(void * arguments);
-
+void WriteTestCSV();
 
 extern TheApp* g_theApp;
 

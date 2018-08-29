@@ -37,22 +37,27 @@ void CSVWriter::AddNewLine()
 bool CSVWriter::WriteToFile(const std::string& filePath)
 {
 	//create a final newline to end writing
-	File outputFile = File(filePath.c_str());
-
-	if(!outputFile.IsOpen())
-		return false;
+	File* outputFile = new File(filePath.c_str());
+	outputFile->Open();
 
 	bool newRow = true;
 
 	for (int contentIndex = 0; contentIndex < (int)m_content.size(); ++contentIndex)
 	{
-		outputFile.WriteToFile(m_content[contentIndex]);
+		outputFile->WriteToFile(m_content[contentIndex]);
 
 		//check the next cell to see if we need a comma separator or not
 		if (contentIndex + 1 < (int)m_content.size())
 		{
 			if(m_content[contentIndex + 1].compare("\n") != 0)
-				outputFile.WriteToFile(",");
+				outputFile->WriteToFile(",");
 		}
 	}
+
+	outputFile->Close();
+
+	delete(outputFile);
+	outputFile = nullptr;
+
+	return true;
 }

@@ -12,10 +12,11 @@
 class File
 {
 public:
+	File();
 	File(const char* fileName);
 	~File();
 
-	bool IsOpen(){return m_file->is_open();}
+	bool IsOpen(){return m_file.is_open();}
 	void Open();
 	void Close();
 
@@ -30,7 +31,7 @@ public:
 
 public:
 	const char* m_fileName = nullptr;
-	std::fstream* m_file = nullptr;
+	std::ofstream m_file;
 };
 
 void* FileReadToNewBuffer( char const *filename );
