@@ -208,6 +208,9 @@ void Quit(Command &cmd)
 //  =========================================================================================
 void WriteTestCSV()
 {
+
+	RemoveFile("Data\\ConsoleLogs\\CSVTest.csv");
+
 	CSVWriter writer;
 
 	writer.AddCell("Cell A1");
@@ -222,5 +225,8 @@ void WriteTestCSV()
 	writer.AddCell("Cell D1, Test");
 	writer.AddCell("Cell D2");
 
+
 	bool success = writer.WriteToFile("Data\\ConsoleLogs\\CSVTest.csv");
+
+	int i  = 0;
 }

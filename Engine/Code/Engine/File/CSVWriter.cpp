@@ -22,7 +22,7 @@ void CSVWriter::AddCell(const std::string& cellContent)
 
 	if (DoesStringContainCharacter(cellContent, ','))
 	{
-		m_content.push_back(Stringf("\"%s\"", cellContent));
+		m_content.push_back(Stringf("\"%s\"", cellContent.c_str()));
 		return;
 	}
 
@@ -37,27 +37,26 @@ void CSVWriter::AddNewLine()
 bool CSVWriter::WriteToFile(const std::string& filePath)
 {
 	//create a final newline to end writing
-	File* outputFile = new File(filePath.c_str());
-	outputFile->Open();
+	std::ofstream writer(filePath);
 
 	bool newRow = true;
 
 	for (int contentIndex = 0; contentIndex < (int)m_content.size(); ++contentIndex)
 	{
-		outputFile->WriteToFile(m_content[contentIndex]);
+		if (!writer.is_open())
+			return false;
+
+		writer << Stringf("%s", m_content[contentIndex].c_str());
 
 		//check the next cell to see if we need a comma separator or not
 		if (contentIndex + 1 < (int)m_content.size())
 		{
 			if(m_content[contentIndex + 1].compare("\n") != 0)
-				outputFile->WriteToFile(",");
+				writer << ",";
 		}
 	}
 
-	outputFile->Close();
-
-	delete(outputFile);
-	outputFile = nullptr;
+	writer.close();
 
 	return true;
 }

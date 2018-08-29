@@ -20,13 +20,13 @@ void LoadingState::Update(float deltaSeconds)
 		// load intensive resources (big textures, audio, etc) =========================================================================================
 		
 		//load textures
-		theRenderer->CreateOrGetImage("Data/Images/galaxy2.png");
-		theRenderer->CreateOrGetImage("Data/Images/terrain.jpg");
+		/*theRenderer->CreateOrGetImage("Data/Images/galaxy2.png");
+		theRenderer->CreateOrGetImage("Data/Images/terrain.jpg");*/
 
 		//load audio
-		theAudio->CreateOrGetAudioGroupFromXML("Data/Audio/AudioGroups/Lasers.xml");
+		/*theAudio->CreateOrGetAudioGroupFromXML("Data/Audio/AudioGroups/Lasers.xml");
 		theAudio->CreateOrGetAudioGroupFromXML("Data/Audio/AudioGroups/Impacts.xml");
-		theAudio->CreateOrGetSound("Data/Audio/Panoramic.mp3");
+		theAudio->CreateOrGetSound("Data/Audio/Panoramic.mp3");*/
 
 		//sleep to insure loading screen visibility
 		Sleep(1);

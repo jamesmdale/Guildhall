@@ -13,7 +13,8 @@ class File
 {
 public:
 	File();
-	File(const char* fileName);
+	//File(const char* fileName);
+	File(const std::string& filePath);
 	~File();
 
 	bool IsOpen(){return m_file.is_open();}
@@ -38,6 +39,8 @@ void* FileReadToNewBuffer( char const *filename );
 
 bool WriteToFileImmediate(const char* fileName, const std::vector<std::string>& outputs);
 bool WriteToFileImmediate(const char* fileName, const std::string& output);
+
+bool RemoveFile(const char* filePath);
 
 //appends the working directory to the front of whatever the file is.  (COMMONLY "RUN_WIN32")
 std::string ReturnFullPath(const char* fileName);

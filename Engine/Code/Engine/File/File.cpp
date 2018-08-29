@@ -12,10 +12,17 @@ File::File()
 }
 
 //  =============================================================================
-File::File(const char* fileName)
+//File::File(const char* fileName)
+//{
+//	m_fileName = fileName;
+//	m_file = std::ofstream(fileName);
+//}
+
+//  =============================================================================
+File::File(const std::string& filePath)
 {
-	m_fileName = fileName;
-	m_file = std::ofstream(fileName);
+	m_fileName = filePath.c_str();
+	m_file = std::ofstream(filePath);
 }
 
 //  =============================================================================
@@ -45,7 +52,7 @@ bool File::WriteToFileNewline(const std::string& output)
 	if (!IsOpen())
 		return false;
 		
-	m_file << Stringf("%s\n", output);
+	m_file << Stringf("%s\n", output.c_str());
 	
 	return true;
 }
@@ -57,7 +64,7 @@ bool File::WriteToFileNewline(const std::vector<std::string>& outputStrings)
 		return false;
 
 	for(int outputIndex = 0; outputIndex < (int)outputStrings.size(); ++outputIndex)
-	m_file << Stringf("%s\n", outputStrings[outputIndex]);
+	m_file << Stringf("%s\n", outputStrings[outputIndex].c_str());
 
 	return true;
 }
@@ -68,7 +75,7 @@ bool File::WriteToFile(const std::string & output)
 	if (!IsOpen())
 		return false;
 
-	m_file << Stringf("%s", output);
+	m_file << Stringf("%s", output.c_str());
 
 	return true;
 }
@@ -80,7 +87,7 @@ bool File::WriteToFile(const std::vector<std::string>& outputStrings)
 		return false;
 
 	for (int outputIndex = 0; outputIndex < (int)outputStrings.size(); ++outputIndex)
-		m_file << Stringf("%s", outputStrings[outputIndex]);
+		m_file << Stringf("%s", outputStrings[outputIndex].c_str());
 
 	return true;
 }
@@ -152,6 +159,14 @@ bool WriteToFileImmediate(const char* fileName, const std::string& output)
 	writer << Stringf("%s\n", output.c_str());
 	writer.close();
 	return true;		
+}
+
+bool RemoveFile(const char* filePath)
+{
+	int deleteSuccess = remove(filePath);
+
+	//if deleteSuccess == 0, the file was deleted.
+	return deleteSuccess == 0;
 }
 
 //  =============================================================================
