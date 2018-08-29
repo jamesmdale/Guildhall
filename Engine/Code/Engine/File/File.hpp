@@ -19,8 +19,11 @@ public:
 	void Open();
 	void Close();
 
+	bool WriteToFileNewline(const std::string& output);
+	bool WriteToFileNewline(const std::vector<std::string>& outputStrings);
+
 	bool WriteToFile(const std::string& output);
-	bool WriteToFile(const std::vector<std::string>& ouputStrings);
+	bool WriteToFile(const std::vector<std::string>& outputStrings);
 
 	//std::string ReadLineFromFile();
 	//bool CanReadFromFile();	

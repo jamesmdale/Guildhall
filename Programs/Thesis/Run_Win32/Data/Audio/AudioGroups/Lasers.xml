@@ -1,8 +1,0 @@
-<AudioGroup name="laser" path="Data/Audio/Laser/">
-    <Sound name="Laser1.wav" />
-    <Sound name="Laser2.wav" />
-    <Sound name="Laser3.wav" />
-    <Sound name="Laser4.wav" />
-    <Sound name="Laser5.wav" />
-    <Sound name="Laser6.wav" />
-</AudioGroup>

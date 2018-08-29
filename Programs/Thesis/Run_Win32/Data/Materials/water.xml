@@ -1,6 +1,0 @@
-<material name="water">
-	<shader name="water" />
-	<textures>
-		<texture bind="0" file="Data\Images\waterTexture.jpg" />
-	</textures>
-</material>

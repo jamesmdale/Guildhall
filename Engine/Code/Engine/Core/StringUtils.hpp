@@ -12,8 +12,10 @@ const std::vector<std::string> SplitStringOnCharacter(const std::string inputStr
 std::string SplitStringOnFirstWord(const std::string& inputString);
 size_t GetStringSize(const std::string& inputString);
 
+//string checks
 bool IsStringNullOrEmpty(const char* inputString);
 bool IsStringNullOrEmpty(const std::string& inputString);
+bool DoesStringContainCharacter(const std::string& inputString, const char character);
 
 //removal
 void RemoveEmptyStrings(std::vector<std::string>& outStrings);

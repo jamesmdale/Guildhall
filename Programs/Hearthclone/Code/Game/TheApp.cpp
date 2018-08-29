@@ -332,7 +332,6 @@ void HostConnection(Command& cmd)
 		std::string ip = GetLocalIP();
 		DevConsolePrintf(Rgba::GREEN, "Hosting connection on port %s", ip.c_str());
 	}
-	
 }
 
 

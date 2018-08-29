@@ -39,7 +39,7 @@ void File::Close()
 }
 
 //  =============================================================================
-bool File::WriteToFile(const std::string& output)
+bool File::WriteToFileNewline(const std::string& output)
 {
 	if (!IsOpen())
 		return false;
@@ -50,13 +50,36 @@ bool File::WriteToFile(const std::string& output)
 }
 
 //  =============================================================================
-bool File::WriteToFile(const std::vector<std::string>& outputStrings)
+bool File::WriteToFileNewline(const std::vector<std::string>& outputStrings)
 {
 	if (!IsOpen())
 		return false;
 
 	for(int outputIndex = 0; outputIndex < (int)outputStrings.size(); ++outputIndex)
 	*m_file << Stringf("%s\n", outputStrings[outputIndex]);
+
+	return true;
+}
+
+//  =============================================================================
+bool File::WriteToFile(const std::string & output)
+{
+	if (!IsOpen())
+		return false;
+
+	*m_file << Stringf("%s", output);
+
+	return true;
+}
+
+//  =============================================================================
+bool File::WriteToFile(const std::vector<std::string>& outputStrings)
+{
+	if (!IsOpen())
+		return false;
+
+	for (int outputIndex = 0; outputIndex < (int)outputStrings.size(); ++outputIndex)
+		*m_file << Stringf("%s", outputStrings[outputIndex]);
 
 	return true;
 }

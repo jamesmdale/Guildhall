@@ -289,6 +289,9 @@
     <ClCompile Include="Net\TCPSocket.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="File\CSVWriter.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -409,6 +412,7 @@
     <ClInclude Include="Net\TCPSocket.hpp" />
     <ClInclude Include="Core\Header.h" />
     <ClInclude Include="Core\WindowsCommon.hpp" />
+    <ClInclude Include="File\CSVWriter.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

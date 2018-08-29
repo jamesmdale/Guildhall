@@ -1,6 +1,0 @@
-<material name="bullet">
-	<shader name="additive" />
-	<textures>
-		<texture bind="0" file="Data\Images\particle.png" />
-	</textures>
-</material>

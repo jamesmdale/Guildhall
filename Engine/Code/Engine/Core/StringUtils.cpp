@@ -86,6 +86,13 @@ bool IsStringNullOrEmpty(const std::string & inputString)
 }
 
 //  =============================================================================
+bool DoesStringContainCharacter(const std::string& inputString, const char character)
+{
+	//if string contains the character, it will return a position. Else, return -1
+	return !inputString.find(character) == std::string::npos;
+}
+
+//  =============================================================================
 void RemoveEmptyStrings(std::vector<std::string>& outStrings)
 {
 	RemoveMatchingStrings(outStrings, "");
