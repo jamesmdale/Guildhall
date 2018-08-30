@@ -1,4 +1,4 @@
-#include "Game\Menu\MainMenuState.hpp"
+#include "Game\GameStates\MainMenuState.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 
@@ -9,6 +9,7 @@ MainMenuState::~MainMenuState()
 
 void MainMenuState::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
 }
 
 void MainMenuState::PreRender()
@@ -35,13 +36,16 @@ void MainMenuState::Render()
 
 	theRenderer->SetCamera(m_camera);
 
+	theRenderer->ClearDepth(1.f);
+	theRenderer->ClearColor(Rgba::BLACK);
+
 	theRenderer->SetTexture(*m_backGroundTexture);
 	theRenderer->SetShader(theRenderer->m_defaultShader);
 
 	theRenderer->m_defaultShader->EnableColorBlending(BLEND_OP_ADD, BLEND_SOURCE_ALPHA, BLEND_ONE_MINUS_SOURCE_ALPHA);
 
 	theRenderer->DrawAABB(theWindow->GetClientWindow(), Rgba(0.f, 0.f, 0.f, 1.f));
-	theRenderer->DrawText2DCentered(Vector2(theWindow->m_clientWidth * .5f, theWindow->m_clientHeight * .66666f), "Tanks!", theWindow->m_clientHeight * .1f, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	theRenderer->DrawText2DCentered(Vector2(theWindow->m_clientWidth * .5f, theWindow->m_clientHeight * .66666f), "Thesis", theWindow->m_clientHeight * .1f, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 	theRenderer->DrawText2DCentered(Vector2(theWindow->m_clientWidth * .5f, theWindow->m_clientHeight * .35f), "Play", theWindow->m_clientHeight * .075f, playColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 	theRenderer->DrawText2DCentered(Vector2(theWindow->m_clientWidth * .5f, theWindow->m_clientHeight * .25f), "Quit", theWindow->m_clientHeight * .075f, quitColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 
@@ -85,7 +89,7 @@ float MainMenuState::UpdateFromInput(float deltaSeconds)
 		{
 		case(PLAY):
 			ResetState();
-			GameState::TransitionMenuStates(GetMenuStateFromGlobalListByType(READY_UP_MENU_STATE));
+			GameState::TransitionGameStates(GetGameStateFromGlobalListByType(PLAYING_GAME_STATE));
 			break;
 		case(EXIT):
 			g_isQuitting = true;
@@ -101,12 +105,6 @@ float MainMenuState::UpdateFromInput(float deltaSeconds)
 	theInput = nullptr;
 	delete(theInput);
 	return deltaSeconds; //new deltaSeconds
-}
-
-void MainMenuState::TransitionOut(float secondsTransitioning)
-{
-	ResetState();
-	s_isFinishedTransitioningOut = true;
 }
 
 void MainMenuState::ResetState()

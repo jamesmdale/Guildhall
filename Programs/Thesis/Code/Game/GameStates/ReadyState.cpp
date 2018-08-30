@@ -1,4 +1,4 @@
-#include "Game\Menu\ReadyState.hpp"
+#include "Game\GameStates\ReadyState.hpp"
 #include "Engine\Window\Window.hpp"
 
 ReadyState::~ReadyState()
@@ -8,6 +8,7 @@ ReadyState::~ReadyState()
 
 void ReadyState::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
 }
 
 void ReadyState::PreRender()
@@ -46,13 +47,13 @@ float ReadyState::UpdateFromInput(float deltaSeconds)
 		switch (m_selectedMenuOption)
 		{
 			case(READY):
-				TransitionMenuStates(GetMenuStateFromGlobalListByType(PLAYING_MENU_STATE));
+				TransitionGameStatesImmediate(GetGameStateFromGlobalListByType(PLAYING_GAME_STATE));
 		}
 	}
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_ESCAPE))
 	{
-		TransitionMenuStatesImmediate(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
+		TransitionGameStatesImmediate(GetGameStateFromGlobalListByType(MAIN_MENU_GAME_STATE));
 	}
 
 	theInput = nullptr;

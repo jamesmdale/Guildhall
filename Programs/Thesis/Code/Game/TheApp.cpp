@@ -11,10 +11,10 @@
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\File\ObjectFileLoader.hpp"
-#include "Game\Menu\MenuState.hpp"
 #include "Engine\Audio\AudioSystem.hpp"
 #include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Profiler\ProfilerConsole.hpp"
+#include "Game\GameStates\GameState.hpp"
 #include "Engine\File\File.hpp"
 #include "Engine\Core\LogSystem.hpp"
 #include "Engine\File\CSVWriter.hpp"
@@ -77,11 +77,6 @@ void TheApp::Initialize()
 	InputSystem::GetInstance()->GetMouse()->MouseShowCursor(false);
 	InputSystem::GetInstance()->GetMouse()->SetMouseMode(MOUSE_RELATIVE_MODE);	
 
-	std::vector<Vector3> vertices;
-	std::vector<Vector2> uvs;
-	std::vector<float> indicies;
-	std::vector<Vector3> normals;
-
 	Game::CreateInstance();
 	Game::GetInstance()->Initialize();
 
@@ -96,7 +91,7 @@ void TheApp::Update()
 	float deltaSeconds = GetMasterDeltaSeconds();
 
 	//update global menu data (handles transitions and timers)
-	GameState::UpdateGlobalMenuState(deltaSeconds);
+	GameState::UpdateGlobalGameState(deltaSeconds);
 
 	deltaSeconds = UpdateInput(deltaSeconds);
 
@@ -208,7 +203,6 @@ void Quit(Command &cmd)
 //  =========================================================================================
 void WriteTestCSV()
 {
-
 	RemoveFile("Data\\ConsoleLogs\\CSVTest.csv");
 
 	CSVWriter writer;
@@ -225,8 +219,5 @@ void WriteTestCSV()
 	writer.AddCell("Cell D1, Test");
 	writer.AddCell("Cell D2");
 
-
 	bool success = writer.WriteToFile("Data\\ConsoleLogs\\CSVTest.csv");
-
-	int i  = 0;
 }

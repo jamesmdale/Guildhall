@@ -1,16 +1,22 @@
 #pragma once
-#include "Game\Menu\MenuState.hpp"
+#include "Game\GameStates\GameState.hpp"
 
-class LoadingState : public GameState
+enum eReadyStateOptions
+{
+	READY,
+	NUM_READY_STATE_OPTIONS
+};
+
+class ReadyState : public GameState
 {
 public:
-	LoadingState(Camera* camera) : GameState(camera)
+	ReadyState(Camera* camera) : GameState(camera)
 	{
-		m_type = LOADING_MENU_STATE;
+		m_type = READY_UP_GAME_STATE;
 		m_backGroundTexture = Renderer::GetInstance()->CreateOrGetTexture("default");
 	}
 
-	virtual ~LoadingState() override;
+	virtual ~ReadyState() override;
 
 	virtual void Update(float deltaSeconds) override;
 	virtual void PreRender() override;
@@ -20,5 +26,6 @@ public:
 
 public:
 	Texture* m_backGroundTexture;
+	eReadyStateOptions m_selectedMenuOption = READY;
 };
 

@@ -66,7 +66,6 @@ void TheApp::Initialize()
 	CommandRegister("connect_and_send", CommandRegistration(ConnectAndSend, ":Insert IP and Port to connect with an a message you wish to send.", ""));
 	CommandRegister("host_connection", CommandRegistration(HostConnection, ":Insert port to listen on.", ""));
 
-
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
 	masterClock->ClockSystemStartup();
@@ -76,11 +75,6 @@ void TheApp::Initialize()
 	InputSystem::GetInstance()->GetMouse()->MouseLockToScreen(false);
 	InputSystem::GetInstance()->GetMouse()->MouseShowCursor(true);
 	InputSystem::GetInstance()->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);	
-
-	std::vector<Vector3> vertices;
-	std::vector<Vector2> uvs;
-	std::vector<float> indicies;
-	std::vector<Vector3> normals;
 
 	Game::GetInstance()->Initialize();
 }

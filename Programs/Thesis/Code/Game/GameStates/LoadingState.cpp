@@ -1,7 +1,7 @@
-#include "Game\Menu\LoadingState.hpp"
+#include "Game\GameStates\LoadingState.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Debug\DebugRender.hpp"
-#include "Engine\Audio\AudioSystem.hpp"
+#include "Engine\Renderer\Renderer.hpp"
 
 static bool s_isLoading = false;
 
@@ -12,33 +12,20 @@ LoadingState::~LoadingState()
 
 void LoadingState::Update(float deltaSeconds)
 {
+	UNUSED(deltaSeconds);
 	if (s_isLoading)
 	{
 		Renderer* theRenderer = Renderer::GetInstance();
-		AudioSystem* theAudio = AudioSystem::GetInstance();
 
-		// load intensive resources (big textures, audio, etc) =========================================================================================
-		
-		//load textures
-		/*theRenderer->CreateOrGetImage("Data/Images/galaxy2.png");
-		theRenderer->CreateOrGetImage("Data/Images/terrain.jpg");*/
-
-		//load audio
-		/*theAudio->CreateOrGetAudioGroupFromXML("Data/Audio/AudioGroups/Lasers.xml");
-		theAudio->CreateOrGetAudioGroupFromXML("Data/Audio/AudioGroups/Impacts.xml");
-		theAudio->CreateOrGetSound("Data/Audio/Panoramic.mp3");*/
-
-		//sleep to insure loading screen visibility
+		//load intensive resources (big textures, audio, etc)
 		Sleep(1);
 
 		//after you are finished loading
-		GameState* state = GetMenuStateFromGlobalListByType(MAIN_MENU_STATE);
+		GameState* state = GetGameStateFromGlobalListByType(MAIN_MENU_GAME_STATE);
 		GUARANTEE_OR_DIE(state != nullptr, "LOADING STATE TRANSITION: PLAYING STATE NOT FOUND");
 
-		TransitionMenuStatesImmediate(GetMenuStateFromGlobalListByType(MAIN_MENU_STATE));
+		TransitionGameStatesImmediate(GetGameStateFromGlobalListByType(MAIN_MENU_GAME_STATE));
 
-		state = nullptr;
-		theAudio = nullptr;
 		theRenderer = nullptr;
 	}	
 }

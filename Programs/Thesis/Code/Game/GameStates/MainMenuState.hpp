@@ -1,5 +1,5 @@
 #pragma once
-#include "Game\Menu\MenuState.hpp"
+#include "Game\GameStates\GameState.hpp"
 
 enum eMainMenuOptions
 {
@@ -13,7 +13,7 @@ class MainMenuState : public GameState
 public:
 	MainMenuState(Camera* camera) : GameState(camera)
 	{
-		m_type = MAIN_MENU_STATE;
+		m_type = MAIN_MENU_GAME_STATE;
 		m_backGroundTexture = Renderer::GetInstance()->CreateOrGetTexture("default");
 	}
 
@@ -24,7 +24,6 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
-	virtual void TransitionOut(float secondsTransitioning);
 
 	virtual void ResetState() override;
 

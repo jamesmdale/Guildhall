@@ -34,6 +34,21 @@
     <ClCompile Include="Menu\ReadyState.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="GameStates\GameState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStates\LoadingState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStates\MainMenuState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStates\PlayingState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStates\ReadyState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -53,5 +68,10 @@
     <ClInclude Include="Menu\LoadingState.hpp" />
     <ClInclude Include="Menu\PlayingState.hpp" />
     <ClInclude Include="Menu\ReadyState.hpp" />
+    <ClInclude Include="GameStates\GameState.hpp" />
+    <ClInclude Include="GameStates\LoadingState.hpp" />
+    <ClInclude Include="GameStates\MainMenuState.hpp" />
+    <ClInclude Include="GameStates\PlayingState.hpp" />
+    <ClInclude Include="GameStates\ReadyState.hpp" />
   </ItemGroup>
 </Project>
