@@ -1,0 +1,52 @@
+#pragma once
+#include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Core\EndianHelper.hpp"
+
+#define BIT_FLAG(f) (1U << (f))
+
+enum eBytePackerOptionBit : uint
+{
+	BYTEPACKER_DEFAULT = 0,
+	BYTEPACKER_OWNS_MEMORY	= BIT_FLAG(0),
+	BYTEPACKER_CAN_GROW		= BIT_FLAG(1)
+};
+
+typedef uint eBytePackerOptions;
+
+class BytePacker
+{
+public:
+	BytePacker(eEndianness byteOrder = LITTLE_ENDIAN);
+	BytePacker(size_t bufferSize, eEndianness byteOrder = LITTLE_ENDIAN);
+	BytePacker(size_t bufferSize, void* buffer, eEndianness = LITTLE_ENDIAN);
+	~BytePacker();
+
+	void SetEndianness(eEndianness endianness);
+	bool SetReadableByteCount(size_t byteCount);
+
+	bool WriteBytes(size_t byteCount, const void* data);
+
+	size_t ReadBytes(void* outData, size_t maxByteCount);
+
+	size_t WriteSize(size_t size);
+	size_t ReadSize(size_t* outsize);
+
+	bool WriteString(const char* writeString);
+
+	bool ReadString(char* outString, size_t maxByteSize);
+
+	void ResetWrite();
+	void ResetRead();
+
+	eEndianness GetEndianness() const;
+	size_t GetWrittenByteCount() const;
+	size_t GetWriteableByteCount() const;
+	size_t GetReadableByteCount() const;
+
+private:
+	eEndianness m_endianness = LITTLE_ENDIAN;
+	size_t m_byteCount;
+	eBytePackerOptionBit m_bytePackerOptions = 0U;
+	
+};
+

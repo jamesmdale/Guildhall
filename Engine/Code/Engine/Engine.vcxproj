@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\BytePacker.cpp" />
     <ClCompile Include="Core\LogSystem.cpp" />
     <ClCompile Include="File\CSVWriter.cpp" />
     <ClCompile Include="Math\AABB3.cpp" />
@@ -124,6 +125,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Async\Threading.hpp" />
+    <ClInclude Include="Core\BytePacker.hpp" />
+    <ClInclude Include="Core\EndianHelper.hpp" />
     <ClInclude Include="Core\Header.h" />
     <ClInclude Include="Core\LogSystem.hpp" />
     <ClInclude Include="Core\WindowsCommon.hpp" />
