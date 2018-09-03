@@ -1,22 +1,15 @@
 <?xml version="1.0"?>
 
-<sprite id="archer_f.portrait">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="152,13,235,130" />
-	<pivot xy="0.5,0" />
-</sprite>
-
-<sprite id="archer_f.tr.idle">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="10,14,25,40" />
+<sprite id="agent.idle.up">
+	<diffuse src="Data/Images/Images/Agents/to_archer.split.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,512,64,576" />
 	<pivot xy="0.5,0" />
 </sprite>
 <sprite id="archer_f.al.idle">
 	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
 	<ppu count="16" />
-	<uv layout="pixel" uvs="10,46,24,72" />
+	<uv layout="pixel" uvs="0,512,64,576" />
 	<pivot xy="0.5,0" />
 </sprite>
 

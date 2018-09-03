@@ -6,7 +6,7 @@
 
 enum eBytePackerOptionBit : uint
 {
-	BYTEPACKER_DEFAULT = 0,
+	BYTEPACKER_DEFAULT = 0U,
 	BYTEPACKER_OWNS_MEMORY	= BIT_FLAG(0),
 	BYTEPACKER_CAN_GROW		= BIT_FLAG(1)
 };
@@ -46,7 +46,7 @@ public:
 private:
 	eEndianness m_endianness = LITTLE_ENDIAN;
 	size_t m_byteCount;
-	eBytePackerOptionBit m_bytePackerOptions = 0U;
-	
+	eBytePackerOptionBit m_bytePackerOptions = BYTEPACKER_DEFAULT;
+	void* m_data;
 };
 
