@@ -4,12 +4,21 @@
 //  =============================================================================
 BytePacker::BytePacker(eEndianness byteOrder)
 {
+	m_endianness = byteOrder;
+	m_bufferSize = sizeof(uint);
+	m_buffer = malloc(m_bufferSize);
 
+	m_bytePackerOptions = 
 }
 
 //  =============================================================================
 BytePacker::BytePacker(size_t bufferSize, eEndianness byteOrder)
 {
+	m_bufferSize = m_bufferSize;
+	m_endianness = byteOrder;
+
+	m_buffer = malloc(bufferSize);
+	m_
 }
 
 //  =============================================================================
