@@ -16,9 +16,14 @@ typedef uint eBytePackerOptions;
 class BytePacker
 {
 public:
-	BytePacker(eEndianness byteOrder = LITTLE_ENDIAN);							//owns buffer. growable
-	BytePacker(size_t bufferSize, eEndianness byteOrder = LITTLE_ENDIAN);		//owns buffer. can't grow
-	BytePacker(size_t bufferSize, void* buffer, eEndianness = LITTLE_ENDIAN);	//doesn't own buffer, can't grow
+	//owns buffer. growable
+	BytePacker(eEndianness byteOrder = LITTLE_ENDIAN);		
+
+	//owns buffer. can't grow
+	BytePacker(size_t bufferSize, eEndianness byteOrder = LITTLE_ENDIAN);	
+
+	//doesn't own buffer, can't grow
+	BytePacker(size_t bufferSize, void* buffer, eEndianness byteOrder = LITTLE_ENDIAN);
 	~BytePacker();
 
 	void SetEndianness(eEndianness endianness);
@@ -46,6 +51,9 @@ public:
 private:
 	eEndianness m_endianness = LITTLE_ENDIAN;
 	size_t m_bufferSize;
+
+	size_t m_writtenByteCount = 0;
+
 	eBytePackerOptionBit m_bytePackerOptions = BYTEPACKER_DEFAULT;
 	void* m_buffer = nullptr;
 };

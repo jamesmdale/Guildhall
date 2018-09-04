@@ -418,6 +418,7 @@
     <ClInclude Include="File\CSVWriter.hpp" />
     <ClInclude Include="Core\EndianHelper.hpp" />
     <ClInclude Include="Core\BytePacker.hpp" />
+    <ClInclude Include="Core\BitHelper.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />
