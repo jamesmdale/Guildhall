@@ -3,10 +3,11 @@
 #include "Game\Map\MapGenStep.hpp"
 
 //  =========================================================================================
-Map::Map(MapDefinition* definition, const std::string & mapName)
+Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* renderScene)
 {
-	m_Name = mapName;
+	m_name = mapName;
 	m_mapDefinition = definition;
+	m_renderScene = renderScene;
 
 	int numTilesX = GetRandomIntInRange(m_mapDefinition->m_width.min, m_mapDefinition->m_width.max);
 	int numTilesY = GetRandomIntInRange(m_mapDefinition->m_height.min, m_mapDefinition->m_height.max);
@@ -17,23 +18,24 @@ Map::Map(MapDefinition* definition, const std::string & mapName)
 	{
 		for (int yCoordinate = 0; yCoordinate < numTilesY; yCoordinate++)
 		{
-			Tile newTile;
+			Tile* newTile = new Tile();
 
-			newTile.m_tileCoords = IntVector2(xCoordinate, yCoordinate);
-			newTile.m_tileDefinition = TileDefinition::s_definitions[m_mapDefinition->m_defaultTile->m_name];
-			newTile.m_renderScene = m_renderScene;
+			newTile->m_tileCoords = IntVector2(xCoordinate, yCoordinate);
+			newTile->m_tileDefinition = TileDefinition::s_definitions[m_mapDefinition->m_defaultTile->m_name];
+			newTile->m_renderScene = m_renderScene;
 
-			newTile.Initialize();
+			newTile->Initialize();
 
 			m_tiles.push_back(newTile);
+			newTile = nullptr;
 		}
 	}
 
-	for (int genStepsIndex = 0; genStepsIndex < (int)definition->m_genSteps.size(); genStepsIndex++)
+	for (int genStepsIndex = 0; genStepsIndex < (int)m_mapDefinition->m_genSteps.size(); genStepsIndex++)
 	{
-		int iterations = GetRandomIntInRange(definition->m_iterations.min, definition->m_iterations.max);
+		int iterations = GetRandomIntInRange(m_mapDefinition->m_iterations.min, m_mapDefinition->m_iterations.max);
 		float chanceToRun = GetRandomFloatZeroToOne();
-		if (chanceToRun <= definition->m_chanceToRun)
+		if (chanceToRun <= m_mapDefinition->m_chanceToRun)
 		{
 			for (int iterationIndex = 0; iterationIndex < iterations; iterationIndex++)
 			{
@@ -43,6 +45,7 @@ Map::Map(MapDefinition* definition, const std::string & mapName)
 	}
 }
 
+//  =========================================================================================
 Map::~Map()
 {
 	m_renderScene = nullptr;

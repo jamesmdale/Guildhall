@@ -73,7 +73,7 @@ void Game::Initialize()
 	// add cameras
 	m_gameCamera = new Camera();
 	m_gameCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
-	m_gameCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
+	m_gameCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1000.f, 1000.f);
 	m_gameCamera->SetView(Matrix44::IDENTITY);
 
 	// add menu states

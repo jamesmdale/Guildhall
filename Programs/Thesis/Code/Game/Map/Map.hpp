@@ -9,7 +9,7 @@
 class Map
 {
 public:
-	explicit Map(MapDefinition* definition, const std::string& mapName);
+	explicit Map(MapDefinition* definition, const std::string& mapName, RenderScene2D* renderScene);
 
 	Map::~Map();
 
@@ -42,10 +42,10 @@ public:
 	//void GenerateMap(const std::string& definitionName, const std::string& mapName);
 
 public:
-	std::string m_Name;
+	std::string m_name;
 	IntVector2 m_dimensions;
 	MapDefinition* m_mapDefinition = nullptr;
-	std::vector<Tile> m_tiles;
+	std::vector<Tile*> m_tiles;
 
 	RenderScene2D* m_renderScene = nullptr;
 private:

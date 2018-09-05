@@ -412,9 +412,6 @@ void MeshBuilder::CreateTexturedQuad3D(const Vector3& center, const Vector2& dim
 	float xVal = 0.f;
 	float yVal = 0.f;
 
-	Vector2 texCoordsAtMins = texCoordsAtMins;
-	Vector2 texCoordsAtMaxs = texCoordsAtMaxs;
-
 	if (dimensions.x != 0.f)
 		xVal = dimensions.x / 2.f;
 

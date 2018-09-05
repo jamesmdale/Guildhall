@@ -30,5 +30,5 @@ public:
 public:
 	IntVector2 m_tileCoords;
 	TileDefinition* m_tileDefinition = nullptr;
-	Tags* m_tags = nullptr;;
+	Tags* m_tags = nullptr;
 };

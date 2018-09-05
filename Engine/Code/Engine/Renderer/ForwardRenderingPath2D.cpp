@@ -31,6 +31,9 @@ void ForwardRenderingPath2D::RenderSceneForCamera(Camera* camera, RenderScene2D*
 
 	theRenderer->SetCamera(camera);
 
+	theRenderer->ClearDepth(1.f);
+	theRenderer->ClearColor(Rgba::BLACK);
+
 	std::vector<DrawCallData2D> drawCalls;
 
 	for (Renderable2D* renderable : scene->m_renderables)

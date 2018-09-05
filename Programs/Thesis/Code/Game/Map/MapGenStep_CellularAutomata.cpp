@@ -1,5 +1,6 @@
 #include "Game\Map\MapGenStep_CellularAutomata.hpp"
 #include "Engine\Core\ErrorWarningAssert.hpp"
+#include "Game/Map/Map.hpp"
 
 MapGenStep_CellularAutomata::MapGenStep_CellularAutomata( const tinyxml2::XMLElement& generationStepElement )
 	: MapGenStep( generationStepElement )
@@ -33,7 +34,7 @@ void MapGenStep_CellularAutomata::Run( Map& map )
 	
 	for(int tileIndex = 0; tileIndex < (int)map.m_tiles.size(); tileIndex++)
 	{	
-		if(map.m_tiles[tileIndex].m_tileDefinition == m_ifType)
+		if(map.m_tiles[tileIndex]->m_tileDefinition == m_ifType)
 		{
 			float randomChance = GetRandomFloatZeroToOne();
 			if(randomChance <= m_chanceToMutate)
@@ -45,7 +46,7 @@ void MapGenStep_CellularAutomata::Run( Map& map )
 					for(size_t neighboringTileIndex = 0; neighboringTileIndex < neighboringTiles.size(); neighboringTileIndex++)
 					{
 						int neighborIndex = neighboringTiles[neighboringTileIndex];
-						if(map.m_tiles[neighborIndex].m_tileDefinition == m_ifNeighborType)
+						if(map.m_tiles[neighborIndex]->m_tileDefinition == m_ifNeighborType)
 						{
 							neighborCount++;
 						}
@@ -74,14 +75,14 @@ void MapGenStep_CellularAutomata::Run( Map& map )
 	{
 		int currentIndex = tileIndexesToChange[tileIndex];
 
-		map.m_tiles[currentIndex].m_tileDefinition = m_changeToType;
+		map.m_tiles[currentIndex]->m_tileDefinition = m_changeToType;
 	}
 }
 
 std::vector<int> MapGenStep_CellularAutomata::GetNeighboringTiles(int currentTileIndex, const Map& map)
 {
 	std::vector<int> neighboringTilesIndexes;	
-	IntVector2 currentTileCoords = map.m_tiles[currentTileIndex].m_tileCoords;
+	IntVector2 currentTileCoords = map.m_tiles[currentTileIndex]->m_tileCoords;
 
 
 	IntVector2 eastTile = IntVector2(currentTileCoords.x + 1, currentTileCoords.y);

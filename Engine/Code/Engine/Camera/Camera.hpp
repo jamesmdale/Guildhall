@@ -26,6 +26,7 @@ public:
 	void SetPerspective(float fovDegrees, float aspect, float nearVal, float farVal);
 
 	void Translate(Vector3 position);
+	void SetPosition(Vector3 position);
 	void RotateByEuler(Vector3 rotation);
 
 	//view settings

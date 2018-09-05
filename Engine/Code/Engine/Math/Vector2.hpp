@@ -46,6 +46,10 @@ public: // NOTE: this is one of the few cases where we break both the "m_" namin
 	static const Vector2 ZERO;
 	static const Vector2 ZEROTOONE;
 	static const Vector2 ONE;
+	static const Vector2 DOWN;
+	static const Vector2 UP;
+	static const Vector2 RIGHT;
+	static const Vector2 LEFT;
 
 };
 

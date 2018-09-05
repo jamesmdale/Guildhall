@@ -3,6 +3,7 @@
 #include "Engine/Core/Rgba.hpp"
 #include <vector>
 #include "Game/GameCommon.hpp"
+#include "Game/Map/Map.hpp"
 
 MapGenStep_FromFile::MapGenStep_FromFile( const tinyxml2::XMLElement& generationStepElement )
 	: MapGenStep( generationStepElement )
@@ -58,18 +59,10 @@ void MapGenStep_FromFile::Run( Map& map )
 			{
 				changeTileDef = TileDefinition::s_definitions["Grass"];
 			}
-			if(color == Rgba::RED)
-			{
-				changeTileDef = TileDefinition::s_definitions["Lava"];
-			}
-			if(color == Rgba::BLUE)
-			{
-				changeTileDef = TileDefinition::s_definitions["Water"];
-			}
 
 			if(changeTileDef != nullptr)
 			{
-				map.m_tiles[tileIndex].m_tileDefinition = changeTileDef;
+				map.m_tiles[tileIndex]->m_tileDefinition = changeTileDef;
 			}
 		}		
 	}	

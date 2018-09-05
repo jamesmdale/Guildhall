@@ -1,5 +1,6 @@
 #include "Game\Map\MapGenStep_Mutate.hpp"
 #include "Engine\Utility\Tags.hpp"
+#include "Game/Map/Map.hpp"
 
 MapGenStep_Mutate::MapGenStep_Mutate( const tinyxml2::XMLElement& generationStepElement )
 	: MapGenStep( generationStepElement )
@@ -21,16 +22,16 @@ void MapGenStep_Mutate::Run( Map& map )
 		{
 			if(m_ifTags != "")
 			{
-				if(map.m_tiles[tileIndex].m_tags->HasTags(m_ifTags))
+				if(map.m_tiles[tileIndex]->m_tags->HasTags(m_ifTags))
 				{
-					map.m_tiles[tileIndex].m_tileDefinition = m_mutateTileDef;
-					map.m_tiles[tileIndex].m_tags->SetOrRemoveTags(m_setTags);
+					map.m_tiles[tileIndex]->m_tileDefinition = m_mutateTileDef;
+					map.m_tiles[tileIndex]->m_tags->SetOrRemoveTags(m_setTags);
 				}						
 			}
 			else
 			{
-				map.m_tiles[tileIndex].m_tileDefinition = m_mutateTileDef;
-				map.m_tiles[tileIndex].m_tags->SetOrRemoveTags(m_setTags);
+				map.m_tiles[tileIndex]->m_tileDefinition = m_mutateTileDef;
+				map.m_tiles[tileIndex]->m_tags->SetOrRemoveTags(m_setTags);
 			}
 			
 		}			

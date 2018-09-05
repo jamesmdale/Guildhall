@@ -85,6 +85,16 @@ void Camera::Translate(Vector3 position)
 	}	
 }
 
+//sets current position
+void Camera::SetPosition(Vector3 position)
+{
+	m_transform->SetLocalPosition(position);
+	if(m_transform->IsTransformDirty())
+	{
+		m_viewMatrix = m_transform->GetWorldMatrix().InvertFastToNew();
+	}	
+}
+
 void Camera::SetView(Matrix44 view)
 {
 	m_viewMatrix = view;

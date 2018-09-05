@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include "Game\Map\Map.hpp"
 #include "Engine\ThirdParty\tinyxml2/tinyxml2.h"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Game\Map\Tile.hpp"

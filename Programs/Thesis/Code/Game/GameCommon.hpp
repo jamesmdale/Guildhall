@@ -13,6 +13,8 @@ const Vector2 g_topRightOrtho = Vector2(1.f, 1.f);
 const Vector2 g_center = Vector2((g_bottomLeftOrtho.x + g_topRightOrtho.x) * .5f, (g_bottomLeftOrtho.y + g_topRightOrtho.y) * .5f);
 const Rgba g_backgroundColor = Rgba(1.f, 1.f, 1.f, 1.f);
 
+const float g_tilePercentageOfWindow = 0.025f;
+
 //game related globals
 extern bool g_isDebug;
 extern bool g_isQuitting;
