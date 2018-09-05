@@ -403,6 +403,55 @@ void MeshBuilder::CreateUVSphere(const Vector3& position, float radius, int wedg
 	}
 }
 
+void MeshBuilder::CreateTexturedQuad3D(const Vector3& center, const Vector2& dimensions, const Vector2& texCoordsAtMins, const Vector2& texCoordsAtMaxs, const Rgba& tint)
+{
+	MeshBuilder mb;
+
+	int vertSize = GetVertexCount();
+
+	float xVal = 0.f;
+	float yVal = 0.f;
+
+	Vector2 texCoordsAtMins = texCoordsAtMins;
+	Vector2 texCoordsAtMaxs = texCoordsAtMaxs;
+
+	if (dimensions.x != 0.f)
+		xVal = dimensions.x / 2.f;
+
+	if (dimensions.y != 0.f)
+		yVal = dimensions.y / 2.f;
+
+	Begin(TRIANGLES_DRAW_PRIMITIVE, true); //begin is does use index buffer
+
+										   //front face
+	SetColor(tint);
+	SetUV(Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
+	SetNormal(Vector3(0.f, 0.f, -1.f));
+	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+	PushVertex(Vector3(center.x - xVal, center.y - yVal, 0.f));
+
+	SetColor(tint);
+	SetUV(Vector2(texCoordsAtMaxs.x, texCoordsAtMins.y));
+	SetNormal(Vector3(0.f, 0.f, -1.f));
+	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+	PushVertex(Vector3(center.x + xVal, center.y - yVal, 0.f));
+
+	SetColor(tint);
+	SetUV(Vector2(texCoordsAtMaxs.x, texCoordsAtMaxs.y));
+	SetNormal(Vector3(0.f, 0.f, -1.f));
+	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+	PushVertex(Vector3(center.x + xVal, center.y + yVal, 0.f));
+
+	SetColor(tint);
+	SetUV(Vector2(texCoordsAtMins.x, texCoordsAtMaxs.y));
+	SetNormal(Vector3(0.f, 0.f, -1.f));
+	SetTangent(Vector4(1.f, 0.f, 0.f, 1.f));
+	PushVertex(Vector3(center.x - xVal, center.y + yVal, 0.f));
+
+
+	AddQuadIndices(vertSize + 0, vertSize + 1, vertSize + 2, vertSize + 3);
+}
+
 //normally z = 0
 void MeshBuilder::CreateQuad3D(const Vector3& center, const Vector2& dimensions, const Rgba& tint)
 {
@@ -515,6 +564,11 @@ void MeshBuilder::CreateQuad2D(const AABB2& drawBounds, const Rgba& tint)
 {
 	Vector2 center = drawBounds.GetCenter();
 	CreateQuad3D(Vector3(center.x, center.y, 0.f), drawBounds.GetDimensions(), tint);
+}
+
+void MeshBuilder::CreateTexturedQuad2D(const Vector2& center, const Vector2 & dimensions, const Vector2 & texCoordsAtMins, const Vector2 & texCoordsAtMaxs, const Rgba & tint)
+{
+	CreateTexturedQuad3D(Vector3(center.x, center.y, 0.f), dimensions, texCoordsAtMins, texCoordsAtMaxs, tint);
 }
 
 void MeshBuilder::CreateTiledQuad2D(const Vector2& center, const Vector2& dimensions, const Vector2& cellDimensions, const Rgba& tint)

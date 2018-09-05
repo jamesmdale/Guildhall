@@ -69,6 +69,7 @@ public:
 	//3D
 	void CreateCube(const Vector3& center, const Vector3& dimensions, const Rgba& tint);
 	void CreateUVSphere(const Vector3& position, float radius, int wedges, int slices, const Rgba& tint);
+	void CreateTexturedQuad3D(const Vector3 & center, const Vector2 & dimensions, const Vector2 & texCoordsAtMins, const Vector2 & texCoordsAtMaxs, const Rgba& tint);
 	void CreateQuad3D(const Vector3& center, const Vector2& dimensions, const Rgba& tint);
 	void CreateLine(const Vector3& positionStart, const Vector3& positionEnd, const Rgba& color);
 	void CreateLine2D(const Vector2& positionStart, const Vector2& positionEnd, const Rgba& color);
@@ -82,6 +83,7 @@ public:
 	void CreateQuad2D(const Vector2& center, const Vector2& dimensions, const Rgba& tint);
 	void CreateLine2D(const Vector2& startPosition, const Vector2& endPosition, float width, const Rgba& tint);
 	void CreateQuad2D(const AABB2& drawBounds, const Rgba& tint);
+	void CreateTexturedQuad2D(const Vector2& center, const Vector2& dimensions, const Vector2& texCoordsAtMins, const Vector2& texCoordsAtMaxs, const Rgba& tint);
 	void CreateTiledQuad2D(const Vector2& center, const Vector2& dimensions, const Vector2& cellDimensions, const Rgba & tint);
 	void CreateScrollableQuad2D(const Vector2& center, const Vector2& dimensions, const Rgba& tint);
 

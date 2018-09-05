@@ -33,7 +33,7 @@ void MapGenStep_CellularAutomata::Run( Map& map )
 	
 	for(int tileIndex = 0; tileIndex < (int)map.m_tiles.size(); tileIndex++)
 	{	
-		if(map.m_tiles[tileIndex].m_tileDef == m_ifType)
+		if(map.m_tiles[tileIndex].m_tileDefinition == m_ifType)
 		{
 			float randomChance = GetRandomFloatZeroToOne();
 			if(randomChance <= m_chanceToMutate)
@@ -45,7 +45,7 @@ void MapGenStep_CellularAutomata::Run( Map& map )
 					for(size_t neighboringTileIndex = 0; neighboringTileIndex < neighboringTiles.size(); neighboringTileIndex++)
 					{
 						int neighborIndex = neighboringTiles[neighboringTileIndex];
-						if(map.m_tiles[neighborIndex].m_tileDef == m_ifNeighborType)
+						if(map.m_tiles[neighborIndex].m_tileDefinition == m_ifNeighborType)
 						{
 							neighborCount++;
 						}
@@ -74,7 +74,7 @@ void MapGenStep_CellularAutomata::Run( Map& map )
 	{
 		int currentIndex = tileIndexesToChange[tileIndex];
 
-		map.m_tiles[currentIndex].m_tileDef = m_changeToType;
+		map.m_tiles[currentIndex].m_tileDefinition = m_changeToType;
 	}
 }
 

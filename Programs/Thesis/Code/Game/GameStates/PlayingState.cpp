@@ -22,7 +22,8 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
-
+	MapDefinition* definition = MapDefinition::s_definitions["Grass"];
+	m_map = new Map(definition, "TestMap");
 
 	//cleanup
 	theRenderer = nullptr;	

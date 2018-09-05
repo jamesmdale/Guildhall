@@ -1,14 +1,18 @@
 #pragma once
 #include <string>
-#include "Engine\Math\IntVector2.hpp"
-#include "Game\Definitions\MapDefinition.hpp"
 #include <vector>
+#include "Engine\Math\IntVector2.hpp"
+#include "Engine\Renderer\RenderScene2D.hpp"
+#include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Map\Tile.hpp"
 
 class Map
 {
 public:
 	explicit Map(MapDefinition* definition, const std::string& mapName);
+
+	Map::~Map();
+
 	void SetMapType(MapDefinition* newMapDefintion) { m_mapDefinition = newMapDefintion; }
 	IntVector2 GetDimensions() { return m_dimensions; }
 
@@ -35,8 +39,6 @@ public:
 	void UpdatePlayerInput();
 	int GetActorIndex();
 
-
-
 	//void GenerateMap(const std::string& definitionName, const std::string& mapName);
 
 public:
@@ -44,6 +46,8 @@ public:
 	IntVector2 m_dimensions;
 	MapDefinition* m_mapDefinition = nullptr;
 	std::vector<Tile> m_tiles;
+
+	RenderScene2D* m_renderScene = nullptr;
 private:
 	bool m_isFullMapView = false;
 };

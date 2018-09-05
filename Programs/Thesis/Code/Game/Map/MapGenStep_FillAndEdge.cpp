@@ -25,11 +25,11 @@ void MapGenStep_FillAndEdge::Run( Map& map )
 
 		if(xCoordinate == 0 || xCoordinate == (map.m_dimensions.x - 1) || yCoordinate == 0 || yCoordinate == (map.m_dimensions.y - 1)) //if we are on the edge
 		{
-			map.m_tiles[tileIndex].m_tileDef = m_edgeTileDef;		
+			map.m_tiles[tileIndex].m_tileDefinition = m_edgeTileDef;		
 		}
 		else
 		{
-			map.m_tiles[tileIndex].m_tileDef = m_fillTileDef;	
+			map.m_tiles[tileIndex].m_tileDefinition = m_fillTileDef;	
 		}
 	}	
 }

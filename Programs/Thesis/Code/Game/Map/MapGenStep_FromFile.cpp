@@ -69,7 +69,7 @@ void MapGenStep_FromFile::Run( Map& map )
 
 			if(changeTileDef != nullptr)
 			{
-				map.m_tiles[tileIndex].m_tileDef = changeTileDef;
+				map.m_tiles[tileIndex].m_tileDefinition = changeTileDef;
 			}
 		}		
 	}	

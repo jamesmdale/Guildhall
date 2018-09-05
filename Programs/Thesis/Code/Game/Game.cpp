@@ -143,6 +143,7 @@ void Game::InitializeTileDefinitions()
 //  =========================================================================================
 void Game::InitializeMapDefinitions()
 {
+	MapDefinition::Initialize("Data/Definitions/MapDefinitions/MapDefinition.xml");
 }
 
 //  =========================================================================================

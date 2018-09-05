@@ -20,7 +20,10 @@ Map::Map(MapDefinition* definition, const std::string & mapName)
 			Tile newTile;
 
 			newTile.m_tileCoords = IntVector2(xCoordinate, yCoordinate);
-			newTile.m_tileDef = TileDefinition::s_definitions[m_mapDefinition->m_defaultTile->m_name];
+			newTile.m_tileDefinition = TileDefinition::s_definitions[m_mapDefinition->m_defaultTile->m_name];
+			newTile.m_renderScene = m_renderScene;
+
+			newTile.Initialize();
 
 			m_tiles.push_back(newTile);
 		}
@@ -38,6 +41,12 @@ Map::Map(MapDefinition* definition, const std::string & mapName)
 			}
 		}
 	}
+}
+
+Map::~Map()
+{
+	m_renderScene = nullptr;
+	m_mapDefinition = nullptr;
 }
 
 //  =========================================================================================
