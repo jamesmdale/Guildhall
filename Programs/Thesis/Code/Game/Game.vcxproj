@@ -295,6 +295,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Agent.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCommon.cpp" />
     <ClCompile Include="GameStates\GameState.cpp" />
@@ -303,7 +304,16 @@
     <ClCompile Include="GameStates\PlayingState.cpp" />
     <ClCompile Include="GameStates\ReadyState.cpp" />
     <ClCompile Include="Main_Win32.cpp" />
+    <ClCompile Include="Map\Map.cpp" />
+    <ClCompile Include="Definitions\MapDefinition.cpp" />
+    <ClCompile Include="Map\MapGenStep.cpp" />
+    <ClCompile Include="Map\MapGenStep_CellularAutomata.cpp" />
+    <ClCompile Include="Map\MapGenStep_FillAndEdge.cpp" />
+    <ClCompile Include="Map\MapGenStep_FromFile.cpp" />
+    <ClCompile Include="Map\MapGenStep_Mutate.cpp" />
     <ClCompile Include="TheApp.cpp" />
+    <ClCompile Include="Map\Tile.cpp" />
+    <ClCompile Include="Definitions\TileDefinition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engine\Code\Engine\Engine.vcxproj">
@@ -311,6 +321,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Agent.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
@@ -319,7 +330,16 @@
     <ClInclude Include="GameStates\MainMenuState.hpp" />
     <ClInclude Include="GameStates\PlayingState.hpp" />
     <ClInclude Include="GameStates\ReadyState.hpp" />
+    <ClInclude Include="Map\Map.hpp" />
+    <ClInclude Include="Definitions\MapDefinition.hpp" />
+    <ClInclude Include="Map\MapGenStep.hpp" />
+    <ClInclude Include="Map\MapGenStep_CellularAutomata.hpp" />
+    <ClInclude Include="Map\MapGenStep_FillAndEdge.hpp" />
+    <ClInclude Include="Map\MapGenStep_FromFile.hpp" />
+    <ClInclude Include="Map\MapGenStep_Mutate.hpp" />
     <ClInclude Include="TheApp.hpp" />
+    <ClInclude Include="Map\Tile.hpp" />
+    <ClInclude Include="Definitions\TileDefinition.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

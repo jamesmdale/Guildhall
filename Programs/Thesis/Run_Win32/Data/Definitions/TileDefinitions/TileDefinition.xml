@@ -1,0 +1,21 @@
+<TileDefinitions>
+  
+  <TileDefinition
+  name="Grass"
+  baseSpriteCoords="0,1"
+  baseSpriteTint="180,180,180"
+  allowsWalking="true"
+  spriteSheetName="Terrain_8x8.png"
+  spriteSheetDimensions="8,8"
+  />
+
+  <TileDefinition
+  name="Wall"
+  baseSpriteCoords="0,6"
+  baseSpriteTint="255,255,255"
+  allowsWalking="false" 
+  spriteSheetName="Terrain_8x8.png"
+  spriteSheetDimensions="8,8"
+  />
+  
+</TileDefinitions>

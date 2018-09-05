@@ -22,6 +22,8 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
+
+
 	//cleanup
 	theRenderer = nullptr;	
 }

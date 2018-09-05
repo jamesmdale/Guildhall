@@ -19,21 +19,6 @@
     <ClCompile Include="GameCommon.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="Menu\MainMenuState.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu\MenuState.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu\LoadingState.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu\PlayingState.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu\ReadyState.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="GameStates\GameState.cpp">
       <Filter>General</Filter>
     </ClCompile>
@@ -47,6 +32,36 @@
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="GameStates\ReadyState.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\MapGenStep.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\MapGenStep_CellularAutomata.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\MapGenStep_FillAndEdge.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\MapGenStep_FromFile.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\MapGenStep_Mutate.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Definitions\TileDefinition.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Definitions\MapDefinition.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\Tile.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\Map.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Agent.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,15 +78,20 @@
     <ClInclude Include="EngineBuildPreferences.hpp">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="Menu\MainMenuState.hpp" />
-    <ClInclude Include="Menu\MenuState.hpp" />
-    <ClInclude Include="Menu\LoadingState.hpp" />
-    <ClInclude Include="Menu\PlayingState.hpp" />
-    <ClInclude Include="Menu\ReadyState.hpp" />
     <ClInclude Include="GameStates\GameState.hpp" />
     <ClInclude Include="GameStates\LoadingState.hpp" />
     <ClInclude Include="GameStates\MainMenuState.hpp" />
     <ClInclude Include="GameStates\PlayingState.hpp" />
     <ClInclude Include="GameStates\ReadyState.hpp" />
+    <ClInclude Include="Map\MapGenStep.hpp" />
+    <ClInclude Include="Map\MapGenStep_CellularAutomata.hpp" />
+    <ClInclude Include="Map\MapGenStep_FillAndEdge.hpp" />
+    <ClInclude Include="Map\MapGenStep_FromFile.hpp" />
+    <ClInclude Include="Map\MapGenStep_Mutate.hpp" />
+    <ClInclude Include="Definitions\TileDefinition.hpp" />
+    <ClInclude Include="Definitions\MapDefinition.hpp" />
+    <ClInclude Include="Map\Tile.hpp" />
+    <ClInclude Include="Map\Map.hpp" />
+    <ClInclude Include="Agent.hpp" />
   </ItemGroup>
 </Project>

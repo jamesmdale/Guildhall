@@ -77,6 +77,7 @@
     <ClCompile Include="Math\Segment3.cpp" />
     <ClCompile Include="Async\Threading.cpp" />
     <ClCompile Include="Net\TCPSocket.cpp" />
+    <ClCompile Include="Utility\Tags.cpp" />
     <ClCompile Include="Time\Stopwatch.cpp" />
     <ClCompile Include="Time\Clock.cpp" />
     <ClCompile Include="Time\Time.cpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="Net\NetAddress.hpp" />
     <ClInclude Include="Net\Net.hpp" />
     <ClInclude Include="Net\TCPSocket.hpp" />
+    <ClInclude Include="Utility\Tags.hpp" />
     <ClInclude Include="Utility\Graph.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
     <ClInclude Include="Audio\AudioSystem.hpp" />

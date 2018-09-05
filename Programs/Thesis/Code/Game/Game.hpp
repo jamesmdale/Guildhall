@@ -35,6 +35,10 @@ public:
 	void PostRender();
 	void Initialize();
 	float UpdateInput(float deltaSeconds);
+
+	void InitializeTileDefinitions();
+	void InitializeMapDefinitions();
+	void InitializeAgentDefinitions();
 };
 
 

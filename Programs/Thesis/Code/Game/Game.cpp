@@ -86,6 +86,11 @@ void Game::Initialize()
 	GameState::TransitionGameStatesImmediate(GameState::GetGameStateFromGlobalListByType(MAIN_MENU_GAME_STATE));
 	GameState::UpdateGlobalGameState(0.f);
 
+	//load definitions
+	InitializeTileDefinitions();
+	InitializeMapDefinitions();
+	InitializeAgentDefinitions();
+
 
 	// cleanup
 	theRenderer = nullptr;
@@ -127,6 +132,22 @@ float Game::UpdateInput(float deltaSeconds)
 	deltaSeconds = GameState::GetCurrentGameState()->UpdateFromInput(deltaSeconds);
 
 	return deltaSeconds;
+}
+
+//  =========================================================================================
+void Game::InitializeTileDefinitions()
+{
+	TileDefinition::Initialize("Data/Definitions/TileDefinitions/TileDefinition.xml");
+}
+
+//  =========================================================================================
+void Game::InitializeMapDefinitions()
+{
+}
+
+//  =========================================================================================
+void Game::InitializeAgentDefinitions()
+{
 }
 
 

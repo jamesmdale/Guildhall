@@ -9,8 +9,8 @@ BytePacker::BytePacker(eEndianness byteOrder)
 	m_bufferSize = sizeof(uint);
 	m_buffer = malloc(m_bufferSize);
 
-	m_bytePackerOptions = EnableBits(m_bytePackerOptions, BYTEPACKER_OWNS_MEMORY);
-	m_bytePackerOptions = EnableBits(m_bytePackerOptions, BYTEPACKER_CAN_GROW);
+	m_bytePackerOptions = (eBytePackerOptionBit)EnableBits<uint>((uint)m_bytePackerOptions, (uint)BYTEPACKER_OWNS_MEMORY);
+	m_bytePackerOptions = (eBytePackerOptionBit)EnableBits<uint>((uint)m_bytePackerOptions, (uint)BYTEPACKER_CAN_GROW);
 }
 
 //  =============================================================================
@@ -21,7 +21,7 @@ BytePacker::BytePacker(size_t bufferSize, eEndianness byteOrder)
 
 	m_buffer = malloc(bufferSize);
 
-	m_bytePackerOptions = EnableBits(m_bytePackerOptions, BYTEPACKER_OWNS_MEMORY);
+	m_bytePackerOptions = (eBytePackerOptionBit)EnableBits<uint>((uint)m_bytePackerOptions, (uint)BYTEPACKER_OWNS_MEMORY);
 }
 
 //  =============================================================================
@@ -37,7 +37,7 @@ BytePacker::BytePacker(size_t bufferSize, void* buffer, eEndianness byteOrder)
 //  =============================================================================
 BytePacker::~BytePacker()
 {
-	if (AreBitsSet(m_bytePackerOptions, BYTEPACKER_OWNS_MEMORY))
+	if (AreBitsSet<uint>((uint)m_bytePackerOptions, (uint)BYTEPACKER_OWNS_MEMORY))
 	{
 		free(m_buffer);
 		m_buffer = nullptr;
