@@ -301,6 +301,9 @@
     <ClCompile Include="Core\EndianHelper.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Net\RemoteCommandService.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -426,6 +429,7 @@
     <ClInclude Include="Core\BytePacker.hpp" />
     <ClInclude Include="Core\BitHelper.hpp" />
     <ClInclude Include="Utility\Tags.hpp" />
+    <ClInclude Include="Net\RemoteCommandService.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

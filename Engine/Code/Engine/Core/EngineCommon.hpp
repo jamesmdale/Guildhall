@@ -19,6 +19,10 @@ constexpr float PROFILER_TEXT_CELL_HEIGHT = 11.f; //in pixels
 constexpr float PROFILER_TEXT_WIDTH_PADDING = 20.f; //in pixels
 constexpr float PROFILER_TEXT_HEIGHT_PADDING = 10.f;
 
+//Remote Command Service Globals
+constexpr int REMOTE_SERVICE_DEFAULT_PORT = 29283;
+constexpr int REMOTE_SERVICE_MAX_CLIENTS = 16;
+
 constexpr char* LOGGER_DATA_FILE = "Data/Log/log.txt";
 
 //stringf stack local

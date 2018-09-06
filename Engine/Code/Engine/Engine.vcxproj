@@ -54,6 +54,7 @@
     <ClCompile Include="Profiler\ProfilerReportEntry.cpp" />
     <ClCompile Include="Profiler\Profiler.cpp" />
     <ClCompile Include="Profiler\ProfilerConsole.cpp" />
+    <ClCompile Include="Net\RemoteCommandService.cpp" />
     <ClCompile Include="Renderer\ForwardRenderingPath2D.cpp" />
     <ClCompile Include="ParticleSystem\ParticleEmitter.cpp" />
     <ClCompile Include="Renderer\Renderable2D.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Net\NetAddress.hpp" />
     <ClInclude Include="Net\Net.hpp" />
     <ClInclude Include="Net\TCPSocket.hpp" />
+    <ClInclude Include="Net\RemoteCommandService.hpp" />
     <ClInclude Include="Utility\Tags.hpp" />
     <ClInclude Include="Utility\Graph.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />

@@ -7,6 +7,7 @@
 #include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Profiler\ProfilerConsole.hpp"
 #include "Engine\Net\Net.hpp"
+#include "Engine\Net\RemoteCommandService.hpp"
 
 
 Blackboard g_gameConfigBlackboard;
@@ -38,6 +39,9 @@ void EngineStartup()
 	ProfilerConsole::GetInstance()->Startup();
 
 	Net::Startup();
+
+	RemoteCommandService::CreateInstance();
+	RemoteCommandService::GetInstance()->Startup();
 
 }
 

@@ -22,7 +22,7 @@ bool TCPSocket::Listen(uint16 port, int maxQueued)
 
 	// now we have an address, we can try to bind it; 
 	// first, we create a socket like we did before; 
-	m_socketHandle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	m_socketHandle = (void*)socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	if ((SOCKET)m_socketHandle == INVALID_SOCKET)
 		return false;
@@ -31,13 +31,13 @@ bool TCPSocket::Listen(uint16 port, int maxQueued)
 	size_t addrLen;
 
 	bool success = m_address.ToSockAddr((sockaddr*)&sockAddrStorage, &addrLen);
-	int result = ::bind(m_socketHandle, (sockaddr*)&sockAddrStorage, addrLen);
+	int result = ::bind((SOCKET)m_socketHandle, (sockaddr*)&sockAddrStorage, addrLen);
 
 	if (result == SOCKET_ERROR) {
 		// failed to bind - if you want to know why, call WSAGetLastError()
 		int errorCode = WSAGetLastError();
 		UNUSED(errorCode);
-		::closesocket(m_socketHandle);
+		::closesocket((SOCKET)m_socketHandle);
 		return false;
 	}
 
@@ -47,9 +47,9 @@ bool TCPSocket::Listen(uint16 port, int maxQueued)
 	// be waiting to connect at once (think of it has a call center with N people manning the phone, but many more 
 	// people who calls may be forwarded to.  Once a call is forwarded, the person answering calls can now answer a new one)
 	int max_queued = 16;  // probably pick a number that is <= max number of players in your game. 
-	result = ::listen(m_socketHandle, max_queued);
+	result = ::listen((SOCKET)m_socketHandle, max_queued);
 	if (result == SOCKET_ERROR) {
-		::closesocket(m_socketHandle);
+		::closesocket((SOCKET)m_socketHandle);
 		return false;
 	}
 
@@ -63,18 +63,18 @@ TCPSocket* TCPSocket::AcceptConnection()
 	sockaddr_storage theirAddr;
 	int theirAddrLength = sizeof(theirAddr);
 
-	SOCKET_T theirSocket = ::accept(m_socketHandle, (sockaddr*)&theirAddr, &theirAddrLength);
+	SOCKET theirSocket = ::accept((SOCKET)m_socketHandle, (sockaddr*)&theirAddr, &theirAddrLength);
 
 	TCPSocket* socket = new TCPSocket();
 	socket->m_address.FromSockAddr((sockaddr*)&theirAddr);
-	socket->m_socketHandle = theirSocket;
+	socket->m_socketHandle = (void*)theirSocket;
 
 	return socket;
 }
 
 bool TCPSocket::Connect(const NetAddress& addr)
 {
-	m_socketHandle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	m_socketHandle = (void*)socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	if ((SOCKET)m_socketHandle == INVALID_SOCKET)
 		return false;
@@ -83,7 +83,7 @@ bool TCPSocket::Connect(const NetAddress& addr)
 	size_t addrLen;
 
 	bool success = addr.ToSockAddr((sockaddr*)&sockAddrStorage, &addrLen);
-	int result = ::connect(m_socketHandle, (sockaddr*)&sockAddrStorage, addrLen);	
+	int result = ::connect((SOCKET)m_socketHandle, (sockaddr*)&sockAddrStorage, addrLen);	
 
 	if (result == SOCKET_ERROR || !success)
 	{
@@ -106,13 +106,13 @@ bool TCPSocket::Connect(const NetAddress& addr)
 
 void TCPSocket::CloseConnection()
 {
-	::closesocket(m_socketHandle);
+	::closesocket((SOCKET)m_socketHandle);
 }
 
 size_t TCPSocket::Send(const void* data)
 {
 	std::string* message = (std::string*)data;
-	int result = ::send(m_socketHandle, message->c_str(), (int)GetStringSize(*message), 0);
+	int result = ::send((SOCKET)m_socketHandle, message->c_str(), (int)GetStringSize(*message), 0);
 
 	if(result == SOCKET_ERROR)
 		return 1;
@@ -122,7 +122,7 @@ size_t TCPSocket::Send(const void* data)
 
 size_t TCPSocket::Receive(void* outBuffer, const size_t maxByteSize)
 {
-	size_t result = ::recv(m_socketHandle, (char*)outBuffer, maxByteSize, 0);
+	size_t result = ::recv((SOCKET)m_socketHandle, (char*)outBuffer, maxByteSize, 0);
 
 	if (result == SOCKET_ERROR)
 		return -1;

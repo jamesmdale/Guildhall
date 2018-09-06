@@ -16,7 +16,7 @@
 #include "Engine\Core\BytePacker.hpp"
 
 TheApp* g_theApp = nullptr;
-TCPSocket* host = nullptr;
+TCPSocket* hostTest = nullptr;
 static bool isRunning = false;
 
 
@@ -63,9 +63,9 @@ void TheApp::Initialize()
 {
 	//register app commands
 	CommandRegister("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
-	CommandRegister("net_print_local_ip", CommandRegistration(PrintLocalIP, ":Use to print local ip", ""));
+	CommandRegister("net_print_local_ip", CommandRegistration(PrintLocalIPTest, ":Use to print local ip", ""));
 	CommandRegister("connect_and_send", CommandRegistration(ConnectAndSend, ":Insert IP and Port to connect with an a message you wish to send.", ""));
-	CommandRegister("host_connection", CommandRegistration(HostConnection, ":Insert port to listen on.", ""));
+	CommandRegister("host_connection", CommandRegistration(HostConnectionTest, ":Insert port to listen on.", ""));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -80,19 +80,19 @@ void TheApp::Initialize()
 	Game::GetInstance()->Initialize();
 
 
-	//bytepacker test
-	BytePacker* packer = new BytePacker(LITTLE_ENDIAN);
-	int value = 100;
+	////bytepacker test
+	//BytePacker* packer = new BytePacker(LITTLE_ENDIAN);
+	//int value = 100;
 
-	std::string stringVal = "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello";
-	//std::string stringVal = "hello";
-	
-	void* data = malloc(sizeof(uint64_t));
+	//std::string stringVal = "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello";
+	////std::string stringVal = "hello";
+	//
+	////void* data = malloc(sizeof(uint64_t));
 
-	packer->WriteString(stringVal.c_str());
-	packer->ReadString((char*)data, 10'000);
+	////packer->WriteString(stringVal.c_str());
+	////packer->ReadString((char*)data, 10'000);
 
-	std::string testString ((char*)data);
+	////std::string testString ((char*)data);
 
 	/*packer->WriteBytes(sizeof(int), &value);
 	int outValue = 0;
@@ -188,13 +188,13 @@ float TheApp::UpdateInput(float deltaSeconds)
 //  =========================================================================================
 bool StartTestServer(uint port)
 {
-	host = new TCPSocket();
-	bool success = host->Listen(port, 16);
+	hostTest = new TCPSocket();
+	bool success = hostTest->Listen(port, 16);
 
 	if (success)
 	{
 		isRunning = true;
-		g_theApp->m_hostThread = new std::thread(ProcessHost, nullptr);	
+		g_theApp->m_hostThread = new std::thread(ProcessHostTest, nullptr);	
 
 		//DevConsolePrintf("Hosting on: %s:%d", GetLocalIP(),port);
 	}
@@ -204,14 +204,14 @@ bool StartTestServer(uint port)
 }
 
 //  =========================================================================================
-void ProcessHost(void*)
+void ProcessHostTest(void*)
 {
 	while (isRunning)
 	{
-		TCPSocket* client = host->AcceptConnection();
+		TCPSocket* client = hostTest->AcceptConnection();
 		if (client != nullptr)
 		{
-			ServiceClient(client);
+			ServiceClientTest(client);
 		}
 
 		delete(client);
@@ -222,18 +222,18 @@ void ProcessHost(void*)
 }
 
 //  =========================================================================================
-void CloseHost()
+void CloseHostTest()
 {
-	host->CloseConnection();
+	hostTest->CloseConnection();
 
 	isRunning = false;
 
-	delete(host);
-	host = nullptr;
+	delete(hostTest);
+	hostTest = nullptr;
 }
 
 //  =========================================================================================
-void ServiceClient(TCPSocket* clientSocket)
+void ServiceClientTest(TCPSocket* clientSocket)
 {
 	unsigned char buffer[256];
 	int received = clientSocket->Receive(&buffer, 256 - 1U);
@@ -298,7 +298,7 @@ void ConnectAndSend(Command& cmd)
 }
 
 //  =============================================================================
-void PrintLocalIP(Command& cmd)
+void PrintLocalIPTest(Command& cmd)
 {
 	NetAddress netAddr;
 
@@ -313,13 +313,15 @@ void PrintLocalIP(Command& cmd)
 	DevConsolePrintf(ip.c_str());
 }
 
-//  =============================================================================
-std::string GetLocalIP()
+
+
+std::string GetLocalIPTest()
 {
 	NetAddress netAddr;
 
 	sockaddr addr;
 	int addrLength = 0;
+
 	netAddr.GetMyHostAddress(&addr, &addrLength);
 
 	netAddr.FromSockAddr(&addr);
@@ -328,7 +330,7 @@ std::string GetLocalIP()
 }
 
 //  =============================================================================
-void HostConnection(Command& cmd)
+void HostConnectionTest(Command& cmd)
 {
 	int port = cmd.GetNextInt();
 
@@ -344,7 +346,7 @@ void HostConnection(Command& cmd)
 		DevConsolePrintf(Rgba::RED, "Could not listen on port!");
 	else
 	{
-		std::string ip = GetLocalIP();
+		std::string ip = GetLocalIPTest();
 		DevConsolePrintf(Rgba::GREEN, "Hosting connection on port %s", ip.c_str());
 	}
 }

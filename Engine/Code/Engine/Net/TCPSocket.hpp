@@ -2,8 +2,6 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Net\NetAddress.hpp"
 
-typedef UINT_PTR SOCKET_T;
-
 class TCPSocket
 {
 public:
@@ -29,7 +27,7 @@ public:
 	bool IsClosed() const;
 
 public:
-	SOCKET_T m_socketHandle; //must cast to SOCKET
+	void* m_socketHandle; //must cast to SOCKET
 
 	//if listening, the address is YOUR address.
 	//if you are connecting (or socket is from an accept)

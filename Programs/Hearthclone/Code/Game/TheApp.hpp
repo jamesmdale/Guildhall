@@ -25,17 +25,17 @@ void Quit(Command &cmd);
 
 //tests for network
 bool StartTestServer(uint port);
-void ProcessHost(void*);
-void CloseHost();
-void ServiceClient(TCPSocket* clientSocket);
+void ProcessHostTest(void*);
+void CloseHostTest();
+void ServiceClientTest(TCPSocket* clientSocket);
 
 void ConnectAndSend(Command& cmd);
-void PrintLocalIP(Command& cmd);
-void Disconnect(Command& cmd);
-std::string GetLocalIP();
-void HostConnection(Command& cmd);
+void PrintLocalIPTest(Command& cmd);
+void DisconnectTest(Command& cmd);
+std::string GetLocalIPTest();
+void HostConnectionTest(Command& cmd);
 
 extern TheApp* g_theApp;
-extern TCPSocket* host;
+extern TCPSocket* hostTest;
 
 
