@@ -86,10 +86,14 @@ void TheApp::Initialize()
 
 	//std::string stringVal = "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello";
 	std::string stringVal = "he";
-	char* outStringVal = nullptr;
+	
+	void* data = malloc(sizeof(uint64_t));
+
 
 	packer->WriteString(stringVal.c_str());
-	packer->ReadString(outStringVal, 10'000);
+	packer->ReadString((char*)data, 10'000);
+
+	std::string testString ((char*)data);
 
 	/*packer->WriteBytes(sizeof(int), &value);
 	int outValue = 0;

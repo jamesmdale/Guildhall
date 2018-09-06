@@ -92,6 +92,7 @@ bool BytePacker::ReadBytes(void* outData, size_t maxByteCount)
 	if(GetReadableByteCount() < maxByteCount)
 		return false;
 
+
 	memcpy(outData, (byte_t*)m_buffer + m_readByteCount, maxByteCount);
 
 	m_readByteCount += maxByteCount;	
@@ -131,7 +132,8 @@ size_t BytePacker::ReadSize(size_t* outsize)
 		byte_t* outByte = (byte_t*)outsize + readBytes;
 		memcpy(outByte, (byte_t*)m_buffer + readBytes, 1);
 
-		if (*(outByte) & 0b1000'0000 != 0b1000'0000)
+		byte_t bitMaskCheck = *(outByte) & 0b1000'0000;
+		if (bitMaskCheck != 0b1000'0000)
 		{
 			sizeReadComplete = true;
 		}
@@ -141,6 +143,7 @@ size_t BytePacker::ReadSize(size_t* outsize)
 
 		memcpy(outByte, &decodedByte, 1);
 		readBytes++;		
+		m_readByteCount++;
 	}
 
 	return readBytes;	
@@ -152,14 +155,12 @@ bool BytePacker::WriteString(const char* writeString)
 	int character = 0;
 	std::string convertedString (writeString);
 	
+	
 	//determine the encoded size
-	size_t writtenSize = WriteSize(convertedString.size());
-
-	//add null character to end of converted string
-	memcpy((byte_t*)&convertedString + convertedString.size(), "\0", 1);
+	size_t writtenSize = WriteSize(convertedString.size() + 1);
 
 	//write the data to the buffer	
-	bool success = WriteBytes(convertedString.size() + 1, &convertedString);
+	bool success = WriteBytes(convertedString.size() + 1, writeString);
 
 	return success;
 }
@@ -176,7 +177,7 @@ bool BytePacker::ReadString(char* outString, size_t maxByteSize)
 		readBytes = maxByteSize;
 	}
 
-	bool success = ReadBytes(outString, readBytes + 1);
+	bool success = ReadBytes(outString, readSize);
 
 	return success;
 }
