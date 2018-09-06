@@ -30,14 +30,12 @@ public:
 	bool SetReadableByteCount(size_t byteCount);
 
 	bool WriteBytes(size_t byteCount, const void* data);
-
-	size_t ReadBytes(void* outData, size_t maxByteCount);
+	bool ReadBytes(void* outData, size_t maxByteCount);
 
 	size_t WriteSize(size_t size);
 	size_t ReadSize(size_t* outsize);
 
 	bool WriteString(const char* writeString);
-
 	bool ReadString(char* outString, size_t maxByteSize);
 
 	void ResetWrite();
@@ -48,11 +46,14 @@ public:
 	size_t GetWriteableByteCount() const;
 	size_t GetReadableByteCount() const;
 
+	bool ExtendBufferSize(size_t newBufferSize);
+
 private:
 	eEndianness m_endianness = LITTLE_ENDIAN;
-	size_t m_bufferSize;
+	size_t m_bufferSize = 0;
 
 	size_t m_writtenByteCount = 0;
+	size_t m_readByteCount = 0;
 
 	eBytePackerOptionBit m_bytePackerOptions = BYTEPACKER_DEFAULT;
 	void* m_buffer = nullptr;

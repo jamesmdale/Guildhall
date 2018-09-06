@@ -1,5 +1,5 @@
 <MapDefinitions>
-	<MapDefinition name="Grass" defaultTile="Grass" width="32~32" height="32~32">
+	<MapDefinition name="Grass" defaultTile="Grass" width="16~16" height="9~9">
 		<GenerationSteps iterations="1" chanceToRun="1.0">
 			<FillAndEdge fillTile="Grass" edgeTile="Wall"></FillAndEdge>
     </GenerationSteps>

@@ -9,6 +9,7 @@
 
 constexpr float PI = static_cast<float>(3.14159);
 constexpr float EPSILON = static_cast<float>(0.001);
+constexpr float UINFINITY = INFINITY;
 
 float ConvertDegreesToRadians(float degrees)
 {
@@ -488,6 +489,11 @@ float GetPi()
 float GetEpsilon()
 {
 	return EPSILON;
+}
+
+float GetInfinity()
+{
+	return UINFINITY;
 }
 
 bool IsNearZero(float inValue)

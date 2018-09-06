@@ -14,6 +14,7 @@ float GetMinFloat(float a, float b);
 int RotateRegularPolygon(float currentDegrees, float rotationDegrees);
 float GetPi();
 float GetEpsilon();
+float GetInfinity();
 bool IsNearZero(float inValue);
 bool IsNear(const float a, const float b);
 float AbsoluteValue(float value);

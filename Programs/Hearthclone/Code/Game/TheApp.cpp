@@ -13,6 +13,7 @@
 #include "Engine\File\ObjectFileLoader.hpp"
 #include "Engine\Net\NetAddress.hpp"
 #include "Engine\Net\TCPSocket.hpp"
+#include "Engine\Core\BytePacker.hpp"
 
 TheApp* g_theApp = nullptr;
 TCPSocket* host = nullptr;
@@ -77,6 +78,23 @@ void TheApp::Initialize()
 	InputSystem::GetInstance()->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);	
 
 	Game::GetInstance()->Initialize();
+
+
+	//bytepacker test
+	BytePacker* packer = new BytePacker(LITTLE_ENDIAN);
+	int value = 100;
+
+	//std::string stringVal = "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello";
+	std::string stringVal = "he";
+	char* outStringVal = nullptr;
+
+	packer->WriteString(stringVal.c_str());
+	packer->ReadString(outStringVal, 10'000);
+
+	/*packer->WriteBytes(sizeof(int), &value);
+	int outValue = 0;
+	packer->ReadBytes(&outValue, sizeof(int));*/
+
 }
 
 

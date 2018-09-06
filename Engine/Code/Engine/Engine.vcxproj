@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\BytePacker.cpp" />
+    <ClCompile Include="Core\EndianHelper.cpp" />
     <ClCompile Include="Core\LogSystem.cpp" />
     <ClCompile Include="File\CSVWriter.cpp" />
     <ClCompile Include="Math\AABB3.cpp" />

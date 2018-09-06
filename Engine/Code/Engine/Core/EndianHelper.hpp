@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine\Core\EngineCommon.hpp"
 
-enum eEndianness
+static enum eEndianness
 {
 	LITTLE_ENDIAN = 0,
 	BIG_ENDIAN
@@ -19,37 +19,7 @@ constexpr eEndianness GetPlatFormEndianness()
 }
 
 // Assumes data is in platform endianness, and will convert to supplied endianness; 
-void ToEndianness(void* outBuffer, size_t bufferSize, eEndianness endianness)
-{
-	if (GetPlatFormEndianness() == endianness)
-		return; //values match. leave buffer alone
-
-	byte_t* byteBuffer = (byte_t*)outBuffer;
-	uint i = 0;
-	uint j = bufferSize - 1U;
-
-	while (i < j)
-	{
-		std::swap(byteBuffer[j], byteBuffer[i]);
-		++i;
-		--j;
-	}
-}
+void ToEndianness(void* outBuffer, size_t bufferSize, eEndianness endianness);
 
 // Assumes data is in supplied endianness, and will convert to platform's endianness
-void FromEndianness(void* outBuffer, size_t bufferSize, eEndianness endianness)
-{
-	if (GetPlatFormEndianness() == endianness)
-		return; //values match. leave buffer alone
-
-	byte_t* byteBuffer = (byte_t*)outBuffer;
-	uint i = 0;
-	uint j = bufferSize - 1U;
-
-	while (i < j)
-	{
-		std::swap(byteBuffer[j], byteBuffer[i]);
-		++i;
-		--j;
-	}
-}
+void FromEndianness(void* outBuffer, size_t bufferSize, eEndianness endianness);
