@@ -111,7 +111,7 @@ size_t BytePacker::WriteSize(size_t size)
 		size = size >> 7;
 
 		if(size != 0)
-			value = value & 0b1000'0000;
+			value = value | 0b1000'0000;
 
 		WriteBytes(1, &value);
 		amountBytesWritten++;
@@ -123,30 +123,34 @@ size_t BytePacker::WriteSize(size_t size)
 //  =============================================================================
 size_t BytePacker::ReadSize(size_t* outsize)
 {
-	size_t readBytes = 0;
+	size_t readIteration = 0;
+	size_t outSizeLocal = 0;
+	size_t nextRead = 0;
 
 	bool sizeReadComplete = false;
 
 	while (!sizeReadComplete)
 	{
-		byte_t* outByte = (byte_t*)outsize + readBytes;
-		memcpy(outByte, (byte_t*)m_buffer + readBytes, 1);
+		nextRead = 0;
+		memcpy(&nextRead, (byte_t*)m_buffer + readIteration, 1);
 
-		byte_t bitMaskCheck = *(outByte) & 0b1000'0000;
+		byte_t bitMaskCheck = nextRead & 0b1000'0000;
 		if (bitMaskCheck != 0b1000'0000)
 		{
 			sizeReadComplete = true;
 		}
 
-		byte_t decodedByte = *(outByte) & 0b0111'1111;
-		decodedByte <<= readBytes;
+		byte_t decodedByte = nextRead & 0b0111'1111;
 
-		memcpy(outByte, &decodedByte, 1);
-		readBytes++;		
+		outSizeLocal = outSizeLocal | (decodedByte << (7 * readIteration));
+
+		readIteration++;
 		m_readByteCount++;
 	}
 
-	return readBytes;	
+	*outsize = outSizeLocal;
+
+	return readIteration;
 }
 
 //  =============================================================================
@@ -154,7 +158,6 @@ bool BytePacker::WriteString(const char* writeString)
 {
 	int character = 0;
 	std::string convertedString (writeString);
-	
 	
 	//determine the encoded size
 	size_t writtenSize = WriteSize(convertedString.size() + 1);

@@ -84,11 +84,10 @@ void TheApp::Initialize()
 	BytePacker* packer = new BytePacker(LITTLE_ENDIAN);
 	int value = 100;
 
-	//std::string stringVal = "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello";
-	std::string stringVal = "he";
+	std::string stringVal = "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello";
+	//std::string stringVal = "hello";
 	
 	void* data = malloc(sizeof(uint64_t));
-
 
 	packer->WriteString(stringVal.c_str());
 	packer->ReadString((char*)data, 10'000);
