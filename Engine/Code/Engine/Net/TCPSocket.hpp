@@ -2,6 +2,12 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Net\NetAddress.hpp"
 
+enum eSocketBlocking
+{
+	NON_BLOCKING,
+	BLOCKING	
+};
+
 class TCPSocket
 {
 public:
@@ -21,17 +27,26 @@ public:
 	//returns how much sent
 	size_t Send(const void* data);
 
+	size_t Send(size_t dataSize, const void * data);
+
 	//returns how much received
 	size_t Receive(void* outBuffer, const size_t maxByteSize);
 
 	bool IsClosed() const;
 
+	bool SetBlockingState(eSocketBlocking blockingState);
+
 public:
-	void* m_socketHandle; //must cast to SOCKET
+	static bool HasFatalError();
+
+public:
+	void* m_socketHandle = nullptr; //must cast to SOCKET
 
 	//if listening, the address is YOUR address.
 	//if you are connecting (or socket is from an accept)
 	//this address is THEIR address.  (do not listen and connect on the same socket)
 	NetAddress m_address;
 };
+
+
 

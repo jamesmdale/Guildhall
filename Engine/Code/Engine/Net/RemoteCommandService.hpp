@@ -1,6 +1,9 @@
 #pragma once
 #include <thread>
 #include "Engine\Net\TCPSocket.hpp"
+#include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Core\BytePacker.hpp"
+#include "Engine\Net\TCPSession.hpp"
 
 enum eRemoteCommandState
 {
@@ -23,6 +26,11 @@ public:
 public:
 	void Update();
 	void Close();
+	void SendCommand(uint index, bool isEcho, const char* messageString);
+
+	//helpers
+	TCPSocket* GetConnectionByIndex(int index);
+	TCPSession* GetTCPSessionByIndex(int index);
 
 private:
 	bool SetupHostConnection();
@@ -38,13 +46,21 @@ private:
 
 	void UpdateDisconnected();
 
-	void ServiceClient(TCPSocket * clientSocket);
+	void ServiceClient(TCPSession* clientSession);
 
 public:
 	eRemoteCommandState m_state = DISCONNECTED_COMMAND_STATE;
-	std::thread* m_remoteThread = nullptr;
+	std::thread* m_remoteThread = nullptr;  //used for client and host
+
+	//If hosting, this is the listening socket. If client this is the reading/writing socket
 	TCPSocket* m_connectedSocket = nullptr;
-	std::vector<TCPSocket> ConnectedClients;	
+
+	//Host only
+	std::vector<TCPSession*> m_connectedClients;
+
+	//Client only
+	BytePacker* m_bytePacker = nullptr;
+
 };
 
 extern RemoteCommandService* g_theRemoteCommandService;

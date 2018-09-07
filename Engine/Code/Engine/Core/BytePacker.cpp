@@ -2,6 +2,7 @@
 #include "Engine\Core\BitHelper.hpp"
 #include "Engine\Math\MathUtils.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Engine\Core\EndianHelper.hpp"
 
 
 //  owns buffer, growable =============================================================================
@@ -60,7 +61,7 @@ bool BytePacker::SetReadableByteCount(size_t byteCount)
 }
 
 //  =============================================================================
-bool BytePacker::WriteBytes(size_t byteCount, const void* data)
+bool BytePacker::WriteBytes(size_t byteCount, const void* data, bool doesConsiderEndianness /* = true */)
 {
 	if(m_writtenByteCount + byteCount > m_bufferSize)
 	{
@@ -80,6 +81,9 @@ bool BytePacker::WriteBytes(size_t byteCount, const void* data)
 
 	memcpy((byte_t*)m_buffer + m_writtenByteCount, data, byteCount);
 
+	if(doesConsiderEndianness)
+		ToEndianness(m_buffer, m_bufferSize, m_endianness);
+
 	//update written byte count
 	m_writtenByteCount += byteCount;
 
@@ -92,8 +96,9 @@ bool BytePacker::ReadBytes(void* outData, size_t maxByteCount)
 	if(GetReadableByteCount() < maxByteCount)
 		return false;
 
-
 	memcpy(outData, (byte_t*)m_buffer + m_readByteCount, maxByteCount);
+
+	ToEndianness(m_buffer, m_bufferSize, m_endianness);
 
 	m_readByteCount += maxByteCount;	
 
@@ -113,7 +118,7 @@ size_t BytePacker::WriteSize(size_t size)
 		if(size != 0)
 			value = value | 0b1000'0000;
 
-		WriteBytes(1, &value);
+		WriteBytes(1, &value, false);
 		amountBytesWritten++;
 	}
 
@@ -132,7 +137,7 @@ size_t BytePacker::ReadSize(size_t* outsize)
 	while (!sizeReadComplete)
 	{
 		nextRead = 0;
-		memcpy(&nextRead, (byte_t*)m_buffer + readIteration, 1);
+		memcpy(&nextRead, (byte_t*)m_buffer + m_readByteCount, 1);
 
 		byte_t bitMaskCheck = nextRead & 0b1000'0000;
 		if (bitMaskCheck != 0b1000'0000)
@@ -163,7 +168,7 @@ bool BytePacker::WriteString(const char* writeString)
 	size_t writtenSize = WriteSize(convertedString.size() + 1);
 
 	//write the data to the buffer	
-	bool success = WriteBytes(convertedString.size() + 1, writeString);
+	bool success = WriteBytes(convertedString.size() + 1, writeString, false);
 
 	return success;
 }
@@ -224,6 +229,12 @@ size_t BytePacker::GetWriteableByteCount() const
 size_t BytePacker::GetReadableByteCount() const
 {
 	return m_writtenByteCount - m_readByteCount;
+}
+
+//  =============================================================================
+void* BytePacker::GetBuffer() const
+{
+	return m_buffer;
 }
 
 //  =============================================================================

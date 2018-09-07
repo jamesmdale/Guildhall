@@ -22,6 +22,7 @@ constexpr float PROFILER_TEXT_HEIGHT_PADDING = 10.f;
 //Remote Command Service Globals
 constexpr int REMOTE_SERVICE_DEFAULT_PORT = 29283;
 constexpr int REMOTE_SERVICE_MAX_CLIENTS = 16;
+constexpr int REMOTE_SERVICE_MAX_BUFFER_SIZE = 256 - 1U;
 
 constexpr char* LOGGER_DATA_FILE = "Data/Log/log.txt";
 

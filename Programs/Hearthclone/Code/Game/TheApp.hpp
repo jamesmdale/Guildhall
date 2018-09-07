@@ -35,6 +35,8 @@ void DisconnectTest(Command& cmd);
 std::string GetLocalIPTest();
 void HostConnectionTest(Command& cmd);
 
+void TestBytePackerSend(Command& cmd);
+
 extern TheApp* g_theApp;
 extern TCPSocket* hostTest;
 

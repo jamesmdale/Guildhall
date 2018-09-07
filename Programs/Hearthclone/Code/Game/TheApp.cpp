@@ -14,6 +14,7 @@
 #include "Engine\Net\NetAddress.hpp"
 #include "Engine\Net\TCPSocket.hpp"
 #include "Engine\Core\BytePacker.hpp"
+#include "Engine\Net\RemoteCommandService.hpp"
 
 TheApp* g_theApp = nullptr;
 TCPSocket* hostTest = nullptr;
@@ -66,6 +67,7 @@ void TheApp::Initialize()
 	CommandRegister("net_print_local_ip", CommandRegistration(PrintLocalIPTest, ":Use to print local ip", ""));
 	CommandRegister("connect_and_send", CommandRegistration(ConnectAndSend, ":Insert IP and Port to connect with an a message you wish to send.", ""));
 	CommandRegister("host_connection", CommandRegistration(HostConnectionTest, ":Insert port to listen on.", ""));
+	CommandRegister("test_message", CommandRegistration(TestBytePackerSend, "Get a string to send", ""));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -98,6 +100,29 @@ void TheApp::Initialize()
 	int outValue = 0;
 	packer->ReadBytes(&outValue, sizeof(int));*/
 
+
+	/*/// TESTING BYTEPACKER
+	BytePacker testBP = BytePacker( LITTLE_ENDIAN );
+	testBP.WriteSize( 987542100 );
+
+	size_t readSize1;
+	testBP.ReadSize( &readSize1 );
+
+	testBP.ResetWrite();
+
+	testBP.WriteSize( 8675309 );
+
+	size_t readSize2;
+	testBP.ReadSize( &readSize2 );
+
+	TODO("BytePacker fails to read if I remove this line..");
+	testBP.WriteString( "Hello World!" );
+	char stringToRead[ 20 ];
+	testBP.ReadString( stringToRead, 10 );
+
+	testBP.WriteString( "12345678" );
+	char stringToRead2[ 20 ];
+	testBP.ReadString( stringToRead2, 20 );*/
 }
 
 
@@ -349,6 +374,15 @@ void HostConnectionTest(Command& cmd)
 		std::string ip = GetLocalIPTest();
 		DevConsolePrintf(Rgba::GREEN, "Hosting connection on port %s", ip.c_str());
 	}
+}
+
+void TestBytePackerSend(Command& cmd)
+{
+	RemoteCommandService* theCommandService = RemoteCommandService::GetInstance();
+
+	theCommandService->SendCommand(0, true, "hello");
+
+	theCommandService = nullptr;
 }
 
 

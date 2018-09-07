@@ -29,7 +29,7 @@ public:
 	void SetEndianness(eEndianness endianness);
 	bool SetReadableByteCount(size_t byteCount);
 
-	bool WriteBytes(size_t byteCount, const void* data);
+	bool WriteBytes(size_t byteCount, const void* data, bool doesConsiderEndianness = true);
 	bool ReadBytes(void* outData, size_t maxByteCount);
 
 	size_t WriteSize(size_t size);
@@ -45,6 +45,7 @@ public:
 	size_t GetWrittenByteCount() const;
 	size_t GetWriteableByteCount() const;
 	size_t GetReadableByteCount() const;
+	void* GetBuffer() const;
 
 	bool ExtendBufferSize(size_t newBufferSize);
 

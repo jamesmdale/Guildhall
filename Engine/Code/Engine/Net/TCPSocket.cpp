@@ -3,14 +3,18 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\StringUtils.hpp"
 
+//  =============================================================================
 TCPSocket::TCPSocket()
 {
 }
 
+//  =============================================================================
 
 TCPSocket::~TCPSocket()
 {
 }
+
+//  =============================================================================
 
 bool TCPSocket::Listen(uint16 port, int maxQueued)
 {
@@ -56,6 +60,7 @@ bool TCPSocket::Listen(uint16 port, int maxQueued)
 	return true;
 }
 
+//  =============================================================================
 TCPSocket* TCPSocket::AcceptConnection()
 {
 	// this will create a new socket
@@ -72,6 +77,7 @@ TCPSocket* TCPSocket::AcceptConnection()
 	return socket;
 }
 
+//  =============================================================================
 bool TCPSocket::Connect(const NetAddress& addr)
 {
 	m_socketHandle = (void*)socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -83,6 +89,7 @@ bool TCPSocket::Connect(const NetAddress& addr)
 	size_t addrLen;
 
 	bool success = addr.ToSockAddr((sockaddr*)&sockAddrStorage, &addrLen);
+
 	int result = ::connect((SOCKET)m_socketHandle, (sockaddr*)&sockAddrStorage, addrLen);	
 
 	if (result == SOCKET_ERROR || !success)
@@ -104,22 +111,36 @@ bool TCPSocket::Connect(const NetAddress& addr)
 	return true;
 }
 
+//  =============================================================================
 void TCPSocket::CloseConnection()
 {
 	::closesocket((SOCKET)m_socketHandle);
 }
 
+//  =============================================================================
 size_t TCPSocket::Send(const void* data)
 {
 	std::string* message = (std::string*)data;
 	int result = ::send((SOCKET)m_socketHandle, message->c_str(), (int)GetStringSize(*message), 0);
 
-	if(result == SOCKET_ERROR)
+	if(result != SOCKET_ERROR)
 		return 1;
 	else
 		return 0;
 }
 
+//  =============================================================================
+size_t TCPSocket::Send(size_t dataSize, const void* data)
+{
+	int result = ::send((SOCKET)m_socketHandle, (char*)data, dataSize, 0);
+
+	if(result != SOCKET_ERROR)
+		return dataSize;
+	else
+		return 0;
+}
+
+//  =============================================================================
 size_t TCPSocket::Receive(void* outBuffer, const size_t maxByteSize)
 {
 	size_t result = ::recv((SOCKET)m_socketHandle, (char*)outBuffer, maxByteSize, 0);
@@ -130,14 +151,33 @@ size_t TCPSocket::Receive(void* outBuffer, const size_t maxByteSize)
 		return result;
 }
 
-
+//  =============================================================================
 bool TCPSocket::IsClosed() const
 {
-
 	return false;
 	/*SOCKET socketPointer = (SOCKET)m_socketHandle;
 
 	sockaddr addr = m_address.
 
 	int peerStatus = getpeername(m_socketHandle, m_address.)*/
+}
+
+//  =============================================================================
+bool TCPSocket::SetBlockingState(eSocketBlocking blockingState)
+{
+	u_long non_blocking = blockingState ? 0 : 1;
+	int success = ::ioctlsocket( (SOCKET)m_socketHandle, FIONBIO, &non_blocking );
+
+	return success == 0;
+}
+
+//  =============================================================================
+bool TCPSocket::HasFatalError()
+{
+	int errorCode = WSAGetLastError();
+
+	if(errorCode == WSAEWOULDBLOCK || errorCode == WSAEMSGSIZE || errorCode == WSAECONNRESET || errorCode == 0)
+		return false;
+
+	return true;
 }
