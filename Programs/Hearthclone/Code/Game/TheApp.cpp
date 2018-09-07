@@ -339,7 +339,7 @@ void PrintLocalIPTest(Command& cmd)
 }
 
 
-
+//  =============================================================================
 std::string GetLocalIPTest()
 {
 	NetAddress netAddr;
@@ -376,6 +376,7 @@ void HostConnectionTest(Command& cmd)
 	}
 }
 
+//  =============================================================================
 void TestBytePackerSend(Command& cmd)
 {
 	RemoteCommandService* theCommandService = RemoteCommandService::GetInstance();

@@ -38,6 +38,7 @@ public:
 	bool WriteString(const char* writeString);
 	bool ReadString(char* outString, size_t maxByteSize);
 
+	void ResetBuffer();
 	void ResetWrite();
 	void ResetRead();
 
@@ -45,6 +46,8 @@ public:
 	size_t GetWrittenByteCount() const;
 	size_t GetWriteableByteCount() const;
 	size_t GetReadableByteCount() const;
+	size_t GetBufferSize() const;
+
 	void* GetBuffer() const;
 
 	bool ExtendBufferSize(size_t newBufferSize);

@@ -128,22 +128,34 @@ void RemoteCommandService::SendCommand(uint index, bool isEcho, const char* mess
 
 	uint16_t uslength = (uint16_t)length; 
 
-	ToEndianness( &uslength, uslength, message.GetEndianness());
+	ToEndianness( &uslength, sizeof(uslength), message.GetEndianness());
 
 	size_t lengthValue = sock->Send( 2, &uslength );  // templated overload
 	size_t messageValue = sock->Send( length, message.GetBuffer() ); 
 }
 
 //  =============================================================================
+void RemoteCommandService::ReceiveCommand(void* data, size_t bufferSize)
+{
+	//m_bytePacker
+}
+
+//  =============================================================================
 TCPSocket* RemoteCommandService::GetConnectionByIndex(int index)
 {
-	return m_connectedClients[index]->m_socket;
+	if(index < 0 || index > (int)m_connectedClients.size() - 1)
+		return nullptr;
+	else
+		return m_connectedClients[index]->m_socket;
 }
 
 //  =============================================================================
 TCPSession* RemoteCommandService::GetTCPSessionByIndex(int index)
 {
-	return m_connectedClients[index];
+	if(index < 0 || index > (int)m_connectedClients.size() - 1)
+		return nullptr;
+	else		
+		return m_connectedClients[index];
 }
 
 
@@ -184,6 +196,7 @@ bool RemoteCommandService::ConnectToHost()
 	if (success)
 	{
 		m_bytePacker = new BytePacker(BIG_ENDIAN);
+		m_connectedSocket->SetBlockingState(NON_BLOCKING);
 	}
 	else
 	{
@@ -275,17 +288,46 @@ void RemoteCommandService::UpdateDisconnected()
 //  =========================================================================================
 void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 {
+	bool isReadyToProcess = false;
+
+	//already in big endian DO NOT CONVERT
 	unsigned char buffer[256];
 	int received = clientSession->m_socket->Receive(&buffer, REMOTE_SERVICE_MAX_BUFFER_SIZE);
+
 	if (received > 0) 
 	{
-		if (!TCPSocket::HasFatalError())
-		{
-			buffer[received] = NULL;
-			DevConsolePrintf("Receieved: %s", buffer);
+		BytePacker* clientBytepacker = clientSession->m_bytePacker;
 
-			std::string response = "gotcha";
-			clientSession->m_socket->Send((void*)&response);
+		if (!TCPSocket::HasFatalError())
+		{		
+			//we aren't currently reading anything so the first byte we can assume is the size
+			if (clientSession->m_bytePacker->GetWrittenByteCount() == 0)
+			{
+				//writebytes needs to NOT CONVERT
+
+				//get the size and write that in
+				size_t bytesWritten = clientSession->m_bytePacker->WriteBytes(2, (void*)&buffer, false);
+				
+				bytesWritten = clientSession->m_bytePacker->WriteBytes(received - 2, (void*)&buffer, false);
+			}
+			else
+			{
+				//we've already starting reading so we need to continue reading from the last location
+				
+			}
+
+
+
+			if (isReadyToProcess)
+			{
+				ReceiveCommand((void*)buffer, (size_t)received);
+			}				
+
+			//buffer[received] = NULL;
+			//DevConsolePrintf("Receieved: %s", buffer);
+
+			//std::string response = "gotcha";
+			//clientSession->m_socket->Send((void*)&response);
 		}	
 		else
 		{

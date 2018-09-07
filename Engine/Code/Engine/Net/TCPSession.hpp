@@ -8,6 +8,7 @@ public:
 	TCPSession();
 	~TCPSession();
 
+public:
 	int m_sessionIndex = 0;
 	BytePacker* m_bytePacker = nullptr;
 	TCPSocket* m_socket = nullptr;

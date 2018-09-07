@@ -27,6 +27,7 @@ public:
 	void Update();
 	void Close();
 	void SendCommand(uint index, bool isEcho, const char* messageString);
+	void ReceiveCommand(void* data, size_t bufferSize);
 
 	//helpers
 	TCPSocket* GetConnectionByIndex(int index);
@@ -39,14 +40,13 @@ private:
 	void UpdateHost();
 	void CloseHost();
 	void ProcessHost();
+	void ServiceClient(TCPSession* clientSession);
 
 	void UpdateClient();
 	void CloseClient();
 	void ProcessClient();
 
 	void UpdateDisconnected();
-
-	void ServiceClient(TCPSession* clientSession);
 
 public:
 	eRemoteCommandState m_state = DISCONNECTED_COMMAND_STATE;

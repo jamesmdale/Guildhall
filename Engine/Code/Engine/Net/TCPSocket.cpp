@@ -73,6 +73,7 @@ TCPSocket* TCPSocket::AcceptConnection()
 	TCPSocket* socket = new TCPSocket();
 	socket->m_address.FromSockAddr((sockaddr*)&theirAddr);
 	socket->m_socketHandle = (void*)theirSocket;
+	socket->SetBlockingState(NON_BLOCKING);
 
 	return socket;
 }

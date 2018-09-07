@@ -189,6 +189,17 @@ bool BytePacker::ReadString(char* outString, size_t maxByteSize)
 
 	return success;
 }
+//  =============================================================================
+void BytePacker::ResetBuffer()
+{
+	delete(m_buffer);
+	m_buffer = nullptr;
+
+	ResetRead();
+	ResetWrite();
+
+	m_buffer = malloc(m_bufferSize);
+}
 
 //  =============================================================================
 void BytePacker::ResetWrite()
@@ -229,6 +240,11 @@ size_t BytePacker::GetWriteableByteCount() const
 size_t BytePacker::GetReadableByteCount() const
 {
 	return m_writtenByteCount - m_readByteCount;
+}
+//  =============================================================================
+size_t BytePacker::GetBufferSize() const
+{
+	return m_bufferSize;
 }
 
 //  =============================================================================
