@@ -48,10 +48,12 @@ public:
 
 						   // Gets the next string in the argument list.
 						   // Breaks on whitespace.  Quoted strings should be treated as a single return 
-	std::string GetNextString();   // would return after each call...
+	std::string GetNextString();   // would return after each call...	
 								   // first:  "(255,255,0)""
 								   // second: "Hello \"world\""
 								   // third+: ""
+	std::string GetRemainingContentAsString();
+
 	//add more helpers as necessary
 	int GetNextInt();
 	Rgba GetNextColor();

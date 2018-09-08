@@ -4,6 +4,7 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\BytePacker.hpp"
 #include "Engine\Net\TCPSession.hpp"
+#include "Engine\Core\Command.hpp"
 
 enum eRemoteCommandState
 {
@@ -67,6 +68,14 @@ extern RemoteCommandService* g_theRemoteCommandService;
 
 std::string GetLocalIP();
 void ServiceClientTest(TCPSocket* clientSocket);
+
+//DevConsole Commands
+void TestBytePackerSend(Command& cmd);
+void RemoteCommand(Command& cmd);
+void RemoteCommandAll(Command& cmd);
+void RemoteCommandBroadcast(Command& cmd);
+void HostRemoteCommandProcessor(Command& cmd, int clientIndex);
+void ClientRemoteCommandProcessor(Command& cmd);
 
 
 

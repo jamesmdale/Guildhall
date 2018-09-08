@@ -325,7 +325,7 @@ void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 				uint16_t packetSizeTest = packetSize;
 				ToEndianness((void*)&packetSizeTest, 2, BIG_ENDIAN);
 
-				if (clientSession->m_bytePacker->GetWrittenByteCount() == packetSize || clientSession->m_bytePacker->GetWrittenByteCount() == REMOTE_SERVICE_MAX_BUFFER_SIZE)
+				if (clientSession->m_bytePacker->GetWrittenByteCount() == packetSize)
 				{
 					isReadyToProcess = true;
 				}
@@ -338,6 +338,7 @@ void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 			if (isReadyToProcess)
 			{
 				ReceiveCommand((void*)buffer, (size_t)received);
+
 
 				clientSession->m_bytePacker->ResetBuffer();
 			}				

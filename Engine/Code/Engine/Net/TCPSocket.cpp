@@ -70,10 +70,16 @@ TCPSocket* TCPSocket::AcceptConnection()
 
 	SOCKET theirSocket = ::accept((SOCKET)m_socketHandle, (sockaddr*)&theirAddr, &theirAddrLength);
 
+	if (theirSocket == INVALID_SOCKET)
+	{
+		return nullptr;
+	}
+		
+
 	TCPSocket* socket = new TCPSocket();
 	socket->m_address.FromSockAddr((sockaddr*)&theirAddr);
 	socket->m_socketHandle = (void*)theirSocket;
-	socket->SetBlockingState(NON_BLOCKING);
+	socket->SetBlockingState(NON_BLOCKING);	
 
 	return socket;
 }
@@ -124,6 +130,9 @@ size_t TCPSocket::Send(const void* data)
 	std::string* message = (std::string*)data;
 	int result = ::send((SOCKET)m_socketHandle, message->c_str(), (int)GetStringSize(*message), 0);
 
+	int errorCode = WSAGetLastError();
+	UNUSED(errorCode);
+
 	if(result != SOCKET_ERROR)
 		return 1;
 	else
@@ -134,6 +143,9 @@ size_t TCPSocket::Send(const void* data)
 size_t TCPSocket::Send(size_t dataSize, const void* data)
 {
 	int result = ::send((SOCKET)m_socketHandle, (char*)data, dataSize, 0);
+
+	int errorCode = WSAGetLastError();
+	UNUSED(errorCode);
 
 	if(result != SOCKET_ERROR)
 		return dataSize;

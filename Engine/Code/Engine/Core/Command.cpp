@@ -176,6 +176,19 @@ std::string Command::GetNextString()
 	}
 }
 
+std::string Command::GetRemainingContentAsString()
+{
+	std::string outString = "";
+
+	while (m_tokenIndex < (int)m_commandTokens.size())
+	{
+		m_tokenIndex++;
+		outString.append(Stringf(" %s", m_commandTokens[m_tokenIndex].c_str()));
+	}
+
+	return outString;
+}
+
 int Command::GetNextInt()
 {
 	return ConvertStringToInt(GetNextString());

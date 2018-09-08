@@ -376,14 +376,16 @@ void HostConnectionTest(Command& cmd)
 	}
 }
 
+// DevConsole functions =============================================================================
 //  =============================================================================
 void TestBytePackerSend(Command& cmd)
 {
 	RemoteCommandService* theCommandService = RemoteCommandService::GetInstance();
 
-	theCommandService->SendCommand(0, true, "hello");
+	theCommandService->SendCommand(0, false, "help");
 
 	theCommandService = nullptr;
 }
+
 
 

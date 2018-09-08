@@ -339,6 +339,7 @@ void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 			{
 				ReceiveCommand((void*)buffer, (size_t)received);
 
+
 				clientSession->m_bytePacker->ResetBuffer();
 			}				
 
