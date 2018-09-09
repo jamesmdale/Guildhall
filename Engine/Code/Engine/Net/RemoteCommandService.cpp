@@ -640,6 +640,7 @@ void RemoteCommandHost(Command& cmd)
 	theCommandService->Close();
 	theCommandService->m_state = DISCONNECTED_COMMAND_STATE;
 
+
 	int portNum = cmd.GetNextInt();
 
 	if (portNum <= 0 || portNum > 65535)
