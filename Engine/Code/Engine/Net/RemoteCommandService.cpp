@@ -42,8 +42,7 @@ RemoteCommandService::~RemoteCommandService()
 	for (int connectedClientIndex = 0; connectedClientIndex < (int)m_connections.size(); ++connectedClientIndex)
 	{
 		m_connections[connectedClientIndex]->m_socket->CloseConnection();
-		delete(m_connections[connectedClientIndex]);
-		m_connections[connectedClientIndex] = nullptr;
+		m_connections.erase(m_connections.begin() + connectedClientIndex);
 	}
 }
 
@@ -72,9 +71,9 @@ void RemoteCommandService::Startup()
 	CommandRegister("rc", CommandRegistration(RemoteCommand, ":'idx=X command' Use to issue remote commands using", ""));
 	CommandRegister("rcb", CommandRegistration(RemoteCommandBroadcast, ":Use to issue a remote command to all connected agents", ""));
 	CommandRegister("rca", CommandRegistration(RemoteCommandAll, ":Use to issue a remote command to all connected agents and run locally", ""));
-	CommandRegister("rc_echo", CommandRegistration(RemoteCommandAll, ":Use to disable echo feedback from console", ""));
-	CommandRegister("rc_join", CommandRegistration(RemoteCommandAll, ":Use to disconnect from current host and attempt to join a new host", ""));
-	CommandRegister("rc_host", CommandRegistration(RemoteCommandAll, ":Use to disconnect from all connections and host on the provided port", ""));
+	CommandRegister("rc_echo_toggle", CommandRegistration(RemoteCommandToggleEcho, ":Use to disable echo feedback from console", ""));
+	CommandRegister("rc_join", CommandRegistration(RemoteCommandJoin, ":Use to disconnect from current host and attempt to join a new host", ""));
+	CommandRegister("rc_host", CommandRegistration(RemoteCommandHost, ":Use to disconnect from all connections and host on the provided port", ""));
 	CommandRegister("test_message", CommandRegistration(TestBytePackerSend, "Get a string to send", ""));
 
 
@@ -271,8 +270,18 @@ void RemoteCommandService::CloseHost()
 
 	g_isHostRunning = false;
 
+	//clear the data of the host
 	delete(g_host);
 	g_host = nullptr;
+
+	//remove connected client session data
+	for (int connectedClientIndex = 0; connectedClientIndex < (int)m_connections.size(); ++connectedClientIndex)
+	{
+		m_connections[connectedClientIndex]->m_socket->CloseConnection();
+		m_connections.erase(m_connections.begin() + connectedClientIndex);
+	}
+
+	m_state = DISCONNECTED_COMMAND_STATE;
 }
 
 //  =========================================================================================
@@ -321,6 +330,23 @@ void RemoteCommandService::UpdateClient()
 //  =========================================================================================
 void RemoteCommandService::CloseClient()
 {
+	g_host->CloseConnection();
+
+	g_isHostRunning = false;
+	g_isClientRunning = false;
+
+	//clear the data of the host
+	delete(g_host);
+	g_host = nullptr;
+
+	//remove connected client session data
+	for (int connectedClientIndex = 0; connectedClientIndex < (int)m_connections.size(); ++connectedClientIndex)
+	{
+		m_connections[connectedClientIndex]->m_socket->CloseConnection();
+		m_connections.erase(m_connections.begin() + connectedClientIndex);
+	}
+
+	m_state = DISCONNECTED_COMMAND_STATE;
 }
 
 //  =========================================================================================
@@ -461,11 +487,16 @@ void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 //  =============================================================================
 std::string GetLocalIP()
 {
+	int port = -1; 
+
+	if(g_host != nullptr)
+		port = g_host->m_address.m_port;
+
 	NetAddress netAddr;
 
 	sockaddr addr;
 	int addrLength = 0;
-	std::string portString = std::to_string(REMOTE_SERVICE_DEFAULT_PORT);
+	std::string portString = std::to_string(port);
 
 	netAddr.GetMyHostAddress(&addr, &addrLength, portString.c_str());
 
@@ -524,6 +555,121 @@ void RemoteCommandBroadcast(Command& cmd)
 	{
 		theCommandService->SendCommand(connectionIndex, g_isEchoEnabled, commandMessage.c_str());
 	}	
+}
+
+void RemoteCommandToggleEcho(Command& cmd)
+{
+	g_isEchoEnabled != g_isEchoEnabled;
+
+	std::string echoState = "";
+
+	if(g_isEchoEnabled)
+		echoState = "enabled";
+	else
+		echoState = "disabled";
+
+	DevConsolePrintf("Remote command echo %s!", echoState.c_str());
+}
+
+//  =========================================================================================
+void RemoteCommandJoin(Command& cmd)
+{
+	RemoteCommandService* theCommandService = RemoteCommandService::GetInstance();
+
+	//close the connection and clear the state of the command service.
+	theCommandService->Close();
+	theCommandService->m_state = DISCONNECTED_COMMAND_STATE;
+
+	std::string addrString = cmd.GetNextString();
+
+	if (IsStringNullOrEmpty(addrString))
+	{
+		DevConsolePrintf(Rgba::RED, "Invalid input. Must be \"hostname:service_name\"");
+		return;
+	}
+	TCPSocket* connectedSocket = new TCPSocket();
+
+	NetAddress netAddr = NetAddress(addrString.c_str());
+
+	bool success = connectedSocket->Connect(netAddr);
+
+	if (success)
+	{
+		TCPSession* session = new TCPSession();
+
+		session->m_socket = connectedSocket;
+		session->m_socket->SetBlockingState(NON_BLOCKING);
+		session->m_bytePacker = new BytePacker(BIG_ENDIAN);
+
+		theCommandService->m_connections.push_back(session);
+
+		//set host socket reference
+		g_host = connectedSocket;
+
+		g_isHostRunning = true;
+		g_isClientRunning = true;
+	}
+	else
+	{
+		delete(connectedSocket);
+		connectedSocket = nullptr;
+	}
+
+	connectedSocket = nullptr;
+
+	if (!success)
+	{
+		DevConsolePrintf(Rgba::RED, "Could not connect to %s", addrString.c_str());
+		return;
+	}
+	else
+	{
+		DevConsolePrintf("Successfully connected to %s", netAddr.ToString().c_str());
+	}
+
+	connectedSocket = nullptr;
+	theCommandService = nullptr;
+}
+
+//  =========================================================================================
+void RemoteCommandHost(Command& cmd)
+{
+	RemoteCommandService* theCommandService = RemoteCommandService::GetInstance();
+
+	//close the connection and clear the state of the command service.
+	theCommandService->Close();
+	theCommandService->m_state = DISCONNECTED_COMMAND_STATE;
+
+	int portNum = cmd.GetNextInt();
+
+	if (portNum <= 0 || portNum > 65535)
+	{
+		DevConsolePrintf(Rgba::RED, "Invalid input. Must be \"portNum\"");
+		return;
+	}
+	else
+	{
+		g_host = new TCPSocket();
+		bool success = g_host->Listen(portNum, REMOTE_SERVICE_MAX_CLIENTS);
+
+		if (success)
+		{
+			theCommandService->m_state = HOSTING_COMMAND_STATE;
+			g_host->SetBlockingState(NON_BLOCKING);
+			g_isHostRunning = true;
+
+			DevConsolePrintf("Successfully hosting");
+		}
+		else
+		{
+			delete(g_host);
+			g_host = nullptr;
+			DevConsolePrintf(Rgba::RED, "Could not host on port %i", portNum);
+			return;
+		}	
+	}
+
+	theCommandService = nullptr;
 }
 
 // Send to each connection AND run locally =============================================================================

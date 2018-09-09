@@ -38,9 +38,10 @@ public:
 
 	std::string GetHostIP();
 
-private:
 	bool SetupHostConnection();
 	bool ConnectToHost();
+
+private:
 
 	void UpdateHost();
 	void CloseHost();
@@ -71,8 +72,10 @@ void ServiceClientTest(TCPSocket* clientSocket);
 void RemoteCommand(Command& cmd);
 void RemoteCommandAll(Command& cmd);
 void RemoteCommandBroadcast(Command& cmd);
-void HostRemoteCommandProcessor(Command& cmd, int clientIndex);
-void ClientRemoteCommandProcessor(Command& cmd);
+void RemoteCommandToggleEcho(Command& cmd);
+void RemoteCommandJoin(Command& cmd);
+void RemoteCommandHost(Command& cmd);
+
 void TestBytePackerSend(Command& cmd);
 
 
