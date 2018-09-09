@@ -28,7 +28,7 @@ public:
 	void Update();
 	void Close();
 	void SendCommand(uint index, bool isEcho, const char* messageString);
-	void ReceiveCommand(void* data, size_t bufferSize);
+	void ReceiveCommand(BytePacker* bytePacker);
 
 	//helpers
 	TCPSocket* GetConnectionByIndex(int index);

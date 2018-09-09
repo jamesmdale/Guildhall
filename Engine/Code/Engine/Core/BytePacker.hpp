@@ -30,7 +30,7 @@ public:
 	bool SetReadableByteCount(size_t byteCount);
 
 	bool WriteBytes(size_t byteCount, const void* data, bool doesConsiderEndianness = true);
-	bool ReadBytes(void* outData, size_t maxByteCount);
+	bool ReadBytes(void* outData, size_t maxByteCount, bool doesConsiderEndianness);
 
 	size_t WriteSize(size_t size);
 	size_t ReadSize(size_t* outsize);
@@ -41,6 +41,8 @@ public:
 	void ResetBuffer();
 	void ResetWrite();
 	void ResetRead();
+
+	uint16_t BytePacker::PeekBuffer(bool doesChangeToPlatformEndianness);
 
 	eEndianness GetEndianness() const;
 	size_t GetWrittenByteCount() const;

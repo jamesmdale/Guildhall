@@ -154,14 +154,14 @@ size_t TCPSocket::Send(size_t dataSize, const void* data)
 }
 
 //  =============================================================================
-size_t TCPSocket::Receive(void* outBuffer, const size_t maxByteSize)
+int TCPSocket::Receive(void* outBuffer, const size_t maxByteSize)
 {
-	size_t result = ::recv((SOCKET)m_socketHandle, (char*)outBuffer, maxByteSize, 0);
+	int result = ::recv((SOCKET)m_socketHandle, (char*)outBuffer, maxByteSize, 0);
 
 	if (result == SOCKET_ERROR)
 		return -1;
 	else
-		return result;
+		return (size_t)result;
 }
 
 //  =============================================================================

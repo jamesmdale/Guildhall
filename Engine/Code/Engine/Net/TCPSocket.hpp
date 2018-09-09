@@ -30,7 +30,7 @@ public:
 	size_t Send(size_t dataSize, const void * data);
 
 	//returns how much received
-	size_t Receive(void* outBuffer, const size_t maxByteSize);
+	int Receive(void* outBuffer, const size_t maxByteSize);
 
 	bool IsClosed() const;
 

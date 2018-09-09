@@ -145,8 +145,23 @@ void RemoteCommandService::SendCommand(uint index, bool isEcho, const char* mess
 }
 
 //  =============================================================================
-void RemoteCommandService::ReceiveCommand(void* data, size_t bufferSize)
+void RemoteCommandService::ReceiveCommand(BytePacker* bytepacker)
 {
+	uint16_t sizeOfData = 0;
+	bool success = bytepacker->ReadBytes(&sizeOfData, 2, false);
+
+	bool doesEcho = false;
+	success = bytepacker->ReadBytes(&doesEcho, 1, false);
+
+	void* data = malloc(bytepacker->GetReadableByteCount() + 1);
+	bytepacker->ReadString((char*)data, bytepacker->GetReadableByteCount());
+
+	//if echo is true, print. Else run it as a command.
+	
+	//testing for now just print.
+	DevConsolePrintf("%s", (char*)data);	
+
+
 	//m_bytePacker
 }
 
@@ -303,7 +318,7 @@ void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 	//already in big endian DO NOT CONVERT
 	unsigned char buffer[256];
 	clientSession->m_socket->SetBlockingState(NON_BLOCKING);
-	int received = clientSession->m_socket->Receive(&buffer, REMOTE_SERVICE_MAX_BUFFER_SIZE);
+	int received = clientSession->m_socket->Receive(&buffer, 2);
 
 	if (received > 0) 
 	{
@@ -317,27 +332,34 @@ void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 				//writebytes needs to NOT CONVERT
 
 				//get the size and write that in
-				bool success = clientSession->m_bytePacker->WriteBytes(2, (void*)&buffer, false);
+				bool success = clientSession->m_bytePacker->WriteBytes(2, (void*)&buffer, false);		
 				
-				success = clientSession->m_bytePacker->WriteBytes(received - 2, (void*)&buffer, false);
-
-				uint16_t packetSize = *(uint16_t*)clientSession->m_bytePacker->GetBuffer();
-				uint16_t packetSizeTest = packetSize;
-				ToEndianness((void*)&packetSizeTest, 2, BIG_ENDIAN);
-
-				if (clientSession->m_bytePacker->GetWrittenByteCount() == packetSize || clientSession->m_bytePacker->GetWrittenByteCount() == REMOTE_SERVICE_MAX_BUFFER_SIZE)
-				{
-					isReadyToProcess = true;
-				}
 			}
 			else
 			{
-				//we've already starting reading so we need to continue reading from the last location				
+				//we've already starting reading so we need to continue reading from the last location
+				size_t packetSize = clientSession->m_bytePacker->PeekBuffer(true);
+
+			/*	if(received + clientSession->m_bytePacker->GetWrittenByteCount() > REMOTE_SERVICE_MAX_BUFFER_SIZE)
+					amountToWrite = REMOTE_SERVICE_MAX_BUFFER_SIZE;
+				else
+					amountToWrite = received;*/
+
+				bool success = clientSession->m_bytePacker->WriteBytes(received, (void*)&buffer, false);
+
+			
+				if (clientSession->m_bytePacker->GetWrittenByteCount() == packetSize)// || clientSession->m_bytePacker->GetWrittenByteCount())
+				{
+					isReadyToProcess = true;
+				}
+								
 			}
 
+			// if we are ready to process the command (ie read the size to the maxsize of a single buffer or the entire message),
+			// process the command.
 			if (isReadyToProcess)
 			{
-				ReceiveCommand((void*)buffer, (size_t)received);
+				ReceiveCommand(clientSession->m_bytePacker);
 
 				clientSession->m_bytePacker->ResetBuffer();
 			}				

@@ -91,14 +91,15 @@ bool BytePacker::WriteBytes(size_t byteCount, const void* data, bool doesConside
 }
 
 //  =============================================================================
-bool BytePacker::ReadBytes(void* outData, size_t maxByteCount)
+bool BytePacker::ReadBytes(void* outData, size_t maxByteCount, bool doesConsiderEndianness)
 {
 	if(GetReadableByteCount() < maxByteCount)
 		return false;
 
 	memcpy(outData, (byte_t*)m_buffer + m_readByteCount, maxByteCount);
 
-	ToEndianness(m_buffer, m_bufferSize, m_endianness);
+	if(doesConsiderEndianness)
+		ToEndianness(m_buffer, m_bufferSize, m_endianness);
 
 	m_readByteCount += maxByteCount;	
 
@@ -185,7 +186,7 @@ bool BytePacker::ReadString(char* outString, size_t maxByteSize)
 		readBytes = maxByteSize;
 	}
 
-	bool success = ReadBytes(outString, readSize);
+	bool success = ReadBytes(outString, readSize, false);
 
 	return success;
 }
@@ -213,6 +214,17 @@ void BytePacker::ResetWrite()
 void BytePacker::ResetRead()
 {
 	m_readByteCount = 0;
+}
+
+// =============================================================================
+uint16_t BytePacker::PeekBuffer(bool doesChangeToPlatformEndianness)
+{
+	uint16_t packetSize = *(uint16_t*)m_buffer;
+
+	if(doesChangeToPlatformEndianness)	
+		FromEndianness((void*)&packetSize, 2, m_endianness);
+
+	return packetSize;
 }
 
 //  =============================================================================
