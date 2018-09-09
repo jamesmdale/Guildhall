@@ -45,7 +45,7 @@ private:
 
 	void UpdateClient();
 	void CloseClient();
-	void ProcessClient();
+	void ProcessClient(TCPSession* clientSession);
 
 	void UpdateDisconnected();
 
@@ -53,29 +53,23 @@ public:
 	eRemoteCommandState m_state = DISCONNECTED_COMMAND_STATE;
 	std::thread* m_remoteThread = nullptr;  //used for client and host
 
-	//If hosting, this is the listening socket. If client this is the reading/writing socket
-	TCPSocket* m_connectedSocket = nullptr;
-
-	//Host only
-	std::vector<TCPSession*> m_connectedClients;
-
-	//Client only
-	BytePacker* m_bytePacker = nullptr;
-
+	std::vector<TCPSession*> m_connections;
 };
 
 extern RemoteCommandService* g_theRemoteCommandService;
+extern bool isEchoEnabled;
 
 std::string GetLocalIP();
 void ServiceClientTest(TCPSocket* clientSocket);
 
 //DevConsole Commands
-void TestBytePackerSend(Command& cmd);
 void RemoteCommand(Command& cmd);
 void RemoteCommandAll(Command& cmd);
 void RemoteCommandBroadcast(Command& cmd);
 void HostRemoteCommandProcessor(Command& cmd, int clientIndex);
 void ClientRemoteCommandProcessor(Command& cmd);
+void TestBytePackerSend(Command& cmd);
+
 
 
 

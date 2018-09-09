@@ -67,7 +67,6 @@ void TheApp::Initialize()
 	CommandRegister("net_print_local_ip", CommandRegistration(PrintLocalIPTest, ":Use to print local ip", ""));
 	CommandRegister("connect_and_send", CommandRegistration(ConnectAndSend, ":Insert IP and Port to connect with an a message you wish to send.", ""));
 	CommandRegister("host_connection", CommandRegistration(HostConnectionTest, ":Insert port to listen on.", ""));
-	CommandRegister("test_message", CommandRegistration(TestBytePackerSend, "Get a string to send", ""));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -338,7 +337,6 @@ void PrintLocalIPTest(Command& cmd)
 	DevConsolePrintf(ip.c_str());
 }
 
-
 //  =============================================================================
 std::string GetLocalIPTest()
 {
@@ -378,14 +376,7 @@ void HostConnectionTest(Command& cmd)
 
 // DevConsole functions =============================================================================
 //  =============================================================================
-void TestBytePackerSend(Command& cmd)
-{
-	RemoteCommandService* theCommandService = RemoteCommandService::GetInstance();
 
-	theCommandService->SendCommand(0, false, "help");
-
-	theCommandService = nullptr;
-}
 
 
 

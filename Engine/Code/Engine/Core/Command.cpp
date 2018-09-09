@@ -180,7 +180,7 @@ std::string Command::GetRemainingContentAsString()
 {
 	std::string outString = "";
 
-	while (m_tokenIndex < (int)m_commandTokens.size())
+	while (m_tokenIndex + 1 < (int)m_commandTokens.size())
 	{
 		m_tokenIndex++;
 		outString.append(Stringf(" %s", m_commandTokens[m_tokenIndex].c_str()));
@@ -207,6 +207,18 @@ float Command::GetNextFloat()
 bool Command::GetNextBool()
 {
 	return ConvertStringToBool(GetNextString());
+}
+
+std::string Command::PeekNextString()
+{
+	if (m_tokenIndex >= (int)m_commandTokens.size())
+	{
+		return "";
+	}
+	else
+	{
+		return m_commandTokens[m_tokenIndex + 1];
+	}
 }
 
 void CommandRegister(char const* name, CommandRegistration definition)

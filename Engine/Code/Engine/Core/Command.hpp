@@ -60,6 +60,11 @@ public:
 	float GetNextFloat();
 	bool GetNextBool();
 
+	std::string PeekNextString();
+
+	void ResetTokenIndex() {m_tokenIndex = 0;}
+	void IncrementTokenIndex() { m_tokenIndex++;}
+
 	bool IsCorrectNumberOfParameters(int expectedParamCount);
 	std::string ParseCommandStringForValidFormatting();								   
 };

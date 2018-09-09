@@ -560,8 +560,10 @@ void DevConsole::SetAllowableCharacters()
 	m_allowableCharacters.push_back(41);//)
 	m_allowableCharacters.push_back(44);//,
 	m_allowableCharacters.push_back(46);//.
-	m_allowableCharacters.push_back(95);//_
 	m_allowableCharacters.push_back(58);//:
+	m_allowableCharacters.push_back(61);//=
+	m_allowableCharacters.push_back(95);//_
+	
 }
 
 //  =========================================================================================

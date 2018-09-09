@@ -37,7 +37,7 @@ std::string GetLocalIPTest();
 
 //DevConsole Commands
 void HostConnectionTest(Command& cmd);
-void TestBytePackerSend(Command& cmd);
+
 
 extern TheApp* g_theApp;
 extern TCPSocket* hostTest;
