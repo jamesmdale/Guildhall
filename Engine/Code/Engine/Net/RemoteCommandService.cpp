@@ -9,11 +9,12 @@
 #include "Engine\Core\StringUtils.hpp"
 
 RemoteCommandService* g_theRemoteCommandService = nullptr;
-bool isEchoEnabled = false;
-TCPSocket* host = nullptr;
+bool g_isEchoEnabled = false;
+TCPSocket* g_host = nullptr;
 bool g_isServiceRunning = false;
 bool g_isHostRunning = false;
 bool g_isClientRunning = false;
+
 
 //  =========================================================================================
 RemoteCommandService::RemoteCommandService()
@@ -25,6 +26,9 @@ RemoteCommandService::RemoteCommandService()
 RemoteCommandService::~RemoteCommandService()
 {
 	g_isServiceRunning = false;
+
+	delete(g_host);
+	g_host = nullptr;
 
 	//delete remote thread
 	if (m_remoteThread != nullptr)
@@ -157,6 +161,10 @@ void RemoteCommandService::ReceiveCommand(BytePacker* bytepacker)
 		//read only the message portion of the string and not the entire buffer
 		//1 byte for the bool, 2 for the size, and one for the extra appended character
 		cmd.m_commandString = cmd.m_commandString.substr(0, (int)bytepacker->GetWrittenByteCount() - 4);
+		
+		//delete the first space after the command name
+		cmd.m_commandString.erase(cmd.m_commandString.begin());
+
 		cmd.ParseCommandStringForValidFormatting();
 
 		std::string index = cmd.m_commandString.substr(0, 3);
@@ -196,18 +204,18 @@ TCPSession* RemoteCommandService::GetTCPSessionByIndex(int index)
 //  =========================================================================================
 bool RemoteCommandService::SetupHostConnection()
 {
-	host = new TCPSocket();	
-	bool success = host->Listen(REMOTE_SERVICE_DEFAULT_PORT, REMOTE_SERVICE_MAX_CLIENTS);
+	g_host = new TCPSocket();	
+	bool success = g_host->Listen(REMOTE_SERVICE_DEFAULT_PORT, REMOTE_SERVICE_MAX_CLIENTS);
 
 	if (success)
 	{
-		host->SetBlockingState(NON_BLOCKING);
+		g_host->SetBlockingState(NON_BLOCKING);
 		g_isHostRunning = true;
 	}	
 	else
 	{
-		delete(host);
-		host = nullptr;
+		delete(g_host);
+		g_host = nullptr;
 	}
 
 	return success;
@@ -233,6 +241,9 @@ bool RemoteCommandService::ConnectToHost()
 
 		m_connections.push_back(session);
 
+		//set host socket reference
+		g_host = connectedSocket; 
+
 		g_isClientRunning = true;
 	}
 	else
@@ -256,12 +267,12 @@ void RemoteCommandService::UpdateHost()
 //  =========================================================================================
 void RemoteCommandService::CloseHost()
 {
-	host->CloseConnection();
+	g_host->CloseConnection();
 
 	g_isHostRunning = false;
 
-	delete(host);
-	host = nullptr;
+	delete(g_host);
+	g_host = nullptr;
 }
 
 //  =========================================================================================
@@ -270,7 +281,7 @@ void RemoteCommandService::ProcessHost()
 	//if we aren't at max capacity of connected clients, we should add any client requestingn to connect
 	if (m_connections.size() < REMOTE_SERVICE_MAX_CLIENTS)
 	{
-		TCPSocket* client = host->AcceptConnection();
+		TCPSocket* client = g_host->AcceptConnection();
 		if (client != nullptr)
 		{
 			TCPSession* newSession = new TCPSession();
@@ -381,6 +392,21 @@ void RemoteCommandService::UpdateDisconnected()
 }
 
 //  =========================================================================================
+bool RemoteCommandService::IsCommandSystemRunning()
+{
+	return g_isServiceRunning;
+}
+
+//  =========================================================================================
+std::string RemoteCommandService::GetHostIP()
+{
+	if(g_host != nullptr)
+		return g_host->m_address.ToString();
+	else
+		return "";
+}
+
+//  =========================================================================================
 void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 {
 	bool isReadyToProcess = false;
@@ -477,7 +503,7 @@ void RemoteCommand(Command& cmd)
 		return;
 	}
 	
-	theCommandService->SendCommand(connectionIndex, isEchoEnabled, cmd.GetRemainingContentAsString().c_str());
+	theCommandService->SendCommand(connectionIndex, g_isEchoEnabled, cmd.GetRemainingContentAsString().c_str());
 }
 
 // Sends to each connection =============================================================================
@@ -487,15 +513,16 @@ void RemoteCommandBroadcast(Command& cmd)
 	{
 		DevConsolePrintf(Rgba::RED, "INVALID COMMAND");
 		return;
-	}
-		
+	}		
 
 	RemoteCommandService* theCommandService = RemoteCommandService::GetInstance();
 	eRemoteCommandState remoteState = theCommandService->m_state;
 
+	std::string commandMessage =cmd.GetRemainingContentAsString();
+
 	for (int connectionIndex = 0; connectionIndex < (int)theCommandService->m_connections.size(); ++connectionIndex)
 	{
-		theCommandService->SendCommand(connectionIndex, isEchoEnabled, cmd.GetRemainingContentAsString().c_str());
+		theCommandService->SendCommand(connectionIndex, g_isEchoEnabled, commandMessage.c_str());
 	}	
 }
 
@@ -541,7 +568,7 @@ void TestBytePackerSend(Command& cmd)
 {
 	RemoteCommandService* theCommandService = RemoteCommandService::GetInstance();
 
-	theCommandService->SendCommand(0, isEchoEnabled, "blerp");
+	theCommandService->SendCommand(0, g_isEchoEnabled, "blerp");
 
 	theCommandService = nullptr;
 }

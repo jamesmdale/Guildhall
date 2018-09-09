@@ -34,6 +34,10 @@ public:
 	TCPSocket* GetConnectionByIndex(int index);
 	TCPSession* GetTCPSessionByIndex(int index);
 
+	bool IsCommandSystemRunning();
+
+	std::string GetHostIP();
+
 private:
 	bool SetupHostConnection();
 	bool ConnectToHost();
@@ -57,7 +61,8 @@ public:
 };
 
 extern RemoteCommandService* g_theRemoteCommandService;
-extern bool isEchoEnabled;
+extern bool g_isEchoEnabled;
+extern bool g_isServiceRunning;
 
 std::string GetLocalIP();
 void ServiceClientTest(TCPSocket* clientSocket);

@@ -10,10 +10,11 @@
 #include "Engine\Renderer\Shader.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Core\EngineCommon.hpp"
-#include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\LogSystem.hpp"
+#include "Engine\Net\RemoteCommandService.hpp"
 #include <ctime>
 #include <stdarg.h>
+
 
 static DevConsole* g_theDevConsole = nullptr;
 
@@ -242,6 +243,7 @@ void DevConsole::Render()
 	Renderer* theRenderer = Renderer::GetInstance();
 	AABB2 consoleBounds = AABB2(0.f, 0.f, theWindow->m_clientWidth, theWindow->m_clientHeight);
 	AABB2 consoleInputBounds = AABB2(0.f, 0.f, theWindow->m_clientWidth, TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y);
+	AABB2 remoteConnectionBounds = AABB2(consoleBounds, Vector2(0.75f, 0.f), Vector2(0.75f, 1.f));
 	
 	int maxIndexToRender = RoundToNearestInt(theWindow->m_clientHeight/(TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y));
 
@@ -275,7 +277,63 @@ void DevConsole::Render()
 	theRenderer->DrawMesh(meshBuilder.CreateMesh<VertexPCU>());*/
 
 	theRenderer->DrawAABB(consoleBounds, Rgba(0.f, 0.f, 0.f, .85f));
+
+	//handle remote connection view
+	RemoteCommandService* theRemoteCommandService = RemoteCommandService::GetInstance();
+	theRenderer->DrawAABB(remoteConnectionBounds, Rgba(0.f, 0.f, 0.f, 1.f));
 	theRenderer->DrawAABB(consoleInputBounds, Rgba(.5f, .5f, .5f, .90f));
+
+	if (theRemoteCommandService->IsCommandSystemRunning())
+	{
+		std::string state = "";
+		std::string ipAddress = "";
+
+		switch (theRemoteCommandService->m_state)
+		{
+		case CLIENT_COMMAND_STATE:
+			state = "[CLIENT]";
+			break;
+		case HOSTING_COMMAND_STATE:
+			state = "[HOSTING]";
+			break;
+		default:
+			state = "[DISCONNECTED]";
+			break;
+		}
+
+		int rcTextCount = 2;
+		int startingPostionFromTop = REMOTE_TEXT_CELL_HEIGHT;
+
+		theRenderer->DrawText2D(Vector2(remoteConnectionBounds.mins.x, remoteConnectionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("REMOTE COMMAND SERVICE %s", state.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		rcTextCount++;
+
+		std::string hostIP = theRemoteCommandService->GetHostIP();
+		std::string ip = GetLocalIP();
+
+		theRenderer->DrawText2D(Vector2(remoteConnectionBounds.mins.x, remoteConnectionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), "LOCAL IP:", REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		rcTextCount++;
+
+		theRenderer->DrawText2D(Vector2(remoteConnectionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, remoteConnectionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), ip, REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		rcTextCount++;
+
+		int connectionCount = (int)theRemoteCommandService->m_connections.size();
+
+		theRenderer->DrawText2D(Vector2(remoteConnectionBounds.mins.x, remoteConnectionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("(%i) NUM CONNECTIONS", connectionCount), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		rcTextCount++;
+
+		for (int connectionIndex = 0; connectionIndex < connectionCount; ++connectionIndex)
+		{
+			std::string connectionIP = theRemoteCommandService->m_connections[connectionIndex]->m_socket->m_address.ToString();
+
+			theRenderer->DrawText2D(Vector2(remoteConnectionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, remoteConnectionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("[%i] %s", connectionCount, connectionIP.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+			rcTextCount++;
+		}	
+	}
+	else
+	{
+		//print that the remote command service is not running
+	}	
+	
 
 	theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, 0.f), modifiedInputWithCursor, TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 
@@ -288,10 +346,9 @@ void DevConsole::Render()
 
 		float currentCellStartPosition = (float)(historyIndex + 1.f) * (TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y);
 		theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, currentCellStartPosition), m_historyStack[historyIndex].m_printText, 15.f, m_historyStack[historyIndex].m_printColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	}
+	}	
 
 	theRenderer->m_defaultShader->DisableBlending();
-
 	theRenderer = nullptr;
 }
 
