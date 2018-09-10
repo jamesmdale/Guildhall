@@ -144,13 +144,10 @@ int ConvertStringToInt(const std::string& convertString)
 {
 	if (convertString != "")
 	{
-		int returnVal = stoi(convertString);
-		if (returnVal != NULL)
-		{
-			return returnVal;
-		}
+		int returnVal = stoi(convertString);	
+		return returnVal;		
 	}	
-	
+
 	return NULL;
 }
 

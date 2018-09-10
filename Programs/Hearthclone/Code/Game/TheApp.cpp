@@ -81,7 +81,7 @@ void TheApp::Initialize()
 
 	Game::GetInstance()->Initialize();
 
-	m_test.Start();
+//	m_test.Start();
 
 
 

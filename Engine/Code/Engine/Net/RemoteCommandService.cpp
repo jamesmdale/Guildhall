@@ -162,7 +162,7 @@ void RemoteCommandService::ReceiveCommand(BytePacker* bytepacker)
 		cmd.m_commandString = cmd.m_commandString.substr(0, (int)bytepacker->GetWrittenByteCount() - 4);
 		
 		//delete the first space after the command name
-		cmd.m_commandString.erase(cmd.m_commandString.begin());
+		//cmd.m_commandString.erase(cmd.m_commandString.begin());
 
 		cmd.ParseCommandStringForValidFormatting();
 
@@ -548,15 +548,17 @@ void RemoteCommand(Command& cmd)
 	int connectionIndex = 0;
 	std::string indexString = cmd.PeekNextString();
 
-	std::string index = cmd.m_commandString.substr(0, 3);
+	std::string index = indexString.substr(0, 3);
 	std::string indexTest("idx");
 	//they actually had an index so lets parse that.
+
+	cmd.ParseCommandStringForValidFormatting();
 	if (index == indexTest)
 	{
 		//udpate the token index
 		cmd.IncrementTokenIndex();
 
-		int clientIndex = ConvertStringToInt(SplitStringOnCharacter(indexString, '=')[1]);
+		connectionIndex = ConvertStringToInt(SplitStringOnCharacter(indexString, '=')[1]);
 	}
 
 
@@ -566,7 +568,7 @@ void RemoteCommand(Command& cmd)
 		return;
 	}
 	
-	theCommandService->SendCommand(connectionIndex, g_isEchoEnabled, cmd.GetRemainingContentAsString().c_str());
+	theCommandService->SendCommand(connectionIndex, g_isEchoEnabled, cmd.m_commandTokens[cmd.m_commandTokens.size() - 1].c_str());
 }
 
 // Sends to each connection =============================================================================
