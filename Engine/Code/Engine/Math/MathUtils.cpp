@@ -114,6 +114,18 @@ float GetMinFloat(float a, float b)
 	}
 }
 
+int GetMinInt(int a, int b)
+{
+	if (a < b)
+	{
+		return a;
+	}
+	else
+	{
+		return b;
+	}
+}
+
 int RotateRegularPolygon(float currentDegrees, float rotationDegrees)
 {
 	return (int)(currentDegrees + rotationDegrees);

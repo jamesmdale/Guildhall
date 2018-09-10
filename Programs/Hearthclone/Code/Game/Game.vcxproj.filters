@@ -115,6 +115,9 @@
     <ClCompile Include="Effects\DerivedEffects\VictoryEffect.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="UDPTest.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -160,5 +163,6 @@
     <ClInclude Include="Effects\DerivedEffects\CastTargetEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\DamageEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\VictoryEffect.hpp" />
+    <ClInclude Include="UDPTest.hpp" />
   </ItemGroup>
 </Project>

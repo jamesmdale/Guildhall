@@ -325,7 +325,7 @@ void DevConsole::Render()
 		{
 			std::string connectionIP = theRemoteCommandService->m_connections[connectionIndex]->m_socket->m_address.ToString();
 
-			theRenderer->DrawText2D(Vector2(remoteConnectionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, remoteConnectionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("[%i] %s", connectionCount, connectionIP.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+			theRenderer->DrawText2D(Vector2(remoteConnectionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, remoteConnectionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("[%i] %s", connectionIndex, connectionIP.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 			rcTextCount++;
 		}	
 	}

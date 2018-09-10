@@ -66,6 +66,10 @@ extern bool g_isEchoEnabled;
 extern bool g_isServiceRunning;
 
 std::string GetLocalIP();
+std::string GetLocalIP(int port);
+
+bool GetLocalIP(NetAddress* outAddress, int port);
+
 void ServiceClientTest(TCPSocket* clientSocket);
 
 //DevConsole Commands

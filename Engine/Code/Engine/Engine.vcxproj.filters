@@ -307,6 +307,15 @@
     <ClCompile Include="Net\TCPSession.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Net\Socket.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\UDPSocket.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPTestDelete.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -434,6 +443,9 @@
     <ClInclude Include="Utility\Tags.hpp" />
     <ClInclude Include="Net\RemoteCommandService.hpp" />
     <ClInclude Include="Net\TCPSession.hpp" />
+    <ClInclude Include="Net\Socket.hpp" />
+    <ClInclude Include="Net\UDPSocket.hpp" />
+    <ClInclude Include="UDPTestDelete.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />

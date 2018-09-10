@@ -505,6 +505,38 @@ std::string GetLocalIP()
 	return netAddr.ToString();
 }
 
+//  =============================================================================
+std::string GetLocalIP(int port)
+{
+	NetAddress netAddr;
+
+	sockaddr addr;
+	int addrLength = 0;
+	std::string portString = std::to_string(port);
+
+	netAddr.GetMyHostAddress(&addr, &addrLength, portString.c_str());
+
+	netAddr.FromSockAddr(&addr);
+
+	return netAddr.ToString();
+}
+
+//  =============================================================================
+bool GetLocalIP(NetAddress* outAddress, int port)
+{
+	sockaddr addr;
+	int addrLength = 0;
+	std::string portString = std::to_string(port);
+
+	outAddress->GetMyHostAddress(&addr, &addrLength, portString.c_str());
+
+	outAddress->FromSockAddr(&addr);
+
+	if(outAddress->m_Ipv4Address != 0)
+		return true;
+	else
+		return false;
+}
 
 // Dev Console Commands =============================================================================
 //  =============================================================================

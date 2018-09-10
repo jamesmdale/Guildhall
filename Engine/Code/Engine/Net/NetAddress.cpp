@@ -38,6 +38,21 @@ NetAddress::NetAddress(const char* string)
 }
 
 //  =============================================================================
+NetAddress::NetAddress(const char* addressString, int port)
+{
+	sockaddr* sock = new sockaddr();
+	int addressLength = 0;
+
+	std::string addressAsString(addressString);
+
+	bool success = GetAddressForHost(sock, &addressLength, addressString, Stringf("%i", port).c_str());
+
+	if (success)
+		FromSockAddr(sock);	
+
+}
+
+//  =============================================================================
 NetAddress::NetAddress(const sockaddr* address)
 {
 	FromSockAddr(address);

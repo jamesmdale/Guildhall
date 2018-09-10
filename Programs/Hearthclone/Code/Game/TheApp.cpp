@@ -67,6 +67,7 @@ void TheApp::Initialize()
 	CommandRegister("net_print_local_ip", CommandRegistration(PrintLocalIPTest, ":Use to print local ip", ""));
 	CommandRegister("connect_and_send", CommandRegistration(ConnectAndSend, ":Insert IP and Port to connect with an a message you wish to send.", ""));
 	CommandRegister("host_connection", CommandRegistration(HostConnectionTest, ":Insert port to listen on.", ""));
+	CommandRegister("udp_test", CommandRegistration(UdpTestSend, ":run a test with udp", ""));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -79,6 +80,10 @@ void TheApp::Initialize()
 	InputSystem::GetInstance()->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);	
 
 	Game::GetInstance()->Initialize();
+
+	m_test.Start();
+
+
 
 
 	////bytepacker test
@@ -146,6 +151,8 @@ void TheApp::Update()
 	{
 		Game::GetInstance()->Update();
 	}
+
+	m_test.Update();
 }
 
 
@@ -335,6 +342,18 @@ void PrintLocalIPTest(Command& cmd)
 	std::string ip = netAddr.ToString();
 
 	DevConsolePrintf(ip.c_str());
+}
+
+//  =============================================================================
+void UdpTestSend(Command& cmd)
+{
+	std::string ipString = cmd.GetNextString();
+	std::string sendString = cmd.GetNextString();
+
+	NetAddress address = NetAddress(ipString.c_str());
+
+	g_theApp->m_test.SendTo(address, sendString.c_str(), 1);
+
 }
 
 //  =============================================================================

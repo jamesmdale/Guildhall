@@ -16,6 +16,7 @@ public:
 	NetAddress();
 	~NetAddress();
 	NetAddress(const char* string);
+	NetAddress(const char* string, int port);
 	NetAddress(const sockaddr* address);
 
 	bool ToSockAddr(const sockaddr* addr, size_t* outSize) const;
@@ -31,7 +32,6 @@ public:
 	//static NetAddress GetLocal();
 	static void GetMyHostAddress(sockaddr* outAddress, int* outAddrlen, const char* service = "80");
 	static bool GetAddressForHost(sockaddr* outAddress, int* outAddrlen, const char* hostName, const char* service);
-
 
 	/*
 	optional:
