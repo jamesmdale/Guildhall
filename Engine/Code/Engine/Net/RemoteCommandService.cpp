@@ -487,7 +487,7 @@ void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 //  =============================================================================
 std::string GetLocalIP()
 {
-	int port = -1; 
+	int port = REMOTE_SERVICE_DEFAULT_PORT; 
 
 	if(g_host != nullptr)
 		port = g_host->m_address.m_port;
