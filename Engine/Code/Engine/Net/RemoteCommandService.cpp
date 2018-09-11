@@ -561,7 +561,6 @@ void RemoteCommand(Command& cmd)
 		connectionIndex = ConvertStringToInt(SplitStringOnCharacter(indexString, '=')[1]);
 	}
 
-
 	if(connectionIndex > (int)theCommandService->m_connections.size() - 1)
 	{
 		DevConsolePrintf(Rgba::RED, "INVALID CONNECTION INDEX");
@@ -583,7 +582,7 @@ void RemoteCommandBroadcast(Command& cmd)
 	RemoteCommandService* theCommandService = RemoteCommandService::GetInstance();
 	eRemoteCommandState remoteState = theCommandService->m_state;
 
-	std::string commandMessage =cmd.GetRemainingContentAsString();
+	std::string commandMessage = cmd.GetRemainingContentAsString();
 
 	for (int connectionIndex = 0; connectionIndex < (int)theCommandService->m_connections.size(); ++connectionIndex)
 	{
@@ -612,7 +611,7 @@ void RemoteCommandJoin(Command& cmd)
 
 	//close the connection and clear the state of the command service.
 	theCommandService->Close();
-	theCommandService->m_state = DISCONNECTED_COMMAND_STATE;
+	theCommandService->m_state = JOINING_COMMAND_STATE;
 
 	std::string addrString = cmd.GetNextString();
 
@@ -653,11 +652,13 @@ void RemoteCommandJoin(Command& cmd)
 
 	if (!success)
 	{
+		theCommandService->m_state = DISCONNECTED_COMMAND_STATE;
 		DevConsolePrintf(Rgba::RED, "Could not connect to %s", addrString.c_str());
 		return;
 	}
 	else
 	{
+		theCommandService->m_state = CLIENT_COMMAND_STATE;
 		DevConsolePrintf("Successfully connected to %s", netAddr.ToString().c_str());
 	}
 
@@ -672,7 +673,7 @@ void RemoteCommandHost(Command& cmd)
 
 	//close the connection and clear the state of the command service.
 	theCommandService->Close();
-	theCommandService->m_state = DISCONNECTED_COMMAND_STATE;
+	theCommandService->m_state = JOINING_COMMAND_STATE;
 
 
 	int portNum = cmd.GetNextInt();
@@ -697,6 +698,7 @@ void RemoteCommandHost(Command& cmd)
 		}
 		else
 		{
+			theCommandService->m_state = DISCONNECTED_COMMAND_STATE;
 			delete(g_host);
 			g_host = nullptr;
 			DevConsolePrintf(Rgba::RED, "Could not host on port %i", portNum);
