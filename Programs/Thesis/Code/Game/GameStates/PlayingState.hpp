@@ -1,6 +1,6 @@
 #pragma once
 #include "Game\GameStates\GameState.hpp"
-#include "Game\Agent.hpp";
+#include "Game\Agent.hpp"
 #include "Game\Map\Map.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Core\Widget.hpp"
@@ -33,7 +33,6 @@ public:
 
 	Map* m_map = nullptr;
 	std::vector<Agent*> m_agents;
-
 
 };
 

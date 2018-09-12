@@ -137,7 +137,8 @@ public:
 
 	//AABB (quad) -----------------------------------------------------------------------------------------------------------------
 	void DrawAABB(const AABB2& bounds, const Rgba& tint);
-	void DrawTexturedAABB(const AABB2& bounds, const Texture& texture, const Vector2& texCoordsAtMins, const Vector2& texCoordsAtMaxs, const Rgba& tint);
+	void DrawTexturedAABB(Matrix44& transformMatrix, const AABB2& bounds, const Texture& texture, const Vector2& texCoordsAtMins, const Vector2& texCoordsAtMaxs, const Rgba& tint);
+	void DrawTexturedAABB(const AABB2& bounds, const Texture & texture, const Vector2 & texCoordsAtMins, const Vector2 & texCoordsAtMaxs, const Rgba & tint);
 	void DrawOrientedTexturedAABB(Matrix44& transformMatrix, const AABB2& bounds, Texture* texture, const Rgba& tint = Rgba::WHITE, const AABB2& uvs = AABB2::ZERO_TO_ONE);
 
 	//disc ------------------------------------------------------------------------------------------------------------------------
@@ -158,6 +159,7 @@ public:
 
 	//mesh -------------------------------------------------------------------------------------------------------------------------
 	void BindMeshToProgram(ShaderProgram* program, Mesh* mesh);
+	
 
 	//GL Functions -------------------------------------------------------------------------------------------------------------------------
 	void LineWidth(float lineWidth);

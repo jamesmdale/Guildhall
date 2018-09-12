@@ -1,334 +1,412 @@
 <?xml version="1.0"?>
 
-<sprite id="agent.idle.up">
-	<diffuse src="Data/Images/Images/Agents/to_archer.split.png" />
+<!--	Cast up  -->
+
+<sprite id="agent.cast.up0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,0,64,64" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.up1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,0,128,64" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.up2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,0,192,64" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.up3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,0,256,64" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.up4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,0,320,64" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.up5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,0,384,64" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.up6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,0,448,64" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+<!--	Cast left  -->
+
+<sprite id="agent.cast.left0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,64,64,128" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.left1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,64,128,128" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.left2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,64,192,128" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.left3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,64,256,128" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.left4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,64,320,128" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.left5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,64,384,128" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.left6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,64,448,128" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+<!--	Cast Down  -->
+
+<sprite id="agent.cast.down0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,128,64,192" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.down1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,128,128,192" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.down2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,128,192,192" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.down3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,128,256,192" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.down4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,128,320,192" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.down5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,128,384,192" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.down6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,128,448,192" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+<!--	Cast Right  -->
+
+<sprite id="agent.cast.right0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,192,64,256" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.right1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,192,128,256" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.right2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,192,192,256" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.right3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,192,256,256" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.right4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,192,320,256" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.right5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,192,384,256" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.cast.right6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,192,448,256" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+
+  <!--	Walk up  -->
+
+<sprite id="agent.walk.up0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
 	<ppu count="64" />
 	<uv layout="pixel" uvs="0,512,64,576" />
 	<pivot xy="0.5,0" />
 </sprite>
-<sprite id="archer_f.al.idle">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="0,512,64,576" />
+<sprite id="agent.walk.up1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,512,128,576" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.up2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,512,192,576" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.up3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,512,256,576" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.up4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,512,320,576" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.up5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,512,384,576" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.up6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,512,448,576" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.up7">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="448,512,512,576" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.up8">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="512,512,576,576" />
 	<pivot xy="0.5,0" />
 </sprite>
 
-<sprite id="archer_f.tr.walk0">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="30,12,46,39" />
+ <!--	Walk left  -->
+
+<sprite id="agent.walk.left0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,576,64,640" />
 	<pivot xy="0.5,0" />
 </sprite>
-<sprite id="archer_f.al.walk0">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="30,45,44,70" />
+<sprite id="agent.walk.left1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,576,128,640" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.left2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,576,192,640" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.left3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,576,256,640" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.left4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,576,320,640" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.left5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,576,384,640" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.left6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,576,448,640" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.left7">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="448,576,512,640" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.left8">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="512,576,576,640" />
 	<pivot xy="0.5,0" />
 </sprite>
 
-<sprite id="archer_f.tr.walk1">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="50,13,65,38" />
+ <!--	Walk Down  -->
+
+<sprite id="agent.walk.down0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,640,64,704" />
 	<pivot xy="0.5,0" />
 </sprite>
-<sprite id="archer_f.al.walk1">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="49,44,65,72" />
+<sprite id="agent.walk.down1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,640,128,704" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.down2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,640,192,704" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.down3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,640,256,704" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.down4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,640,320,704" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.down5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,640,384,704" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.down6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,640,448,704" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.down7">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="448,640,512,704" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.down8">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="512,640,576,704" />
 	<pivot xy="0.5,0" />
 </sprite>
 
-<sprite id="archer_f.tr.hit">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="70,12,86,40" />
+ <!--	Walk Right  -->
+
+<sprite id="agent.walk.right0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,704,64,768" />
 	<pivot xy="0.5,0" />
 </sprite>
-<sprite id="archer_f.al.hit">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="70,44,85,72" />
+<sprite id="agent.walk.right1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,704,128,768" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.right2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,704,192,768" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.right3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,704,256,768" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.right4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,704,320,768" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.right5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,704,384,768" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.right6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,704,448,768" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.right7">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="448,704,512,768" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.walk.right8">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="512,704,576,768" />
 	<pivot xy="0.5,0" />
 </sprite>
 
-<sprite id="archer_f.tr.weak">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="90,15,106,40" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="archer_f.al.weak">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="90,47,105,72" />
-	<pivot xy="0.5,0" />
-</sprite>
 
-<sprite id="archer_f.tr.cast">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="111,13,126,40" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="archer_f.al.cast">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="110,46,124,72" />
-	<pivot xy="0.5,0" />
-</sprite>
-
-<sprite id="archer_f.tr.crouch">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="129,15,145,40" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="archer_f.al.crouch">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="130,49,145,72" />
-	<pivot xy="0.5,0" />
-</sprite>
-
-<sprite id="archer_f.tr.dead">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="10,85,26,104" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="archer_f.al.dead">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="10,116,25,136" />
-	<pivot xy="0.5,0" />
-</sprite>
-
-<sprite id="archer_f.tr.attack0">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="30,79,46,104" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="archer_f.al.attack0">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="31,108,46,136" />
-	<pivot xy="0.5,0" />
-</sprite>
-
-<sprite id="archer_f.tr.attack1">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="50,78,65,104" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="archer_f.al.attack1">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="50,110,66,136" />
-	<pivot xy="0.5,0" />
-</sprite>
-
-<sprite id="archer_f.tr.attack2">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="70,79,85,104" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="archer_f.al.attack2">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="71,111,85,136" />
-	<pivot xy="0.5,0" />
-</sprite>
-
-<sprite id="archer_f.tr.attack3">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="89,78,107,104" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="archer_f.al.attack3">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="88,109,105,136" />
-	<pivot xy="0.5,0" />
-</sprite>
-
-<sprite id="archer_f.tr.attack4">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="110,78,126,104" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="archer_f.al.attack4">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="110,109,125,136" />
-	<pivot xy="0.5,0" />
-</sprite>
-
-<!-- working copy - male -->
-<sprite id="to_archer_27">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="30,139,46,167" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_28">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="70,140,86,168" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_29">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="111,140,127,168" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_30">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="10,141,25,168" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_31">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="49,141,66,166" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_32">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="153,141,237,258" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_33">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="91,142,107,168" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_34">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="131,144,146,168" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_35">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="32,171,46,197" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_36">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="90,171,105,200" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_37">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="12,172,26,200" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_38">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="51,172,67,199" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_39">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="71,172,87,200" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_40">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="111,172,126,200" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_41">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="131,174,145,200" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_42">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="70,204,86,229" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_43">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="31,205,47,232" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_44">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="51,205,66,232" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_45">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="89,206,108,232" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_46">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="111,206,127,232" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_47">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="10,212,27,231" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_48">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="32,234,47,264" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_49">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="71,235,86,264" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_50">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="89,235,107,264" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_51">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="111,235,126,264" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_52">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="51,236,67,264" />
-	<pivot xy="0.5,0" />
-</sprite>
-<sprite id="to_archer_53">
-	<diffuse src="Data/Images/Sprites/to_archer.split.png" />
-	<ppu count="16" />
-	<uv layout="pixel" uvs="11,241,27,263" />
-	<pivot xy="0.5,0" />
-</sprite>

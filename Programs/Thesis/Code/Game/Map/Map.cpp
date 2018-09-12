@@ -77,3 +77,8 @@ int Map::GetActorIndex()
 {
 	return 0;
 }
+
+IntVector2 Map::GetTileCoordinateOfPosition(Vector2 position)
+{
+	return IntVector2(RoundToNearestInt(position.x), RoundToNearestInt(position.y));
+}

@@ -296,6 +296,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Agent.cpp" />
+    <ClCompile Include="AgentDefinition.cpp" />
+    <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteAnimDefinition.cpp" />
+    <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteAnimSetDefinition.cpp" />
+    <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteDefinition.cpp" />
+    <ClCompile Include="Definitions\SpriteDefinitions\SpriteDefinition.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCommon.cpp" />
     <ClCompile Include="GameStates\GameState.cpp" />
@@ -311,6 +316,10 @@
     <ClCompile Include="Map\MapGenStep_FillAndEdge.cpp" />
     <ClCompile Include="Map\MapGenStep_FromFile.cpp" />
     <ClCompile Include="Map\MapGenStep_Mutate.cpp" />
+    <ClCompile Include="Sprites\IsoSprite.cpp" />
+    <ClCompile Include="Sprites\IsoSpriteAnim.cpp" />
+    <ClCompile Include="Sprites\IsoSpriteAnimSet.cpp" />
+    <ClCompile Include="Sprites\Sprite.cpp" />
     <ClCompile Include="TheApp.cpp" />
     <ClCompile Include="Map\Tile.cpp" />
     <ClCompile Include="Definitions\TileDefinition.cpp" />
@@ -322,6 +331,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agent.hpp" />
+    <ClInclude Include="AgentDefinition.hpp" />
+    <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteAnimDefinition.hpp" />
+    <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteAnimSetDefinition.hpp" />
+    <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteDefinition.hpp" />
+    <ClInclude Include="Definitions\SpriteDefinitions\SpriteDefinition.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
@@ -337,6 +351,10 @@
     <ClInclude Include="Map\MapGenStep_FillAndEdge.hpp" />
     <ClInclude Include="Map\MapGenStep_FromFile.hpp" />
     <ClInclude Include="Map\MapGenStep_Mutate.hpp" />
+    <ClInclude Include="Sprites\IsoSprite.hpp" />
+    <ClInclude Include="Sprites\IsoSpriteAnim.hpp" />
+    <ClInclude Include="Sprites\IsoSpriteAnimSet.hpp" />
+    <ClInclude Include="Sprites\Sprite.hpp" />
     <ClInclude Include="TheApp.hpp" />
     <ClInclude Include="Map\Tile.hpp" />
     <ClInclude Include="Definitions\TileDefinition.hpp" />

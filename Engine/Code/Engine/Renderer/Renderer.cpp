@@ -720,11 +720,25 @@ void Renderer::BindMeshToProgram(ShaderProgram* program, Mesh* mesh)
 	}
 }
 
-
 void Renderer::DrawTexturedAABB(const AABB2& bounds, const Texture& texture, const Vector2& texCoordsAtMins, const Vector2& texCoordsAtMaxs, const Rgba& tint)
 {
-	//int textureIndex = 0;
+	SetTexture(texture);
 
+	VertexPCU vertex[6];
+	vertex[0] = VertexPCU(Vector3(bounds.mins.x, bounds.mins.y, 0), tint, Vector2(texCoordsAtMins.x, texCoordsAtMins.y));
+	vertex[1] = VertexPCU(Vector3(bounds.maxs.x, bounds.mins.y, 0), tint, Vector2(texCoordsAtMaxs.x, texCoordsAtMins.y));
+	vertex[2] = VertexPCU(Vector3(bounds.maxs.x, bounds.maxs.y, 0), tint, Vector2(texCoordsAtMaxs.x, texCoordsAtMaxs.y));
+
+	vertex[3] = vertex[2];
+	vertex[4] = VertexPCU(Vector3(bounds.mins.x, bounds.maxs.y, 0), tint, Vector2(texCoordsAtMins.x, texCoordsAtMaxs.y));
+	vertex[5] = vertex[0];
+
+	DrawMeshImmediate(&vertex[0], 6, TRIANGLES_DRAW_PRIMITIVE);
+}
+
+
+void Renderer::DrawTexturedAABB(Matrix44& transformMatrix, const AABB2& bounds, const Texture& texture, const Vector2& texCoordsAtMins, const Vector2& texCoordsAtMaxs, const Rgba& tint)
+{
 	SetTexture(texture);
 
 	VertexPCU vertex[6];
@@ -736,8 +750,7 @@ void Renderer::DrawTexturedAABB(const AABB2& bounds, const Texture& texture, con
 	vertex[4] = VertexPCU(Vector3(bounds.mins.x, bounds.maxs.y, 0), tint, Vector2(texCoordsAtMins.x, texCoordsAtMaxs.y));
 	vertex[5] = vertex[0];
 
-	DrawMeshImmediate(&vertex[0], 6, TRIANGLES_DRAW_PRIMITIVE);
-
+	DrawMeshImmediate(&vertex[0], 6, TRIANGLES_DRAW_PRIMITIVE, transformMatrix);
 }
 
 void Renderer::DrawTriangle(const Vector3& aPosition, const Vector3& bPosition, const Vector3& cPosition, const Rgba& tint)

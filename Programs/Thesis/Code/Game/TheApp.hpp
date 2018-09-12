@@ -16,7 +16,8 @@ public:
 	void RunFrame();
 	float UpdateInput(float deltaSeconds);
 
-
+	//resoureces
+	void InitializeGameResources();
 };
 
 void Quit(Command &cmd);

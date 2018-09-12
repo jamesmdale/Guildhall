@@ -20,6 +20,10 @@
 #include "Engine\File\CSVWriter.hpp"
 #include <thread>
 #include <fstream>
+#include "Game\Definitions\SpriteDefinitions\SpriteDefinition.hpp"
+#include "Game\Definitions\SpriteDefinitions\IsoSpriteDefinition.hpp"
+#include "Game\Definitions\SpriteDefinitions\IsoSpriteAnimDefinition.hpp"
+#include "Game\Definitions\SpriteDefinitions\IsoSpriteAnimSetDefinition.hpp"
 
 TheApp* g_theApp = nullptr;
 
@@ -79,6 +83,8 @@ void TheApp::Initialize()
 
 	Game::CreateInstance();
 	Game::GetInstance()->Initialize();
+
+	InitializeGameResources();
 
 	WriteTestCSV();
 }
@@ -189,6 +195,30 @@ float TheApp::UpdateInput(float deltaSeconds)
 	}
 
 	return deltaSeconds;
+}
+//  =========================================================================================
+void TheApp::InitializeGameResources()
+{
+	Renderer* theRenderer = Renderer::GetInstance();
+
+	//load sprite sheet images
+	theRenderer->CreateOrGetTexture("Data/Images/Agents/Female_1.png");
+	theRenderer->CreateOrGetTexture("Data/Images/Agents/Female_2.png");
+	theRenderer->CreateOrGetTexture("Data/Images/Agents/Female_3.png");
+	theRenderer->CreateOrGetTexture("Data/Images/Agents/Female_4.png");
+	theRenderer->CreateOrGetTexture("Data/Images/Agents/Male_1.png");
+	theRenderer->CreateOrGetTexture("Data/Images/Agents/Male_2.png");
+	theRenderer->CreateOrGetTexture("Data/Images/Agents/Male_3.png");
+	theRenderer->CreateOrGetTexture("Data/Images/Agents/Male_4.png");
+
+
+	//initialize agent definition
+	SpriteDefinition::Initialize("Data/Definitions/AgentDefinitions/to_agent_sprite.xml");
+	IsoSpriteDefinition::Initialize("Data/Definitions/AgentDefinitions/agent_isosprite.xml");
+	IsoSpriteAnimDefinition::Initialize("Data/Definitions/AgentDefinitions/agent_animation.xml");
+	IsoSpriteAnimSetDefinition::Initialize("Data/Definitions/AgentDefinitions/agent_animset.xml");
+
+	theRenderer = nullptr;
 }
 
 //  =============================================================================

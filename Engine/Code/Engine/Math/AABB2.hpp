@@ -27,6 +27,8 @@ public:
 	Vector2 GetCenter() const; //return center position of the box
 	void SetFromText(const char* text);
 
+	Vector2 GetRandomPointInBounds();
+
 	void operator+=(const Vector2& translation); //move (translate) the box
 	void operator-=(const Vector2& antiTranslation);
 	AABB2 operator+(const Vector2& translation) const; //create a (temp) moved box

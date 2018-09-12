@@ -174,6 +174,11 @@ Vector2 AABB2::GetCenter() const //return center position of the box
 	return centerPoint;
 }
 
+Vector2 AABB2::GetRandomPointInBounds()
+{
+	return Vector2(GetRandomFloatInRange(mins.x, maxs.x), GetRandomFloatInRange(mins.y, maxs.y));
+}
+
 void AABB2::operator+=(const Vector2& translation) //move
 {
 	mins.x += translation.x;

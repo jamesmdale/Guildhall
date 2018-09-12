@@ -34,16 +34,38 @@ void PlayingState::Initialize()
 
 	MapDefinition* definition = MapDefinition::s_definitions["Grass"];
 	m_map = new Map(definition, "TestMap", m_renderScene2D);
+	
+	//test agent
+	IsoSpriteAnimSet* animSet = nullptr;
+	std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
+	if (spriteDefIterator != IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.end())
+	{
+		animSet = new IsoSpriteAnimSet(spriteDefIterator->second);
+	}
+
+	IntVector2 dimensions = m_map->GetDimensions();
+
+	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
+	Vector2 randomStartingLocation = mapBounds.GetRandomPointInBounds();
+
+	Agent* agent = new Agent(Vector2::ZERO, animSet, m_map);
+
+	m_agents.push_back(agent);
 
 	//cleanup
-	theRenderer = nullptr;	
+	definition = nullptr;
+	agent = nullptr;
+	animSet = nullptr;
+	theRenderer = nullptr;
 }
 
 //  =============================================================================
 void PlayingState::Update(float deltaSeconds)
 { 
-	
-
+	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
+	{
+		m_agents[agentIndex]->Update(deltaSeconds);
+	}
 }
 
 //  =============================================================================
@@ -57,6 +79,11 @@ void PlayingState::Render()
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	Game::GetInstance()->m_forwardRenderingPath2D->Render(m_renderScene2D);
+
+	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
+	{
+		m_agents[agentIndex]->Render();
+	}
 
 	theRenderer = nullptr;
 }

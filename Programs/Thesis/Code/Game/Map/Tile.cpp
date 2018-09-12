@@ -34,7 +34,7 @@ void Tile::Initialize()
 	MeshBuilder mb;
 	mb.FlushBuilder();
 
-	mb.CreateTexturedQuad2D(Vector2::ZERO, bounds.GetDimensions(), m_tileDefinition->m_baseSpriteUVCoords.mins, m_tileDefinition->m_baseSpriteUVCoords.maxs, Rgba::WHITE);
+	mb.CreateTexturedQuad2D(Vector2::ZERO, bounds.GetDimensions(), Vector2(m_tileDefinition->m_baseSpriteUVCoords.mins.x, m_tileDefinition->m_baseSpriteUVCoords.maxs.y), Vector2(m_tileDefinition->m_baseSpriteUVCoords.maxs.x, m_tileDefinition->m_baseSpriteUVCoords.mins.y), Rgba::WHITE);
 	Material* materialInstance = Material::Clone(theRenderer->CreateOrGetMaterial("default"));
 	materialInstance->SetTexture(0, theRenderer->CreateOrGetTexture("Data/Images/Terrain_8x8.png"));
 

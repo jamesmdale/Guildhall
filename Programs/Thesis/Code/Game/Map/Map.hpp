@@ -39,6 +39,10 @@ public:
 	void UpdatePlayerInput();
 	int GetActorIndex();
 
+	IntVector2 GetTileCoordinateOfPosition(Vector2 position);
+
+
+
 	//void GenerateMap(const std::string& definitionName, const std::string& mapName);
 
 public:

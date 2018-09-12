@@ -18,3 +18,14 @@ const float g_tilePercentageOfWindow = 0.025f;
 //game related globals
 extern bool g_isDebug;
 extern bool g_isQuitting;
+
+//convenience directions
+extern IntVector2 MAP_NORTH;
+extern IntVector2 MAP_SOUTH;
+extern IntVector2 MAP_EAST;
+extern IntVector2 MAP_WEST;
+
+extern IntVector2 UI_UP;
+extern IntVector2 UI_DOWN;
+extern IntVector2 UI_RIGHT;
+extern IntVector2 UI_LEFT;
