@@ -73,8 +73,11 @@ void Agent::Render()
 
 	//theRenderer->BindMaterial(material);
 	//theRenderer->DrawTexturedAABB( bounds, *theRenderer->CreateOrGetTexture(sprite.m_definition->m_diffuseSource), sprite.m_definition->m_uvs.mins, sprite.m_definition->m_uvs.maxs, Rgba::WHITE);
+	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
+
 	theRenderer->DrawTexturedAABB(m_transform.GetWorldMatrix(), bounds, *theRenderer->CreateOrGetTexture(sprite.m_definition->m_diffuseSource), Vector2(sprite.GetNormalizedUV().mins.x, sprite.GetNormalizedUV().maxs.y), Vector2(sprite.GetNormalizedUV().maxs.x, sprite.GetNormalizedUV().mins.y), Rgba::WHITE);
 
+	theRenderer->SetShader(theRenderer->CreateOrGetShader("default"));
 
 	theRenderer = nullptr;
 	//material = nullptr;
