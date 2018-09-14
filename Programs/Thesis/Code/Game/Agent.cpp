@@ -68,19 +68,11 @@ void Agent::Render()
 	bounds.mins.y = 0.f - (spritePivot.y) * dimensions;
 	bounds.maxs.y = bounds.mins.y + 1.f * dimensions;
 
-	//Material* material = theRenderer->CreateOrGetMaterial("agent");
-	//material->SetTexture(0, theRenderer->CreateOrGetTexture(sprite.m_definition->m_diffuseSource));
-
-	//theRenderer->BindMaterial(material);
-	//theRenderer->DrawTexturedAABB( bounds, *theRenderer->CreateOrGetTexture(sprite.m_definition->m_diffuseSource), sprite.m_definition->m_uvs.mins, sprite.m_definition->m_uvs.maxs, Rgba::WHITE);
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
-
 	theRenderer->DrawTexturedAABB(m_transform.GetWorldMatrix(), bounds, *theRenderer->CreateOrGetTexture(sprite.m_definition->m_diffuseSource), Vector2(sprite.GetNormalizedUV().mins.x, sprite.GetNormalizedUV().maxs.y), Vector2(sprite.GetNormalizedUV().maxs.x, sprite.GetNormalizedUV().mins.y), Rgba::WHITE);
-
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("default"));
 
 	theRenderer = nullptr;
-	//material = nullptr;
 }
 
 void Agent::UpdateSpriteRenderDirection()

@@ -27,6 +27,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Utility\Grid.cpp" />
+    <ClCompile Include="Utility\AStar.cpp" />
     <ClCompile Include="Core\BytePacker.cpp" />
     <ClCompile Include="Core\EndianHelper.cpp" />
     <ClCompile Include="Core\LogSystem.cpp" />
@@ -82,7 +84,6 @@
     <ClCompile Include="Net\TCPSession.cpp" />
     <ClCompile Include="Net\Socket.cpp" />
     <ClCompile Include="Net\UDPSocket.cpp" />
-    <ClCompile Include="UDPTestDelete.cpp" />
     <ClCompile Include="Utility\Tags.cpp" />
     <ClCompile Include="Time\Stopwatch.cpp" />
     <ClCompile Include="Time\Clock.cpp" />
@@ -131,6 +132,8 @@
     <ClCompile Include="Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Utility\Grid.hpp" />
+    <ClInclude Include="Utility\AStar.hpp" />
     <ClInclude Include="Async\Threading.hpp" />
     <ClInclude Include="Core\BitHelper.hpp" />
     <ClInclude Include="Core\BytePacker.hpp" />
@@ -146,7 +149,6 @@
     <ClInclude Include="Net\TCPSession.hpp" />
     <ClInclude Include="Net\Socket.hpp" />
     <ClInclude Include="Net\UDPSocket.hpp" />
-    <ClInclude Include="UDPTestDelete.hpp" />
     <ClInclude Include="Utility\Tags.hpp" />
     <ClInclude Include="Utility\Graph.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />

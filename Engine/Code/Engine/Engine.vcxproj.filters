@@ -313,7 +313,10 @@
     <ClCompile Include="Net\UDPSocket.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="UDPTestDelete.cpp">
+    <ClCompile Include="Utility\AStar.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\Grid.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
@@ -445,7 +448,8 @@
     <ClInclude Include="Net\TCPSession.hpp" />
     <ClInclude Include="Net\Socket.hpp" />
     <ClInclude Include="Net\UDPSocket.hpp" />
-    <ClInclude Include="UDPTestDelete.hpp" />
+    <ClInclude Include="Utility\AStar.hpp" />
+    <ClInclude Include="Utility\Grid.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="ThirdParty\fmod\fmod_vc.lib" />
