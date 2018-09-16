@@ -3,6 +3,7 @@
 #include "Engine\Core\ErrorWarningAssert.hpp"
 #include "Engine\core\Vertex.hpp"
 #include <string.h>
+#include <limits>
 
 extern Blackboard g_gameConfigBlackboard;
 
@@ -13,20 +14,20 @@ constexpr int MAX_LIGHTS = 8;
 
 constexpr int MAX_PROFILER_HISTORY = 256;
 
-//profiler globals
+//profiler globals  =============================================================================
 constexpr int PROFILER_SORT_LAYER = 999;
 constexpr float PROFILER_TEXT_CELL_HEIGHT = 11.f; //in pixels
 constexpr float PROFILER_TEXT_WIDTH_PADDING = 20.f; //in pixels
 constexpr float PROFILER_TEXT_HEIGHT_PADDING = 10.f;
 
-//Remote Command Service Globals
+//Remote Command Service Globals  =============================================================================
 constexpr int REMOTE_SERVICE_DEFAULT_PORT = 29283;
 constexpr int REMOTE_SERVICE_MAX_CLIENTS = 16;
 constexpr int REMOTE_SERVICE_MAX_BUFFER_SIZE = 256 - 1U;
 
 constexpr char* LOGGER_DATA_FILE = "Data/Log/log.txt";
 
-//stringf stack local
+//stringf stack local  =============================================================================
 const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;
 const int MAX_MAX_CONSOLE_SIZE = 100;
 

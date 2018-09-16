@@ -4,6 +4,7 @@
 #include "Game\Map\Map.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Core\Widget.hpp"
+#include "Engine\Utility\Grid.hpp"
 
 class PlayingState : public GameState
 {
@@ -24,8 +25,7 @@ public:
 
 	bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);
 	Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);
-
-
+	
 public:
 
 	Stopwatch* m_gameTime = nullptr;
@@ -33,6 +33,5 @@ public:
 
 	Map* m_map = nullptr;
 	std::vector<Agent*> m_agents;
-
 };
 

@@ -124,6 +124,11 @@ bool IntVector2::operator!=( const IntVector2& compare ) const
 	return isNotEqual;
 }
 
+bool IntVector2::operator<(const IntVector2 & compare) const
+{
+	return false;
+}
+
 IntVector2 operator*( int uniformScale, const IntVector2& vecToScale )
 {
 	return IntVector2( vecToScale.x * uniformScale, vecToScale.y * uniformScale); // #MP1Fixme
@@ -142,6 +147,13 @@ void IntVector2::SetFromText(const char* text)
 	return;	
 }
 
+int GetDistance(const IntVector2& start, const IntVector2& end)
+{
+	int dx = start.x - end.x;
+	int dy = start.y - end.y;
+	int returnFloat = sqrtf((dx * dx) + (dy * dy));
+	return returnFloat;	
+}
 
 int GetDistanceSquared(const IntVector2& a, const IntVector2& b)
 {

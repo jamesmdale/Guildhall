@@ -3,8 +3,10 @@
 #include <vector>
 #include "Engine\Math\IntVector2.hpp"
 #include "Engine\Renderer\RenderScene2D.hpp"
+#include "Engine\Utility\Grid.hpp"
 #include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Map\Tile.hpp"
+
 
 class Map
 {
@@ -40,6 +42,8 @@ public:
 	int GetActorIndex();
 
 	IntVector2 GetTileCoordinateOfPosition(Vector2 position);
+
+	Grid<int>* GetAsGrid();
 
 
 

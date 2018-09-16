@@ -4,6 +4,8 @@
 #include "Engine\Core\LightObject.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Debug\DebugRender.hpp"
+#include "Engine\Utility\AStar.hpp"
+#include "Engine\Math\IntVector2.hpp"
 #include <map>
 #include <string>
 
@@ -51,6 +53,15 @@ void PlayingState::Initialize()
 	Agent* agent = new Agent(Vector2::ZERO, animSet, m_map);
 
 	m_agents.push_back(agent);
+
+	////test for A*
+	Grid<int>* mapGrid = m_map->GetAsGrid();
+	std::vector<int> searchPath;
+	IntVector2 startPos = IntVector2::ONE;
+	IntVector2 endPos = IntVector2(3,3);
+	bool isDestinationFound = false;
+
+	isDestinationFound = AStarSearch(searchPath, *mapGrid, startPos, endPos);
 
 	//cleanup
 	definition = nullptr;
@@ -179,3 +190,5 @@ Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& widgets)
 	// return 
 	return selectedWidget;
 }
+
+

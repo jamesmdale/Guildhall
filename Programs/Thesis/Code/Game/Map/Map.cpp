@@ -14,10 +14,10 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 
 	m_dimensions = IntVector2(numTilesX, numTilesY);
 
-	for (int xCoordinate = 0; xCoordinate < numTilesX; xCoordinate++)
+	for (int yCoordinate = 0; yCoordinate < numTilesY; yCoordinate++)
 	{
-		for (int yCoordinate = 0; yCoordinate < numTilesY; yCoordinate++)
-		{
+		for (int xCoordinate = 0; xCoordinate < numTilesX; xCoordinate++)
+		{		
 			Tile* newTile = new Tile();
 
 			newTile->m_tileCoords = IntVector2(xCoordinate, yCoordinate);
@@ -78,6 +78,25 @@ int Map::GetActorIndex()
 	return 0;
 }
 
+//  =========================================================================================
+Grid<int>* Map::GetAsGrid()
+{
+	Grid<int>* grid = new Grid<int>();
+
+	grid->InitializeGrid(0, m_dimensions.x, m_dimensions.y);
+
+	for (int tileIndex = 0; tileIndex < (int)m_tiles.size(); tileIndex++)
+	{
+		int value = m_tiles[tileIndex]->m_tileDefinition->m_allowsWalking ? 0 : 1;
+
+		if(value != 0)
+			grid->SetValueAtIndex(value, tileIndex);
+	}
+
+	return grid;
+}
+
+//  =========================================================================================
 IntVector2 Map::GetTileCoordinateOfPosition(Vector2 position)
 {
 	return IntVector2(RoundToNearestInt(position.x), RoundToNearestInt(position.y));

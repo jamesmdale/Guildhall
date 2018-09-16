@@ -28,6 +28,8 @@ public:
 	friend IntVector2 operator*( int uniformScale, const IntVector2& vecToScale);	// int * vec2
 	void SetFromText(const char* text);
 
+	bool operator<(const IntVector2& compare) const;
+
 public: // NOTE: this is one of the few cases where we break both the "m_" naming rule AND the avoid-public-members rule
 	int x;
 	int y;
@@ -39,6 +41,7 @@ public: // NOTE: this is one of the few cases where we break both the "m_" namin
 	static const IntVector2 ZERO;
 	static const IntVector2 ONE;
 };
+int GetDistance(const IntVector2& start, const IntVector2& end);
 int GetDistanceSquared(const IntVector2& a, const IntVector2& b);
 const IntVector2 Interpolate(const IntVector2& start, const IntVector2& end, float fractionTowardEnd);
 int GetLargerOfXY(const IntVector2& vector);
