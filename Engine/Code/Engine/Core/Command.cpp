@@ -60,32 +60,32 @@ std::string Command::ParseCommandStringForValidFormatting()
 	bool isCurrentStringQuoted = false;
 	bool isCurrentStringParenthesis = false;
 
-	if((int)m_commandString.size() > 100)
+	if ((int)m_commandString.size() > 100)
 	{
 		return std::string("INVALID: Command input too long");
 	}
 
-	for(int characterIndex = 0; characterIndex < (int)m_commandString.size(); characterIndex++)
+	for (int characterIndex = 0; characterIndex < (int)m_commandString.size(); characterIndex++)
 	{
 		char currentChar = m_commandString[characterIndex];
 
-		if(currentChar == ' ' && !isCurrentStringQuoted && !isCurrentStringParenthesis)
+		if (currentChar == ' ' && !isCurrentStringQuoted && !isCurrentStringParenthesis)
 		{
-			if(!currentStringToken.empty())
+			if (!currentStringToken.empty())
 			{
 				m_commandTokens.push_back(currentStringToken);
 				currentStringToken.clear();
-			}			
+			}
 		}
-		else if(currentChar == '\"')
-		{	
-			if(isCurrentStringParenthesis)
+		else if (currentChar == '\"')
+		{
+			if (isCurrentStringParenthesis)
 			{
 				return std::string("INVALID: Cannot have string in parenthesis");
 			}
-			if(isCurrentStringQuoted)
-			{	
-				if(currentStringToken.empty())
+			if (isCurrentStringQuoted)
+			{
+				if (currentStringToken.empty())
 				{
 					return std::string("INVALID: Cannot have empty string in quotes");
 				}
@@ -95,43 +95,43 @@ std::string Command::ParseCommandStringForValidFormatting()
 			}
 			else
 			{
-				if(!currentStringToken.empty())
+				if (!currentStringToken.empty())
 				{
 					m_commandTokens.push_back(currentStringToken);
 					currentStringToken.clear();
 				}
 				isCurrentStringQuoted = true;
-			}			
+			}
 		}
-		else if(currentChar == '(') 
+		else if (currentChar == '(')
 		{
-			if(isCurrentStringQuoted)
+			if (isCurrentStringQuoted)
 			{
 				currentStringToken.push_back(currentChar);
 			}
-			else if(isCurrentStringParenthesis)
+			else if (isCurrentStringParenthesis)
 			{
-				return std::string("INVALID: Cannot have nested '('");				
+				return std::string("INVALID: Cannot have nested '('");
 			}
 			else
 			{
-				if(!currentStringToken.empty())
+				if (!currentStringToken.empty())
 				{
 					m_commandTokens.push_back(currentStringToken);
 					currentStringToken.clear();
-				}				
+				}
 				isCurrentStringParenthesis = true;
 			}
 		}
-		else if(currentChar == ')')
+		else if (currentChar == ')')
 		{
-			if(isCurrentStringQuoted)
+			if (isCurrentStringQuoted)
 			{
 				currentStringToken.push_back(currentChar);
 			}
-			else if(isCurrentStringParenthesis)
+			else if (isCurrentStringParenthesis)
 			{
-				if(currentStringToken.empty())
+				if (currentStringToken.empty())
 				{
 					return std::string("INVALID: Cannot have empty rbga...(empty rgba)");
 				}
@@ -148,7 +148,7 @@ std::string Command::ParseCommandStringForValidFormatting()
 			currentStringToken.push_back(currentChar);
 		}
 	}
-	if(!currentStringToken.empty())
+	if (!currentStringToken.empty())
 	{
 		m_commandTokens.push_back(currentStringToken);
 	}

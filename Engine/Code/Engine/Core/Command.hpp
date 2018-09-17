@@ -42,7 +42,7 @@ public:
 	std::vector<std::string> m_commandTokens;
 	CommandRegistration* m_commandInfo = nullptr;
 
-
+public:
 	Command( char const *str );
 	const char* GetName(); // would return "echo_with_color"
 

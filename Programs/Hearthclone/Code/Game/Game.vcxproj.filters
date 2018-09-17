@@ -118,6 +118,9 @@
     <ClCompile Include="UDPTest.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="SessionInfrastructure\NetSession.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -164,5 +167,6 @@
     <ClInclude Include="Effects\DerivedEffects\DamageEffect.hpp" />
     <ClInclude Include="Effects\DerivedEffects\VictoryEffect.hpp" />
     <ClInclude Include="UDPTest.hpp" />
+    <ClInclude Include="SessionInfrastructure\NetSession.hpp" />
   </ItemGroup>
 </Project>
