@@ -1,4 +1,6 @@
 #include "Game\GameStates\PlayingState.hpp"
+#include "Game\PointOfInterest.hpp"
+#include "Game\Agent.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Core\LightObject.hpp"
@@ -45,23 +47,34 @@ void PlayingState::Initialize()
 		animSet = new IsoSpriteAnimSet(spriteDefIterator->second);
 	}
 
+	//setup agent
 	IntVector2 dimensions = m_map->GetDimensions();
 
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
 	Vector2 randomStartingLocation = mapBounds.GetRandomPointInBounds();
-
 	Agent* agent = new Agent(Vector2::ZERO, animSet, m_map);
-
 	m_agents.push_back(agent);
 
+	//add random point of interest
+	randomStartingLocation = Vector2(m_map->m_dimensions.x - 2.f, m_map->m_dimensions.y - 2.f);
+	//randomStartingLocation = mapBounds.GetRandomPointInBounds();
+	PointOfInterest* testLocation = new PointOfInterest(randomStartingLocation * Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow, Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow);
+	m_pointOfInterests.push_back(testLocation);
+	
 	////test for A*
 	Grid<int>* mapGrid = m_map->GetAsGrid();
-	std::vector<int> searchPath;
+	std::vector<IntVector2> searchPath;
 	IntVector2 startPos = IntVector2::ONE;
-	IntVector2 endPos = IntVector2(3,3);
+	IntVector2 endPos = IntVector2((int)testLocation->m_position.x, (int)testLocation->m_position.y);
 	bool isDestinationFound = false;
 
 	isDestinationFound = AStarSearch(searchPath, *mapGrid, startPos, endPos);
+
+	//readjust camera center
+	Vector2 mapCenter = -1.f * m_map->m_mapBounds.GetCenter();
+	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));
+
+	m_agents[0]->m_currentPath = searchPath;
 
 	//cleanup
 	definition = nullptr;
@@ -91,10 +104,16 @@ void PlayingState::Render()
 
 	Game::GetInstance()->m_forwardRenderingPath2D->Render(m_renderScene2D);
 
+	for (int pointOfInterestIndex = 0; pointOfInterestIndex < (int)m_pointOfInterests.size(); ++pointOfInterestIndex)
+	{
+		m_pointOfInterests[pointOfInterestIndex]->Render();
+	}
+
 	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
 	{
 		m_agents[agentIndex]->Render();
 	}
+
 
 	theRenderer = nullptr;
 }

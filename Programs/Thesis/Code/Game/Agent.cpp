@@ -32,16 +32,25 @@ Agent::~Agent()
 
 void Agent::Update(float deltaSeconds)
 {
-	//get new goal position
-	if (m_currentMap->GetTileCoordinateOfPosition(m_goalLocation) == m_currentMap->GetTileCoordinateOfPosition(m_position))
+	//if we have a path, follow it.
+	if (m_currentPath.size() > 0)
 	{
-		Vector2 direction = Vector2(GetRandomFloatInRange(0.f, 1.f), GetRandomFloatInRange(0.f, 1.f));
+		if (IntVector2((int)m_position.x, (int)m_position.y) != m_currentPath.at(0))
+		{
+			m_goalLocation = Vector2(m_currentPath.at(0).x, m_currentPath.at(0).y);
+			
+		}
+		else
+		{
+			m_currentPath.erase(m_currentPath.begin());
+			m_goalLocation = Vector2(m_currentPath.at(0).x, m_currentPath.at(0).y);
+		}
 
-		m_goalLocation += (direction * 5.f);
 		m_forward = m_goalLocation - m_position;
-
-		m_position += (m_forward * (m_movespeed * deltaSeconds));	
-	}
+		m_position += (m_forward * (m_movespeed * deltaSeconds));
+	}	
+	else
+		m_goalLocation = m_position;
 
 	m_transform.SetLocalPosition(m_position);
 	UpdateSpriteRenderDirection();

@@ -40,16 +40,16 @@ int CalculateHeuristicValue(const IntVector2& cellPosition, const IntVector2& de
 	return GetDistance(cellPosition, destinationPosition);
 }
 
-void GetPath(std::vector<int>& outIndicies, Grid<SearchCell>& cellList, const IntVector2& cellListDimensions, const IntVector2& destinationPosition)
+void GetPath(std::vector<IntVector2>& outIndicies, Grid<SearchCell>& cellList, const IntVector2& cellListDimensions, const IntVector2& startPosition, const IntVector2& destinationPosition)
 {
 	//we have a path from the start to the destination. Now we just need to extract it.
 	int currentRow = destinationPosition.x;
 	int currentColumn = destinationPosition.y;
 
 	//only while we are not the same row and not the same column
-	while (cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateX != currentRow && cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateY != currentColumn)
+	while (cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateX != startPosition.x && cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateY != startPosition.y)
 	{
-		outIndicies.push_back(cellList.GetIndexAtLocation(currentRow, currentColumn));
+		outIndicies.push_back(IntVector2(currentRow, currentColumn));
 		int tempRow = cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateX;
 		int tempColumn = cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateY;
 	
@@ -60,7 +60,7 @@ void GetPath(std::vector<int>& outIndicies, Grid<SearchCell>& cellList, const In
 	//complete
 }
 
-bool AStarSearch(std::vector<int>& outIndices, Grid<int>& grid, const IntVector2& startPosition, const IntVector2& destinationPosition)
+bool AStarSearch(std::vector<IntVector2>& outPositions, Grid<int>& grid, const IntVector2& startPosition, const IntVector2& destinationPosition)
 {
 	ASSERT_OR_DIE(grid.IsCellValid(startPosition) && grid.IsCellValid(destinationPosition), "Search cells out of range");
 	ASSERT_OR_DIE(grid.GetValueAtCoordinate(startPosition) == 0 && grid.GetValueAtCoordinate(destinationPosition) == 0, "Search cell is blocked (inaccessible)");
@@ -141,7 +141,7 @@ bool AStarSearch(std::vector<int>& outIndices, Grid<int>& grid, const IntVector2
 					foundCell->parentCoordinateY = currentCoordinate.y;
 					isDestinationFound = true;
 					
-					GetPath(outIndices, cellList, cellList.m_dimensions, destinationPosition);
+					GetPath(outPositions, cellList, cellList.m_dimensions, startPosition, destinationPosition);
 
 					foundCell = nullptr;
 					return isDestinationFound;
@@ -182,7 +182,7 @@ bool AStarSearch(std::vector<int>& outIndices, Grid<int>& grid, const IntVector2
 					foundCell->parentCoordinateY = currentCoordinate.y;
 					isDestinationFound = true;					
 
-					GetPath(outIndices, cellList, cellList.m_dimensions, destinationPosition);
+					GetPath(outPositions, cellList, cellList.m_dimensions, startPosition, destinationPosition);
 
 					foundCell = nullptr;
 					return isDestinationFound;
@@ -221,7 +221,7 @@ bool AStarSearch(std::vector<int>& outIndices, Grid<int>& grid, const IntVector2
 					foundCell->parentCoordinateY = currentCoordinate.y;
 					isDestinationFound = true;					
 
-					GetPath(outIndices, cellList, cellList.m_dimensions, destinationPosition);
+					GetPath(outPositions, cellList, cellList.m_dimensions, startPosition, destinationPosition);
 
 					foundCell = nullptr;
 					return isDestinationFound;
@@ -260,7 +260,7 @@ bool AStarSearch(std::vector<int>& outIndices, Grid<int>& grid, const IntVector2
 					foundCell->parentCoordinateY = currentCoordinate.y;
 					isDestinationFound = true;				
 
-					GetPath(outIndices, cellList, cellList.m_dimensions, destinationPosition);
+					GetPath(outPositions, cellList, cellList.m_dimensions, startPosition, destinationPosition);
 
 					foundCell = nullptr;
 					return isDestinationFound;
@@ -299,7 +299,7 @@ bool AStarSearch(std::vector<int>& outIndices, Grid<int>& grid, const IntVector2
 					foundCell->parentCoordinateY = currentCoordinate.y;
 					isDestinationFound = true;					
 
-					GetPath(outIndices, cellList, cellList.m_dimensions, destinationPosition);
+					GetPath(outPositions, cellList, cellList.m_dimensions, startPosition, destinationPosition);
 
 					foundCell = nullptr;
 					return isDestinationFound;
@@ -338,7 +338,7 @@ bool AStarSearch(std::vector<int>& outIndices, Grid<int>& grid, const IntVector2
 					foundCell->parentCoordinateY = currentCoordinate.y;
 					isDestinationFound = true;					
 
-					GetPath(outIndices, cellList, cellList.m_dimensions, destinationPosition);
+					GetPath(outPositions, cellList, cellList.m_dimensions, startPosition, destinationPosition);
 
 					foundCell = nullptr;
 					return isDestinationFound;
@@ -377,7 +377,7 @@ bool AStarSearch(std::vector<int>& outIndices, Grid<int>& grid, const IntVector2
 					foundCell->parentCoordinateY = currentCoordinate.y;
 					isDestinationFound = true;					
 
-					GetPath(outIndices, cellList, cellList.m_dimensions, destinationPosition);
+					GetPath(outPositions, cellList, cellList.m_dimensions, startPosition, destinationPosition);
 
 					foundCell = nullptr;
 					return isDestinationFound;
@@ -416,7 +416,7 @@ bool AStarSearch(std::vector<int>& outIndices, Grid<int>& grid, const IntVector2
 					foundCell->parentCoordinateY = currentCoordinate.y;
 					isDestinationFound = true;					
 
-					GetPath(outIndices, cellList, cellList.m_dimensions, destinationPosition);
+					GetPath(outPositions, cellList, cellList.m_dimensions, startPosition, destinationPosition);
 
 					foundCell = nullptr;
 					return isDestinationFound;

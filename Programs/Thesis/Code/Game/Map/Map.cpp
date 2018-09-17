@@ -1,6 +1,8 @@
 #include "Game\Map\Map.hpp"
 #include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Map\MapGenStep.hpp"
+#include "Engine\Window\Window.hpp"
+#include "Game\GameCommon.hpp"
 
 //  =========================================================================================
 Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* renderScene)
@@ -43,6 +45,10 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 			}
 		}
 	}
+
+	float dimensions = Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow;
+
+	m_mapBounds = AABB2(0.f, 0.f, m_dimensions.x * dimensions, m_dimensions.y * dimensions);
 }
 
 //  =========================================================================================
@@ -100,4 +106,9 @@ Grid<int>* Map::GetAsGrid()
 IntVector2 Map::GetTileCoordinateOfPosition(Vector2 position)
 {
 	return IntVector2(RoundToNearestInt(position.x), RoundToNearestInt(position.y));
+}
+
+Vector2 Map::GetWorldPositionOfMapCoordinate(Vector2 position)
+{
+	IntVector2 position = GetTileCoordinateOfPosition(
 }

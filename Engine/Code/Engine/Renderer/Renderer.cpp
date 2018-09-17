@@ -400,47 +400,31 @@ void Renderer::DrawLineWithColor(const Vector3& startingPoint, const Vector3& en
 	DrawMeshImmediate(&vertex[0], 2, LINES_DRAW_PRIMITIVE);
 }
 
-//void Renderer::DrawLineWithColorFeathered(const Vector2& startingPoint, const Vector2& endPoint, const Rgba& startColor, const Rgba& endColor) const
-//{
-//	//TODO: refactor for drawmesh
-//	SetColor(startColor);
-//	UNIMPLEMENTED();//glVertex2f(startingPoint.x, startingPoint.y);
-//	SetColor(endColor);
-//	UNIMPLEMENTED();//glVertex2f(endPoint.x, endPoint.y);
-//}
-//
-//void Renderer::SetColor(const Rgba& color) const
-//{
-//	UNIMPLEMENTED();//glColor4ub(color.r, color.g, color.b, color.a);
-//}
-//
-//
-//void Renderer::DrawDottedDisc2WithColor(const Disc2& disc, const Rgba& color, const float& numSides) const
-//{
-//	UNIMPLEMENTED();
-//	TODO("Add for Vector3");
-//	////TODO: refactor for drawmesh
-//	//float degrees = 360.f/numSides;
-//	//float sides = numSides;
-//	//const int sidesInt = (int)sides;
-//	//for(float i = 1; i < numSides + 1; i+=2) //skip every other line
-//	//{
-//	//	float radiansStart = ConvertDegreesToRadians((float)i * degrees);
-//	//	float radiansEnd = ConvertDegreesToRadians((float)(i+1)*degrees);
-//
-//	//	float startX = CalculateXPoint(disc.center.x, disc.radius, radiansStart);
-//	//	float startY = CalculateYPoint(disc.center.y, disc.radius, radiansStart);
-//
-//	//	float endX = CalculateXPoint(disc.center.x, disc.radius, radiansEnd);
-//	//	float endY = CalculateYPoint(disc.center.y, disc.radius, radiansEnd);
-//	//	
-//	//	Vertex_3DPCU vertex[2];
-//	//	vertex[0] = Vertex_3DPCU(Vector2(startX, startY), color, Vector2(0, 0));
-//	//	vertex[1] = Vertex_3DPCU(Vector2(endX, endY), color, Vector2(0, 0));
-//	//	DrawMeshImmediate(&vertex[0], 2, GetGLDrawPrimitive(LINES));
-//	//}	
-//	//End();
-//}
+void Renderer::DrawDottedDisc2WithColor(const Disc2& disc, const Rgba& color, const float& numSides)
+{
+	UNIMPLEMENTED();
+	TODO("Add for Vector3");
+	//TODO: refactor for drawmesh
+	float degrees = 360.f/numSides;
+	float sides = numSides;
+	const int sidesInt = (int)sides;
+	for(float i = 1; i < numSides + 1; i+=2) //skip every other line
+	{
+		float radiansStart = ConvertDegreesToRadians((float)i * degrees);
+		float radiansEnd = ConvertDegreesToRadians((float)(i+1)*degrees);
+
+		float startX = CalculateXPoint(disc.center.x, disc.radius, radiansStart);
+		float startY = CalculateYPoint(disc.center.y, disc.radius, radiansStart);
+
+		float endX = CalculateXPoint(disc.center.x, disc.radius, radiansEnd);
+		float endY = CalculateYPoint(disc.center.y, disc.radius, radiansEnd);
+		
+		VertexPCU vertex[2];
+		vertex[0] = VertexPCU(Vector3(startX, startY, 0), color, Vector2(0, 0));
+		vertex[1] = VertexPCU(Vector3(endX, endY, 0), color, Vector2(0, 0));	
+		DrawMeshImmediate(&vertex[0], 2, LINES_DRAW_PRIMITIVE);
+	}	
+}
 //
 //void Renderer::Translatef(const Vector2& center) const
 //{

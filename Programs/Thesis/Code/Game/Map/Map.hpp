@@ -43,6 +43,10 @@ public:
 
 	IntVector2 GetTileCoordinateOfPosition(Vector2 position);
 
+	Vector2 GetWorldPositionOfMapCoordinate(Vector2 position);
+
+
+
 	Grid<int>* GetAsGrid();
 
 
@@ -54,6 +58,8 @@ public:
 	IntVector2 m_dimensions;
 	MapDefinition* m_mapDefinition = nullptr;
 	std::vector<Tile*> m_tiles;
+
+	AABB2 m_mapBounds;
 
 	RenderScene2D* m_renderScene = nullptr;
 private:

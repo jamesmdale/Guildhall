@@ -64,9 +64,6 @@
     <ClCompile Include="Agent.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="AgentDefinition.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteAnimDefinition.cpp">
       <Filter>General</Filter>
     </ClCompile>
@@ -89,6 +86,12 @@
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Sprites\Sprite.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Definitions\AgentDefinition.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="PointOfInterest.cpp">
       <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
@@ -120,7 +123,6 @@
     <ClInclude Include="Map\Tile.hpp" />
     <ClInclude Include="Map\Map.hpp" />
     <ClInclude Include="Agent.hpp" />
-    <ClInclude Include="AgentDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteAnimDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteAnimSetDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteDefinition.hpp" />
@@ -129,5 +131,7 @@
     <ClInclude Include="Sprites\IsoSpriteAnim.hpp" />
     <ClInclude Include="Sprites\IsoSpriteAnimSet.hpp" />
     <ClInclude Include="Sprites\Sprite.hpp" />
+    <ClInclude Include="Definitions\AgentDefinition.hpp" />
+    <ClInclude Include="PointOfInterest.hpp" />
   </ItemGroup>
 </Project>

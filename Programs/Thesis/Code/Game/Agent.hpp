@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine\Math\IntVector2.hpp"
+#include "Engine\Math\Vector2.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\Transform2D.hpp"
 #include "Game\Sprites\IsoSpriteAnimSet.hpp"
@@ -30,6 +31,8 @@ public:
 	IsoSpriteAnimSet* m_animationSet = nullptr;		
 
 	Transform2D m_transform;
+
+	std::vector<IntVector2> m_currentPath;
 
 	//helper references
 	Map* m_currentMap = nullptr;

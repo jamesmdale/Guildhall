@@ -296,7 +296,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Agent.cpp" />
-    <ClCompile Include="AgentDefinition.cpp" />
+    <ClCompile Include="Definitions\AgentDefinition.cpp" />
     <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteAnimDefinition.cpp" />
     <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteAnimSetDefinition.cpp" />
     <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteDefinition.cpp" />
@@ -316,6 +316,7 @@
     <ClCompile Include="Map\MapGenStep_FillAndEdge.cpp" />
     <ClCompile Include="Map\MapGenStep_FromFile.cpp" />
     <ClCompile Include="Map\MapGenStep_Mutate.cpp" />
+    <ClCompile Include="PointOfInterest.cpp" />
     <ClCompile Include="Sprites\IsoSprite.cpp" />
     <ClCompile Include="Sprites\IsoSpriteAnim.cpp" />
     <ClCompile Include="Sprites\IsoSpriteAnimSet.cpp" />
@@ -331,7 +332,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agent.hpp" />
-    <ClInclude Include="AgentDefinition.hpp" />
+    <ClInclude Include="Definitions\AgentDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteAnimDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteAnimSetDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteDefinition.hpp" />
@@ -351,6 +352,7 @@
     <ClInclude Include="Map\MapGenStep_FillAndEdge.hpp" />
     <ClInclude Include="Map\MapGenStep_FromFile.hpp" />
     <ClInclude Include="Map\MapGenStep_Mutate.hpp" />
+    <ClInclude Include="PointOfInterest.hpp" />
     <ClInclude Include="Sprites\IsoSprite.hpp" />
     <ClInclude Include="Sprites\IsoSpriteAnim.hpp" />
     <ClInclude Include="Sprites\IsoSpriteAnimSet.hpp" />

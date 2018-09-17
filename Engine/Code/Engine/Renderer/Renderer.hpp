@@ -142,7 +142,7 @@ public:
 	void DrawOrientedTexturedAABB(Matrix44& transformMatrix, const AABB2& bounds, Texture* texture, const Rgba& tint = Rgba::WHITE, const AABB2& uvs = AABB2::ZERO_TO_ONE);
 
 	//disc ------------------------------------------------------------------------------------------------------------------------
-	//void DrawDottedDisc2WithColor(const Disc2&, const Rgba& color, const float& numberOfSides) const;
+	void DrawDottedDisc2WithColor(const Disc2&, const Rgba& color, const float& numberOfSides);
 	
 	//text ------------------------------------------------------------------------------------------------------------------------
 	void DrawText2D( const Vector2& drawMins, const std::string& asciiText, float cellHeight, const Rgba& tint = Rgba::WHITE, float aspectScale = 1.f, const BitmapFont* font = nullptr );
@@ -156,10 +156,8 @@ public:
 	//skybox-------------------------------------------------------------------------------------------------------------------------
 	void DrawSkybox(Skybox* skybox);
 
-
 	//mesh -------------------------------------------------------------------------------------------------------------------------
-	void BindMeshToProgram(ShaderProgram* program, Mesh* mesh);
-	
+	void BindMeshToProgram(ShaderProgram* program, Mesh* mesh);	
 
 	//GL Functions -------------------------------------------------------------------------------------------------------------------------
 	void LineWidth(float lineWidth);
