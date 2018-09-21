@@ -35,18 +35,24 @@ void Agent::Update(float deltaSeconds)
 	//if we have a path, follow it.
 	if (m_currentPath.size() > 0)
 	{
-		if (IntVector2((int)m_position.x, (int)m_position.y) != m_currentPath.at(0))
+		if (m_currentMap->GetTileCoordinateOfPosition(m_position) != (m_currentPath.at(m_currentPath.size() - 1)))
 		{
-			m_goalLocation = Vector2(m_currentPath.at(0).x, m_currentPath.at(0).y);
-			
+			m_goalLocation = m_currentMap->GetWorldPositionOfMapCoordinate(m_currentPath.at(m_currentPath.size() - 1));
+
+			m_forward = m_goalLocation - m_position;
+			m_forward.NormalizeAndGetLength();
 		}
 		else
 		{
-			m_currentPath.erase(m_currentPath.begin());
-			m_goalLocation = Vector2(m_currentPath.at(0).x, m_currentPath.at(0).y);
+			m_currentPath.erase(m_currentPath.end() - 1);
+
+			if(m_currentPath.size() != 0)
+				m_goalLocation = m_currentMap->GetWorldPositionOfMapCoordinate(m_currentPath.at(m_currentPath.size() - 1));
+
+			m_forward = m_goalLocation - m_position;
+			m_forward.NormalizeAndGetLength();
 		}
 
-		m_forward = m_goalLocation - m_position;
 		m_position += (m_forward * (m_movespeed * deltaSeconds));
 	}	
 	else

@@ -1,8 +1,13 @@
 #include "Game\GameCommon.hpp"
+#include "Engine\Window\Window.hpp"
 //#include AudioSystem
 
 bool g_isDebug = false;
 bool g_isQuitting = false;
+
+//data set in game startup after window has been initialized
+float g_tileSize = 1.f;
+float g_divideTileSize = 1.f;
 
 
 //XY

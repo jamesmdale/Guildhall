@@ -9,7 +9,6 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 {
 	m_name = mapName;
 	m_mapDefinition = definition;
-	m_renderScene = renderScene;
 
 	int numTilesX = GetRandomIntInRange(m_mapDefinition->m_width.min, m_mapDefinition->m_width.max);
 	int numTilesY = GetRandomIntInRange(m_mapDefinition->m_height.min, m_mapDefinition->m_height.max);
@@ -24,7 +23,6 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 
 			newTile->m_tileCoords = IntVector2(xCoordinate, yCoordinate);
 			newTile->m_tileDefinition = TileDefinition::s_definitions[m_mapDefinition->m_defaultTile->m_name];
-			newTile->m_renderScene = m_renderScene;
 
 			newTile->Initialize();
 
@@ -46,15 +44,12 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 		}
 	}
 
-	float dimensions = Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow;
-
-	m_mapBounds = AABB2(0.f, 0.f, m_dimensions.x * dimensions, m_dimensions.y * dimensions);
+	m_mapWorldBounds = AABB2(0.f, 0.f, m_dimensions.x * g_tileSize, m_dimensions.y * g_tileSize);
 }
 
 //  =========================================================================================
 Map::~Map()
 {
-	m_renderScene = nullptr;
 	m_mapDefinition = nullptr;
 }
 
@@ -103,12 +98,36 @@ Grid<int>* Map::GetAsGrid()
 }
 
 //  =========================================================================================
-IntVector2 Map::GetTileCoordinateOfPosition(Vector2 position)
+IntVector2 Map::GetTileCoordinateOfPosition(const Vector2& position)
 {
-	return IntVector2(RoundToNearestInt(position.x), RoundToNearestInt(position.y));
+	float clientWidth = Window::GetInstance()->GetClientWidth();
+
+	Vector2 positionInCoordinateSpace = position * g_divideTileSize;
+	IntVector2 tileCoordinate = IntVector2(RoundToNearestInt(positionInCoordinateSpace.x), RoundToNearestInt(positionInCoordinateSpace.y));
+	return tileCoordinate;
 }
 
-Vector2 Map::GetWorldPositionOfMapCoordinate(Vector2 position)
+Vector2 Map::GetWorldPositionOfMapCoordinate(const IntVector2& position)
 {
-	IntVector2 position = GetTileCoordinateOfPosition(
+	Vector2 worldPosition = m_tiles[position.x + (position.y * m_dimensions.x)]->GetWorldSpaceCoordinates();
+	return worldPosition;
+}
+
+Vector2 Map::GetRandomNonBlockedPositionInMapBounds()
+{
+	bool isNonBlocked = false;
+	Vector2 randomPoint = Vector2::NEGATIVE_ONE;
+
+	while (isNonBlocked == false)
+	{
+		randomPoint = m_mapWorldBounds.GetRandomPointInBounds();
+		IntVector2 correspondingTileCoordinate = GetTileCoordinateOfPosition(randomPoint);
+
+		if (m_tiles[correspondingTileCoordinate.x + (correspondingTileCoordinate.y * m_dimensions.x)]->m_tileDefinition->m_allowsWalking)
+		{
+			isNonBlocked = true;
+		}
+	}
+
+	return randomPoint;
 }

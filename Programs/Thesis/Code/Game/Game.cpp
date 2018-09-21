@@ -66,6 +66,10 @@ void Game::Initialize()
 	Window* theWindow = Window::GetInstance();
 	Renderer* theRenderer = Renderer::GetInstance();
 
+	//set game common values after window has been started up
+	g_tileSize = Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow;
+	g_divideTileSize = 1 / (Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow);
+
 	theRenderer->SetAmbientLightIntensity(0.15f);
 
 	m_gameClock = new Clock(GetMasterClock());

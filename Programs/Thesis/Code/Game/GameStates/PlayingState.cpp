@@ -36,6 +36,7 @@ void PlayingState::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder meshBuilder;
 
+	// map creation
 	MapDefinition* definition = MapDefinition::s_definitions["Grass"];
 	m_map = new Map(definition, "TestMap", m_renderScene2D);
 	
@@ -46,32 +47,30 @@ void PlayingState::Initialize()
 	{
 		animSet = new IsoSpriteAnimSet(spriteDefIterator->second);
 	}
-
-	//setup agent
 	IntVector2 dimensions = m_map->GetDimensions();
 
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
-	Vector2 randomStartingLocation = mapBounds.GetRandomPointInBounds();
-	Agent* agent = new Agent(Vector2::ZERO, animSet, m_map);
+	Vector2 randomStartingLocation = m_map->GetRandomNonBlockedPositionInMapBounds();
+	Agent* agent = new Agent(randomStartingLocation, animSet, m_map);
 	m_agents.push_back(agent);
 
 	//add random point of interest
-	randomStartingLocation = Vector2(m_map->m_dimensions.x - 2.f, m_map->m_dimensions.y - 2.f);
+	//randomStartingLocation = Vector2(m_map->m_dimensions.x - 2.f, m_map->m_dimensions.y - 2.f);
 	//randomStartingLocation = mapBounds.GetRandomPointInBounds();
-	PointOfInterest* testLocation = new PointOfInterest(randomStartingLocation * Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow, Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow);
+	PointOfInterest* testLocation = new PointOfInterest(m_map->GetRandomNonBlockedPositionInMapBounds(), g_tileSize);
 	m_pointOfInterests.push_back(testLocation);
 	
-	////test for A*
+	//test for A*
 	Grid<int>* mapGrid = m_map->GetAsGrid();
 	std::vector<IntVector2> searchPath;
-	IntVector2 startPos = IntVector2::ONE;
-	IntVector2 endPos = IntVector2((int)testLocation->m_position.x, (int)testLocation->m_position.y);
+	IntVector2 startPos = m_map->GetTileCoordinateOfPosition(agent->m_position);
+	IntVector2 endPos = IntVector2(m_map->GetTileCoordinateOfPosition(testLocation->m_position));
 	bool isDestinationFound = false;
 
 	isDestinationFound = AStarSearch(searchPath, *mapGrid, startPos, endPos);
 
-	//readjust camera center
-	Vector2 mapCenter = -1.f * m_map->m_mapBounds.GetCenter();
+	//re-adjust camera center
+	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
 	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));
 
 	m_agents[0]->m_currentPath = searchPath;
@@ -103,6 +102,11 @@ void PlayingState::Render()
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	Game::GetInstance()->m_forwardRenderingPath2D->Render(m_renderScene2D);
+
+	for (int tileIndex = 0; tileIndex < (int)m_map->m_tiles.size(); ++tileIndex)
+	{
+		m_map->m_tiles[tileIndex]->Render();
+	}
 
 	for (int pointOfInterestIndex = 0; pointOfInterestIndex < (int)m_pointOfInterests.size(); ++pointOfInterestIndex)
 	{

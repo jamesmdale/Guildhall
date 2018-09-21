@@ -20,12 +20,13 @@ public:
 	void Render();
 
 	void UpdateSpriteRenderDirection();
+	void DetectAgentToTileCollision(Agent, Vector2 entityCenter, IntVector2 tileCoordinate, int tileDirection);
 
 public:
 	Vector2 m_position;
 	Vector2 m_forward;
 	Vector2 m_goalLocation;
-	float m_movespeed = 5.f;
+	float m_movespeed = 50.f;
 
 	IntVector2 m_spriteDirection;
 	IsoSpriteAnimSet* m_animationSet = nullptr;		

@@ -7,7 +7,6 @@
 #include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Map\Tile.hpp"
 
-
 class Map
 {
 public:
@@ -41,27 +40,23 @@ public:
 	void UpdatePlayerInput();
 	int GetActorIndex();
 
-	IntVector2 GetTileCoordinateOfPosition(Vector2 position);
+	//Conversion functions for Tile Coordinates to World Coordinates
+	IntVector2 GetTileCoordinateOfPosition(const Vector2& position);
+	Vector2 GetWorldPositionOfMapCoordinate(const IntVector2& position);
 
-	Vector2 GetWorldPositionOfMapCoordinate(Vector2 position);
-
-
+	Vector2 GetRandomNonBlockedPositionInMapBounds();
 
 	Grid<int>* GetAsGrid();
 
-
-
-	//void GenerateMap(const std::string& definitionName, const std::string& mapName);
 
 public:
 	std::string m_name;
 	IntVector2 m_dimensions;
 	MapDefinition* m_mapDefinition = nullptr;
 	std::vector<Tile*> m_tiles;
+	AABB2 m_mapWorldBounds;
 
-	AABB2 m_mapBounds;
-
-	RenderScene2D* m_renderScene = nullptr;
+	//RenderScene2D* m_renderScene = nullptr;
 private:
 	bool m_isFullMapView = false;
 };

@@ -6,6 +6,7 @@
 const Vector2 Vector2::ZERO = Vector2(0.f, 0.f);
 const Vector2 Vector2::ZEROTOONE = Vector2(0.f, 1.f);
 const Vector2 Vector2::ONE = Vector2(1.f, 1.f);
+const Vector2 Vector2::NEGATIVE_ONE = Vector2(-1.f, -1.f);
 
 const Vector2 Vector2::DOWN = Vector2(0.f, -1.f);
 const Vector2 Vector2::UP = Vector2(0.f, 1.f);;

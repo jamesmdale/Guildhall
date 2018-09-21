@@ -46,8 +46,11 @@ void GetPath(std::vector<IntVector2>& outIndicies, Grid<SearchCell>& cellList, c
 	int currentRow = destinationPosition.x;
 	int currentColumn = destinationPosition.y;
 
+	int tempX = cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateX;
+	int tempY = cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateY;
+
 	//only while we are not the same row and not the same column
-	while (cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateX != startPosition.x && cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateY != startPosition.y)
+	while (tempX != startPosition.x || tempY != startPosition.y)
 	{
 		outIndicies.push_back(IntVector2(currentRow, currentColumn));
 		int tempRow = cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateX;
@@ -55,6 +58,9 @@ void GetPath(std::vector<IntVector2>& outIndicies, Grid<SearchCell>& cellList, c
 	
 		currentRow = tempRow;
 		currentColumn = tempColumn;
+
+		tempX = cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateX;
+		tempY = cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateY;
 	}
 
 	//complete

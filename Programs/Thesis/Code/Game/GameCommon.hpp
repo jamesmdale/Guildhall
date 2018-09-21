@@ -19,6 +19,9 @@ const float g_tilePercentageOfWindow = 0.025f;
 extern bool g_isDebug;
 extern bool g_isQuitting;
 
+extern float g_tileSize;
+extern float g_divideTileSize;
+
 //convenience directions
 extern IntVector2 MAP_NORTH;
 extern IntVector2 MAP_SOUTH;
