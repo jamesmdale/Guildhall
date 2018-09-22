@@ -17,5 +17,14 @@
   spriteSheetName="Terrain_8x8.png"
   spriteSheetDimensions="8,8"
   />
+
+  <TileDefinition
+  name="Portal"
+  baseSpriteCoords="1,7"
+  baseSpriteTint="255,255,255"
+  allowsWalking="true"
+  spriteSheetName="Terrain_8x8.png"
+  spriteSheetDimensions="8,8"
+  />
   
 </TileDefinitions>

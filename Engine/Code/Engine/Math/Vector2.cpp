@@ -213,6 +213,12 @@ float Vector2::Dot(const Vector2& dotVector)
 	return DotProduct(*this, dotVector);
 }
 
+void Vector2::Floor()
+{
+	x = floorf(x);
+	y = floorf(y);
+}
+
 float GetDistance(const Vector2& a, const Vector2& b)
 {
 	float dx = a.x - b.x;

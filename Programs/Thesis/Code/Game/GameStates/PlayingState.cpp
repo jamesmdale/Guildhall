@@ -57,7 +57,10 @@ void PlayingState::Initialize()
 	//add random point of interest
 	//randomStartingLocation = Vector2(m_map->m_dimensions.x - 2.f, m_map->m_dimensions.y - 2.f);
 	//randomStartingLocation = mapBounds.GetRandomPointInBounds();
-	PointOfInterest* testLocation = new PointOfInterest(m_map->GetRandomNonBlockedPositionInMapBounds(), g_tileSize);
+	Vector2 randomPOILocation = m_map->GetRandomNonBlockedPositionInMapBounds();
+	randomPOILocation.Floor();
+
+	PointOfInterest* testLocation = new PointOfInterest(Vector2(randomPOILocation.x + 0.5f, randomPOILocation.y + 0.5f), g_tileSize);
 	m_pointOfInterests.push_back(testLocation);
 	
 	//test for A*
@@ -67,6 +70,7 @@ void PlayingState::Initialize()
 	IntVector2 endPos = IntVector2(m_map->GetTileCoordinateOfPosition(testLocation->m_position));
 	bool isDestinationFound = false;
 
+	//add the location
 	isDestinationFound = AStarSearch(searchPath, *mapGrid, startPos, endPos);
 
 	//re-adjust camera center

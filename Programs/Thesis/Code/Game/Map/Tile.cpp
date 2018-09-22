@@ -72,6 +72,8 @@ void Tile::Render()
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	theRenderer->DrawTexturedAABB(GetWorldSpaceBounds(), *theRenderer->CreateOrGetTexture("Data/Images/Terrain_8x8.png"), m_tileDefinition->m_baseSpriteUVCoords.mins, m_tileDefinition->m_baseSpriteUVCoords.maxs, m_tint);
+	
+	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("default"));
 
 	theRenderer = nullptr;
 }

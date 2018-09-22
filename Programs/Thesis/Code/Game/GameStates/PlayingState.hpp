@@ -36,4 +36,3 @@ public:
 	std::vector<Agent*> m_agents;
 	std::vector<PointOfInterest*> m_pointOfInterests;
 };
-

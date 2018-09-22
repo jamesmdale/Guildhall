@@ -38,6 +38,7 @@ public:
 	static Vector2 MakeDirectionAtDegrees(float degrees);
 	void SetFromText(const char* text);
 	float Dot(const Vector2& dotVector);
+	void Floor();
 
 public: // NOTE: this is one of the few cases where we break both the "m_" naming rule AND the avoid-public-members rule
 	float x;

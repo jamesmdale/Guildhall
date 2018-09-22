@@ -52,7 +52,7 @@ void GetPath(std::vector<IntVector2>& outIndicies, Grid<SearchCell>& cellList, c
 	//only while we are not the same row and not the same column
 	while (tempX != startPosition.x || tempY != startPosition.y)
 	{
-		outIndicies.push_back(IntVector2(currentRow, currentColumn));
+		outIndicies.push_back(IntVector2((float)currentRow, (float)currentColumn));
 		int tempRow = cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateX;
 		int tempColumn = cellList.GetValueAtCoordinate(currentRow, currentColumn).parentCoordinateY;
 	
