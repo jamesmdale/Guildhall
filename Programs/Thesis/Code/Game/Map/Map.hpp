@@ -44,9 +44,12 @@ public:
 	IntVector2 GetTileCoordinateOfPosition(const Vector2& position);
 	Vector2 GetWorldPositionOfMapCoordinate(const IntVector2& position);
 
+	//helpers
 	Vector2 GetRandomNonBlockedPositionInMapBounds();
-
+	IntVector2 GetRandomNonBlockedCoordinateInMapBounds();
 	Grid<int>* GetAsGrid();
+	bool IsTileBlockingAtCoordinate(const IntVector2& coordinate);
+	Tile * GetTileAtCoordinate(const IntVector2 & coordinate);
 
 
 public:

@@ -55,8 +55,6 @@ void PlayingState::Initialize()
 	m_agents.push_back(agent);
 
 	//add random point of interest
-	//randomStartingLocation = Vector2(m_map->m_dimensions.x - 2.f, m_map->m_dimensions.y - 2.f);
-	//randomStartingLocation = mapBounds.GetRandomPointInBounds();
 	Vector2 randomPOILocation = m_map->GetRandomNonBlockedPositionInMapBounds();
 	randomPOILocation.Floor();
 

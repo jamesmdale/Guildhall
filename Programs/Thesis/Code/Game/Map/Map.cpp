@@ -98,6 +98,19 @@ Grid<int>* Map::GetAsGrid()
 }
 
 //  =========================================================================================
+bool Map::IsTileBlockingAtCoordinate(const IntVector2 & coordinate)
+{
+	bool isBlocking = GetTileAtCoordinate(coordinate)->m_tileDefinition->m_allowsWalking;
+	return isBlocking;	
+}
+
+//  =========================================================================================
+Tile* Map::GetTileAtCoordinate(const IntVector2& coordinate)
+{
+	return m_tiles[coordinate.x + (coordinate.y * m_dimensions.x)];
+}
+
+//  =========================================================================================
 IntVector2 Map::GetTileCoordinateOfPosition(const Vector2& position)
 {
 	float clientWidth = Window::GetInstance()->GetClientWidth();
@@ -107,12 +120,14 @@ IntVector2 Map::GetTileCoordinateOfPosition(const Vector2& position)
 	return tileCoordinate;
 }
 
+//  =========================================================================================
 Vector2 Map::GetWorldPositionOfMapCoordinate(const IntVector2& position)
 {
 	Vector2 worldPosition = m_tiles[position.x + (position.y * m_dimensions.x)]->GetWorldSpaceCoordinates();
 	return worldPosition;
 }
 
+//  =========================================================================================
 Vector2 Map::GetRandomNonBlockedPositionInMapBounds()
 {
 	bool isNonBlocked = false;
@@ -127,6 +142,21 @@ Vector2 Map::GetRandomNonBlockedPositionInMapBounds()
 		{
 			isNonBlocked = true;
 		}
+	}
+
+	return randomPoint;
+}
+
+//  =========================================================================================
+IntVector2 Map::GetRandomNonBlockedCoordinateInMapBounds()
+{
+	bool isNonBlocked = false;
+	IntVector2 randomPoint;
+
+	while (isNonBlocked == false)
+	{
+		randomPoint = IntVector2(GetRandomIntInRange(0, m_dimensions.x), GetRandomIntInRange(0, m_dimensions.y));
+		isNonBlocked = IsTileBlockingAtCoordinate(randomPoint);
 	}
 
 	return randomPoint;
