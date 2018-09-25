@@ -1,7 +1,7 @@
 <MapDefinitions>
-	<MapDefinition name="Grass" defaultTile="Portal" width="16~16" height="9~9">
+	<MapDefinition name="Grass" defaultTile="Grass" width="16~16" height="9~9">
 		<GenerationSteps iterations="1" chanceToRun="1.0">
-			<FillAndEdge fillTile="Portal" edgeTile="Wall"></FillAndEdge>
+			<FillAndEdge fillTile="Grass" edgeTile="Wall"></FillAndEdge>
     </GenerationSteps>
 	</MapDefinition>
 </MapDefinitions>

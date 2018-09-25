@@ -32,3 +32,8 @@ extern IntVector2 UI_UP;
 extern IntVector2 UI_DOWN;
 extern IntVector2 UI_RIGHT;
 extern IntVector2 UI_LEFT;
+
+//tints
+extern Rgba ARMORY_TINT;
+extern Rgba LUMBER_TINT;
+extern Rgba MED_TINT;

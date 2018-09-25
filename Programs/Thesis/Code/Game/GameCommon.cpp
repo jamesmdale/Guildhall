@@ -13,11 +13,16 @@ float g_divideTileSize = 1.f;
 //XY
 IntVector2 MAP_NORTH = IntVector2(0, 1);
 IntVector2 MAP_SOUTH = IntVector2(0, -1);
-IntVector2 MAP_EAST = IntVector2(-1, 0);
-IntVector2 MAP_WEST = IntVector2(1, 0);
+IntVector2 MAP_EAST = IntVector2(1, 0);
+IntVector2 MAP_WEST = IntVector2(-1, 0);
 
 IntVector2 UI_UP = IntVector2(0, 1);
 IntVector2 UI_DOWN = IntVector2(0, -1);
 IntVector2 UI_RIGHT = IntVector2(-1, 0);
 IntVector2 UI_LEFT = IntVector2(1, 0);
+
+//TINT
+Rgba ARMORY_TINT = Rgba(1.f, 0.f, 0.f, 0.3f);
+Rgba LUMBER_TINT = Rgba(0.f, 1.f, 0.f, 0.3f);
+Rgba MED_TINT = Rgba(0.f, 0.f, 1.f, 0.3f);
 

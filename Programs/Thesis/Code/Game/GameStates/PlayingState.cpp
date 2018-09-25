@@ -56,6 +56,7 @@ void PlayingState::Initialize()
 
 	//add random point of interest
 	PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
+	poiLocation->m_mapReference = m_map;
 
 	m_pointOfInterests.push_back(poiLocation);
 	

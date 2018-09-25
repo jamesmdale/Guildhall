@@ -33,4 +33,3 @@ public:
 	//for now all poi are 2x2 blocks with an access point randomly touching one
 
 };
-
