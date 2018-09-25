@@ -25,5 +25,5 @@ public:
 	bool m_allowsWalking = false;
 
 	//static variables
-	static std::map< std::string, TileDefinition* >	s_definitions;
+	static std::map< std::string, TileDefinition* >	s_tileDefinitions;
 };

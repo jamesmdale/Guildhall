@@ -6,6 +6,7 @@
 #include "Engine\Utility\Grid.hpp"
 #include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Map\Tile.hpp"
+#include "Game\PointOfInterest.hpp"
 
 class Map
 {
@@ -45,11 +46,15 @@ public:
 	Vector2 GetWorldPositionOfMapCoordinate(const IntVector2& position);
 
 	//helpers
+	bool CheckIsPositionValid(const Vector2& position);
+	bool CheckIsCoordianteValid(const IntVector2& coordinate);
 	Vector2 GetRandomNonBlockedPositionInMapBounds();
 	IntVector2 GetRandomNonBlockedCoordinateInMapBounds();
 	Grid<int>* GetAsGrid();
 	bool IsTileBlockingAtCoordinate(const IntVector2& coordinate);
 	Tile * GetTileAtCoordinate(const IntVector2 & coordinate);
+
+	PointOfInterest* GeneratePointOfInterest(ePointOfInterestType poiType);
 
 
 public:

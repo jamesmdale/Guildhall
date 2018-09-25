@@ -7,13 +7,13 @@ MapGenStep_CellularAutomata::MapGenStep_CellularAutomata( const tinyxml2::XMLEle
 {
 	m_name = generationStepElement.Name();
 	std::string ifTileType = ParseXmlAttribute(generationStepElement, "ifType", std::string("default"));
-	m_ifType = TileDefinition::s_definitions[ifTileType];
+	m_ifType = TileDefinition::s_tileDefinitions[ifTileType];
 
 	std::string changeToType = ParseXmlAttribute(generationStepElement, "changeToType", std::string("default"));
-	m_changeToType = TileDefinition::s_definitions[changeToType];
+	m_changeToType = TileDefinition::s_tileDefinitions[changeToType];
 
 	std::string ifNeighborType = ParseXmlAttribute(generationStepElement, "ifNeighborType", std::string("default"));
-	m_ifNeighborType = TileDefinition::s_definitions[ifNeighborType];
+	m_ifNeighborType = TileDefinition::s_tileDefinitions[ifNeighborType];
 
 	m_chanceToMutate = ParseXmlAttribute(generationStepElement, "chanceToMutate", m_chanceToMutate);
 

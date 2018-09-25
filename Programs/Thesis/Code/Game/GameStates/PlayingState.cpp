@@ -55,17 +55,15 @@ void PlayingState::Initialize()
 	m_agents.push_back(agent);
 
 	//add random point of interest
-	Vector2 randomPOILocation = m_map->GetRandomNonBlockedPositionInMapBounds();
-	randomPOILocation.Floor();
+	PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
 
-	PointOfInterest* testLocation = new PointOfInterest(Vector2(randomPOILocation.x + 0.5f, randomPOILocation.y + 0.5f), g_tileSize);
-	m_pointOfInterests.push_back(testLocation);
+	m_pointOfInterests.push_back(poiLocation);
 	
 	//test for A*
 	Grid<int>* mapGrid = m_map->GetAsGrid();
 	std::vector<IntVector2> searchPath;
 	IntVector2 startPos = m_map->GetTileCoordinateOfPosition(agent->m_position);
-	IntVector2 endPos = IntVector2(m_map->GetTileCoordinateOfPosition(testLocation->m_position));
+	IntVector2 endPos = poiLocation->m_accessCoordinate;
 	bool isDestinationFound = false;
 
 	//add the location

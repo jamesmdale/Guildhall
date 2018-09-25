@@ -57,7 +57,7 @@ void MapGenStep_FromFile::Run( Map& map )
 			color.a = (unsigned char)255;
 			if(color == Rgba::GREEN)
 			{
-				changeTileDef = TileDefinition::s_definitions["Grass"];
+				changeTileDef = TileDefinition::s_tileDefinitions["Grass"];
 			}
 
 			if(changeTileDef != nullptr)

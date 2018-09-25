@@ -1,15 +1,17 @@
 #include "Game\PointOfInterest.hpp"
+#include "Game\GameCommon.hpp"
+#include "Game\Map\Map.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Core\EngineCommon.hpp"
-#include "Game\GameCommon.hpp"
 
-PointOfInterest::PointOfInterest(const Vector2 & position, float radius)
+
+
+PointOfInterest::PointOfInterest(ePointOfInterestType poiType, const IntVector2& startingCoordinate, const IntVector2& accessCoordinate)
 {
-	m_position = position;
-
-	m_boundsDisc.center = position;
-	m_boundsDisc.radius = radius;
+	m_type = poiType;
+	m_startingCoordinate = startingCoordinate;
+	m_accessCoordinate = accessCoordinate;
 }
 
 PointOfInterest::~PointOfInterest()
@@ -25,9 +27,25 @@ void PointOfInterest::Render()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
 
-	float length = m_boundsDisc.radius * 0.25f;
-	AABB2 textureBounds = AABB2(m_position, length, length);
-	theRenderer->DrawTexturedAABB( textureBounds, *theRenderer->m_defaultTexture, Vector2::ZERO, Vector2::ONE, Rgba::RED);
+	Rgba tint = Rgba::WHITE;
+	switch (m_type)
+	{
+	case ARMORY_POI_TYPE:
+		tint = Rgba(1.f, 0.f, 0.f, 0.5f);
+		break;
+	case LUMBERYARD_POI_TYPE:
+		tint = Rgba(0.f, 1.f, 0.f, 0.5f);
+		break;
+	case MED_STATION_POI_TYPE:
+		tint = Rgba(0.f, 0.f, 1.f, 0.5f);
+		break;
+	}
+
+	AABB2 bounds;
+	bounds.mins = m_mapReference->GetWorldPositionOfMapCoordinate(m_startingCoordinate);
+	bounds.maxs = m_mapReference->GetWorldPositionOfMapCoordinate(m_startingCoordinate + IntVector2::ONE);
+
+	theRenderer->DrawAABB(bounds, tint);
 
 	theRenderer = nullptr;	
 }

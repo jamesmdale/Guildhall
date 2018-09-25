@@ -26,5 +26,23 @@
   spriteSheetName="Terrain_8x8.png"
   spriteSheetDimensions="8,8"
   />
+
+  <TileDefinition
+  name="Building"
+  baseSpriteCoords="2,6"
+  baseSpriteTint="255,255,255"
+  allowsWalking="false"
+  spriteSheetName="Terrain_8x8.png"
+  spriteSheetDimensions="8,8"
+    />
+
+  <TileDefinition
+  name="BuildingAccess"
+  baseSpriteCoords="7,2"
+  baseSpriteTint="255,255,255"
+  allowsWalking="true"
+  spriteSheetName="Terrain_8x8.png"
+  spriteSheetDimensions="8,8"
+    />
   
 </TileDefinitions>

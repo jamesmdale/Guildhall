@@ -5,7 +5,7 @@
 #include "Game\GameCommon.hpp"
 #include "Game\Definitions\TileDefinition.hpp"
 
-std::map< std::string, TileDefinition* > TileDefinition:: s_definitions;
+std::map< std::string, TileDefinition* > TileDefinition:: s_tileDefinitions;
 
 TileDefinition::TileDefinition( const tinyxml2::XMLElement& element )
 {	
@@ -41,7 +41,7 @@ void TileDefinition::Initialize(const std::string& filePath)
 	{
 		TileDefinition* newDef = new TileDefinition(*definitionNode);		
 
-		s_definitions.insert(std::pair<std::string, TileDefinition*>(std::string(newDef->m_name), newDef));
+		s_tileDefinitions.insert(std::pair<std::string, TileDefinition*>(std::string(newDef->m_name), newDef));
 	}	
 
 	//debugger notification

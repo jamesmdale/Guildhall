@@ -7,11 +7,11 @@ MapGenStep_FillAndEdge::MapGenStep_FillAndEdge( const tinyxml2::XMLElement& gene
 	m_name = generationStepElement.Name();
 	std::string defaultFillTileName = "Not Water";
 	std::string fillTileNameParsedString = ParseXmlAttribute(generationStepElement, "fillTile", defaultFillTileName);
-	m_fillTileDef = TileDefinition::s_definitions[fillTileNameParsedString];
+	m_fillTileDef = TileDefinition::s_tileDefinitions[fillTileNameParsedString];
 
 	std::string defaultEdgeTileName = "Not Water";
 	std::string edgeTileNameParsedString = ParseXmlAttribute(generationStepElement, "edgeTile", defaultEdgeTileName);
-	m_edgeTileDef = TileDefinition::s_definitions[edgeTileNameParsedString];
+	m_edgeTileDef = TileDefinition::s_tileDefinitions[edgeTileNameParsedString];
 
 	m_edgeThickness = ParseXmlAttribute( generationStepElement, "edgeThickness", m_edgeThickness );
 }

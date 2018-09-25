@@ -10,7 +10,7 @@ MapGenStep_Mutate::MapGenStep_Mutate( const tinyxml2::XMLElement& generationStep
 
 	std::string defaultMutateTile = "Grass";
 	std::string mutateTileNameParsedString = ParseXmlAttribute(generationStepElement, "mutateTile", defaultMutateTile);
-	m_mutateTileDef = TileDefinition::s_definitions[mutateTileNameParsedString];
+	m_mutateTileDef = TileDefinition::s_tileDefinitions[mutateTileNameParsedString];
 }
 
 void MapGenStep_Mutate::Run( Map& map )

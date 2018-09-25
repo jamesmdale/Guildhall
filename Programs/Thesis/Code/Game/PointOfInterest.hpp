@@ -1,11 +1,21 @@
 #pragma once
-#include "Engine\Math\Vector2.hpp"
-#include "Engine\Math\Disc2.hpp"
+#include "Engine\Math\IntVector2.hpp"
+
+//forward declarations
+class Map;
+
+enum ePointOfInterestType
+{
+	ARMORY_POI_TYPE,
+	LUMBERYARD_POI_TYPE,
+	MED_STATION_POI_TYPE,
+	NUM_POI_TYPES
+};
 
 class PointOfInterest
 {
 public:
-	PointOfInterest(const Vector2& position, float radius);
+	PointOfInterest(ePointOfInterestType poiType, const IntVector2& startingCoordinate, const IntVector2& accessCoordinate);
 	~PointOfInterest();
 
 	void Update();
@@ -14,7 +24,13 @@ public:
 	//later add types and stuff
 
 public:
-	Vector2 m_position;
-	Disc2 m_boundsDisc;
+	IntVector2 m_startingCoordinate;
+	IntVector2 m_accessCoordinate;
+	ePointOfInterestType m_type;
+
+	Map* m_mapReference = nullptr;
+
+	//for now all poi are 2x2 blocks with an access point randomly touching one
+
 };
 

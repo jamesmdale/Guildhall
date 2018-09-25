@@ -13,7 +13,7 @@ MapDefinition::MapDefinition( const tinyxml2::XMLElement& element )
 	std::string defaultTileName = "default";
 	std::string tileNameParsedString = ParseXmlAttribute(element, "defaultTile", defaultTileName);
 	GUARANTEE_OR_DIE(tileNameParsedString != "default", "No default tile set or incorrect matching name from known tile definitions");
-	m_defaultTile = TileDefinition::s_definitions[tileNameParsedString];
+	m_defaultTile = TileDefinition::s_tileDefinitions[tileNameParsedString];
 
 	const tinyxml2::XMLElement* pRoot = element.FirstChildElement();
 	m_iterations = ParseXmlAttribute(*pRoot, "iterations", m_iterations);
