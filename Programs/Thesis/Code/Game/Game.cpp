@@ -69,6 +69,7 @@ void Game::Initialize()
 	//set game common values after window has been started up
 	g_tileSize = Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow;
 	g_divideTileSize = 1 / (Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow);
+	g_halfTileSize = g_tileSize * 0.5f;
 
 	theRenderer->SetAmbientLightIntensity(0.15f);
 

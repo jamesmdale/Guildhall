@@ -21,6 +21,7 @@ extern bool g_isQuitting;
 
 extern float g_tileSize;
 extern float g_divideTileSize;
+extern float g_halfTileSize;
 
 //convenience directions
 extern IntVector2 MAP_NORTH;

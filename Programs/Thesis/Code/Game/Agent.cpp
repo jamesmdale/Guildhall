@@ -35,19 +35,25 @@ void Agent::Update(float deltaSeconds)
 	//if we have a path, follow it.
 	if (m_currentPath.size() > 0)
 	{
-		if (m_currentMap->GetTileCoordinateOfPosition(m_position) != (m_currentPath.at(m_currentPath.size() - 1)))
+		if (m_currentMap->GetTileCoordinateOfPosition(m_position) != m_currentMap->GetTileCoordinateOfPosition(m_currentPath.at(m_currentPath.size() - 1)))
 		{
-			m_goalLocation = m_currentMap->GetWorldPositionOfMapCoordinate(m_currentPath.at(m_currentPath.size() - 1));
+			m_goalLocation = m_currentPath.at(m_currentPath.size() - 1);
 
 			m_forward = m_goalLocation - m_position;
 			m_forward.NormalizeAndGetLength();
 		}
 		else
 		{
+			//if we are down to our final destination and we are in the same tile, just snap to the location in that tile
+			if (m_currentPath.size() == 1)
+			{
+				m_position = m_currentPath.at(m_currentPath.size() - 1);
+			}
+
 			m_currentPath.erase(m_currentPath.end() - 1);
 
 			if(m_currentPath.size() != 0)
-				m_goalLocation = m_currentMap->GetWorldPositionOfMapCoordinate(m_currentPath.at(m_currentPath.size() - 1));
+				m_goalLocation = m_currentPath.at(m_currentPath.size() - 1);
 
 			m_forward = m_goalLocation - m_position;
 			m_forward.NormalizeAndGetLength();
@@ -55,8 +61,6 @@ void Agent::Update(float deltaSeconds)
 
 		m_position += (m_forward * (m_movespeed * deltaSeconds));
 	}	
-	else
-		m_goalLocation = m_position;
 
 	m_transform.SetLocalPosition(m_position);
 	UpdateSpriteRenderDirection();

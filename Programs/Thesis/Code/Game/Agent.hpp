@@ -33,7 +33,7 @@ public:
 
 	Transform2D m_transform;
 
-	std::vector<IntVector2> m_currentPath;
+	std::vector<Vector2> m_currentPath;
 
 	//helper references
 	Map* m_currentMap = nullptr;

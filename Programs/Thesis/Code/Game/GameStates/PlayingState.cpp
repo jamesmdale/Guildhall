@@ -62,13 +62,16 @@ void PlayingState::Initialize()
 	
 	//test for A*
 	Grid<int>* mapGrid = m_map->GetAsGrid();
-	std::vector<IntVector2> searchPath;
-	IntVector2 startPos = m_map->GetTileCoordinateOfPosition(agent->m_position);
-	IntVector2 endPos = poiLocation->m_accessCoordinate;
+	std::vector<Vector2> searchPath;
+	IntVector2 startCoord = m_map->GetTileCoordinateOfPosition(agent->m_position);
+	IntVector2 endCoord = poiLocation->m_accessCoordinate;
 	bool isDestinationFound = false;
 
+	Vector2 endPosition = m_map->GetWorldPositionOfMapCoordinate(endCoord);
+	searchPath.push_back(Vector2(endPosition.x + g_halfTileSize, endPosition.y + g_halfTileSize));
+
 	//add the location
-	isDestinationFound = AStarSearch(searchPath, *mapGrid, startPos, endPos);
+	isDestinationFound = AStarSearch(searchPath, *mapGrid, startCoord, endCoord, m_map);	
 
 	//re-adjust camera center
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();

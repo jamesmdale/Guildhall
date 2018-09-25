@@ -221,10 +221,6 @@ void RunFrame()
 	Render();			// #SD1ToDo: ...becomes with g_theApp->Render();
 }
 
-
-//-----------------------------------------------------------------------------------------------
-
-
 //-----------------------------------------------------------------------------------------------
 void Shutdown()
 {
@@ -232,7 +228,6 @@ void Shutdown()
 	delete g_TheApp;			// #SD1ToDo: make sure you delete and null out the App when done
 	g_TheApp = nullptr;
 }
-
 
 //-----------------------------------------------------------------------------------------------
 int WINAPI WinMain( HINSTANCE applicationInstanceHandle, HINSTANCE, LPSTR commandLineString, int )
