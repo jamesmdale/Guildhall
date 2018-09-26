@@ -37,8 +37,14 @@ void PlayingState::Initialize()
 
 	// map creation
 	MapDefinition* definition = MapDefinition::s_definitions["Grass"];
-	m_map = new Map(definition, "TestMap", m_renderScene2D);
+	m_map = new Map(definition, "TestMap", m_renderScene2D);	
 	
+	//add random point of interest
+	PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
+	poiLocation->m_mapReference = m_map;
+
+	m_map->m_pointsOfInterest.push_back(poiLocation);
+
 	//test agent
 	IsoSpriteAnimSet* animSet = nullptr;
 	std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
@@ -53,30 +59,18 @@ void PlayingState::Initialize()
 	Agent* agent = new Agent(randomStartingLocation, animSet, m_map);
 	m_map->m_agents.push_back(agent);
 
-	//add random point of interest
-	PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
-	poiLocation->m_mapReference = m_map;
-
-	m_map->m_pointOfInterests.push_back(poiLocation);
-	
-	//test for A*
-	/*Grid<int>* mapGrid = m_map->GetAsGrid();
-	std::vector<Vector2> searchPath;
-	IntVector2 startCoord = m_map->GetTileCoordinateOfPosition(agent->m_position);
-	IntVector2 endCoord = poiLocation->m_accessCoordinate;
-	bool isDestinationFound = false;
-
-	Vector2 endPosition = m_map->GetWorldPositionOfMapCoordinate(endCoord);
-	searchPath.push_back(Vector2(endPosition.x + g_halfTileSize, endPosition.y + g_halfTileSize));
-*/
-	//add the location
-	//isDestinationFound = AStarSearch(searchPath, *mapGrid, startCoord, endCoord, m_map);	
-
-	//m_map->m_agents[0]->m_currentPath = searchPath;
-
 	//re-adjust camera center
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
 	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));
+
+	Vector2 accessPosition = m_map->GetWorldPositionOfMapCoordinate(m_map->m_pointsOfInterest[0]->m_accessCoordinate);
+
+	//test action for agent
+	ActionData* data = new ActionData();
+	data->m_action = ShootAction;
+	data->m_finalGoalDestination = accessPosition;
+
+	m_map->m_agents[0]->AddActionToStack(data);
 
 	//cleanup
 	definition = nullptr;

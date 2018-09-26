@@ -40,7 +40,7 @@ Agent::~Agent()
 //  =========================================================================================
 void Agent::Update(float deltaSeconds)
 {
-	ProcessActionQueue(deltaSeconds);
+	ProcessActionStack(deltaSeconds);
 
 	UpdateSpriteRenderDirection();
 	m_animationSet->Update(deltaSeconds);
@@ -100,35 +100,35 @@ bool Agent::GetIsAtPosition(const Vector2 & goalDestination)
 }
 
 //  =========================================================================================
-void Agent::ProcessActionQueue(float deltaSeconds)
+void Agent::ProcessActionStack(float deltaSeconds)
 {
 	//get action at the top of the queue
-	if (m_actionQueue.size() > 0)
+	if (m_actionStack.size() > 0)
 	{
-		ActionData* goal = m_actionQueue.front();
+		ActionData* goal = m_actionStack.top();
 
 		//run action
 		bool isComplete = goal->m_action(this, goal->m_finalGoalDestination);
 
 		if (isComplete)
 		{
-			m_actionQueue.pop();
+			m_actionStack.pop();
 		}			
 	}	
 }
 
 //  =========================================================================================
-void Agent::EnqueueAction(ActionData* goalData)
+void Agent::AddActionToStack(ActionData* actionData)
 {
-	m_actionQueue.push(goalData);
+	m_actionStack.push(actionData);
 }
 
 //  =========================================================================================
-void Agent::ClearQueue()
+void Agent::ClearStack()
 {
-	while (m_actionQueue.size() > 0)
+	while (m_actionStack.size() > 0)
 	{
-		m_actionQueue.pop();
+		m_actionStack.pop();
 	}
 }
 
@@ -211,7 +211,7 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination)
 		agent->m_forward = agent->m_intermediateGoalPosition - agent->m_position;
 		agent->m_forward.NormalizeAndGetLength();
 
-		agent->m_position += (agent->m_forward * (agent->m_movespeed * g_gameClock->GetDeltaSeconds()));
+		agent->m_position += (agent->m_forward * (agent->m_movespeed * GetMasterDeltaSeconds()));
 	}
 	else
 	{
@@ -232,7 +232,7 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination)
 			agent->m_forward = agent->m_intermediateGoalPosition - agent->m_position;
 			agent->m_forward.NormalizeAndGetLength();
 
-			agent->m_position += (agent->m_forward * (agent->m_movespeed * g_gameClock->GetDeltaSeconds()));
+			agent->m_position += (agent->m_forward * (agent->m_movespeed * GetMasterDeltaSeconds()));
 		}
 	}
 
@@ -245,15 +245,15 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination)
 //  =========================================================================================
 bool ShootAction(Agent* agent, const Vector2& goalDestination)
 {
-	/*if (!GetIsAtPosition(goalDestination))
+	if (!agent->GetIsAtPosition(goalDestination))
 	{
 		ActionData* data = new ActionData();
 		data->m_action = MoveAction;
 		data->m_finalGoalDestination = goalDestination;
 
-		EnqueueAction(data);
+		agent->AddActionToStack(data);
 		return false;
-	}*/
+	}
 
 	//if we are at our destination, we are ready to shoot	
 	return false;

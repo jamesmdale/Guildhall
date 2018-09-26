@@ -75,9 +75,9 @@ void Map::Render()
 		m_tiles[tileIndex]->Render();
 	}
 
-	for (int pointOfInterestIndex = 0; pointOfInterestIndex < (int)m_pointOfInterests.size(); ++pointOfInterestIndex)
+	for (int pointOfInterestIndex = 0; pointOfInterestIndex < (int)m_pointsOfInterest.size(); ++pointOfInterestIndex)
 	{
-		m_pointOfInterests[pointOfInterestIndex]->Render();
+		m_pointsOfInterest[pointOfInterestIndex]->Render();
 	}
 
 	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)

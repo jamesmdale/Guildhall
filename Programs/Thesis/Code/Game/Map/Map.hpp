@@ -69,7 +69,7 @@ public:
 	AABB2 m_mapWorldBounds;
 
 	std::vector<Agent*> m_agents;
-	std::vector<PointOfInterest*> m_pointOfInterests;
+	std::vector<PointOfInterest*> m_pointsOfInterest;
 
 	//RenderScene2D* m_renderScene = nullptr;
 private:

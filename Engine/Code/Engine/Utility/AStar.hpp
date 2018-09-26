@@ -76,8 +76,8 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 	ASSERT_OR_DIE(grid.IsCellValid(startPosition) && grid.IsCellValid(destinationPosition), "Search cells out of range");
 	ASSERT_OR_DIE(grid.GetValueAtCoordinate(startPosition) == 0 && grid.GetValueAtCoordinate(destinationPosition) == 0, "Search cell is blocked (inaccessible)");
 
-	if(startPosition == destinationPosition)
-		return true;	
+	if (startPosition == destinationPosition)
+		return true;
 
 	//as we loop over the grid, we need to mark cells as searched
 	bool defaultCheckVal = false;

@@ -4,7 +4,7 @@
 #include "Engine\Math\Vector2.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\Transform2D.hpp"
-#include <queue>
+#include <stack>
 
 //forward declarations
 class Map;
@@ -41,9 +41,9 @@ public:
 	bool GetIsAtPosition(const Vector2& goalDestination);
 
 	//queue management
-	void ProcessActionQueue(float deltaSeconds);
-	void EnqueueAction(ActionData* goalData);
-	void ClearQueue();
+	void ProcessActionStack(float deltaSeconds);
+	void AddActionToStack(ActionData* actionData);
+	void ClearStack();
 
 public:
 
@@ -83,13 +83,13 @@ public:
 	Map* m_currentMap = nullptr;	
 
 private:
-	std::queue<ActionData*> m_actionQueue;
+	std::stack<ActionData*> m_actionStack;
 };
 
 
 // actions ----------------------------------------------
 bool MoveAction(Agent* agent, const Vector2& goalDestination);      //walk between locations	
-bool ShootAction(const Vector2& goalDestination);	  //combat
+bool ShootAction(Agent* agent, const Vector2& goalDestination);	  //combat
 //bool RepairAction(const Vector2& goalDestination);  //repairs
 //bool BandageAction(const Vector2& goalDestination); //heal
 bool GatherAction(Agent* agent, const Vector2& goalDestination);    //acquire resource at poiLocation	
