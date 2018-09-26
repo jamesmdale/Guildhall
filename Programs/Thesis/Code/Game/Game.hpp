@@ -20,9 +20,6 @@ public:
 	//rendering members
 	ForwardRenderingPath2D* m_forwardRenderingPath2D = nullptr;
 
-	//clock
-	Clock* m_gameClock = nullptr;
-
 public:
 	Game();
 	~Game();
@@ -41,7 +38,7 @@ public:
 	void InitializeAgentDefinitions();
 };
 
-
+static Clock* g_gameClock = nullptr;
 
 
 

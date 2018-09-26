@@ -1,12 +1,17 @@
 #pragma once
-#include <string>
-#include <vector>
+#include "Game\Definitions\MapDefinition.hpp"
+#include "Game\Map\Tile.hpp"
 #include "Engine\Math\IntVector2.hpp"
 #include "Engine\Renderer\RenderScene2D.hpp"
 #include "Engine\Utility\Grid.hpp"
-#include "Game\Definitions\MapDefinition.hpp"
-#include "Game\Map\Tile.hpp"
-#include "Game\PointOfInterest.hpp"
+#include <string>
+#include <vector>
+
+
+//forward declarations
+enum ePointOfInterestType;
+class Agent;
+class PointOfInterest;
 
 class Map
 {
@@ -19,7 +24,7 @@ public:
 	IntVector2 GetDimensions() { return m_dimensions; }
 
 	void Render();
-	void Update(float timeDelta);
+	void Update(float deltaSeconds);
 
 	//spawn functions
 	//void SpawnActorByName(std::string actorType, Vector2 spawnPosition);
@@ -52,10 +57,9 @@ public:
 	IntVector2 GetRandomNonBlockedCoordinateInMapBounds();
 	Grid<int>* GetAsGrid();
 	bool IsTileBlockingAtCoordinate(const IntVector2& coordinate);
-	Tile * GetTileAtCoordinate(const IntVector2 & coordinate);
+	Tile* GetTileAtCoordinate(const IntVector2 & coordinate);
 
-	PointOfInterest* GeneratePointOfInterest(ePointOfInterestType poiType);
-
+	PointOfInterest* GeneratePointOfInterest(int poiType);
 
 public:
 	std::string m_name;
@@ -63,6 +67,9 @@ public:
 	MapDefinition* m_mapDefinition = nullptr;
 	std::vector<Tile*> m_tiles;
 	AABB2 m_mapWorldBounds;
+
+	std::vector<Agent*> m_agents;
+	std::vector<PointOfInterest*> m_pointOfInterests;
 
 	//RenderScene2D* m_renderScene = nullptr;
 private:

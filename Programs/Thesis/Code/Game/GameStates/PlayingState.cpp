@@ -6,7 +6,6 @@
 #include "Engine\Core\LightObject.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Debug\DebugRender.hpp"
-#include "Engine\Utility\AStar.hpp"
 #include "Engine\Math\IntVector2.hpp"
 #include <map>
 #include <string>
@@ -52,16 +51,16 @@ void PlayingState::Initialize()
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
 	Vector2 randomStartingLocation = m_map->GetRandomNonBlockedPositionInMapBounds();
 	Agent* agent = new Agent(randomStartingLocation, animSet, m_map);
-	m_agents.push_back(agent);
+	m_map->m_agents.push_back(agent);
 
 	//add random point of interest
 	PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
 	poiLocation->m_mapReference = m_map;
 
-	m_pointOfInterests.push_back(poiLocation);
+	m_map->m_pointOfInterests.push_back(poiLocation);
 	
 	//test for A*
-	Grid<int>* mapGrid = m_map->GetAsGrid();
+	/*Grid<int>* mapGrid = m_map->GetAsGrid();
 	std::vector<Vector2> searchPath;
 	IntVector2 startCoord = m_map->GetTileCoordinateOfPosition(agent->m_position);
 	IntVector2 endCoord = poiLocation->m_accessCoordinate;
@@ -69,15 +68,15 @@ void PlayingState::Initialize()
 
 	Vector2 endPosition = m_map->GetWorldPositionOfMapCoordinate(endCoord);
 	searchPath.push_back(Vector2(endPosition.x + g_halfTileSize, endPosition.y + g_halfTileSize));
-
+*/
 	//add the location
-	isDestinationFound = AStarSearch(searchPath, *mapGrid, startCoord, endCoord, m_map);	
+	//isDestinationFound = AStarSearch(searchPath, *mapGrid, startCoord, endCoord, m_map);	
+
+	//m_map->m_agents[0]->m_currentPath = searchPath;
 
 	//re-adjust camera center
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
 	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));
-
-	m_agents[0]->m_currentPath = searchPath;
 
 	//cleanup
 	definition = nullptr;
@@ -89,10 +88,7 @@ void PlayingState::Initialize()
 //  =============================================================================
 void PlayingState::Update(float deltaSeconds)
 { 
-	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
-	{
-		m_agents[agentIndex]->Update(deltaSeconds);
-	}
+	m_map->Update(deltaSeconds);
 }
 
 //  =============================================================================
@@ -107,21 +103,7 @@ void PlayingState::Render()
 
 	Game::GetInstance()->m_forwardRenderingPath2D->Render(m_renderScene2D);
 
-	for (int tileIndex = 0; tileIndex < (int)m_map->m_tiles.size(); ++tileIndex)
-	{
-		m_map->m_tiles[tileIndex]->Render();
-	}
-
-	for (int pointOfInterestIndex = 0; pointOfInterestIndex < (int)m_pointOfInterests.size(); ++pointOfInterestIndex)
-	{
-		m_pointOfInterests[pointOfInterestIndex]->Render();
-	}
-
-	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
-	{
-		m_agents[agentIndex]->Render();
-	}
-
+	m_map->Render();
 
 	theRenderer = nullptr;
 }

@@ -4,6 +4,10 @@
 #include "Engine\Window\Window.hpp"
 #include "Game\GameCommon.hpp"
 #include "Game\PointOfInterest.hpp"
+#include "Game\Agent.hpp"
+#include "Game\Map\Tile.hpp"
+
+
 
 //  =========================================================================================
 Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* renderScene)
@@ -55,13 +59,31 @@ Map::~Map()
 }
 
 //  =========================================================================================
-void Map::Render()
+void Map::Update(float deltaSeconds)
 {
+	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
+	{
+		m_agents[agentIndex]->Update(deltaSeconds);
+	}
 }
 
 //  =========================================================================================
-void Map::Update(float timeDelta)
+void Map::Render()
 {
+	for (int tileIndex = 0; tileIndex < (int)m_tiles.size(); ++tileIndex)
+	{
+		m_tiles[tileIndex]->Render();
+	}
+
+	for (int pointOfInterestIndex = 0; pointOfInterestIndex < (int)m_pointOfInterests.size(); ++pointOfInterestIndex)
+	{
+		m_pointOfInterests[pointOfInterestIndex]->Render();
+	}
+
+	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
+	{
+		m_agents[agentIndex]->Render();
+	}
 }
 
 //  =========================================================================================
@@ -112,8 +134,10 @@ Tile* Map::GetTileAtCoordinate(const IntVector2& coordinate)
 }
 
 //  =========================================================================================
-PointOfInterest* Map::GeneratePointOfInterest(ePointOfInterestType poiType)
+PointOfInterest* Map::GeneratePointOfInterest(int poiType)
 {
+	ePointOfInterestType type = (ePointOfInterestType)poiType;
+
 	//determine if random location is unblocked
 	bool isLocationValid = false;
 	IntVector2 randomLocation = IntVector2::ONE;
@@ -213,7 +237,7 @@ PointOfInterest* Map::GeneratePointOfInterest(ePointOfInterestType poiType)
 	tile = GetTileAtCoordinate(accessCoordinate);
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("BuildingAccess")->second;
 
-	PointOfInterest* poi = new PointOfInterest(poiType, randomLocation, accessCoordinate);
+	PointOfInterest* poi = new PointOfInterest(type, randomLocation, accessCoordinate);
 
 	//cleanup
 	tile = nullptr;

@@ -1,8 +1,6 @@
 #pragma once
 #include "Game\GameStates\GameState.hpp"
-#include "Game\Agent.hpp"
 #include "Game\Map\Map.hpp"
-#include "Game\PointOfInterest.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Core\Widget.hpp"
 #include "Engine\Utility\Grid.hpp"
@@ -33,6 +31,4 @@ public:
 	Widget* m_currentSelectedWidget = nullptr;
 
 	Map* m_map = nullptr;
-	std::vector<Agent*> m_agents;
-	std::vector<PointOfInterest*> m_pointOfInterests;
 };

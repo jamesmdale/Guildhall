@@ -73,7 +73,7 @@ void Game::Initialize()
 
 	theRenderer->SetAmbientLightIntensity(0.15f);
 
-	m_gameClock = new Clock(GetMasterClock());
+	g_gameClock = new Clock(GetMasterClock());
 
 	// add cameras
 	m_gameCamera = new Camera();
@@ -105,7 +105,7 @@ void Game::Initialize()
 //  =========================================================================================
 void Game::Update()
 {
-	float deltaSeconds = m_gameClock->GetDeltaSeconds();
+	float deltaSeconds = g_gameClock->GetDeltaSeconds();
 
 	// update global menu data (handles transitions and timers) =============================================================================
 	GameState::UpdateGlobalGameState(deltaSeconds);

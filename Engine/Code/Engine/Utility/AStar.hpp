@@ -36,12 +36,12 @@ public:
 };
 
 
-int CalculateHeuristicValue(const IntVector2& cellPosition, const IntVector2& destinationPosition)
+static int CalculateHeuristicValue(const IntVector2& cellPosition, const IntVector2& destinationPosition)
 {
 	return GetDistance(cellPosition, destinationPosition);
 }
 
-void GetPath(std::vector<Vector2>& outIndicies, Grid<SearchCell>& cellList, const IntVector2& cellListDimensions, const IntVector2& startPosition, const IntVector2& destinationPosition, Map* currentMap)
+static void GetPath(std::vector<Vector2>& outIndicies, Grid<SearchCell>& cellList, const IntVector2& cellListDimensions, const IntVector2& startPosition, const IntVector2& destinationPosition, Map* currentMap)
 {
 	//we have a path from the start to the destination. Now we just need to extract it.
 	int currentRow = destinationPosition.x;
@@ -69,8 +69,10 @@ void GetPath(std::vector<Vector2>& outIndicies, Grid<SearchCell>& cellList, cons
 	//complete
 }
 
-bool AStarSearch(std::vector<Vector2>& outPositions, Grid<int>& grid, const IntVector2& startPosition, const IntVector2& destinationPosition, Map* currentMap)
+static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& startPosition, const IntVector2& destinationPosition, Map* currentMap)
 {
+	Grid<int> grid = *currentMap->GetAsGrid();
+
 	ASSERT_OR_DIE(grid.IsCellValid(startPosition) && grid.IsCellValid(destinationPosition), "Search cells out of range");
 	ASSERT_OR_DIE(grid.GetValueAtCoordinate(startPosition) == 0 && grid.GetValueAtCoordinate(destinationPosition) == 0, "Search cell is blocked (inaccessible)");
 

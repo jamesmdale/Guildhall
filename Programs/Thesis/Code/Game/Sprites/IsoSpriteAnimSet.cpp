@@ -1,6 +1,7 @@
 #include "Game\Sprites\IsoSpriteAnimSet.hpp"
 #include "Engine\Core\StringUtils.hpp"
 
+//  =========================================================================================
 IsoSpriteAnimSet::IsoSpriteAnimSet( IsoSpriteAnimSetDefinition* animSetDef )
 {
 	m_animSetDef = animSetDef;
@@ -17,6 +18,8 @@ IsoSpriteAnimSet::IsoSpriteAnimSet( IsoSpriteAnimSetDefinition* animSetDef )
 
 	SetCurrentAnim("idle"); //idle is our default.  If we don't find and idle, it doesn't set one.
 }
+
+//  =========================================================================================
 void IsoSpriteAnimSet::Update( float deltaSeconds )
 {
 	//TODO: add logic determining which anim to run from here.  This is the animation related pointer held in the entity itself.
@@ -27,11 +30,15 @@ void IsoSpriteAnimSet::Update( float deltaSeconds )
 		SetCurrentAnim("idle");
 	}
 }
+
+//  =========================================================================================
 void IsoSpriteAnimSet::StartAnim(const std::string& animNameSimplified )
 {
 	SetCurrentAnim(animNameSimplified);
 	m_currentAnim->PlayFromStart();
 }
+
+//  =========================================================================================
 void IsoSpriteAnimSet::SetCurrentAnim( const std::string& animNameSimplified )
 {
 	std::string animName = m_animSetDef->GetAnimationIdBySimplifiedName(ToLowerAsNew(animNameSimplified));
@@ -39,15 +46,20 @@ void IsoSpriteAnimSet::SetCurrentAnim( const std::string& animNameSimplified )
 	auto animIndex = m_namedAnims.find(animName);
 	if(animIndex != m_namedAnims.end())
 	{
-		m_currentAnim = m_namedAnims.at(animName);		
+		if (m_currentAnim != m_namedAnims.at(animName))
+		{
+			m_currentAnim = m_namedAnims.at(animName);
+			m_currentAnim->PlayFromStart();
+		}			
 	}
 	else
 	{
 		m_currentAnim = m_namedAnims.at("idle");
+		m_currentAnim->PlayFromStart();
 	}
-
-	m_currentAnim->PlayFromStart();
 }
+
+//  =========================================================================================
 const Texture& IsoSpriteAnimSet::GetCurrentTexture(IntVector2 direction) const
 {
 	int index = m_currentAnim->GetIsoSpriteIndexForTime(m_currentAnim->GetElapsedSeconds());
@@ -56,6 +68,7 @@ const Texture& IsoSpriteAnimSet::GetCurrentTexture(IntVector2 direction) const
 	return *isoSprite->GetCurrentTextureByDirection(direction);
 }
 
+//  =========================================================================================
 AABB2 IsoSpriteAnimSet::GetCurrentUVs(IntVector2 direction) const
 {
 	int index = m_currentAnim->GetIsoSpriteIndexForTime(m_currentAnim->GetElapsedSeconds());
@@ -66,6 +79,7 @@ AABB2 IsoSpriteAnimSet::GetCurrentUVs(IntVector2 direction) const
 	return uvs;
 }
 
+//  =========================================================================================
 Sprite* IsoSpriteAnimSet::GetCurrentSprite(IntVector2 direction)
 {
 	IsoSpriteAnim* anim = GetCurrentAnim();
@@ -76,6 +90,7 @@ Sprite* IsoSpriteAnimSet::GetCurrentSprite(IntVector2 direction)
 	return sprite;
 }
 
+//  =========================================================================================
 IsoSprite* IsoSpriteAnimSet::GetCurrentIsoSprite()
 {
 	IsoSpriteAnim* anim = GetCurrentAnim();

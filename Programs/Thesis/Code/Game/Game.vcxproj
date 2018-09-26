@@ -295,12 +295,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Actions\Action.cpp" />
     <ClCompile Include="Agent.cpp" />
     <ClCompile Include="Definitions\AgentDefinition.cpp" />
     <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteAnimDefinition.cpp" />
     <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteAnimSetDefinition.cpp" />
     <ClCompile Include="Definitions\SpriteDefinitions\IsoSpriteDefinition.cpp" />
     <ClCompile Include="Definitions\SpriteDefinitions\SpriteDefinition.cpp" />
+    <ClCompile Include="EncounterState.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameCommon.cpp" />
     <ClCompile Include="GameStates\GameState.cpp" />
@@ -331,12 +333,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actions\Action.hpp" />
     <ClInclude Include="Agent.hpp" />
     <ClInclude Include="Definitions\AgentDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteAnimDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteAnimSetDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\IsoSpriteDefinition.hpp" />
     <ClInclude Include="Definitions\SpriteDefinitions\SpriteDefinition.hpp" />
+    <ClInclude Include="EncounterState.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
