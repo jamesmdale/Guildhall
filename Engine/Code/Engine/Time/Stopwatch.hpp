@@ -16,6 +16,7 @@ public:
 	uint64_t GetElapsedTimeInHPC();
 	bool HasElapsed();
 	void Reset();
+	bool ResetIfElapsed();
 	bool CheckAndReset();
 	bool Decrement();
 	int DecrementAll();

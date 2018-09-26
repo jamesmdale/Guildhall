@@ -10,6 +10,9 @@ float g_tileSize = 1.f;
 float g_divideTileSize = 1.f;
 float g_halfTileSize = 1.f;
 
+//poi globals
+float g_baseRefillTimePerSecond = 0.5f;
+int g_maxResourceCarryAmount = 20;
 
 //XY
 IntVector2 MAP_NORTH = IntVector2(0, 1);

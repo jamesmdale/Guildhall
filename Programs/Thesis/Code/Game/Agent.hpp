@@ -12,13 +12,14 @@ class PlayingState;
 class Agent;
 
 //typedefs
-typedef bool (*ActionCallback)(Agent* agent, const Vector2& goalDestination);
+typedef bool (*ActionCallback)(Agent* agent, const Vector2& goalDestination, int interactEntityId);
 
 //container for data needed to be stored in queue
 struct ActionData
 {
 	ActionCallback m_action = nullptr;
 	Vector2 m_finalGoalDestination;
+	int m_interactEntityId = -1;
 };
 
 class Agent
@@ -80,7 +81,7 @@ public:
 	IsoSpriteAnimSet* m_animationSet = nullptr;			
 
 	//helper references
-	Map* m_currentMap = nullptr;	
+	Map* m_mapReference = nullptr;	
 
 private:
 	std::stack<ActionData*> m_actionStack;
@@ -88,11 +89,11 @@ private:
 
 
 // actions ----------------------------------------------
-bool MoveAction(Agent* agent, const Vector2& goalDestination);      //walk between locations	
-bool ShootAction(Agent* agent, const Vector2& goalDestination);	  //combat
-//bool RepairAction(const Vector2& goalDestination);  //repairs
-//bool BandageAction(const Vector2& goalDestination); //heal
-bool GatherAction(Agent* agent, const Vector2& goalDestination);    //acquire resource at poiLocation	
+bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);      //walk between locations	
+bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);	    //combat
+//bool RepairAction(const Vector2& goalDestination);				//repairs
+//bool BandageAction(const Vector2& goalDestination);				//heal
+bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);    //acquire resource at poiLocation	
 
 
 

@@ -1,24 +1,34 @@
 #include "Game\PointOfInterest.hpp"
 #include "Game\GameCommon.hpp"
 #include "Game\Map\Map.hpp"
+#include "Game\Agent.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 
-PointOfInterest::PointOfInterest(ePointOfInterestType poiType, const IntVector2& startingCoordinate, const IntVector2& accessCoordinate)
+PointOfInterest::PointOfInterest(ePointOfInterestType poiType, const IntVector2& startingCoordinate, const IntVector2& accessCoordinate, Map* mapReference)
 {
 	m_type = poiType;
 	m_startingCoordinate = startingCoordinate;
 	m_accessCoordinate = accessCoordinate;
+
+	m_mapReference = mapReference;
+
+	m_id = m_mapReference->m_pointsOfInterest.size();
+
+	//start stopwatch
+	m_refillTimer = new Stopwatch();
+	m_refillTimer->SetTimer(g_baseRefillTimePerSecond);
 }
 
 PointOfInterest::~PointOfInterest()
 {
+	m_mapReference = nullptr;
 }
 
-void PointOfInterest::Update()
+void PointOfInterest::Update(float deltaSeconds)
 {
-	TODO("Add some update functionality later...rotation maybe.")
+	UNUSED(deltaSeconds);
 }
 
 void PointOfInterest::Render()
@@ -46,7 +56,6 @@ void PointOfInterest::Render()
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
 	theRenderer->DrawAABB(bounds, tint);
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("default"));
-
 
 	theRenderer = nullptr;	
 }

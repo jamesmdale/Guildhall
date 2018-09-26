@@ -134,6 +134,33 @@ Tile* Map::GetTileAtCoordinate(const IntVector2& coordinate)
 }
 
 //  =========================================================================================
+Agent* Map::GetAgentById(int agentId)
+{
+	//assume in order and just search
+	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
+	{
+		if(agentId == m_agents[agentIndex]->m_id)
+			return m_agents[agentIndex];
+	}
+
+	//if we never found the agent, return nullptr;
+	return nullptr;
+}
+
+//  =========================================================================================
+PointOfInterest* Map::GetPointOfInterestById(int poiId)
+{
+	for (int poiIndex = 0; poiIndex < (int)m_pointsOfInterest.size(); ++poiIndex)
+	{
+		if(poiId == m_pointsOfInterest[poiIndex]->m_id)
+			return m_pointsOfInterest[poiIndex];
+	}
+
+	//if we never found the poi, return nullptr;
+	return nullptr;
+}
+
+//  =========================================================================================
 PointOfInterest* Map::GeneratePointOfInterest(int poiType)
 {
 	ePointOfInterestType type = (ePointOfInterestType)poiType;
@@ -237,7 +264,7 @@ PointOfInterest* Map::GeneratePointOfInterest(int poiType)
 	tile = GetTileAtCoordinate(accessCoordinate);
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("BuildingAccess")->second;
 
-	PointOfInterest* poi = new PointOfInterest(type, randomLocation, accessCoordinate);
+	PointOfInterest* poi = new PointOfInterest(type, randomLocation, accessCoordinate, this);
 
 	//cleanup
 	tile = nullptr;

@@ -67,8 +67,9 @@ void PlayingState::Initialize()
 
 	//test action for agent
 	ActionData* data = new ActionData();
-	data->m_action = ShootAction;
+	data->m_action = GatherAction;
 	data->m_finalGoalDestination = accessPosition;
+	data->m_interactEntityId = m_map->m_pointsOfInterest[0]->m_id;
 
 	m_map->m_agents[0]->AddActionToStack(data);
 

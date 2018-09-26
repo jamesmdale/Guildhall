@@ -23,6 +23,10 @@ extern float g_tileSize;
 extern float g_divideTileSize;
 extern float g_halfTileSize;
 
+//poi globals
+extern float g_baseRefillTimePerSecond;
+extern int g_maxResourceCarryAmount;
+
 //convenience directions
 extern IntVector2 MAP_NORTH;
 extern IntVector2 MAP_SOUTH;

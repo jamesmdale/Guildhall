@@ -83,6 +83,16 @@ void Stopwatch::Reset()
 	m_startHPC = m_referenceClock->m_total.hpc;
 }
 
+bool Stopwatch::ResetIfElapsed()
+{
+	bool hasElapsed = HasElapsed();
+	
+	if(hasElapsed)
+		Reset();
+
+	return hasElapsed;
+}
+
 bool Stopwatch::CheckAndReset()
 {
 	bool elapsed = HasElapsed();

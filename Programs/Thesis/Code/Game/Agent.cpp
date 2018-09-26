@@ -3,6 +3,7 @@
 #include "Game\GameStates\GameState.hpp"
 #include "Game\Map\Map.hpp"
 #include "Game\GameCommon.hpp"
+#include "Game\PointOfInterest.hpp"
 #include "Game\GameStates\PlayingState.hpp"
 #include "Engine\Core\Transform2D.hpp"
 #include "Engine\Math\MathUtils.hpp"
@@ -21,7 +22,7 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 {
 	m_position = startingPosition;
 	m_animationSet = animationSet;
-	m_currentMap = mapReference;
+	m_mapReference = mapReference;
 
 	m_intermediateGoalPosition = m_position;
 
@@ -34,7 +35,7 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 
 Agent::~Agent()
 {
-	m_currentMap = nullptr;
+	m_mapReference = nullptr;
 }
 
 //  =========================================================================================
@@ -78,14 +79,14 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 {
 	m_currentPath = std::vector<Vector2>(); //clear vector
 
-	IntVector2 startCoord = m_currentMap->GetTileCoordinateOfPosition(m_position);
-	IntVector2 endCoord = m_currentMap->GetTileCoordinateOfPosition(goalDestination);
+	IntVector2 startCoord = m_mapReference->GetTileCoordinateOfPosition(m_position);
+	IntVector2 endCoord = m_mapReference->GetTileCoordinateOfPosition(goalDestination);
 	bool isDestinationFound = false;
 
 	m_currentPath.push_back(goalDestination);
 
 	//add the location
-	isDestinationFound = AStarSearch(m_currentPath, startCoord, endCoord, m_currentMap);
+	isDestinationFound = AStarSearch(m_currentPath, startCoord, endCoord, m_mapReference);
 
 	return isDestinationFound;
 }
@@ -93,7 +94,7 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 //  =========================================================================================
 bool Agent::GetIsAtPosition(const Vector2 & goalDestination)
 {
-	if (m_currentMap->GetTileCoordinateOfPosition(m_position) != m_currentMap->GetTileCoordinateOfPosition(goalDestination))
+	if (m_mapReference->GetTileCoordinateOfPosition(m_position) != m_mapReference->GetTileCoordinateOfPosition(goalDestination))
 		return false;
 	else
 		return true;
@@ -108,7 +109,7 @@ void Agent::ProcessActionStack(float deltaSeconds)
 		ActionData* goal = m_actionStack.top();
 
 		//run action
-		bool isComplete = goal->m_action(this, goal->m_finalGoalDestination);
+		bool isComplete = goal->m_action(this, goal->m_finalGoalDestination, goal->m_interactEntityId);
 
 		if (isComplete)
 		{
@@ -187,15 +188,17 @@ void Agent::UpdateSpriteRenderDirection()
 //  Actions
 //  =========================================================================================
 
-bool MoveAction(Agent* agent, const Vector2& goalDestination)
+bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
+	UNUSED(interactEntityId);
+
 	bool isComplete = false;
 
 	TODO("might optimize not doing this every frame later");
 	agent->m_animationSet->SetCurrentAnim("walk");
 
 	// early outs ----------------------------------------------
-	if (agent->m_currentMap->GetTileCoordinateOfPosition(agent->m_position) == agent->m_currentMap->GetTileCoordinateOfPosition(goalDestination))
+	if (agent->m_mapReference->GetTileCoordinateOfPosition(agent->m_position) == agent->m_mapReference->GetTileCoordinateOfPosition(goalDestination))
 		return true;
 
 	//if we don't have a path to the destination, get a new path
@@ -204,7 +207,7 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination)
 
 
 	//We have a path, follow it.
-	if (agent->m_currentMap->GetTileCoordinateOfPosition(agent->m_position) != agent->m_currentMap->GetTileCoordinateOfPosition(agent->m_currentPath.at(agent->m_currentPath.size() - 1)))
+	if (agent->m_mapReference->GetTileCoordinateOfPosition(agent->m_position) != agent->m_mapReference->GetTileCoordinateOfPosition(agent->m_currentPath.at(agent->m_currentPath.size() - 1)))
 	{
 		agent->m_intermediateGoalPosition = agent->m_currentPath.at(agent->m_currentPath.size() - 1);
 
@@ -243,7 +246,7 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination)
 }
 
 //  =========================================================================================
-bool ShootAction(Agent* agent, const Vector2& goalDestination)
+bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
 	if (!agent->GetIsAtPosition(goalDestination))
 	{
@@ -260,20 +263,108 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination)
 }
 
 //  =========================================================================================
-bool GatherAction(Agent* agent, const Vector2 & goalDestination)
+bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
-	/*if (!GetIsAtPosition(goalDestination))
+	agent->m_animationSet->SetCurrentAnim("idle");
+	// easy outs ----------------------------------------------
+	if (!agent->GetIsAtPosition(goalDestination))
 	{
 		ActionData* data = new ActionData();
 		data->m_action = MoveAction;
 		data->m_finalGoalDestination = goalDestination;
+		data->m_interactEntityId = -1;	//move actions don't have a target entity to interact with
 
-		EnqueueAction(data);
+		agent->AddActionToStack(data);
+		data = nullptr;
 		return false;
-	}*/
+	}
 
 	//if we are at our destination, we are ready to gather
+	PointOfInterest* targetPoi = agent->m_mapReference->GetPointOfInterestById(interactEntityId);
+
+	//confirm agent is at targetPOI accessLocation
+	if (agent->m_mapReference->GetTileCoordinateOfPosition(agent->m_position) != targetPoi->m_accessCoordinate)
+	{	
+		ActionData* data = new ActionData();
+		data->m_action = MoveAction;
+		data->m_finalGoalDestination = targetPoi->m_mapReference->GetWorldPositionOfMapCoordinate(targetPoi->m_accessCoordinate);
+		data->m_interactEntityId = -1; //move actions don't have a target entity to interact with
+
+		agent->AddActionToStack(data);
+		data = nullptr;
+		return false;
+	}
+
+	//if we are serving another agent or no one is assigned we either need to wait or set this agent to currently serving
+	if (targetPoi->m_agentCurrentlyServing != agent)
+	{
+		//no one is being served, we can begin acquiring resources from the poi
+		if (targetPoi->m_agentCurrentlyServing == nullptr)
+		{
+			targetPoi->m_agentCurrentlyServing = agent;
+			targetPoi->m_refillTimer->Reset();
+			agent->m_animationSet->SetCurrentAnim("cast");
+		}
+		//another agent is being served so we need to wait
+		else
+		{
+			//cleanup and return
+			targetPoi = nullptr;
+			return false;
+		}
+	}
+
+	// we are ready to be served by poi ----------------------------------------------
+	switch (targetPoi->m_type)
+	{
+	case ARMORY_POI_TYPE:
+		if (targetPoi->m_refillTimer->ResetIfElapsed())
+		{
+			agent->m_arrowCount++;
+		}
+		if (agent->m_arrowCount == g_maxResourceCarryAmount)
+		{
+			//agent is served and ready to move on
+			targetPoi->m_agentCurrentlyServing = nullptr;
+
+			//cleanup
+			targetPoi = nullptr;
+			return true;
+		}
+		break;
+	case LUMBERYARD_POI_TYPE:
+		if (targetPoi->m_refillTimer->ResetIfElapsed())
+		{
+			agent->m_lumberCount++;
+		}
+		if (agent->m_lumberCount == g_maxResourceCarryAmount)
+		{
+			//agent is served and ready to move on
+			targetPoi->m_agentCurrentlyServing = nullptr;
+
+			//cleanup
+			targetPoi = nullptr;
+			return true;
+		}
+		break;
+	case MED_STATION_POI_TYPE:
+		if (targetPoi->m_refillTimer->ResetIfElapsed())
+		{
+			agent->m_bandageCount++;
+		}
+		if (agent->m_bandageCount == g_maxResourceCarryAmount)
+		{
+			//agent is served and ready to move on
+			targetPoi->m_agentCurrentlyServing = nullptr;
+
+			//cleanup
+			targetPoi = nullptr;
+			return true;
+		}
+		break;
+	}		
 	
+	targetPoi = nullptr;
 	return false;
 }
 

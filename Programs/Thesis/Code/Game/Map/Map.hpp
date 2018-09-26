@@ -58,6 +58,8 @@ public:
 	Grid<int>* GetAsGrid();
 	bool IsTileBlockingAtCoordinate(const IntVector2& coordinate);
 	Tile* GetTileAtCoordinate(const IntVector2 & coordinate);
+	Agent* GetAgentById(int agentId);
+	PointOfInterest* GetPointOfInterestById(int poiId);
 
 	PointOfInterest* GeneratePointOfInterest(int poiType);
 
