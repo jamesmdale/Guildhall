@@ -75,6 +75,7 @@ void RemoteCommandService::Startup()
 	CommandRegister("rc_join", CommandRegistration(RemoteCommandJoin, ":Use to disconnect from current host and attempt to join a new host", ""));
 	CommandRegister("rc_host", CommandRegistration(RemoteCommandHost, ":Use to disconnect from all connections and host on the provided port", ""));
 	CommandRegister("test_message", CommandRegistration(TestBytePackerSend, "Get a string to send", ""));
+	CommandRegister("spawn_process", CommandRegistration(SpawnProcess, "Clone this process X number of times (max of 10)", ""));
 
 
 	auto func = [=](){g_theRemoteCommandService->Update();};
@@ -309,6 +310,15 @@ void RemoteCommandService::ProcessHost()
 	{
 		ServiceClient(m_connections[clientIndex]);
 	}
+
+	//cleanup disconnected clients
+	for (int clientIndex = 0; clientIndex < (int)m_connections.size(); ++clientIndex)
+	{
+		if (m_connections[clientIndex]->m_socket->IsClosed())
+		{
+			m_connections.erase(m_connections.begin() + clientIndex);
+		}
+	}
 }
 
 //CLIENT METHODS
@@ -318,6 +328,10 @@ void RemoteCommandService::UpdateClient()
 	if (m_connections.size() > 0)
 	{
 		ProcessClient(m_connections[0]);
+		if (m_connections[0]->m_socket->IsClosed())
+		{
+			m_connections.erase(m_connections.begin(), m_connections.end());
+		}
 	}
 	else
 	{
@@ -362,7 +376,7 @@ void RemoteCommandService::ProcessClient(TCPSession* hostSession)
 
 	if (hostSession->m_bytePacker->GetWrittenByteCount() < 2)
 	{
-		received = hostSession->m_socket->Receive(&buffer, 2);
+		received = hostSession->m_socket->Receive(&buffer, 2);	
 
 		if (received <= 0)
 			return;
@@ -447,7 +461,7 @@ void RemoteCommandService::ServiceClient(TCPSession* clientSession)
 	{
 		received = clientSession->m_socket->Receive(&buffer, 2);
 
-		if(received <= 0)
+		if (received <= 0)
 			return;
 
 		bool success = clientSession->m_bytePacker->WriteBytes(2, (void*)&buffer, false);
@@ -725,6 +739,27 @@ void RemoteCommandAll(Command& cmd)
 	CommandRun(cmd.GetRemainingContentAsString().c_str());
 }
 
+//  =============================================================================
+void SpawnProcess(Command& cmd)
+{
+	int numProcesses = cmd.GetNextInt();
+	if(numProcesses > 10)
+		numProcesses = 10;
+
+	for (int processIndex = 0; processIndex < numProcesses; ++processIndex)
+	{
+		STARTUPINFO startupInfo;
+		PROCESS_INFORMATION processInformation;
+
+		ZeroMemory( &startupInfo, sizeof(startupInfo) );
+		startupInfo.cb = sizeof(startupInfo);
+		ZeroMemory( &processInformation, sizeof(processInformation) );
+
+		wchar_t buffer[MAX_PATH]; 
+		GetModuleFileName(NULL, buffer, MAX_PATH) ;
+		CreateProcess(buffer, 0, 0, FALSE, 0, 0, 0, 0, &startupInfo, &processInformation);
+	}	
+}
 
 //  =============================================================================
 void HostRemoteCommandProcessor(Command& cmd, int clientIndex)
@@ -755,3 +790,5 @@ void TestBytePackerSend(Command& cmd)
 
 	theCommandService = nullptr;
 }
+
+
