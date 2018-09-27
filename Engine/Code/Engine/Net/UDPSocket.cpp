@@ -14,7 +14,7 @@ UDPSocket::~UDPSocket()
 {
 }
 
-bool UDPSocket::Bind(const NetAddress& address, uint16_t portRange)
+bool UDPSocket::Bind(NetAddress& address, uint16_t portRange)
 {
 	// create the socket 
 	SOCKET mySocket = socket( AF_INET,	// IPv4 to send...
@@ -29,16 +29,25 @@ bool UDPSocket::Bind(const NetAddress& address, uint16_t portRange)
 	sockaddr_storage sockAddr;
 	size_t sockAddrLength;
 
-	address.ToSockAddr((sockaddr*)&sockAddr, &sockAddrLength);
-
-	// try to bind - if it succeeds - great.  If not, try the next port in the range.
-	int result = ::bind( mySocket, (sockaddr*)&sockAddr, (int)sockAddrLength );
-	if (result == 0) 
+	uint16_t attemptCount = 0;
+	while (attemptCount <= portRange)
 	{
-		m_socketHandle = (void*)mySocket; 
-		m_address = address; 
-		return true; 
-	} 
+		address.m_port += attemptCount;
+		address.ToSockAddr((sockaddr*)&sockAddr, &sockAddrLength);
+
+		// try to bind - if it succeeds - great.  If not, try the next port in the range.
+		int result = ::bind( mySocket, (sockaddr*)&sockAddr, (int)sockAddrLength );
+		if (result == 0) 
+		{
+			m_socketHandle = (void*)mySocket; 
+			m_address = address; 
+			return true; 
+		} 
+		else
+		{
+			attemptCount++;
+		}
+	}	
 
 	return false; 
 }
