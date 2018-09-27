@@ -80,7 +80,7 @@ void RemoteCommandBroadcast(Command& cmd);
 void RemoteCommandToggleEcho(Command& cmd);
 void RemoteCommandJoin(Command& cmd);
 void RemoteCommandHost(Command& cmd);
-
+void SpawnProcess(Command& cmd);
 void TestBytePackerSend(Command& cmd);
 
 

@@ -122,6 +122,7 @@ bool TCPSocket::Connect(const NetAddress& addr)
 void TCPSocket::CloseConnection()
 {
 	::closesocket((SOCKET)m_socketHandle);
+	m_socketHandle = (void*)INVALID_SOCKET;
 }
 
 //  =============================================================================
@@ -158,21 +159,30 @@ int TCPSocket::Receive(void* outBuffer, const size_t maxByteSize)
 {
 	int result = ::recv((SOCKET)m_socketHandle, (char*)outBuffer, maxByteSize, 0);
 
-	if (result == SOCKET_ERROR)
-		return -1;
+	if (result < 0)
+	{
+		if (HasFatalError())
+		{
+			CloseConnection();
+		}
+		return 0;
+	}
+	else if(result == 0)
+	{
+		CloseConnection();
+		return 0;
+	}
 	else
+	{
 		return (size_t)result;
+	}
 }
 
 //  =============================================================================
 bool TCPSocket::IsClosed() const
 {
-	return false;
-	/*SOCKET socketPointer = (SOCKET)m_socketHandle;
-
-	sockaddr addr = m_address.
-
-	int peerStatus = getpeername(m_socketHandle, m_address.)*/
+	bool isClosed = (SOCKET)m_socketHandle == INVALID_SOCKET;
+	return isClosed;
 }
 
 //  =============================================================================
@@ -189,7 +199,7 @@ bool TCPSocket::HasFatalError()
 {
 	int errorCode = WSAGetLastError();
 
-	if(errorCode == WSAEWOULDBLOCK || errorCode == WSAEMSGSIZE || errorCode == WSAECONNRESET || errorCode == 0)
+	if(errorCode == WSAEWOULDBLOCK || errorCode == WSAEMSGSIZE || errorCode == 0)
 		return false;
 
 	return true;
