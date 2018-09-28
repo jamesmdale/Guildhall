@@ -3,14 +3,20 @@
 #include "Engine\Net\NetConnection.hpp"
 #include "Engine\Net\UDPSocket.hpp"
 #include "Engine\Net\NetAddress.hpp"
+#include "Engine\Core\Command.hpp"
 #include <map>
 #include <string>
 #include <vector>
 
 class NetSession
 {
+public:
 	NetSession();
 	~NetSession();
+	static NetSession* GetInstance();
+	static NetSession* CreateInstance();
+
+	void Startup();
 
 	bool BindPort(uint port, uint range);
 	bool AddConnection(uint8_t connectionIndex, const NetAddress& address);
@@ -21,10 +27,7 @@ class NetSession
 
 	//message registration
 	bool RegisterMessageDefinition(const std::string& name, NetMessageCallback callback);
-	void LockMessageRegistration();
-
-	NetMessageCallback GetRegisteredCallbackByName(const std::string& name);
-	NetMessageCallback GetRegisteredCallbackById(int id);
+	void LockMessageDefinitionRegistration();
 
 public:
 	UDPSocket* m_socket = nullptr;
@@ -34,4 +37,13 @@ public:
 	bool m_isDefinitionRegistrationLocked = false;
 };
 
+//net callbacks
+NetMessageCallback GetRegisteredNetCallbackById(int id);
+NetMessageCallback GetRegisteredCallbackByName(const std::string& name);
+
 std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
+
+//console commands
+void AddConnection(Command& cmd);
+void SendPing(Command& cmd);
+void SendAdd(Command& cmd);

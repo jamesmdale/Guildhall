@@ -148,7 +148,7 @@ int ConvertStringToInt(const std::string& convertString)
 		return returnVal;		
 	}	
 
-	return NULL;
+	return INT_MAX;
 }
 
 //  =============================================================================

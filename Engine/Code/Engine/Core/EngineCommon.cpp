@@ -8,6 +8,7 @@
 #include "Engine\Profiler\ProfilerConsole.hpp"
 #include "Engine\Net\Net.hpp"
 #include "Engine\Net\RemoteCommandService.hpp"
+#include "Engine\Net\NetSession.hpp"
 
 
 Blackboard g_gameConfigBlackboard;
@@ -43,6 +44,8 @@ void EngineStartup()
 	RemoteCommandService::CreateInstance();
 	RemoteCommandService::GetInstance()->Startup();
 
+	NetSession::CreateInstance();
+	NetSession::GetInstance()->Startup();
 }
 
 //  =============================================================================
