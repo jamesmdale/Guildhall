@@ -22,7 +22,9 @@ class NetSession
 	//message registration
 	bool RegisterMessageDefinition(const std::string& name, NetMessageCallback callback);
 	void LockMessageRegistration();
-	NetMessageCallback GetRegisteredCallbackByName()
+
+	NetMessageCallback GetRegisteredCallbackByName(const std::string& name);
+	NetMessageCallback GetRegisteredCallbackById(int id);
 
 public:
 	UDPSocket* m_socket = nullptr;

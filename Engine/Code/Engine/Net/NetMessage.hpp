@@ -24,17 +24,6 @@ public:
 	NetMessage();
 	~NetMessage();
 
-	void WriteBool(bool writeBool);
-	void WriteInt(int writeInt);
-	void WriteFloat(float writeFloat);
-	//...
-
-	/*uint8_t ReadByte();
-	bool ReadBool();
-	int ReadInt();
-	float ReadFloat();*/
-	//..
-
 public:
 	NetMessageHeader* m_header = nullptr;
 	NetMessageDefinition* m_definition = nullptr;

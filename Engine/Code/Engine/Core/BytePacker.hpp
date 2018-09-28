@@ -38,9 +38,12 @@ public:
 	bool WriteString(const char* writeString);
 	bool ReadString(char* outString, size_t maxByteSize);
 
+	//read/write head helpers
 	void ResetBuffer();
+	void ResetHeads();
 	void ResetWrite();
 	void ResetRead();
+	void MoveReadHead(size_t numBytes);
 
 	uint16_t BytePacker::PeekBuffer(bool doesChangeToPlatformEndianness);
 

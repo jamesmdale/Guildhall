@@ -203,6 +203,13 @@ void BytePacker::ResetBuffer()
 }
 
 //  =============================================================================
+void BytePacker::ResetHeads()
+{
+	ResetWrite();
+	ResetRead();
+}
+
+//  =============================================================================
 void BytePacker::ResetWrite()
 {
 	//must move readbytecount to be less than written bytecount
@@ -214,6 +221,19 @@ void BytePacker::ResetWrite()
 void BytePacker::ResetRead()
 {
 	m_readByteCount = 0;
+}
+
+//  =============================================================================
+void BytePacker::MoveReadHead(size_t bytes)
+{
+	size_t numByteCount = m_readByteCount + bytes;
+
+	if(numByteCount > m_writtenByteCount)
+		m_readByteCount = m_writtenByteCount;
+	else if(numByteCount < 0)
+		m_readByteCount = 0;
+	else
+		m_readByteCount = numByteCount;
 }
 
 // =============================================================================
