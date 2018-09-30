@@ -2,6 +2,7 @@
 #include "Game\Game.hpp"
 #include "Game\GameStates\GameState.hpp"
 #include "Game\Map\Map.hpp"
+#include "Game\Planner.hpp";
 #include "Game\GameCommon.hpp"
 #include "Game\PointOfInterest.hpp"
 #include "Game\GameStates\PlayingState.hpp"
@@ -22,7 +23,7 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 {
 	m_position = startingPosition;
 	m_animationSet = animationSet;
-	m_mapReference = mapReference;
+	m_planner = new Planner(mapReference, this);
 
 	m_intermediateGoalPosition = m_position;
 
@@ -35,13 +36,13 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 
 Agent::~Agent()
 {
-	m_mapReference = nullptr;
+	m_planner = nullptr;
 }
 
 //  =========================================================================================
 void Agent::Update(float deltaSeconds)
 {
-	ProcessActionStack(deltaSeconds);
+	m_planner->ProcessActionStack(deltaSeconds);	
 
 	UpdateSpriteRenderDirection();
 	m_animationSet->Update(deltaSeconds);
@@ -79,14 +80,14 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 {
 	m_currentPath = std::vector<Vector2>(); //clear vector
 
-	IntVector2 startCoord = m_mapReference->GetTileCoordinateOfPosition(m_position);
-	IntVector2 endCoord = m_mapReference->GetTileCoordinateOfPosition(goalDestination);
+	IntVector2 startCoord = m_planner->m_map->GetTileCoordinateOfPosition(m_position);
+	IntVector2 endCoord = m_planner->m_map->GetTileCoordinateOfPosition(goalDestination);
 	bool isDestinationFound = false;
 
 	m_currentPath.push_back(goalDestination);
 
 	//add the location
-	isDestinationFound = AStarSearch(m_currentPath, startCoord, endCoord, m_mapReference);
+	isDestinationFound = AStarSearch(m_currentPath, startCoord, endCoord, m_planner->m_map);
 
 	return isDestinationFound;
 }
@@ -94,43 +95,10 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 //  =========================================================================================
 bool Agent::GetIsAtPosition(const Vector2 & goalDestination)
 {
-	if (m_mapReference->GetTileCoordinateOfPosition(m_position) != m_mapReference->GetTileCoordinateOfPosition(goalDestination))
+	if (m_planner->m_map->GetTileCoordinateOfPosition(m_position) != m_planner->m_map->GetTileCoordinateOfPosition(goalDestination))
 		return false;
 	else
 		return true;
-}
-
-//  =========================================================================================
-void Agent::ProcessActionStack(float deltaSeconds)
-{
-	//get action at the top of the queue
-	if (m_actionStack.size() > 0)
-	{
-		ActionData* goal = m_actionStack.top();
-
-		//run action
-		bool isComplete = goal->m_action(this, goal->m_finalGoalDestination, goal->m_interactEntityId);
-
-		if (isComplete)
-		{
-			m_actionStack.pop();
-		}			
-	}	
-}
-
-//  =========================================================================================
-void Agent::AddActionToStack(ActionData* actionData)
-{
-	m_actionStack.push(actionData);
-}
-
-//  =========================================================================================
-void Agent::ClearStack()
-{
-	while (m_actionStack.size() > 0)
-	{
-		m_actionStack.pop();
-	}
 }
 
 //  =========================================================================================
@@ -198,7 +166,7 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 	agent->m_animationSet->SetCurrentAnim("walk");
 
 	// early outs ----------------------------------------------
-	if (agent->m_mapReference->GetTileCoordinateOfPosition(agent->m_position) == agent->m_mapReference->GetTileCoordinateOfPosition(goalDestination))
+	if (agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_position) == agent->m_planner->m_map->GetTileCoordinateOfPosition(goalDestination))
 		return true;
 
 	//if we don't have a path to the destination, get a new path
@@ -207,7 +175,7 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 
 
 	//We have a path, follow it.
-	if (agent->m_mapReference->GetTileCoordinateOfPosition(agent->m_position) != agent->m_mapReference->GetTileCoordinateOfPosition(agent->m_currentPath.at(agent->m_currentPath.size() - 1)))
+	if (agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_position) != agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_currentPath.at(agent->m_currentPath.size() - 1)))
 	{
 		agent->m_intermediateGoalPosition = agent->m_currentPath.at(agent->m_currentPath.size() - 1);
 
@@ -254,9 +222,14 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 		data->m_action = MoveAction;
 		data->m_finalGoalDestination = goalDestination;
 
-		agent->AddActionToStack(data);
+		agent->m_planner->AddActionToStack(data);
 		return false;
 	}
+	//if (agent->m_arrowCount == 0)
+	//{
+	//	//ActionData* data = new ActionData();
+	//	//m_mapReference.GetNearest
+	//}
 
 	//if we are at our destination, we are ready to shoot	
 	return false;
@@ -265,7 +238,8 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 //  =========================================================================================
 bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
-	agent->m_animationSet->SetCurrentAnim("idle");
+	agent->m_animationSet->SetCurrentAnim("cast");
+
 	// easy outs ----------------------------------------------
 	if (!agent->GetIsAtPosition(goalDestination))
 	{
@@ -274,23 +248,23 @@ bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 		data->m_finalGoalDestination = goalDestination;
 		data->m_interactEntityId = -1;	//move actions don't have a target entity to interact with
 
-		agent->AddActionToStack(data);
+		agent->m_planner->AddActionToStack(data);
 		data = nullptr;
 		return false;
 	}
 
 	//if we are at our destination, we are ready to gather
-	PointOfInterest* targetPoi = agent->m_mapReference->GetPointOfInterestById(interactEntityId);
+	PointOfInterest* targetPoi = agent->m_planner->m_map->GetPointOfInterestById(interactEntityId);
 
 	//confirm agent is at targetPOI accessLocation
-	if (agent->m_mapReference->GetTileCoordinateOfPosition(agent->m_position) != targetPoi->m_accessCoordinate)
+	if (agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_position) != targetPoi->m_accessCoordinate)
 	{	
 		ActionData* data = new ActionData();
 		data->m_action = MoveAction;
-		data->m_finalGoalDestination = targetPoi->m_mapReference->GetWorldPositionOfMapCoordinate(targetPoi->m_accessCoordinate);
+		data->m_finalGoalDestination = targetPoi->m_map->GetWorldPositionOfMapCoordinate(targetPoi->m_accessCoordinate);
 		data->m_interactEntityId = -1; //move actions don't have a target entity to interact with
 
-		agent->AddActionToStack(data);
+		agent->m_planner->AddActionToStack(data);
 		data = nullptr;
 		return false;
 	}

@@ -49,7 +49,6 @@ NetSession* NetSession::CreateInstance()
 void NetSession::Startup()
 {
 	//register messages
-
 }
 
 //  =============================================================================
@@ -70,13 +69,24 @@ bool NetSession::BindPort(uint port, uint range)
 }
 
 //  =============================================================================
-bool NetSession::AddConnection(uint8_t connectionIndex, const NetAddress & address)
+bool NetSession::AddConnection(uint8_t connectionIndex, NetAddress* address)
 {
+	if (m_connections.size() > connectionIndex)
+	{
+		if(m_connections[connectionIndex] != nullptr)
+			return false;
+	}
+	else if(m_connections.size() < connectionIndex)
+	{
+		return false;
+	}
+
 	NetConnection* connection = new NetConnection();
 	connection->m_index = connectionIndex;
-	connection->m_address = address;
+	connection->m_address = address;	
 
 	m_connections.push_back(connection);
+	return true;
 }
 
 //  =============================================================================
@@ -125,6 +135,12 @@ void NetSession::LockMessageDefinitionRegistration()
 	}
 }
 
+NetConnection* NetSession::GetConnectionById(uint8_t id)
+{
+	return nullptr;
+	//m_connections.find(id)
+}
+
 //  =========================================================================================
 //  Callback
 //  =========================================================================================
@@ -137,7 +153,8 @@ NetMessageCallback GetRegisteredCallbackByName(const std::string& name)
 //  =========================================================================================
 NetMessageCallback GetRegisteredNetCallbackById(int id)
 {
-	return s_registeredMessageDefinitions.begin() + id;
+	return nullptr;
+	//return s_registeredMessageDefinitions.begin() + id;
 }
 
 //  =========================================================================================
@@ -151,17 +168,40 @@ void AddConnection(Command & cmd)
 	int index = cmd.GetNextInt();
 	std::string address = cmd.GetNextString();
 
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	if (theNetSession->m_connections.size() != index)
+	{
+		DevConsolePrintf(Rgba::RED, "Requested index %i is invalid", index);
+	}
+
 	if (IsStringNullOrEmpty(address))
-		DevConsolePrintf("Address is invalid");
+		DevConsolePrintf(Rgba::RED, "Address is invalid");
+
+	NetAddress* netAddress = new NetAddress(address.c_str());
+
+	NetSession::GetInstance()->AddConnection(index, netAddress);
+
+	DevConsolePrintf("Successfully added address (%s) at index %i", address.c_str(), index);
+
+	//cleanup
+	netAddress = nullptr;
+	theNetSession = nullptr;
 }
 
 //  =========================================================================================
-void SendPing(Command & cmd)
+void SendPing(Command& cmd)
 {
+	uint8_t index = (uint8_t)cmd.GetNextInt();
+
+	NetSession* theNetSession = NetSession::GetInstance();
+	//NetConnection* connection = theNetSession->GetConnection(index);
+
+	theNetSession = nullptr;
 }
 
 //  =========================================================================================
-void SendAdd(Command & cmd)
+void SendAdd(Command& cmd)
 {
 }
 

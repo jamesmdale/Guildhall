@@ -318,6 +318,7 @@
     <ClCompile Include="Map\MapGenStep_FillAndEdge.cpp" />
     <ClCompile Include="Map\MapGenStep_FromFile.cpp" />
     <ClCompile Include="Map\MapGenStep_Mutate.cpp" />
+    <ClCompile Include="Planner.cpp" />
     <ClCompile Include="PointOfInterest.cpp" />
     <ClCompile Include="Sprites\IsoSprite.cpp" />
     <ClCompile Include="Sprites\IsoSpriteAnim.cpp" />
@@ -356,6 +357,7 @@
     <ClInclude Include="Map\MapGenStep_FillAndEdge.hpp" />
     <ClInclude Include="Map\MapGenStep_FromFile.hpp" />
     <ClInclude Include="Map\MapGenStep_Mutate.hpp" />
+    <ClInclude Include="Planner.hpp" />
     <ClInclude Include="PointOfInterest.hpp" />
     <ClInclude Include="Sprites\IsoSprite.hpp" />
     <ClInclude Include="Sprites\IsoSpriteAnim.hpp" />

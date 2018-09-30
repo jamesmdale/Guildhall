@@ -13,7 +13,7 @@ public:
 
 public:
 	uint8_t m_index = UCHAR_MAX; //max of 255
-	NetAddress m_address;
+	NetAddress* m_address = nullptr;
 
 	std::vector<NetMessage*> m_outgoingMessages;
 };

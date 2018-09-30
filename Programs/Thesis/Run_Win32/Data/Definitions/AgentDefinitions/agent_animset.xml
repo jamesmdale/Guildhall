@@ -14,4 +14,13 @@
     <set id="cast">
       <anim id="agent.cast" />
    </set>
+   <set id="shoot">
+      <anim id="agent.shoot" />
+   </set>
+   <set id="die">
+      <anim id="agent.die" />
+   </set>
+   <set id="stand">
+       <anim id="agent.stand" />
+   </set>
 </animset>

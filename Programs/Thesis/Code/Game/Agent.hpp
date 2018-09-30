@@ -4,9 +4,9 @@
 #include "Engine\Math\Vector2.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\Transform2D.hpp"
-#include <stack>
 
 //forward declarations
+class Planner;
 class Map;
 class PlayingState;
 class Agent;
@@ -41,10 +41,6 @@ public:
 	bool GetPathToDestination(const Vector2& goalDestination);
 	bool GetIsAtPosition(const Vector2& goalDestination);
 
-	//queue management
-	void ProcessActionStack(float deltaSeconds);
-	void AddActionToStack(ActionData* actionData);
-	void ClearStack();
 
 public:
 
@@ -81,10 +77,7 @@ public:
 	IsoSpriteAnimSet* m_animationSet = nullptr;			
 
 	//helper references
-	Map* m_mapReference = nullptr;	
-
-private:
-	std::stack<ActionData*> m_actionStack;
+	Planner* m_planner = nullptr;
 };
 
 

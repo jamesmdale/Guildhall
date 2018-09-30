@@ -59,9 +59,10 @@ public:
 	bool IsTileBlockingAtCoordinate(const IntVector2& coordinate);
 	Tile* GetTileAtCoordinate(const IntVector2 & coordinate);
 	Agent* GetAgentById(int agentId);
-	PointOfInterest* GetPointOfInterestById(int poiId);
 
+	//point of interest helpers
 	PointOfInterest* GeneratePointOfInterest(int poiType);
+	PointOfInterest* GetPointOfInterestById(int poiId);	
 
 public:
 	std::string m_name;

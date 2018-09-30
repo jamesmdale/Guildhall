@@ -12,9 +12,9 @@ PointOfInterest::PointOfInterest(ePointOfInterestType poiType, const IntVector2&
 	m_startingCoordinate = startingCoordinate;
 	m_accessCoordinate = accessCoordinate;
 
-	m_mapReference = mapReference;
+	m_map = mapReference;
 
-	m_id = m_mapReference->m_pointsOfInterest.size();
+	m_id = m_map->m_pointsOfInterest.size();
 
 	//start stopwatch
 	m_refillTimer = new Stopwatch();
@@ -23,7 +23,7 @@ PointOfInterest::PointOfInterest(ePointOfInterestType poiType, const IntVector2&
 
 PointOfInterest::~PointOfInterest()
 {
-	m_mapReference = nullptr;
+	m_map = nullptr;
 }
 
 void PointOfInterest::Update(float deltaSeconds)
@@ -50,8 +50,8 @@ void PointOfInterest::Render()
 	}
 
 	AABB2 bounds;
-	bounds.mins = m_mapReference->GetWorldPositionOfMapCoordinate(m_startingCoordinate);
-	bounds.maxs = m_mapReference->GetWorldPositionOfMapCoordinate(m_startingCoordinate + IntVector2(2,2));
+	bounds.mins = m_map->GetWorldPositionOfMapCoordinate(m_startingCoordinate);
+	bounds.maxs = m_map->GetWorldPositionOfMapCoordinate(m_startingCoordinate + IntVector2(2,2));
 
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
 	theRenderer->DrawAABB(bounds, tint);

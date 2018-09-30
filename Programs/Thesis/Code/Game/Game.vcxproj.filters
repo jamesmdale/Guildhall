@@ -100,6 +100,9 @@
     <ClCompile Include="Actions\Action.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Planner.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -141,5 +144,6 @@
     <ClInclude Include="PointOfInterest.hpp" />
     <ClInclude Include="EncounterState.hpp" />
     <ClInclude Include="Actions\Action.hpp" />
+    <ClInclude Include="Planner.hpp" />
   </ItemGroup>
 </Project>

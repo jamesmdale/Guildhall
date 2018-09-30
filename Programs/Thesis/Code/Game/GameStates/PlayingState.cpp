@@ -41,7 +41,7 @@ void PlayingState::Initialize()
 	
 	//add random point of interest
 	PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
-	poiLocation->m_mapReference = m_map;
+	poiLocation->m_map = m_map;
 
 	m_map->m_pointsOfInterest.push_back(poiLocation);
 
@@ -63,15 +63,15 @@ void PlayingState::Initialize()
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
 	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));
 
-	Vector2 accessPosition = m_map->GetWorldPositionOfMapCoordinate(m_map->m_pointsOfInterest[0]->m_accessCoordinate);
+	//Vector2 accessPosition = m_map->GetWorldPositionOfMapCoordinate(m_map->m_pointsOfInterest[0]->m_accessCoordinate);
 
 	//test action for agent
-	ActionData* data = new ActionData();
-	data->m_action = GatherAction;
+	/*ActionData* data = new ActionData();
+	data->m_action = ShootAction;
 	data->m_finalGoalDestination = accessPosition;
-	data->m_interactEntityId = m_map->m_pointsOfInterest[0]->m_id;
+	data->m_interactEntityId = m_map->m_pointsOfInterest[0]->m_id;*/
 
-	m_map->m_agents[0]->AddActionToStack(data);
+	//m_map->m_agents[0]->AddActionToStack(data);
 
 	//cleanup
 	definition = nullptr;
@@ -159,40 +159,6 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 	}
 
 	return deltaSeconds; //new deltaSeconds
-}
-
-//  =============================================================================
-Widget* PlayingState::GetSelectedWidget(const std::vector<Widget*>& widgets)
-{
-	Vector2 mousePosition = InputSystem::GetInstance()->GetMouse()->GetInvertedMouseClientPosition();
-
-	//create a vector of widgets that are under the mouse position.  We will sort according to layer to find selected widget
-	Widget* selectedWidget = nullptr;
-
-	//add each widget at the mouse cursor to 
-	for (int widgetIndex = 0; widgetIndex < (int)widgets.size(); ++widgetIndex)
-	{
-		Widget* widget = widgets[widgetIndex];
-		Vector2 position = widget->m_transform2D->GetWorldPosition();
-		AABB2 widgetBounds = AABB2(position, widget->m_dimensionsInPixels.x, widget->m_dimensionsInPixels.y);
-
-		if (widgetBounds.IsPointInside(mousePosition) == true)
-		{
-			if (selectedWidget == nullptr )
-			{
-				selectedWidget = widget;
-			}
-			else if (widget->GetSortLayer() > selectedWidget->GetSortLayer())
-			{
-				selectedWidget = widget;
-			}
-		}
-
-		widget = nullptr;
-	}
-
-	// return 
-	return selectedWidget;
 }
 
 

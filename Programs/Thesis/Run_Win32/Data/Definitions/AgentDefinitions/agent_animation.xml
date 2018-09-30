@@ -23,5 +23,36 @@
    <frame src="agent.walk7" duration="0.12" />
    <frame src="agent.walk8" duration="0.12" />
 </anim>
+<anim id="agent.shoot" loop="loop">
+   <frame src="agent.shoot0" duration="0.16" />
+   <frame src="agent.shoot1" duration="0.16" />
+   <frame src="agent.shoot2" duration="0.16" />
+   <frame src="agent.shoot3" duration="0.16" />
+   <frame src="agent.shoot4" duration="0.16" />
+   <frame src="agent.shoot5" duration="0.16" />
+   <frame src="agent.shoot6" duration="0.16" />
+   <frame src="agent.shoot7" duration="0.16" />
+   <frame src="agent.shoot8" duration="0.16" />
+   <frame src="agent.shoot9" duration="0.16" />
+   <frame src="agent.shoot10" duration="0.16" />
+   <frame src="agent.shoot11" duration="0.16" />
+   <frame src="agent.shoot12" duration="0.16" />
+</anim>
+<anim id="agent.die" loop="loop">
+   <frame src="agent.die0" duration="0.16" />
+   <frame src="agent.die1" duration="0.16" />
+   <frame src="agent.die2" duration="0.16" />
+   <frame src="agent.die3" duration="0.16" />
+   <frame src="agent.die4" duration="0.16" />
+   <frame src="agent.die5" duration="0.16" />
+</anim>
+<anim id="agent.stand" loop="loop">
+   <frame src="agent.die5" duration="0.16" />
+   <frame src="agent.die4" duration="0.16" />
+   <frame src="agent.die3" duration="0.16" />
+   <frame src="agent.die2" duration="0.16" />
+   <frame src="agent.die1" duration="0.16" />
+   <frame src="agent.die0" duration="0.16" />
+</anim>
 
 

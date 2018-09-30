@@ -1,15 +1,13 @@
 #include "Engine\Net\NetConnection.hpp"
 
 //  =============================================================================
-NetMessage::NetMessage()
+NetConnection::NetConnection()
 {
-
 }
 
 //  =============================================================================
-NetMessage::~NetMessage()
+NetConnection::~NetConnection()
 {
-
 }
 
 //  =============================================================================

@@ -27,6 +27,8 @@ public:
 
 public:
 	int m_id = -1;
+	int m_health = 100;
+
 	Agent* m_agentCurrentlyServing = nullptr;
 
 	IntVector2 m_startingCoordinate;
@@ -34,7 +36,7 @@ public:
 	ePointOfInterestType m_type;
 
 	Stopwatch* m_refillTimer = new Stopwatch();
-	Map* m_mapReference = nullptr;
+	Map* m_map = nullptr;
 
 	//for now all poi are 2x2 blocks with an access point randomly touching one
 };

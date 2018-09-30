@@ -22,8 +22,8 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
-	bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);
-	Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);
+	//bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);
+	//Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);
 	
 public:
 

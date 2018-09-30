@@ -410,3 +410,481 @@
 </sprite>
 
 
+  <!--	Shoot up  -->
+
+<sprite id="agent.shoot.up0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,1024,64,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,1024,128,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,1024,192,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,1024,256,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,1024,320,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,1024,384,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,1024,448,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up7">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="448,1024,512,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up8">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="512,1024,576,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up9">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="576,1024,640,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up10">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="640,1024,704,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up11">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="704,1024,768,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.up12">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="768,1024,832,1088" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+
+  <!--	Shoot left  -->
+
+<sprite id="agent.shoot.left0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,1088,64,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,1088,128,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,1088,192,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,1088,256,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,1088,320,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,1088,384,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,1088,448,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left7">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="448,1088,512,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left8">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="512,1088,576,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left9">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="576,1088,640,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left10">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="640,1088,704,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left11">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="704,1088,768,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.left12">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="768,1088,832,1152" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+ <!--	Shoot down  -->
+
+<sprite id="agent.shoot.down0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,1152,64,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,1152,128,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,1152,192,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,1152,256,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,1152,320,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,1152,384,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,1152,448,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down7">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="448,1152,512,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down8">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="512,1152,576,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down9">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="576,1152,640,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down10">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="640,1152,704,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down11">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="704,1152,768,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.down12">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="768,1152,832,1216" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+ <!--	Shoot right  -->
+<sprite id="agent.shoot.right0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,1216,64,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,1216,128,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,1216,192,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,1216,256,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,1216,320,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,1216,384,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right6">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="384,1216,448,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right7">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="448,1216,512,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right8">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="512,1216,576,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right9">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="576,1216,640,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right10">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="640,1216,704,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right11">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="704,1216,768,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.shoot.right12">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="768,1216,832,1280" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+
+  <!--	Dead up  -->
+<sprite id="agent.dead.up0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,1280,64,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.up1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,1280,128,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.up2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,1280,192,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.up3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,1280,256,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.up4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,1280,320,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.up5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,1280,384,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+  <!--	Dead left  -->
+<sprite id="agent.dead.left0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,1280,64,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.left1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,1280,128,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.left2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,1280,192,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.left3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,1280,256,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.left4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,1280,320,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.left5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,1280,384,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+
+  <!--	Dead down  -->
+<sprite id="agent.dead.down0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,1280,64,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.down1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,1280,128,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.down2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,1280,192,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.down3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,1280,256,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.down4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,1280,320,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.down5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,1280,384,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+
+
+  <!--	Dead right  -->
+<sprite id="agent.dead.right0">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="0,1280,64,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.right1">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="64,1280,128,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.right2">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="128,1280,192,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.right3">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="192,1280,256,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.right4">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="256,1280,320,1344" />
+	<pivot xy="0.5,0" />
+</sprite>
+<sprite id="agent.dead.right5">
+	<diffuse src="Data\Images\Agents\Female_1.png" />
+	<ppu count="64" />
+	<uv layout="pixel" uvs="320,1280,384,1344" />
+	<pivot xy="0.5,0" />
+</sprite>

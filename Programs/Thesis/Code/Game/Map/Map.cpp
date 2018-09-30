@@ -8,7 +8,6 @@
 #include "Game\Map\Tile.hpp"
 
 
-
 //  =========================================================================================
 Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* renderScene)
 {

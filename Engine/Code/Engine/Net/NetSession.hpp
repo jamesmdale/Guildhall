@@ -19,7 +19,7 @@ public:
 	void Startup();
 
 	bool BindPort(uint port, uint range);
-	bool AddConnection(uint8_t connectionIndex, const NetAddress& address);
+	bool AddConnection(uint8_t connectionIndex, NetAddress* address);
 
 	//message processing
 	void ProcessIncomingMessages();
@@ -28,6 +28,8 @@ public:
 	//message registration
 	bool RegisterMessageDefinition(const std::string& name, NetMessageCallback callback);
 	void LockMessageDefinitionRegistration();
+
+	NetConnection* GetConnectionById(uint8_t id);
 
 public:
 	UDPSocket* m_socket = nullptr;
@@ -41,7 +43,7 @@ public:
 NetMessageCallback GetRegisteredNetCallbackById(int id);
 NetMessageCallback GetRegisteredCallbackByName(const std::string& name);
 
-std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
+static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
 
 //console commands
 void AddConnection(Command& cmd);
