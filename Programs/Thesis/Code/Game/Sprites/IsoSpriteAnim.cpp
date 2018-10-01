@@ -28,7 +28,7 @@ void IsoSpriteAnim::Update( float deltaSeconds )
 	float fractionelapsed = GetFractionElapsed();
 	if(fractionelapsed >= 1.f)
 	{
-		if(m_animDef->m_loopType == "loop")
+		if(m_animDef->m_doesLoop == true)
 		{
 			m_elapsedSeconds = 0.0f;
 			PlayFromStart();

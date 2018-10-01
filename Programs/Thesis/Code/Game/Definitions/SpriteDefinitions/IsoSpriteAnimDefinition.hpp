@@ -20,7 +20,7 @@ public:
 
 public:
 	std::string m_id;
-	std::string m_loopType;
+	bool m_doesLoop = false;
 	std::vector<IsoSpriteAnimFrameStruct> m_frameStructs;
 
 	//previously used a static list in sd1 (adventure)

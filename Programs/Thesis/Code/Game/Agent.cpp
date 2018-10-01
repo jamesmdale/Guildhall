@@ -18,7 +18,6 @@ Agent::Agent()
 }
 
 //  =========================================================================================
-
 Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapReference)
 {
 	m_position = startingPosition;
@@ -33,7 +32,6 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 }
 
 //  =========================================================================================
-
 Agent::~Agent()
 {
 	m_planner = nullptr;
@@ -216,6 +214,8 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 //  =========================================================================================
 bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
+	agent->m_animationSet->SetCurrentAnim("shoot");
+
 	if (!agent->GetIsAtPosition(goalDestination))
 	{
 		ActionData* data = new ActionData();
@@ -225,13 +225,19 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 		agent->m_planner->AddActionToStack(data);
 		return false;
 	}
-	//if (agent->m_arrowCount == 0)
-	//{
-	//	//ActionData* data = new ActionData();
-	//	//m_mapReference.GetNearest
-	//}
 
 	//if we are at our destination, we are ready to shoot	
+	if (agent->m_animationSet->GetCurrentAnim()->IsFinished())
+	{
+		//launch arrow in agent forward
+		agent->m_arrowCount--;
+		agent->m_animationSet->GetCurrentAnim()->PlayFromStart();
+	}
+	
+
+	if(agent->m_arrowCount == 0)
+		return true;
+
 	return false;
 }
 

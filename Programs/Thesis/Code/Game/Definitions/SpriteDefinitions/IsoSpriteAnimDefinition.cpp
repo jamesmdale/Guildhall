@@ -7,7 +7,7 @@ std::map<std::string, IsoSpriteAnimDefinition*> IsoSpriteAnimDefinition::s_isoSp
 IsoSpriteAnimDefinition::IsoSpriteAnimDefinition(const tinyxml2::XMLElement& element)
 {
 	m_id = ParseXmlAttribute(element, "id", m_id);
-	m_loopType = ParseXmlAttribute(element, "loop", m_loopType);
+	m_doesLoop = ParseXmlAttribute(element, "loop", m_doesLoop);
 
 	const tinyxml2::XMLElement* frameElement = element.FirstChildElement("frame");
 	if(frameElement)
