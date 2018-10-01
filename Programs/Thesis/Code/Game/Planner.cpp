@@ -152,11 +152,87 @@ void Planner::QueueShootActions()
 //  =========================================================================================
 void Planner::QueueRepairActions()
 {
+	//get coordinate of agent position
+	IntVector2 agentCoordinate = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
+
+	if (m_agent->m_lumberCount < g_maxResourceCarryAmount)
+	{
+		//if we need arrows, we must first gather arrows
+		PointOfInterest* gatherPoi = GetNearestPointOfInterestOfTypeFromCoordinate(LUMBERYARD_POI_TYPE, agentCoordinate);
+
+		ActionData* gatherActionData = new ActionData();
+		gatherActionData->m_action = GatherAction;
+		gatherActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(gatherPoi->m_accessCoordinate);
+		gatherActionData->m_interactEntityId = gatherPoi->m_id;
+
+		//after we gather lumber, we will find the nearest/lowest health poi to repair. Then we get the closest wall on that building as our coordinate
+		PointOfInterest* finalDestinationPoi = GetNearestPointOfInterestWithLowestHealthFromCoordinate(agentCoordinate);
+		IntVector2 closestPoiWallCoordiante = finalDestinationPoi->GetCoordinateBoundsClosestToCoordinate(agentCoordinate);
+
+		ActionData* repairActionData = new ActionData();
+		repairActionData->m_action = RepairAction;
+		repairActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(closestPoiWallCoordiante);
+		repairActionData->m_interactEntityId = finalDestinationPoi->m_id;
+
+		//push both actions onto stack;
+		m_actionStack.push(repairActionData);
+		m_actionStack.push(gatherActionData);
+	}
+	else
+	{
+		//we will find the nearest/lowest health poi to repair. Then we get the closest wall on that building as our coordinate
+		PointOfInterest* finalDestinationPoi = GetNearestPointOfInterestWithLowestHealthFromCoordinate(agentCoordinate);
+		IntVector2 closestPoiWallCoordiante = finalDestinationPoi->GetCoordinateBoundsClosestToCoordinate(agentCoordinate);		
+
+		ActionData* repairActionData = new ActionData();
+		repairActionData->m_action = RepairAction;
+		repairActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(closestPoiWallCoordiante);
+		repairActionData->m_interactEntityId = finalDestinationPoi->m_id;
+
+		m_actionStack.push(repairActionData);
+	}
 }
 
 //  =========================================================================================
 void Planner::QueueHealActions()
 {
+	//get coordinate of agent position
+	IntVector2 agentCoordinate = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
+
+	if (m_agent->m_bandageCount < g_maxResourceCarryAmount)
+	{
+		//if we need arrows, we must first gather arrows
+		PointOfInterest* gatherPoi = GetNearestPointOfInterestOfTypeFromCoordinate(MED_STATION_POI_TYPE, agentCoordinate);
+
+		ActionData* gatherActionData = new ActionData();
+		gatherActionData->m_action = GatherAction;
+		gatherActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(gatherPoi->m_accessCoordinate);
+		gatherActionData->m_interactEntityId = gatherPoi->m_id;
+
+		//after we gather arrows, we will find the nearest map edge and move there from the access coordinate
+		IntVector2 shootDestinationCoordinate = GetNearestTileCoordinateOfMapEdgeFromCoordinate(gatherPoi->m_accessCoordinate);
+
+		ActionData* repairActionData = new ActionData();
+		repairActionData->m_action = ShootAction;
+		repairActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(shootDestinationCoordinate);
+		repairActionData->m_interactEntityId = -1;
+
+		//push both actions onto stack;
+		m_actionStack.push(repairActionData);
+		m_actionStack.push(gatherActionData);
+	}
+	else
+	{
+		PointOfInterest* finalDestinationPoi = GetNearestPointOfInterestWithLowestHealthFromCoordinate(agentCoordinate);
+		IntVector2 closestWallCoordiante = finalDestinationPoi->GetCoordinateBoundsClosestToCoordinate(agentCoordinate);
+
+		ActionData* repairActionData = new ActionData();
+		repairActionData->m_action = RepairAction;
+		repairActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(closestWallCoordiante);
+		repairActionData->m_interactEntityId = finalDestinationPoi->m_id;
+
+		m_actionStack.push(repairActionData);
+	}
 }
 
 //  =========================================================================================
@@ -198,7 +274,6 @@ float Planner::GetAverageAgentHealth()
 
 	return (float)(totalHealthOfAllAgents / numAgents);
 }
-
 
 //  =========================================================================================
 PointOfInterest* Planner::GetNearestPointOfInterestOfTypeFromCoordinate(int poiType, const IntVector2& coodinate)

@@ -59,3 +59,39 @@ void PointOfInterest::Render()
 
 	theRenderer = nullptr;	
 }
+
+IntVector2 PointOfInterest::GetCoordinateBoundsClosestToCoordinate(const IntVector2& coordinate)
+{
+	//set start to left wall
+	IntVector2 closestCoordinate = IntVector2(m_startingCoordinate.x, m_startingCoordinate.y + 1);
+	int closestDistance = GetDistanceSquared(m_startingCoordinate, coordinate);
+	
+	//check lower bottom wall
+	IntVector2 boundsCoordinate = IntVector2(m_startingCoordinate.x + 1, m_startingCoordinate.y);
+	int boundsDistance = GetDistanceSquared(boundsCoordinate, coordinate);
+	if (GetDistanceSquared(boundsCoordinate, coordinate) < closestDistance)
+	{
+		closestCoordinate = boundsCoordinate;
+		closestDistance = boundsDistance;
+	}
+
+	//check right wall
+	boundsCoordinate = IntVector2(m_startingCoordinate.x + 2, m_startingCoordinate.y + 1);
+	boundsDistance = GetDistanceSquared(boundsCoordinate, coordinate);
+	if (GetDistanceSquared(boundsCoordinate, coordinate) < closestDistance)
+	{
+		closestCoordinate = boundsCoordinate;
+		closestDistance = boundsDistance;
+	}
+
+	//check upper wall
+	boundsCoordinate = IntVector2(m_startingCoordinate.x + 1, m_startingCoordinate.y + 2);
+	boundsDistance = GetDistanceSquared(boundsCoordinate, coordinate);
+	if (GetDistanceSquared(boundsCoordinate, coordinate) < closestDistance)
+	{
+		closestCoordinate = boundsCoordinate;
+		closestDistance = boundsDistance;
+	}
+
+	return closestCoordinate;
+}

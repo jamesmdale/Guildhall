@@ -10,7 +10,10 @@
 #include "Engine\Math\MathUtils.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Utility\AStar.hpp"
+#include "Engine\Time\Stopwatch.hpp"
 
+bool isFirstLoopThroughAction = true;
+Stopwatch* actionTimer = nullptr;
 
 //  =========================================================================================
 Agent::Agent()
@@ -29,6 +32,8 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 	m_animationSet->SetCurrentAnim("idle");
 
 	m_id = mapReference->m_agents.size();
+
+	actionTimer = new Stopwatch(GetMasterClock());
 }
 
 //  =========================================================================================
@@ -147,15 +152,19 @@ void Agent::UpdateSpriteRenderDirection()
 	m_spriteDirection = direction;
 }
 
-
-
-
 //  =========================================================================================
 //  Actions
 //  =========================================================================================
 
 bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
+	//used to handle any extra logic that must occur on first loop
+	if (isFirstLoopThroughAction)
+	{
+		//do first pass logic
+		isFirstLoopThroughAction = false;
+	}
+
 	UNUSED(interactEntityId);
 
 	bool isComplete = false;
@@ -165,7 +174,12 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 
 	// early outs ----------------------------------------------
 	if (agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_position) == agent->m_planner->m_map->GetTileCoordinateOfPosition(goalDestination))
+	{
+		//reset first loop action
+		isFirstLoopThroughAction = true;
 		return true;
+	}
+		
 
 	//if we don't have a path to the destination, get a new path
 	if (agent->m_currentPath.size() == 0)
@@ -189,6 +203,9 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 		{
 			agent->m_position = agent->m_currentPath.at(agent->m_currentPath.size() - 1);
 			agent->m_currentPath.erase(agent->m_currentPath.end() - 1);
+
+			//reset first loop action
+			isFirstLoopThroughAction = true;
 			return true;
 		}
 		else
@@ -205,7 +222,6 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 		}
 	}
 
-
 	agent->m_transform.SetLocalPosition(agent->m_position);
 
 	return isComplete;
@@ -214,6 +230,13 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 //  =========================================================================================
 bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
+	//used to handle any extra logic that must occur on first loop
+	if (isFirstLoopThroughAction)
+	{
+		//do first pass logic
+		isFirstLoopThroughAction = false;
+	}
+
 	agent->m_animationSet->SetCurrentAnim("shoot");
 
 	if (!agent->GetIsAtPosition(goalDestination))
@@ -232,13 +255,77 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 		//launch arrow in agent forward
 		agent->m_arrowCount--;
 		agent->m_animationSet->GetCurrentAnim()->PlayFromStart();
-	}
-	
+	}	
 
-	if(agent->m_arrowCount == 0)
+	if (agent->m_arrowCount == 0)
+	{
+		//reset first loop action
+		isFirstLoopThroughAction = true;
 		return true;
+	}
+		
+	return false;
+}
+
+//  =========================================================================================
+bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
+{
+	//used to handle any extra logic that must occur on first loop
+	if (isFirstLoopThroughAction)
+	{
+		//do first pass logic
+		actionTimer->SetTimer(1.f);
+		isFirstLoopThroughAction = false;
+	}
+
+	agent->m_animationSet->SetCurrentAnim("cast");
+
+	// easy outs ----------------------------------------------
+	if (!agent->GetIsAtPosition(goalDestination))
+	{
+		ActionData* data = new ActionData();
+		data->m_action = MoveAction;
+		data->m_finalGoalDestination = goalDestination;
+		data->m_interactEntityId = -1;	//move actions don't have a target entity to interact with
+
+		agent->m_planner->AddActionToStack(data);
+		data = nullptr;
+		return false;
+	}
+
+	//if we are at our destination, we are ready to repair
+	PointOfInterest* targetPoi = agent->m_planner->m_map->GetPointOfInterestById(interactEntityId);
+	
+	if (actionTimer->ResetIfElapsed())
+	{
+		targetPoi->m_health = ClampInt(targetPoi->m_health + g_baseRepairAmountPerSecond, 0, 100);
+	}
+
+	if (agent->m_lumberCount == 0 || targetPoi->m_health == 100)
+	{
+		//reset first loop action
+		isFirstLoopThroughAction = true;
+		return true;
+	}		
 
 	return false;
+}
+
+//  =========================================================================================
+bool HealAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
+{
+
+	//used to handle any extra logic that must occur on first loop
+	if (isFirstLoopThroughAction)
+	{
+		//do first pass logic
+		actionTimer->SetTimer(1.f);
+		isFirstLoopThroughAction = false;
+	}
+
+	//reset first loop action
+	isFirstLoopThroughAction = true;
+	return true;	
 }
 
 //  =========================================================================================

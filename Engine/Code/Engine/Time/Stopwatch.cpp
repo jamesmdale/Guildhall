@@ -7,8 +7,7 @@ Stopwatch::Stopwatch(Clock* referenceClock)
 {
 	SetClock(referenceClock);
 
-	m_startHPC = m_referenceClock->m_total.hpc;
-	
+	m_startHPC = m_referenceClock->m_total.hpc;	
 }
 
 Stopwatch::~Stopwatch()

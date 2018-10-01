@@ -41,7 +41,6 @@ public:
 	bool GetPathToDestination(const Vector2& goalDestination);
 	bool GetIsAtPosition(const Vector2& goalDestination);
 
-
 public:
 
 	int m_id = -1;
@@ -82,11 +81,11 @@ public:
 
 
 // actions ----------------------------------------------
-bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);      //walk between locations	
+bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);		//walk between locations	
 bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);	    //combat
-//bool RepairAction(const Vector2& goalDestination);				//repairs
-//bool BandageAction(const Vector2& goalDestination);				//heal
-bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);    //acquire resource at poiLocation	
+bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);									//repairs
+bool HealAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);										//heal
+bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEntityId);		//acquire resource at poiLocation	
 
 
 

@@ -26,6 +26,7 @@ extern float g_halfTileSize;
 //poi globals
 extern float g_baseRefillTimePerSecond;
 extern int g_maxResourceCarryAmount;
+extern int g_baseRepairAmountPerSecond;
 
 //convenience directions
 extern IntVector2 MAP_NORTH;

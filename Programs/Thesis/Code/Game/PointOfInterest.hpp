@@ -23,7 +23,7 @@ public:
 	void Update(float deltaSeconds);
 	void Render();
 
-	//later add types and stuff
+	IntVector2 GetCoordinateBoundsClosestToCoordinate(const IntVector2& coordinate);
 
 public:
 	int m_id = -1;
