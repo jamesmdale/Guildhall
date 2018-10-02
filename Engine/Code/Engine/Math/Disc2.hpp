@@ -37,5 +37,5 @@ public: // NOTE: this is one of the few cases where we break both the "m_" namin
 
 bool DoDiscsOverlap(const Disc2& a, const Disc2& b);
 bool DoDiscsOverlap(const Vector2& aCenter, float aRadius, const Vector2& bCenter, float bRadius);
-bool DoesDiscOverlapWithAABB2(const Vector2& aCenter, float aRadius, const Vector2& bBox);
+bool DoesDiscOverlapWithAABB2(const Disc2& disc, const AABB2& box);
 const Disc2 Interpolate(const Disc2& start, const Disc2& end, float fractionTowardEnd);

@@ -12,6 +12,8 @@
 enum ePointOfInterestType;
 class Agent;
 class PointOfInterest;
+class Bombardment;
+class Stopwatch;
 
 class Map
 {
@@ -55,6 +57,7 @@ public:
 	bool CheckIsCoordianteValid(const IntVector2& coordinate);
 	Vector2 GetRandomNonBlockedPositionInMapBounds();
 	IntVector2 GetRandomNonBlockedCoordinateInMapBounds();
+	IntVector2 GetRandomCoordinateInMapBounds();
 	Grid<int>* GetAsGrid();
 	bool IsTileBlockingAtCoordinate(const IntVector2& coordinate);
 	Tile* GetTileAtCoordinate(const IntVector2 & coordinate);
@@ -63,6 +66,11 @@ public:
 	//point of interest helpers
 	PointOfInterest* GeneratePointOfInterest(int poiType);
 	PointOfInterest* GetPointOfInterestById(int poiId);	
+
+	//bombardment collision
+	void DetectBombardmentToAgentCollision(Bombardment* bombardment);
+	void DetectBombardmentToPOICollision(Bombardment* bombardment);
+
 
 public:
 	std::string m_name;
@@ -73,8 +81,13 @@ public:
 
 	std::vector<Agent*> m_agents;
 	std::vector<PointOfInterest*> m_pointsOfInterest;
+	std::vector<Bombardment*> m_activeBombardments;
 
-	//RenderScene2D* m_renderScene = nullptr;
+	Stopwatch* m_bombardmentTimer = nullptr;
+	Stopwatch* m_threatTimer = nullptr;
+
+	float m_threat = 0.f;
+
 private:
 	bool m_isFullMapView = false;
 };

@@ -70,6 +70,7 @@ void Game::Initialize()
 	g_tileSize = Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow;
 	g_divideTileSize = 1 / (Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow);
 	g_halfTileSize = g_tileSize * 0.5f;
+	g_bombardmentExplosionSize = g_halfTileSize;
 
 	theRenderer->SetAmbientLightIntensity(0.15f);
 

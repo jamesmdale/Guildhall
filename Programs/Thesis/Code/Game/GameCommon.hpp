@@ -28,6 +28,13 @@ extern float g_baseRefillTimePerSecond;
 extern int g_maxResourceCarryAmount;
 extern int g_baseRepairAmountPerSecond;
 
+extern float g_bombardmentRatePerSecond;
+extern float g_bombardmentExplosionTime;
+extern float g_bombardmentExplosionSize;
+extern int g_bombardmentDamage;
+
+extern float g_threatIncreaseRatePerSecond;
+
 //convenience directions
 extern IntVector2 MAP_NORTH;
 extern IntVector2 MAP_SOUTH;

@@ -37,6 +37,8 @@ public:
 	void UpdateSpriteRenderDirection();
 	//void DetectAgentToTileCollision(Agent, Vector2 entityCenter, IntVector2 tileCoordinate, int tileDirection);	
 
+	void TakeDamage(int damageAmount);
+
 	//pathing
 	bool GetPathToDestination(const Vector2& goalDestination);
 	bool GetIsAtPosition(const Vector2& goalDestination);

@@ -6,6 +6,7 @@
 #include "Engine\Window\Window.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 
+//  =========================================================================================
 PointOfInterest::PointOfInterest(ePointOfInterestType poiType, const IntVector2& startingCoordinate, const IntVector2& accessCoordinate, Map* mapReference)
 {
 	m_type = poiType;
@@ -21,16 +22,19 @@ PointOfInterest::PointOfInterest(ePointOfInterestType poiType, const IntVector2&
 	m_refillTimer->SetTimer(g_baseRefillTimePerSecond);
 }
 
+//  =========================================================================================
 PointOfInterest::~PointOfInterest()
 {
 	m_map = nullptr;
 }
 
+//  =========================================================================================
 void PointOfInterest::Update(float deltaSeconds)
 {
 	UNUSED(deltaSeconds);
 }
 
+//  =========================================================================================
 void PointOfInterest::Render()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
@@ -60,6 +64,24 @@ void PointOfInterest::Render()
 	theRenderer = nullptr;	
 }
 
+//  =========================================================================================
+AABB2 PointOfInterest::GetWorldBounds()
+{
+	AABB2 bounds;
+	bounds.mins = m_map->GetWorldPositionOfMapCoordinate(m_startingCoordinate);
+	bounds.maxs = m_map->GetWorldPositionOfMapCoordinate(IntVector2(m_startingCoordinate.x + 2, m_startingCoordinate.y + 2));
+
+	return bounds;
+}
+
+//  =========================================================================================
+void PointOfInterest::TakeDamage(int damageAmount)
+{
+	m_health -= damageAmount;
+	m_health = ClampInt(m_health, 0, 100);
+}
+
+//  =========================================================================================
 IntVector2 PointOfInterest::GetCoordinateBoundsClosestToCoordinate(const IntVector2& coordinate)
 {
 	//set start to left wall

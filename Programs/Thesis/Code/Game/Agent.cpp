@@ -151,6 +151,12 @@ void Agent::UpdateSpriteRenderDirection()
 	//set the final direction.
 	m_spriteDirection = direction;
 }
+//  =========================================================================================
+void Agent::TakeDamage(int damageAmount)
+{
+	m_health -= damageAmount;
+	m_health = ClampInt(m_health, 0, 100);
+}
 
 //  =========================================================================================
 //  Actions

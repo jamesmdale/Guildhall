@@ -157,16 +157,17 @@ bool DoDiscsOverlap(const Vector2& aCenter, float aRadius, const Vector2& bCente
 
 }
 
-bool DoesDiscOverlapWithAABB2(const Vector2& aCenter, float aRadius, const Vector2& bBoxCenter)
+bool DoesDiscOverlapWithAABB2(const Disc2& disc, const AABB2& box)
 {
 	bool doesOverlap = false;
 
-	float displacement = GetDistance(aCenter,  bBoxCenter);
+	Vector2 directionToCenterVector = box.GetCenter() - disc.center;
+	float length = directionToCenterVector.NormalizeAndGetLength();
+
+	Vector2 positionToCheck = (directionToCenterVector * disc.radius) + disc.center;
 	
-	if(displacement < (aRadius * 2))
-	{
+	if(box.IsPointInside(positionToCheck))
 		doesOverlap = true;
-	}
 
 	return doesOverlap;
 }

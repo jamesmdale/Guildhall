@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine\Math\IntVector2.hpp"
 #include "Engine\Time\Stopwatch.hpp"
+#include "Engine\Math\AABB2.hpp"
 
 //forward declarations
 class Map;
@@ -22,6 +23,9 @@ public:
 
 	void Update(float deltaSeconds);
 	void Render();
+
+	AABB2 GetWorldBounds();
+	void TakeDamage(int damageAmount);
 
 	IntVector2 GetCoordinateBoundsClosestToCoordinate(const IntVector2& coordinate);
 

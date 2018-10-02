@@ -42,6 +42,8 @@ public:
 //net callbacks
 NetMessageCallback GetRegisteredNetCallbackById(int id);
 NetMessageCallback GetRegisteredCallbackByName(const std::string& name);
+NetMessageDefinition* GetRgisteredDefinitionById(int id);
+NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 
 static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
 

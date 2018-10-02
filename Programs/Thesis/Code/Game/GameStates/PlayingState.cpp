@@ -106,7 +106,7 @@ void PlayingState::Render()
 //  =============================================================================
 void PlayingState::PostRender()
 {
-	//post render steps here.
+	m_map->DeleteDeadEntities();
 }
 
 //  =============================================================================

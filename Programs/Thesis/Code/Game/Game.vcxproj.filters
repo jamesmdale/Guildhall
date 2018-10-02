@@ -103,6 +103,9 @@
     <ClCompile Include="Planner.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="Bombardment.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -145,5 +148,6 @@
     <ClInclude Include="EncounterState.hpp" />
     <ClInclude Include="Actions\Action.hpp" />
     <ClInclude Include="Planner.hpp" />
+    <ClInclude Include="Bombardment.hpp" />
   </ItemGroup>
 </Project>

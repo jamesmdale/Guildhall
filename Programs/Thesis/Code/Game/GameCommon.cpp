@@ -15,6 +15,15 @@ float g_baseRefillTimePerSecond = 0.5f;
 int g_maxResourceCarryAmount = 20;
 int g_baseRepairAmountPerSecond = 20;
 
+//bombardment globals
+float g_bombardmentRatePerSecond = 1.f;
+float g_bombardmentExplosionTime = 1.f;
+float g_bombardmentExplosionSize = 1.f;
+int g_bombardmentDamage = 10.f;
+
+//threat globals
+float g_threatIncreaseRatePerSecond = 1.f;
+
 //XY
 IntVector2 MAP_NORTH = IntVector2(0, 1);
 IntVector2 MAP_SOUTH = IntVector2(0, -1);

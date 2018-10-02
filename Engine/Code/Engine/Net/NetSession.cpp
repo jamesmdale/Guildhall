@@ -135,36 +135,62 @@ void NetSession::LockMessageDefinitionRegistration()
 	}
 }
 
+//  =========================================================================================
 NetConnection* NetSession::GetConnectionById(uint8_t id)
 {
-	return nullptr;
-	//m_connections.find(id)
-}
-
-//  =========================================================================================
-//  Callback
-//  =========================================================================================
-NetMessageCallback GetRegisteredCallbackByName(const std::string& name)
-{
-	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator;
-	definitionIterator =  s_registeredMessageDefinitions.find(name);
-	if (definitionIterator != s_registeredMessageDefinitions.end())
+	if (id < m_connections.size() )
 	{
-		return definitionIterator->second->m_callback;
+		return m_connections[(int)id];
 	}
 
 	return nullptr;	
 }
 
 //  =========================================================================================
-NetMessageCallback GetRegisteredNetCallbackById(int id)
+//  Callback
+//  =========================================================================================
+
+NetMessageDefinition* GetRgisteredDefinitionById(int id)
 {
 	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator;
 	std::advance(definitionIterator, id);
 	if (definitionIterator != s_registeredMessageDefinitions.end())
 	{
-		return definitionIterator->second->m_callback;
+		return definitionIterator->second;
 	}
+
+	return nullptr;
+}
+
+//  =========================================================================================
+NetMessageDefinition* GetRegisteredDefinitionByName(const std::string & name)
+{
+	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator;
+	definitionIterator = s_registeredMessageDefinitions.find(name);
+	if (definitionIterator != s_registeredMessageDefinitions.end())
+	{
+		return definitionIterator->second;
+	}
+
+	return nullptr;
+}
+
+//  =========================================================================================
+NetMessageCallback GetRegisteredCallbackByName(const std::string& name)
+{
+	NetMessageDefinition* definition = GetRegisteredDefinitionByName(name);
+	if(definition != nullptr)
+		return definition->m_callback;
+
+	return nullptr;
+}
+
+//  =========================================================================================
+NetMessageCallback GetRegisteredNetCallbackById(int id)
+{
+	NetMessageDefinition* definition = GetRgisteredDefinitionById(id);
+	if (definition != nullptr)
+		return definition->m_callback;
 
 	return nullptr;	
 }
@@ -174,9 +200,6 @@ NetMessageCallback GetRegisteredNetCallbackById(int id)
 //  =========================================================================================
 void AddConnection(Command& cmd)
 {
-	//uint8_t index;
-	//NetAddress address;
-
 	int index = cmd.GetNextInt();
 	std::string address = cmd.GetNextString();
 
@@ -217,25 +240,31 @@ void SendAdd(Command& cmd)
 {
 	int index = cmd.GetNextInt();
 
+	float parameter1 = cmd.GetNextFloat();
+	float parameter2 = cmd.GetNextFloat();
 
-	if (!args.get_next( &idx )) {
-		ConsoleErrorf( "Must provide an index." ); 
+	if (index == INT_MAX) {
+		DevConsolePrintf(Rgba::RED, "Must provide an index." ); 
+		return; 
+	}
+	NetSession* theNetSession = NetSession::GetInstance();
+	
+	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)index);
+	if (connection == nullptr) 
+	{
+		DevConsolePrintf( "No connection at index %u", index ); 
 		return; 
 	}
 
-	NetSession *session = Game::GetSession(); 
-	NetConnection *cp = session->get_connection( idx ); 
-	if (nullptr == cp) {
-		ConsoleErrorf( "No connection at index %u", idx ); 
-		return; 
-	}
-
-	NetMessage msg("ping"); 
-	char const *str = args.get_next_string(); 
-	msg.write_string( str ); 
+	NetMessage* message = new NetMessage("ping");
+	//char const *str = args.get_next_string();
+	//msg.write_string( str ); 
 
 	// messages are sent to connections (not sessions)
-	cp->send( msg ); 
+	connection->QueueMessage( message ); 
+
+	message = nullptr;
+	theNetSession = nullptr;
 }
 
 

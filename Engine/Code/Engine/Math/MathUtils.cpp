@@ -169,6 +169,24 @@ float ClampFloat(float inValue, float minInclusiveValue, float maxInclusiveValue
 	return clampedValue;
 }
 
+double ClampDouble(double inValue, double minInclusiveValue, double maxInclusiveValue)
+{
+	double clampedValue;
+	if (inValue > maxInclusiveValue)
+	{
+		clampedValue = maxInclusiveValue;
+	}
+	else if (inValue < minInclusiveValue)
+	{
+		clampedValue = minInclusiveValue;
+	}
+	else
+	{
+		clampedValue = inValue;
+	}
+	return clampedValue;
+}
+
 Vector3 ClampVector3Uniform(Vector3 inValue, Vector3 minInclusiveValue, Vector3 maxInclusiveValue)
 {
 	inValue.x = ClampFloat(inValue.x, minInclusiveValue.x, maxInclusiveValue.x);

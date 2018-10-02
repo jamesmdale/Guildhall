@@ -50,6 +50,7 @@ Vector3 GetRandomVector3InSphere(float positionMin, float positionMax);
 
 //clamp functions
 float ClampFloat(float inValue, float minInclusiveValue, float maxInclusiveValue);
+double ClampDouble(double inValue, double minInclusiveValue, double maxInclusiveValue);
 Vector3 ClampVector3Uniform(Vector3 inValue, Vector3 minInclusiveValue, Vector3 maxInclusiveValue);
 Vector4 ClampVector4Uniform(Vector4 inValue, Vector4 minInclusiveValue, Vector4 maxInclusiveValue);
 float ClampFloatZeroToOne(float inValue);

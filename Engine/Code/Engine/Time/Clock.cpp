@@ -51,6 +51,8 @@ void Clock::BeginFrame()
 
 	double elapsedSeconds = PerformanceCounterToSeconds(elapsedHPC);
 
+	elapsedSeconds = ClampDouble(elapsedSeconds, 0.0, 0.1);
+
 	AdvanceClock(elapsedHPC, elapsedSeconds);
 }
 
@@ -132,7 +134,7 @@ float GetMasterDeltaSeconds()
 		return std::numeric_limits<float>::min();
 	}
 
-	float deltaSeconds = ClampFloat((float)g_masterClock->m_frame.hpcSeconds, 0.0f, 10.f);
+	float deltaSeconds = ClampFloat((float)g_masterClock->m_frame.hpcSeconds, 0.0f, 0.1f);
 	return deltaSeconds;
 }
 

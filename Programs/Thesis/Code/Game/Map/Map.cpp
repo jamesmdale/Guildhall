@@ -1,11 +1,14 @@
 #include "Game\Map\Map.hpp"
 #include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Map\MapGenStep.hpp"
-#include "Engine\Window\Window.hpp"
 #include "Game\GameCommon.hpp"
 #include "Game\PointOfInterest.hpp"
 #include "Game\Agent.hpp"
 #include "Game\Map\Tile.hpp"
+#include "Game\Bombardment.hpp"
+#include "Engine\Window\Window.hpp"
+#include "Engine\Time\Stopwatch.hpp"
+#include "Engine\Math\MathUtils.hpp"
 
 
 //  =========================================================================================
@@ -49,6 +52,13 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 	}
 
 	m_mapWorldBounds = AABB2(0.f, 0.f, m_dimensions.x * g_tileSize, m_dimensions.y * g_tileSize);
+
+	//setup timeres
+	m_bombardmentTimer = new Stopwatch(GetMasterClock());
+	m_bombardmentTimer->SetTimer(1.f / g_bombardmentRatePerSecond);
+
+	m_threatTimer = new Stopwatch(GetMasterClock());
+	m_threatTimer->SetTimer(1.f / g_threatIncreaseRatePerSecond);
 }
 
 //  =========================================================================================
@@ -60,9 +70,27 @@ Map::~Map()
 //  =========================================================================================
 void Map::Update(float deltaSeconds)
 {
+	//udpate timers
+	if (m_threatTimer->DecrementAll() > 0)
+		m_threat++;
+
+	if (m_bombardmentTimer->DecrementAll() > 0)
+	{
+		Bombardment* bombardment = new Bombardment(GetWorldPositionOfMapCoordinate(GetRandomCoordinateInMapBounds()));
+		m_activeBombardments.push_back(bombardment);
+	}
+	
+
+	//udpate agents
 	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
 	{
 		m_agents[agentIndex]->Update(deltaSeconds);
+	}
+
+	//udpate bombardments
+	for (int bombardmentIndex = 0; bombardmentIndex < (int)m_activeBombardments.size(); ++bombardmentIndex)
+	{
+		m_activeBombardments[bombardmentIndex]->Update(deltaSeconds);
 	}
 }
 
@@ -83,11 +111,28 @@ void Map::Render()
 	{
 		m_agents[agentIndex]->Render();
 	}
+
+	for (int bombardmentIndex = 0; bombardmentIndex < (int)m_activeBombardments.size(); ++bombardmentIndex)
+	{
+		m_activeBombardments[bombardmentIndex]->Render();
+	}
 }
 
 //  =========================================================================================
 void Map::DeleteDeadEntities()
 {
+	for (int bombardmentIndex = 0; bombardmentIndex < (int)m_activeBombardments.size(); ++bombardmentIndex)
+	{
+		if (m_activeBombardments[bombardmentIndex]->IsExplosionComplete())
+		{
+			//check collision to all characters and buildings
+			DetectBombardmentToAgentCollision(m_activeBombardments[bombardmentIndex]);
+			DetectBombardmentToPOICollision(m_activeBombardments[bombardmentIndex]);
+
+			m_activeBombardments.erase(m_activeBombardments.begin() + bombardmentIndex);
+			--bombardmentIndex;
+		}
+	}
 }
 
 //  =========================================================================================
@@ -157,6 +202,31 @@ PointOfInterest* Map::GetPointOfInterestById(int poiId)
 
 	//if we never found the poi, return nullptr;
 	return nullptr;
+}
+
+//  =========================================================================================
+void Map::DetectBombardmentToAgentCollision(Bombardment* bombardment)
+{
+	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
+	{
+		if (bombardment->m_disc.IsPointInside(m_agents[agentIndex]->m_position))
+		{
+			m_agents[agentIndex]->TakeDamage(g_bombardmentDamage);
+		}
+	}
+}
+
+//  =========================================================================================
+void Map::DetectBombardmentToPOICollision(Bombardment* bombardment)
+{
+	for (int poiIndex = 0; poiIndex < (int)m_pointsOfInterest.size(); ++poiIndex)
+	{
+		AABB2 poiBounds = m_pointsOfInterest[poiIndex]->GetWorldBounds();
+		if (DoesDiscOverlapWithAABB2(bombardment->m_disc, poiBounds))
+		{
+			m_pointsOfInterest[poiIndex]->TakeDamage(g_bombardmentDamage);
+		}
+	}
 }
 
 //  =========================================================================================
@@ -339,4 +409,10 @@ IntVector2 Map::GetRandomNonBlockedCoordinateInMapBounds()
 	}
 
 	return randomPoint;
+}
+
+//  =========================================================================================
+IntVector2 Map::GetRandomCoordinateInMapBounds()
+{
+	return IntVector2(GetRandomIntInRange(0, m_dimensions.x - 1), GetRandomIntInRange(0, m_dimensions.y - 1));
 }

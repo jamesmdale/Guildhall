@@ -21,7 +21,7 @@ struct NetMessageDefinition
 class NetMessage : public BytePacker
 {
 public:
-	NetMessage();
+	NetMessage(const std::string& messageName);
 	~NetMessage();
 
 public:
