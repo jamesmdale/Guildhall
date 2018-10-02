@@ -384,13 +384,16 @@ Vector2 Map::GetRandomNonBlockedPositionInMapBounds()
 
 	while (isNonBlocked == false)
 	{
-		randomPoint = m_mapWorldBounds.GetRandomPointInBounds();
-		IntVector2 correspondingTileCoordinate = GetTileCoordinateOfPosition(randomPoint);
+		AABB2 validBounds = m_mapWorldBounds;
+		validBounds.maxs = Vector2(validBounds.maxs.x - g_tileSize, validBounds.maxs.y - g_tileSize);
 
+		randomPoint = validBounds.GetRandomPointInBounds();
+		IntVector2 correspondingTileCoordinate = GetTileCoordinateOfPosition(randomPoint);
+	
 		if (m_tiles[correspondingTileCoordinate.x + (correspondingTileCoordinate.y * m_dimensions.x)]->m_tileDefinition->m_allowsWalking)
 		{
 			isNonBlocked = true;
-		}
+		}	
 	}
 
 	return randomPoint;

@@ -74,7 +74,8 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 	Grid<int> grid = *currentMap->GetAsGrid();
 
 	ASSERT_OR_DIE(grid.IsCellValid(startPosition) && grid.IsCellValid(destinationPosition), "Search cells out of range");
-	ASSERT_OR_DIE(grid.GetValueAtCoordinate(startPosition) == 0 && grid.GetValueAtCoordinate(destinationPosition) == 0, "Search cell is blocked (inaccessible)");
+	int value = grid.GetValueAtCoordinate(destinationPosition);
+	//ASSERT_OR_DIE(grid.GetValueAtCoordinate(startPosition) == 0 && grid.GetValueAtCoordinate(destinationPosition) == 0, "Search cell is blocked (inaccessible)");
 
 	if (startPosition == destinationPosition)
 		return true;

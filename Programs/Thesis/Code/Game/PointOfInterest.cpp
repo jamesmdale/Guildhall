@@ -85,31 +85,31 @@ void PointOfInterest::TakeDamage(int damageAmount)
 IntVector2 PointOfInterest::GetCoordinateBoundsClosestToCoordinate(const IntVector2& coordinate)
 {
 	//set start to left wall
-	IntVector2 closestCoordinate = IntVector2(m_startingCoordinate.x, m_startingCoordinate.y + 1);
+	IntVector2 closestCoordinate = IntVector2(m_startingCoordinate.x - 1, m_startingCoordinate.y + 1);
 	int closestDistance = GetDistanceSquared(m_startingCoordinate, coordinate);
 	
 	//check lower bottom wall
-	IntVector2 boundsCoordinate = IntVector2(m_startingCoordinate.x + 1, m_startingCoordinate.y);
+	IntVector2 boundsCoordinate = IntVector2(m_startingCoordinate.x + 1, m_startingCoordinate.y - 1);
 	int boundsDistance = GetDistanceSquared(boundsCoordinate, coordinate);
-	if (GetDistanceSquared(boundsCoordinate, coordinate) < closestDistance)
+	if (GetDistanceSquared(boundsCoordinate, coordinate) < closestDistance && m_map->CheckIsCoordianteValid(boundsCoordinate))
 	{
 		closestCoordinate = boundsCoordinate;
 		closestDistance = boundsDistance;
 	}
 
 	//check right wall
-	boundsCoordinate = IntVector2(m_startingCoordinate.x + 2, m_startingCoordinate.y + 1);
+	boundsCoordinate = IntVector2(m_startingCoordinate.x + 3, m_startingCoordinate.y + 1);
 	boundsDistance = GetDistanceSquared(boundsCoordinate, coordinate);
-	if (GetDistanceSquared(boundsCoordinate, coordinate) < closestDistance)
+	if (GetDistanceSquared(boundsCoordinate, coordinate) < closestDistance && m_map->CheckIsCoordianteValid(boundsCoordinate))
 	{
 		closestCoordinate = boundsCoordinate;
 		closestDistance = boundsDistance;
 	}
 
 	//check upper wall
-	boundsCoordinate = IntVector2(m_startingCoordinate.x + 1, m_startingCoordinate.y + 2);
+	boundsCoordinate = IntVector2(m_startingCoordinate.x + 1, m_startingCoordinate.y + 3);
 	boundsDistance = GetDistanceSquared(boundsCoordinate, coordinate);
-	if (GetDistanceSquared(boundsCoordinate, coordinate) < closestDistance)
+	if (GetDistanceSquared(boundsCoordinate, coordinate) < closestDistance && m_map->CheckIsCoordianteValid(boundsCoordinate))
 	{
 		closestCoordinate = boundsCoordinate;
 		closestDistance = boundsDistance;

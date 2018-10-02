@@ -45,19 +45,35 @@ void PlayingState::Initialize()
 
 	m_map->m_pointsOfInterest.push_back(poiLocation);
 
+	//add random point of interest
+	poiLocation = m_map->GeneratePointOfInterest(LUMBERYARD_POI_TYPE);
+	poiLocation->m_map = m_map;
+
+	m_map->m_pointsOfInterest.push_back(poiLocation);
+
 	//test agent
-	IsoSpriteAnimSet* animSet = nullptr;
-	std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
-	if (spriteDefIterator != IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.end())
-	{
-		animSet = new IsoSpriteAnimSet(spriteDefIterator->second);
-	}
+	
 	IntVector2 dimensions = m_map->GetDimensions();
 
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
-	Vector2 randomStartingLocation = m_map->GetRandomNonBlockedPositionInMapBounds();
-	Agent* agent = new Agent(randomStartingLocation, animSet, m_map);
-	m_map->m_agents.push_back(agent);
+	
+	for (int i = 0; i < 10; ++i)
+	{
+		IsoSpriteAnimSet* animSet = nullptr;
+		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
+		if (spriteDefIterator != IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.end())
+		{
+			animSet = new IsoSpriteAnimSet(spriteDefIterator->second);
+		}
+
+		Vector2 randomStartingLocation = m_map->GetRandomNonBlockedPositionInMapBounds();
+		Agent* agent = new Agent(randomStartingLocation, animSet, m_map);
+		m_map->m_agents.push_back(agent);
+
+		animSet = nullptr;
+		agent = nullptr;
+	}
+	
 
 	//re-adjust camera center
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
@@ -74,9 +90,7 @@ void PlayingState::Initialize()
 	//m_map->m_agents[0]->AddActionToStack(data);
 
 	//cleanup
-	definition = nullptr;
-	agent = nullptr;
-	animSet = nullptr;
+	definition = nullptr;	
 	theRenderer = nullptr;
 }
 

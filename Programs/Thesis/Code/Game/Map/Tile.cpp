@@ -5,6 +5,8 @@
 #include "Engine\Renderer\Renderable2D.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Window\Window.hpp"
+#include "Game\GameCommon.hpp"
+#include "Engine\Core\StringUtils.hpp"
 
 Tile::Tile()
 {
@@ -74,6 +76,13 @@ void Tile::Render()
 	theRenderer->DrawTexturedAABB(GetWorldSpaceBounds(), *theRenderer->CreateOrGetTexture("Data/Images/Terrain_8x8.png"), m_tileDefinition->m_baseSpriteUVCoords.mins, m_tileDefinition->m_baseSpriteUVCoords.maxs, m_tint);
 	
 	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("default"));
+
+	if (g_showBlockedTileData)
+	{
+		int value = m_tileDefinition->m_allowsWalking == true ? 0 : 1;
+		std::string doesBlock = Stringf("%i", value);
+		theRenderer->DrawText2DCentered(GetWorldSpaceBounds().GetCenter(), doesBlock.c_str(), g_tileSize, Rgba::WHITE, 1.f, theRenderer->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	}
 
 	theRenderer = nullptr;
 }

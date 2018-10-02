@@ -71,8 +71,22 @@ void Agent::Render()
 	bounds.mins.y = 0.f - (spritePivot.y) * dimensions;
 	bounds.maxs.y = bounds.mins.y + 1.f * dimensions;
 
+	Rgba agentColor = Rgba::WHITE;
+	switch (m_planner->m_currentPlan)
+	{
+	case SHOOT_PLAN_TYPE:
+		agentColor = Rgba::RED;
+		break;
+	case REPAIR_PLAN_TYPE:
+		agentColor = Rgba::BLUE;
+		break;
+	case HEAL_PLAN_TYPE:
+		agentColor = Rgba::GREEN;
+		break;
+	}
+
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
-	theRenderer->DrawTexturedAABB(m_transform.GetWorldMatrix(), bounds, *theRenderer->CreateOrGetTexture(sprite.m_definition->m_diffuseSource), Vector2(sprite.GetNormalizedUV().mins.x, sprite.GetNormalizedUV().maxs.y), Vector2(sprite.GetNormalizedUV().maxs.x, sprite.GetNormalizedUV().mins.y), Rgba::WHITE);
+	theRenderer->DrawTexturedAABB(m_transform.GetWorldMatrix(), bounds, *theRenderer->CreateOrGetTexture(sprite.m_definition->m_diffuseSource), Vector2(sprite.GetNormalizedUV().mins.x, sprite.GetNormalizedUV().maxs.y), Vector2(sprite.GetNormalizedUV().maxs.x, sprite.GetNormalizedUV().mins.y), agentColor);
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("default"));
 
 	theRenderer = nullptr;
@@ -168,6 +182,7 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 	if (isFirstLoopThroughAction)
 	{
 		//do first pass logic
+		agent->m_currentPath.clear();
 		isFirstLoopThroughAction = false;
 	}
 
@@ -247,6 +262,8 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 
 	if (!agent->GetIsAtPosition(goalDestination))
 	{
+		isFirstLoopThroughAction = true;
+
 		ActionData* data = new ActionData();
 		data->m_action = MoveAction;
 		data->m_finalGoalDestination = goalDestination;
@@ -279,6 +296,8 @@ bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 	//used to handle any extra logic that must occur on first loop
 	if (isFirstLoopThroughAction)
 	{
+		PointOfInterest* targetPoi = agent->m_planner->m_map->GetPointOfInterestById(interactEntityId);
+		agent->m_forward = targetPoi->GetWorldBounds().GetCenter() - agent->m_position;
 		//do first pass logic
 		actionTimer->SetTimer(1.f);
 		isFirstLoopThroughAction = false;
@@ -289,6 +308,8 @@ bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 	// easy outs ----------------------------------------------
 	if (!agent->GetIsAtPosition(goalDestination))
 	{
+		isFirstLoopThroughAction = true;
+
 		ActionData* data = new ActionData();
 		data->m_action = MoveAction;
 		data->m_finalGoalDestination = goalDestination;
@@ -305,6 +326,7 @@ bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 	if (actionTimer->ResetIfElapsed())
 	{
 		targetPoi->m_health = ClampInt(targetPoi->m_health + g_baseRepairAmountPerSecond, 0, 100);
+		agent->m_lumberCount--;
 	}
 
 	if (agent->m_lumberCount == 0 || targetPoi->m_health == 100)
@@ -324,6 +346,9 @@ bool HealAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 	//used to handle any extra logic that must occur on first loop
 	if (isFirstLoopThroughAction)
 	{
+		Agent* targetAgent = agent->m_planner->m_map->GetAgentById(interactEntityId);
+		agent->m_forward = targetAgent->m_position - agent->m_position;
+
 		//do first pass logic
 		actionTimer->SetTimer(1.f);
 		isFirstLoopThroughAction = false;
@@ -342,6 +367,8 @@ bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 	// easy outs ----------------------------------------------
 	if (!agent->GetIsAtPosition(goalDestination))
 	{
+		isFirstLoopThroughAction = true;
+
 		ActionData* data = new ActionData();
 		data->m_action = MoveAction;
 		data->m_finalGoalDestination = goalDestination;
@@ -371,6 +398,8 @@ bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 	//if we are serving another agent or no one is assigned we either need to wait or set this agent to currently serving
 	if (targetPoi->m_agentCurrentlyServing != agent)
 	{
+		agent->m_forward = targetPoi->GetWorldBounds().GetCenter() - agent->m_position;
+
 		//no one is being served, we can begin acquiring resources from the poi
 		if (targetPoi->m_agentCurrentlyServing == nullptr)
 		{

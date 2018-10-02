@@ -101,7 +101,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType)
 		QueueShootActions();
 		break;
 	case REPAIR_PLAN_TYPE:
-		QueueShootActions();
+		QueueRepairActions();
 		break;
 	case HEAL_PLAN_TYPE:
 		QueueShootActions();
@@ -238,7 +238,7 @@ void Planner::QueueHealActions()
 //  =========================================================================================
 float Planner::GetShootCost()
 {
-	float cost = 0.0f;
+	float cost = 5.f;
 
 	return cost;
 }
@@ -246,15 +246,16 @@ float Planner::GetShootCost()
 //  =========================================================================================
 float Planner::GetRepairCost()
 {
-	float cost = 0.0f;
-
-	return cost;
+	if(m_map->m_pointsOfInterest[0]->m_health < 100)
+		return 1.f;
+	else
+		return 10.f;
 }
 
 //  =========================================================================================
 float Planner::GetHealCost()
 {
-	float cost = 0.0f;
+	float cost = 100.0f;
 
 	return cost;
 }

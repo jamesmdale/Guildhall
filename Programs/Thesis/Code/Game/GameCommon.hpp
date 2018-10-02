@@ -22,6 +22,7 @@ extern bool g_isQuitting;
 extern float g_tileSize;
 extern float g_divideTileSize;
 extern float g_halfTileSize;
+extern bool g_showBlockedTileData;
 
 //poi globals
 extern float g_baseRefillTimePerSecond;

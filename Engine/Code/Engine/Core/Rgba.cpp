@@ -12,6 +12,7 @@ const Rgba Rgba::GREEN = Rgba(0, 255, 0, 255);
 const Rgba Rgba::BLUE = Rgba(0, 0, 255, 255);
 const Rgba Rgba::LIGHT_BLUE = Rgba(126, 221, 214, 255);
 const Rgba Rgba::LIGHT_BLUE_TRANSPARENT = Rgba(126, 221, 214, 200);
+const Rgba Rgba::LIGHT_GREEN_TRANSPARENT = Rgba(124, 124, 248, 150);
 const Rgba Rgba::LIGHT_WHITE_TRANSPARENT = Rgba(255, 255, 255, 50);
 const Rgba Rgba::WHITE = Rgba(255, 255, 255, 255);
 const Rgba Rgba::YELLOW = Rgba(255, 255, 0, 255);

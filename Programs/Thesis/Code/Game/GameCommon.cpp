@@ -9,11 +9,12 @@ bool g_isQuitting = false;
 float g_tileSize = 1.f;
 float g_divideTileSize = 1.f;
 float g_halfTileSize = 1.f;
+bool g_showBlockedTileData = false;
 
 //poi globals
 float g_baseRefillTimePerSecond = 0.5f;
-int g_maxResourceCarryAmount = 20;
-int g_baseRepairAmountPerSecond = 20;
+int g_maxResourceCarryAmount = 5;
+int g_baseRepairAmountPerSecond = 5;
 
 //bombardment globals
 float g_bombardmentRatePerSecond = 1.f;
