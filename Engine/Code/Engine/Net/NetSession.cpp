@@ -146,21 +146,33 @@ NetConnection* NetSession::GetConnectionById(uint8_t id)
 //  =========================================================================================
 NetMessageCallback GetRegisteredCallbackByName(const std::string& name)
 {
-	NetMessageDefinition* definition =  s_registeredMessageDefinitions.find(name)->second;
-	return definition->m_callback;
+	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator;
+	definitionIterator =  s_registeredMessageDefinitions.find(name);
+	if (definitionIterator != s_registeredMessageDefinitions.end())
+	{
+		return definitionIterator->second->m_callback;
+	}
+
+	return nullptr;	
 }
 
 //  =========================================================================================
 NetMessageCallback GetRegisteredNetCallbackById(int id)
 {
-	return nullptr;
-	//return s_registeredMessageDefinitions.begin() + id;
+	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator;
+	std::advance(definitionIterator, id);
+	if (definitionIterator != s_registeredMessageDefinitions.end())
+	{
+		return definitionIterator->second->m_callback;
+	}
+
+	return nullptr;	
 }
 
 //  =========================================================================================
 //  Console Commands
 //  =========================================================================================
-void AddConnection(Command & cmd)
+void AddConnection(Command& cmd)
 {
 	//uint8_t index;
 	//NetAddress address;
@@ -203,6 +215,27 @@ void SendPing(Command& cmd)
 //  =========================================================================================
 void SendAdd(Command& cmd)
 {
+	int index = cmd.GetNextInt();
+
+
+	if (!args.get_next( &idx )) {
+		ConsoleErrorf( "Must provide an index." ); 
+		return; 
+	}
+
+	NetSession *session = Game::GetSession(); 
+	NetConnection *cp = session->get_connection( idx ); 
+	if (nullptr == cp) {
+		ConsoleErrorf( "No connection at index %u", idx ); 
+		return; 
+	}
+
+	NetMessage msg("ping"); 
+	char const *str = args.get_next_string(); 
+	msg.write_string( str ); 
+
+	// messages are sent to connections (not sessions)
+	cp->send( msg ); 
 }
 
 
