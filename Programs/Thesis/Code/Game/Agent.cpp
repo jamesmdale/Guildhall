@@ -256,6 +256,7 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 	{
 		//do first pass logic
 		isFirstLoopThroughAction = false;
+		actionTimer->SetTimer(g_maxActionPerformanceRatePerSecond * agent->m_combatEfficiency);		
 	}
 
 	agent->m_animationSet->SetCurrentAnim("shoot");
@@ -273,14 +274,15 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 	}
 
 	//if we are at our destination, we are ready to shoot	
-	if (agent->m_animationSet->GetCurrentAnim()->IsFinished())
+	if (actionTimer->DecrementAll() > 0)
 	{
 		//launch arrow in agent forward
+		ClampInt(agent->m_planner->m_map->m_threat - g_baseShootDamageAmountPerPerformance, 0, g_maxThreat);
 		agent->m_arrowCount--;
 		agent->m_animationSet->GetCurrentAnim()->PlayFromStart();
 	}	
 
-	if (agent->m_arrowCount == 0)
+	if (agent->m_arrowCount == 0 || agent->m_planner->m_map->m_threat == 0)
 	{
 		//reset first loop action
 		isFirstLoopThroughAction = true;
@@ -299,7 +301,7 @@ bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 		PointOfInterest* targetPoi = agent->m_planner->m_map->GetPointOfInterestById(interactEntityId);
 		agent->m_forward = targetPoi->GetWorldBounds().GetCenter() - agent->m_position;
 		//do first pass logic
-		actionTimer->SetTimer(1.f);
+		actionTimer->SetTimer(g_maxActionPerformanceRatePerSecond * agent->m_repairEfficiency);
 		isFirstLoopThroughAction = false;
 	}
 
@@ -323,9 +325,9 @@ bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 	//if we are at our destination, we are ready to repair
 	PointOfInterest* targetPoi = agent->m_planner->m_map->GetPointOfInterestById(interactEntityId);
 	
-	if (actionTimer->ResetIfElapsed())
+	if (actionTimer->DecrementAll() > 0)
 	{
-		targetPoi->m_health = ClampInt(targetPoi->m_health + g_baseRepairAmountPerSecond, 0, 100);
+		targetPoi->m_health = ClampInt(targetPoi->m_health + g_baseRepairAmountPerPerformance, 0, 100);
 		agent->m_lumberCount--;
 	}
 
@@ -342,7 +344,6 @@ bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 //  =========================================================================================
 bool HealAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
-
 	//used to handle any extra logic that must occur on first loop
 	if (isFirstLoopThroughAction)
 	{

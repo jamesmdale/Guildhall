@@ -28,28 +28,45 @@ PlayingState::~PlayingState()
 //  =============================================================================
 void PlayingState::Initialize()
 {
+	Window* theWindow = Window::GetInstance();
+	Renderer* theRenderer = Renderer::GetInstance();
+
+	//setup cameras
+	m_uiCamera = new Camera();
+	m_uiCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
+	m_uiCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
+	m_uiCamera->SetView(Matrix44::IDENTITY);
+
 	g_orthoZoom = Window::GetInstance()->GetClientHeight();
 	ORTHO_MAX = g_orthoZoom * 5.f;
 	ORTHO_MIN = g_orthoZoom;
 
-	Renderer* theRenderer = Renderer::GetInstance();
-	MeshBuilder meshBuilder;
-
 	// map creation
 	MapDefinition* definition = MapDefinition::s_definitions["Grass"];
 	m_map = new Map(definition, "TestMap", m_renderScene2D);	
+
+	//set globals based on map
+	g_maxCoordinateDistanceSquared = GetDistanceSquared(IntVector2::ZERO, m_map->GetDimensions());
 	
-	//add random point of interest
-	PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
-	poiLocation->m_map = m_map;
+	for (int armoryIndex = 0; armoryIndex < 2; ++armoryIndex)
+	{
+		//add random point of interest
+		PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
+		poiLocation->m_map = m_map;
 
-	m_map->m_pointsOfInterest.push_back(poiLocation);
+		m_map->m_pointsOfInterest.push_back(poiLocation);
+		poiLocation = nullptr;
+	}
+	
+	for (int lumberyardIndex = 0; lumberyardIndex < 2; ++lumberyardIndex)
+	{
+		//add random point of interest
+		PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(LUMBERYARD_POI_TYPE);
+		poiLocation->m_map = m_map;
 
-	//add random point of interest
-	poiLocation = m_map->GeneratePointOfInterest(LUMBERYARD_POI_TYPE);
-	poiLocation->m_map = m_map;
-
-	m_map->m_pointsOfInterest.push_back(poiLocation);
+		m_map->m_pointsOfInterest.push_back(poiLocation);
+		poiLocation = nullptr;
+	}
 
 	//test agent
 	
@@ -74,24 +91,14 @@ void PlayingState::Initialize()
 		agent = nullptr;
 	}
 	
-
 	//re-adjust camera center
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
 	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));
 
-	//Vector2 accessPosition = m_map->GetWorldPositionOfMapCoordinate(m_map->m_pointsOfInterest[0]->m_accessCoordinate);
-
-	//test action for agent
-	/*ActionData* data = new ActionData();
-	data->m_action = ShootAction;
-	data->m_finalGoalDestination = accessPosition;
-	data->m_interactEntityId = m_map->m_pointsOfInterest[0]->m_id;*/
-
-	//m_map->m_agents[0]->AddActionToStack(data);
-
 	//cleanup
 	definition = nullptr;	
 	theRenderer = nullptr;
+	theWindow = nullptr;
 }
 
 //  =============================================================================
@@ -113,6 +120,8 @@ void PlayingState::Render()
 	Game::GetInstance()->m_forwardRenderingPath2D->Render(m_renderScene2D);
 
 	m_map->Render();
+
+	RenderUI();
 
 	theRenderer = nullptr;
 }
@@ -172,7 +181,29 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 		m_camera->SetProjectionOrtho(g_orthoZoom, CLIENT_ASPECT, -1000.f, 1000.f);
 	}
 
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_T))
+	{
+		g_showBlockedTileData = !g_showBlockedTileData;
+	}
+
 	return deltaSeconds; //new deltaSeconds
+}
+
+//  =========================================================================================
+void PlayingState::RenderUI()
+{
+	TODO("Render UI");
+
+	Window* theWindow = Window::GetInstance();
+	Renderer* theRenderer = Renderer::GetInstance();
+	theRenderer->SetCamera(m_uiCamera);
+
+
+	//theRenderer->DrawText2DCentered()
+
+	////cleanup
+	//theRenderer->SetCamera(m_camera);
+	//theRenderer = nullptr;
 }
 
 

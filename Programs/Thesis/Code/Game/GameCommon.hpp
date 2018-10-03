@@ -23,18 +23,26 @@ extern float g_tileSize;
 extern float g_divideTileSize;
 extern float g_halfTileSize;
 extern bool g_showBlockedTileData;
+extern float g_maxCoordinateDistanceSquared;
 
 //poi globals
-extern float g_baseRefillTimePerSecond;
+extern float g_baseResourceRefillTimePerSecond;
 extern int g_maxResourceCarryAmount;
-extern int g_baseRepairAmountPerSecond;
 
+//action performance globals
+extern float g_baseRepairAmountPerPerformance;
+extern float g_baseShootDamageAmountPerPerformance;
+extern float g_maxActionPerformanceRatePerSecond;
+
+//bombardment globals
 extern float g_bombardmentRatePerSecond;
 extern float g_bombardmentExplosionTime;
 extern float g_bombardmentExplosionSize;
 extern int g_bombardmentDamage;
 
+//  threat globals
 extern float g_threatIncreaseRatePerSecond;
+extern float g_maxThreat;
 
 //convenience directions
 extern IntVector2 MAP_NORTH;

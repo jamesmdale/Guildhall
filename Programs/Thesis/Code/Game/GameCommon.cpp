@@ -11,19 +11,26 @@ float g_divideTileSize = 1.f;
 float g_halfTileSize = 1.f;
 bool g_showBlockedTileData = false;
 
+float g_maxCoordinateDistanceSquared = 0.f;
+
 //poi globals
-float g_baseRefillTimePerSecond = 0.5f;
+float g_baseResourceRefillTimePerSecond = 0.5f;
 int g_maxResourceCarryAmount = 5;
-int g_baseRepairAmountPerSecond = 5;
+
+//action performance globals
+float g_baseRepairAmountPerPerformance = 5.f;
+float g_baseShootDamageAmountPerPerformance = 5.f;
+float g_maxActionPerformanceRatePerSecond = 1.f;
 
 //bombardment globals
-float g_bombardmentRatePerSecond = 1.f;
+float g_bombardmentRatePerSecond = 4.f;
 float g_bombardmentExplosionTime = 1.f;
 float g_bombardmentExplosionSize = 1.f;
 int g_bombardmentDamage = 10.f;
 
 //threat globals
 float g_threatIncreaseRatePerSecond = 1.f;
+float g_maxThreat = 500.f;
 
 //XY
 IntVector2 MAP_NORTH = IntVector2(0, 1);

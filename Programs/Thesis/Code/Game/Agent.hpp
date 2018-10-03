@@ -49,16 +49,16 @@ public:
 	int m_health = 100;
 
 	// bias ----------------------------------------------
-	//float m_combatBias = 0.33f;
-	//float m_repairBias = 0.33f;
-	//float m_healBias = 0.33f;
+	float m_combatBias = 0.33f;
+	float m_repairBias = 0.33f;
+	float m_healBias = 0.33f;
 
 	// skill ----------------------------------------------
-	//float m_combatSkill = 1.f;
-	//float m_repairSkill = 1.f;
-	//float m_healSkill = 1.f
+	float m_combatEfficiency = 1.f;
+	float m_repairEfficiency = 1.f;
+	float m_healEfficiency = 1.f;
 
-	// inventory
+	// inventory ----------------------------------------------
 	int m_arrowCount = 0;
 	int m_bandageCount = 0;
 	int m_lumberCount = 0;
@@ -79,6 +79,8 @@ public:
 
 	//helper references
 	Planner* m_planner = nullptr;
+
+	Stopwatch* actionPerformanceTimer = nullptr;
 };
 
 

@@ -238,9 +238,55 @@ void Planner::QueueHealActions()
 //  =========================================================================================
 float Planner::GetShootCost()
 {
-	float cost = 5.f;
+	/*factors to consider:
+		arrowCount
+		positionFromNearestWall
+		currentThreat
+		skill
+		bias
+	*/
 
-	return cost;
+	//if there is no threat, we shouldn't shoot
+	if(m_map->m_threat == 0)
+		return 0.f;
+
+	//agent's tile coord to be used throughout calculations
+	IntVector2 agentTileCoord = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
+
+	//get arrow capacity efficiency
+	float percentageOfArrowCapacity = (float)m_agent->m_arrowCount/(float)g_maxResourceCarryAmount;
+	
+	//only if we aren't full should we consider distance to armory and gathering costs
+	float distanceSquaredToArmorySquared = 0.f;
+	IntVector2 startingCoordToWall = agentTileCoord;
+	float timeToGatherToFull = 0.f;
+
+	if (percentageOfArrowCapacity < 0.75f)
+	{
+		PointOfInterest* nearestPoi = GetNearestPointOfInterestOfTypeFromCoordinate(ARMORY_POI_TYPE, agentTileCoord);
+
+		float distanceSquaredToArmory = (float)GetDistanceSquared(agentTileCoord, nearestPoi->m_accessCoordinate);	
+
+		timeToGatherToFull = (g_maxResourceCarryAmount - m_agent->m_arrowCount) * (1/g_baseResourceRefillTimePerSecond);
+		startingCoordToWall = nearestPoi->m_accessCoordinate;
+		percentageOfArrowCapacity = 1.f;
+
+		//cleanup
+		nearestPoi = nullptr;
+	}
+
+	
+	//get distance to nearest wall
+	float distanceToNearestWallSquared = (float)GetDistanceSquared(GetNearestTileCoordinateOfMapEdgeFromCoordinate(startingCoordToWall), startingCoordToWall);
+	float timeToDepleteInventory = m_agent->m_combatEfficiency * g_maxActionPerformanceRatePerSecond * (float)m_agent->m_arrowCount;
+
+
+	//combine it all for score.
+	float threatScore = (g_maxThreat - m_map->m_threat + (g_maxThreat - (g_maxThreat * 0.8f)))/g_maxThreat * m_agent->m_combatBias;														//amount we care about threat
+	float totalDistanceSquaredRequirement = (distanceSquaredToArmorySquared + distanceToNearestWallSquared)/g_maxCoordinateDistanceSquared;				//total distance we'd have to travel
+	float totalTimeToCompleteTask = timeToGatherToFull + timeToDepleteInventory;																		//total time to complete task			
+
+	return (1 - threatScore) * total 
 }
 
 //  =========================================================================================

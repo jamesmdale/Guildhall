@@ -425,6 +425,7 @@ void ClearBits( unsigned int& bitFlags32, unsigned int flagToClear )
 	bitFlags32 &= actualMask;
 }
 
+
 IntVector2 ConvertVector2ToIntVector2(Vector2 vectorToConvert)
 {
 	return IntVector2((int)vectorToConvert.x, (int)vectorToConvert.y);

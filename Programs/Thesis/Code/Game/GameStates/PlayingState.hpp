@@ -22,6 +22,8 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
+	void RenderUI();
+
 	//bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);
 	//Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);
 	
@@ -29,6 +31,8 @@ public:
 
 	Stopwatch* m_gameTime = nullptr;
 	Widget* m_currentSelectedWidget = nullptr;
+
+	Camera* m_uiCamera = nullptr;
 
 	Map* m_map = nullptr;
 };

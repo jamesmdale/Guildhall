@@ -28,19 +28,6 @@ public:
 	void Render();
 	void Update(float deltaSeconds);
 
-	//spawn functions
-	//void SpawnActorByName(std::string actorType, Vector2 spawnPosition);
-	//void SpawnActorByDefinition(ActorDefinition* actorType, Vector2 spawnPosition);
-
-	//Collision detections
-	
-	/*void ActorToTileCollision();
-	void DetectActorToTileCollision(int entityIndex, Vector2 entityCenter, IntVector2 tileCoordinate, int tileDirection);
-	void ActorToPortalCollision();
-	void ActorToActorCollision();
-	void ActorToItemCollision();
-	void ActorToActorAttackCollision();*/
-
 	//Cleanup functions
 	void DeleteDeadEntities();
 
