@@ -248,7 +248,7 @@ float Planner::GetShootCost()
 
 	//if there is no threat, we shouldn't shoot
 	if(m_map->m_threat == 0)
-		return 0.f;
+		return 9999.f;
 
 	//agent's tile coord to be used throughout calculations
 	IntVector2 agentTileCoord = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
@@ -265,7 +265,7 @@ float Planner::GetShootCost()
 	{
 		PointOfInterest* nearestPoi = GetNearestPointOfInterestOfTypeFromCoordinate(ARMORY_POI_TYPE, agentTileCoord);
 
-		float distanceSquaredToArmory = (float)GetDistanceSquared(agentTileCoord, nearestPoi->m_accessCoordinate);	
+		distanceSquaredToArmorySquared = (float)GetDistanceSquared(agentTileCoord, nearestPoi->m_accessCoordinate);	
 
 		timeToGatherToFull = (g_maxResourceCarryAmount - m_agent->m_arrowCount) * (1/g_baseResourceRefillTimePerSecond);
 		startingCoordToWall = nearestPoi->m_accessCoordinate;
@@ -274,34 +274,89 @@ float Planner::GetShootCost()
 		//cleanup
 		nearestPoi = nullptr;
 	}
-
 	
 	//get distance to nearest wall
 	float distanceToNearestWallSquared = (float)GetDistanceSquared(GetNearestTileCoordinateOfMapEdgeFromCoordinate(startingCoordToWall), startingCoordToWall);
-	float timeToDepleteInventory = m_agent->m_combatEfficiency * g_maxActionPerformanceRatePerSecond * (float)m_agent->m_arrowCount;
+	
+	//get combatefficiency * performance rate * numArrows = total time
+	float timeToDepleteInventory = (g_maxActionPerformanceRatePerSecond * (percentageOfArrowCapacity * g_maxResourceCarryAmount)) / m_agent->m_combatEfficiency;
 
+	//get max calculations for gather and depletion
+	float maxTimeToGatherToFull = g_maxResourceCarryAmount / g_baseResourceRefillTimePerSecond;
+	float maxTimeToDepleteInventory = (g_maxActionPerformanceRatePerSecond * g_maxResourceCarryAmount) / g_minSkillEfficiency;
+
+	//	threat score graph
+	// https://www.desmos.com/calculator/rw09ludgqr
 
 	//combine it all for score.
-	float threatScore = (g_maxThreat - m_map->m_threat + (g_maxThreat - (g_maxThreat * 0.8f)))/g_maxThreat * m_agent->m_combatBias;														//amount we care about threat
+	float threatScore = ((g_maxThreat - m_map->m_threat + (std::pow( (g_maxThreat - (g_maxThreat * 0.8f)),3)))/std::pow(g_maxThreat,3)) / (1 - m_agent->m_combatBias);														//amount we care about threat
 	float totalDistanceSquaredRequirement = (distanceSquaredToArmorySquared + distanceToNearestWallSquared)/g_maxCoordinateDistanceSquared;				//total distance we'd have to travel
-	float totalTimeToCompleteTask = timeToGatherToFull + timeToDepleteInventory;																		//total time to complete task			
+	float totalTimeToCompleteTask =  (timeToGatherToFull + timeToDepleteInventory) / (maxTimeToGatherToFull +  maxTimeToDepleteInventory);																		//total time to complete task			
 
-	return (1 - threatScore) * total 
+	//take weighted mean
+	return (5.f * (1.f - ClampFloat(threatScore, 0.f, 1.f)) + (0.25f * totalDistanceSquaredRequirement) + totalTimeToCompleteTask) / (5.f + 0.25f + 1.f);
 }
 
 //  =========================================================================================
 float Planner::GetRepairCost()
 {
-	if(m_map->m_pointsOfInterest[0]->m_health < 100)
-		return 1.f;
-	else
-		return 10.f;
+	//if there is no threat, we shouldn't shoot
+
+	float averageHealth = m_map->GetAveragePOIHealth();
+	if(averageHealth == (float)g_maxHealth)
+		return 9999.f;
+
+	//agent's tile coord to be used throughout calculations
+	IntVector2 agentTileCoord = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
+
+	//get arrow capacity efficiency
+	float percentOfLumberCapacity = (float)m_agent->m_lumberCount/(float)g_maxResourceCarryAmount;
+
+	//only if we aren't full should we consider distance to armory and gathering costs
+	float distanceSquaredToLumberyardSquared = 0.f;
+	IntVector2 startingCoordToMostDamagedPOI = agentTileCoord;
+	float timeToGatherToFull = 0.f;
+
+	if (percentOfLumberCapacity < 0.75f)
+	{
+		PointOfInterest* nearestPoi = GetNearestPointOfInterestOfTypeFromCoordinate(LUMBERYARD_POI_TYPE, agentTileCoord);
+
+		distanceSquaredToLumberyardSquared = (float)GetDistanceSquared(agentTileCoord, nearestPoi->m_accessCoordinate);	
+
+		timeToGatherToFull = (g_maxResourceCarryAmount - m_agent->m_arrowCount) * (1/g_baseResourceRefillTimePerSecond);
+		startingCoordToMostDamagedPOI = nearestPoi->m_accessCoordinate;
+		percentOfLumberCapacity = 1.f;
+
+		//cleanup
+		nearestPoi = nullptr;
+	}
+
+	//get distance to nearest wall
+	float distanceToNearestDamagedPOI = (float)GetDistanceSquared(GetNearestPointOfInterestWithLowestHealthFromCoordinate(startingCoordToMostDamagedPOI)->GetCoordinateBoundsClosestToCoordinate(startingCoordToMostDamagedPOI), startingCoordToMostDamagedPOI);
+
+	//get combatefficiency * performance rate * numArrows = total time
+	float timeToDepleteInventory = (g_maxActionPerformanceRatePerSecond * (percentOfLumberCapacity * g_maxResourceCarryAmount)) / m_agent->m_repairEfficiency;
+
+	//get max calculations for gather and depletion
+	float maxTimeToGatherToFull = g_maxResourceCarryAmount / g_baseResourceRefillTimePerSecond;
+	float maxTimeToDepleteInventory = (g_maxActionPerformanceRatePerSecond * g_maxResourceCarryAmount) / g_minSkillEfficiency;
+
+	//	threat score graph
+	// https://www.desmos.com/calculator/rw09ludgqr
+
+	//combine it all for score.
+	float poiHealthUrgency = ((g_maxHealth - averageHealth + (std::pow( (g_maxHealth - (g_maxHealth * 0.8f)),3)))/std::pow(g_maxHealth,3)) / (1 - m_agent->m_repairBias);														//amount we care about threat
+	float totalDistanceSquaredRequirement = (distanceSquaredToLumberyardSquared + distanceToNearestDamagedPOI)/g_maxCoordinateDistanceSquared;				//total distance we'd have to travel
+	float totalTimeToCompleteTask =  (timeToGatherToFull + timeToDepleteInventory) / (maxTimeToGatherToFull +  maxTimeToDepleteInventory);																		//total time to complete task			
+
+																																																				//take weighted mean
+	return (5.f * (1.f - ClampFloat(poiHealthUrgency, 0.f, 1.f)) + (0.25f * totalDistanceSquaredRequirement) + totalTimeToCompleteTask) / (5.f + 0.25f + 1.f);
 }
 
 //  =========================================================================================
 float Planner::GetHealCost()
 {
-	float cost = 100.0f;
+	float cost = 99999.f;
 
 	return cost;
 }

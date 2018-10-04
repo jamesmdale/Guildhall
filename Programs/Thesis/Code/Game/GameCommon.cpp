@@ -13,6 +13,9 @@ bool g_showBlockedTileData = false;
 
 float g_maxCoordinateDistanceSquared = 0.f;
 
+//general globals
+int g_maxHealth = 100;
+
 //poi globals
 float g_baseResourceRefillTimePerSecond = 0.5f;
 int g_maxResourceCarryAmount = 5;
@@ -21,6 +24,8 @@ int g_maxResourceCarryAmount = 5;
 float g_baseRepairAmountPerPerformance = 5.f;
 float g_baseShootDamageAmountPerPerformance = 5.f;
 float g_maxActionPerformanceRatePerSecond = 1.f;
+
+float g_minSkillEfficiency = 0.1f;
 
 //bombardment globals
 float g_bombardmentRatePerSecond = 4.f;

@@ -48,7 +48,7 @@ void PlayingState::Initialize()
 	//set globals based on map
 	g_maxCoordinateDistanceSquared = GetDistanceSquared(IntVector2::ZERO, m_map->GetDimensions());
 	
-	for (int armoryIndex = 0; armoryIndex < 2; ++armoryIndex)
+	for (int armoryIndex = 0; armoryIndex < 10; ++armoryIndex)
 	{
 		//add random point of interest
 		PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
@@ -58,7 +58,7 @@ void PlayingState::Initialize()
 		poiLocation = nullptr;
 	}
 	
-	for (int lumberyardIndex = 0; lumberyardIndex < 2; ++lumberyardIndex)
+	for (int lumberyardIndex = 0; lumberyardIndex < 10; ++lumberyardIndex)
 	{
 		//add random point of interest
 		PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(LUMBERYARD_POI_TYPE);
@@ -74,7 +74,7 @@ void PlayingState::Initialize()
 
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
 	
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < 500; ++i)
 	{
 		IsoSpriteAnimSet* animSet = nullptr;
 		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
