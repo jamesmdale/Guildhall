@@ -48,10 +48,11 @@ NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
 
 //console commands
-void AddConnection(Command& cmd);
+void AddConnectionToIndex(Command& cmd);
 void SendPing(Command& cmd);
 void SendAdd(Command& cmd);
 
-void OnPing(Command& cmd);
-void OnPong(Command& cmd);
-void OnAdd(Command& cmd);
+//message registrations
+bool OnPing(const NetMessage& message, NetConnection* fromConnection);
+bool OnPong(const NetMessage& message, NetConnection* fromConnection);
+bool OnAdd(const NetMessage& message, NetConnection* fromConnection);

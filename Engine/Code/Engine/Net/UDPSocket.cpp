@@ -1,19 +1,46 @@
 #include "Engine\Net\UDPSocket.hpp"
+#include "Engine\Net\RemoteCommandService.hpp"
 #include "Engine\Core\WindowsCommon.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\StringUtils.hpp"
 
 
-
+//  =============================================================================
 UDPSocket::UDPSocket()
 {
 }
 
-
+//  =============================================================================
 UDPSocket::~UDPSocket()
 {
 }
 
+//  =============================================================================
+bool UDPSocket::BindToPort(int port)
+{
+	NetAddress address;	
+	bool success = GetLocalIP(&address, (int)port);
+
+	if (!success)
+	{
+		DebuggerPrintf("Address not available");
+		return false;
+	}
+
+	if (!Bind(address, 5))
+	{
+		DebuggerPrintf("Failed to bind.");
+		return false;
+	}
+	else
+	{
+		SetBlocking(false);
+		DebuggerPrintf("Socket bound: %s", GetAddress().ToString().c_str());
+		return true;
+	}
+}
+
+//  =============================================================================
 bool UDPSocket::Bind(NetAddress& address, uint16_t portRange)
 {
 	// create the socket 
@@ -48,10 +75,10 @@ bool UDPSocket::Bind(NetAddress& address, uint16_t portRange)
 			attemptCount++;
 		}
 	}	
-
 	return false; 
 }
 
+//  =============================================================================
 size_t UDPSocket::SendTo(const NetAddress& address, const void* data, const size_t byteCount)
 {
 	if (IsClosed())
@@ -92,6 +119,7 @@ size_t UDPSocket::SendTo(const NetAddress& address, const void* data, const size
 	}
 }
 
+//  =============================================================================
 size_t UDPSocket::ReceiveFrom(NetAddress* outAddress, const void* outBuffer, const size_t maxReadSize)
 {
 	if (IsClosed())
@@ -125,6 +153,5 @@ size_t UDPSocket::ReceiveFrom(NetAddress* outAddress, const void* outBuffer, con
 
 		return 0;
 	}
-
 }
 

@@ -1,5 +1,6 @@
 #include "Engine\Net\NetMessage.hpp"
 #include "Engine\Net\NetSession.hpp"
+#include "Engine\Net\NetConnection.hpp"
 
 
 //  =============================================================================

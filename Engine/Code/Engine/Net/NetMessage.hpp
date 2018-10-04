@@ -3,8 +3,9 @@
 
 //forward dec netmessage for callback
 class NetMessage;
+class NetConnection;
 
-typedef bool (*NetMessageCallback)(const NetMessage& message);
+typedef bool (*NetMessageCallback)(const NetMessage& message, NetConnection* fromConnection);
 
 struct NetMessageHeader
 {

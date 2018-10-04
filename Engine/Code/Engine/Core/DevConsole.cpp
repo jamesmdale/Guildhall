@@ -13,6 +13,7 @@
 #include "Engine\Core\LogSystem.hpp"
 #include "Engine\Net\RemoteCommandService.hpp"
 #include "Engine\Net\NetSession.hpp"
+#include "Engine\Net\NetAddress.hpp"
 #include <ctime>
 #include <stdarg.h>
 
@@ -290,6 +291,9 @@ void DevConsole::Render()
 		theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, currentCellStartPosition), m_historyStack[historyIndex].m_printText, 15.f, m_historyStack[historyIndex].m_printColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 	}	
 
+	RenderRemoteCommandService();
+	RenderNetSession();
+
 	theRenderer->m_defaultShader->DisableBlending();
 
 	//cleanup
@@ -379,32 +383,29 @@ void DevConsole::RenderNetSession()
 	theRenderer->DrawAABB(netSessionBounds, Rgba(0.f, 0.f, 0.f, 1.f));
 
 	//  ----------------------------------------------
-	int rcTextCount = 2;
+	int netSessionTextCount = 2;
 	int startingPostionFromTop = REMOTE_TEXT_CELL_HEIGHT;
 
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("REMOTE COMMAND SERVICE %s", state.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	rcTextCount++;
+	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)), Stringf("NET SESSION SERVICE"), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	netSessionTextCount++;
 
-	std::string hostIP = theRemoteCommandService->GetHostIP();
-	std::string ip = GetLocalIP();
+	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)), "SESSION IP:", REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	netSessionTextCount++;
 
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), "LOCAL IP:", REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	rcTextCount++;
+	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)), theNetSession->m_socket->m_address.ToString().c_str(), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	netSessionTextCount++;
 
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), ip, REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	rcTextCount++;
+	int connectionCount = (int)theNetSession->m_connections.size();
 
-	int connectionCount = (int)theRemoteCommandService->m_connections.size();
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("(%i) NUM CONNECTIONS", connectionCount), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	rcTextCount++;
+	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)), Stringf("(%i) NUM CONNECTIONS", connectionCount), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	netSessionTextCount++;
 
 	for (int connectionIndex = 0; connectionIndex < connectionCount; ++connectionIndex)
 	{
-		std::string connectionIP = theRemoteCommandService->m_connections[connectionIndex]->m_socket->m_address.ToString();
+		std::string connectionIP = theNetSession->m_connections[connectionIndex]->m_address->ToString();
 
-		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("[%i] %s", connectionIndex, connectionIP.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-		rcTextCount++;
+		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)), Stringf("[%i] %s", connectionIndex, connectionIP.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		netSessionTextCount++;
 	}
 
 	//cleanup

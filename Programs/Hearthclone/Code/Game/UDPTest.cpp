@@ -5,6 +5,7 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Net\RemoteCommandService.hpp"
+#include "Engine\Net\NetSession.hpp"
 
 bool UDPTest::Start()
 {

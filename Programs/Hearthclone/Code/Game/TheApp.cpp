@@ -152,7 +152,6 @@ void TheApp::Update()
 		Game::GetInstance()->Update();
 	}
 
-	m_test.Update();
 }
 
 
@@ -351,9 +350,6 @@ void UdpTestSend(Command& cmd)
 	std::string sendString = cmd.GetNextString();
 
 	NetAddress address = NetAddress(ipString.c_str());
-
-	g_theApp->m_test.SendTo(address, sendString.c_str(), 1);
-
 }
 
 //  =============================================================================

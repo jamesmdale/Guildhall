@@ -4,29 +4,30 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\DevConsole.hpp"
+#include "Engine\Core\Command.hpp"
 #include <string>
 
 NetSession* g_theNetSession = nullptr;
 
-
 //  =============================================================================
 NetSession::NetSession()
 {
+
 }
 
 //  =============================================================================
 NetSession::~NetSession()
 {
 	delete(m_socket);
-m_socket = nullptr;
+	m_socket = nullptr;
 
-for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
-{
-	//disconnect m_connections[connectionIndex]
-	m_connections[connectionIndex]->FlushOutgoingMessages();
-	delete(m_connections[connectionIndex]);
-	m_connections[connectionIndex] = nullptr;
-}
+	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
+	{
+		//disconnect m_connections[connectionIndex]
+		m_connections[connectionIndex]->FlushOutgoingMessages();
+		delete(m_connections[connectionIndex]);
+		m_connections[connectionIndex] = nullptr;
+	}
 }
 
 //  =============================================================================
@@ -48,12 +49,20 @@ NetSession* NetSession::CreateInstance()
 //  =========================================================================================
 void NetSession::Startup()
 {
+	m_socket = new UDPSocket();
+	m_socket->BindToPort(GAME_PORT);
+
 	//register messages
+	RegisterMessageDefinition("ping", OnPing);
+	RegisterMessageDefinition("pong", OnPong);
+	RegisterMessageDefinition("add", OnAdd);
+
+	LockMessageDefinitionRegistration();
+
 	//register app commands
-	CommandRegister("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", ""));
+	CommandRegister("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", "Successfully added connection!"));
 	CommandRegister("send_ping", CommandRegistration(SendPing, ": Send ping to index: idx", ""));
 	CommandRegister("send_add", CommandRegistration(SendAdd, ": Send add request to index: idx var1 var2", ""));
-	
 }
 
 //  =============================================================================
@@ -215,17 +224,26 @@ void AddConnectionToIndex(Command& cmd)
 		DevConsolePrintf(Rgba::RED, "Requested index %i is invalid", index);
 	}
 
-	if (IsStringNullOrEmpty(address))
+	else if (IsStringNullOrEmpty(address))
+	{
 		DevConsolePrintf(Rgba::RED, "Address is invalid");
-
-	NetAddress* netAddress = new NetAddress(address.c_str());
-
-	NetSession::GetInstance()->AddConnection(index, netAddress);
-
-	DevConsolePrintf("Successfully added address (%s) at index %i", address.c_str(), index);
+	}		
+	else
+	{
+		NetAddress* netAddress = new NetAddress(address.c_str());
+		if (netAddress == nullptr)
+		{
+			DevConsolePrintf(Rgba::RED, "Address is invalid");
+		}
+		else
+		{
+			NetSession::GetInstance()->AddConnection(index, netAddress);
+			DevConsolePrintf("Successfully added address (%s) at index %i", address.c_str(), index);
+		}	
+		netAddress = nullptr;
+	}
 
 	//cleanup
-	netAddress = nullptr;
 	theNetSession = nullptr;
 }
 
@@ -270,6 +288,26 @@ void SendAdd(Command& cmd)
 
 	message = nullptr;
 	theNetSession = nullptr;
+}
+
+//  =============================================================================
+//	NetMessage Definition Callbacks
+//  =============================================================================
+bool OnPing(const NetMessage& message, NetConnection* fromConnection)
+{
+	return true;
+}
+
+//  =============================================================================
+bool OnPong(const NetMessage& message, NetConnection* fromConnection)
+{
+	return true;
+}
+
+//  =============================================================================
+bool OnAdd(const NetMessage& message, NetConnection* fromConnection)
+{
+	return true;
 }
 
 

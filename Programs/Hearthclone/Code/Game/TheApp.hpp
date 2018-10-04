@@ -4,7 +4,6 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Net\TCPSocket.hpp"
 #include <thread>
-#include "Game\UDPTest.hpp"
 
 class TheApp
 {
@@ -20,8 +19,6 @@ public:
 	float UpdateInput(float timeDelta);
 
 	std::thread* m_hostThread = nullptr;
-
-	UDPTest m_test;
 };
 
 void Quit(Command &cmd);
