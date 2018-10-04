@@ -12,7 +12,6 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\LogSystem.hpp"
 #include "Engine\Net\RemoteCommandService.hpp"
-#include "Engine\Net\NetSession.hpp"
 #include <ctime>
 #include <stdarg.h>
 
@@ -244,6 +243,7 @@ void DevConsole::Render()
 	Renderer* theRenderer = Renderer::GetInstance();
 	AABB2 consoleBounds = AABB2(0.f, 0.f, theWindow->m_clientWidth, theWindow->m_clientHeight);
 	AABB2 consoleInputBounds = AABB2(0.f, 0.f, theWindow->m_clientWidth, TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y);
+	AABB2 remoteConnectionBounds = AABB2(consoleBounds, Vector2(0.75f, 0.f), Vector2(0.75f, 1.f));
 	
 	int maxIndexToRender = RoundToNearestInt(theWindow->m_clientHeight/(TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y));
 
@@ -266,6 +266,7 @@ void DevConsole::Render()
 
 	theRenderer->m_defaultShader->EnableColorBlending(BLEND_OP_ADD, BLEND_SOURCE_ALPHA, BLEND_ONE_MINUS_SOURCE_ALPHA);
 
+
 	TODO("Convert devconsole to use meshes.");
 	//MeshBuilder meshBuilder;
 
@@ -275,39 +276,12 @@ void DevConsole::Render()
 	meshBuilder.CreateQuad2D(consoleInputBounds, Rgba(.5f, .5f, .5f, .90f));
 	theRenderer->DrawMesh(meshBuilder.CreateMesh<VertexPCU>());*/
 
-	theRenderer->DrawAABB(consoleBounds, Rgba(0.f, 0.f, 0.f, .85f));	
-	theRenderer->DrawAABB(consoleInputBounds, Rgba(.5f, .5f, .5f, .90f));
-	theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, 0.f), modifiedInputWithCursor, TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	theRenderer->DrawAABB(consoleBounds, Rgba(0.f, 0.f, 0.f, .85f));
 
-	for(int historyIndex = 0; historyIndex < (int)m_historyStack.size(); historyIndex++)
-	{
-		if(historyIndex > maxIndexToRender)
-		{
-			break;
-		}		
-
-		float currentCellStartPosition = (float)(historyIndex + 1.f) * (TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y);
-		theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, currentCellStartPosition), m_historyStack[historyIndex].m_printText, 15.f, m_historyStack[historyIndex].m_printColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	}	
-
-	theRenderer->m_defaultShader->DisableBlending();
-
-	//cleanup
-	theRenderer = nullptr;
-	theWindow = nullptr;
-}
-
-// =========================================================================================
-void DevConsole::RenderRemoteCommandService()
-{
 	//handle remote connection view
-	Window* theWindow = Window::GetInstance();
-	Renderer* theRenderer = Renderer::GetInstance();
 	RemoteCommandService* theRemoteCommandService = RemoteCommandService::GetInstance();
-
-	AABB2 consoleBounds = AABB2(0.f, 0.f, theWindow->m_clientWidth, theWindow->m_clientHeight);
-	AABB2 remoteConnectionBounds = AABB2(consoleBounds, Vector2(0.75f, 0.f), Vector2(0.75f, 1.f));
 	theRenderer->DrawAABB(remoteConnectionBounds, Rgba(0.f, 0.f, 0.f, 1.f));
+	theRenderer->DrawAABB(consoleInputBounds, Rgba(.5f, .5f, .5f, .90f));
 
 	if (theRemoteCommandService->IsCommandSystemRunning())
 	{
@@ -353,64 +327,29 @@ void DevConsole::RenderRemoteCommandService()
 
 			theRenderer->DrawText2D(Vector2(remoteConnectionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, remoteConnectionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("[%i] %s", connectionIndex, connectionIP.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 			rcTextCount++;
-		}
+		}	
 	}
 	else
 	{
 		//print that the remote command service is not running
-	}
+	}	
+	
 
-	//cleanup
-	theRemoteCommandService = nullptr;
-	theRenderer = nullptr;
-	theWindow = nullptr;
-}
+	theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, 0.f), modifiedInputWithCursor, TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 
-// =========================================================================================
-void DevConsole::RenderNetSession()
-{
-	//handle remote connection view
-	Window* theWindow = Window::GetInstance();
-	Renderer* theRenderer = Renderer::GetInstance();
-	NetSession* theNetSession = NetSession::GetInstance();
-
-	AABB2 consoleBounds = AABB2(0.f, 0.f, theWindow->m_clientWidth, theWindow->m_clientHeight);
-	AABB2 netSessionBounds = AABB2(consoleBounds, Vector2(0.f, 0.f), Vector2(0.f, 1.f));
-	theRenderer->DrawAABB(netSessionBounds, Rgba(0.f, 0.f, 0.f, 1.f));
-
-	//  ----------------------------------------------
-	int rcTextCount = 2;
-	int startingPostionFromTop = REMOTE_TEXT_CELL_HEIGHT;
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("REMOTE COMMAND SERVICE %s", state.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	rcTextCount++;
-
-	std::string hostIP = theRemoteCommandService->GetHostIP();
-	std::string ip = GetLocalIP();
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), "LOCAL IP:", REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	rcTextCount++;
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), ip, REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	rcTextCount++;
-
-	int connectionCount = (int)theRemoteCommandService->m_connections.size();
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("(%i) NUM CONNECTIONS", connectionCount), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	rcTextCount++;
-
-	for (int connectionIndex = 0; connectionIndex < connectionCount; ++connectionIndex)
+	for(int historyIndex = 0; historyIndex < (int)m_historyStack.size(); historyIndex++)
 	{
-		std::string connectionIP = theRemoteCommandService->m_connections[connectionIndex]->m_socket->m_address.ToString();
+		if(historyIndex > maxIndexToRender)
+		{
+			break;
+		}		
 
-		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, netSessionBounds.maxs.y - (startingPostionFromTop * rcTextCount)), Stringf("[%i] %s", connectionIndex, connectionIP.c_str()), REMOTE_TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-		rcTextCount++;
-	}
+		float currentCellStartPosition = (float)(historyIndex + 1.f) * (TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y);
+		theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, currentCellStartPosition), m_historyStack[historyIndex].m_printText, 15.f, m_historyStack[historyIndex].m_printColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+	}	
 
-	//cleanup
-	theNetSession = nullptr;
+	theRenderer->m_defaultShader->DisableBlending();
 	theRenderer = nullptr;
-	theWindow = nullptr;
 }
 
 // =========================================================================================

@@ -43,9 +43,6 @@ public:
 
 	// Renders the display
 	void Render(); 
-	void RenderRemoteCommandService();
-	void RenderNetSession();
-	
 
 	void Open(); 
 	void Close(); 

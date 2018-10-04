@@ -51,7 +51,3 @@ static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitio
 void AddConnection(Command& cmd);
 void SendPing(Command& cmd);
 void SendAdd(Command& cmd);
-
-void OnPing(Command& cmd);
-void OnPong(Command& cmd);
-void OnAdd(Command& cmd);

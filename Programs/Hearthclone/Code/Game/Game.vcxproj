@@ -326,7 +326,6 @@
     <ClCompile Include="Entity\Minion.cpp" />
     <ClCompile Include="Effects\DerivedEffects\ReorganizeHandEffect.cpp" />
     <ClCompile Include="Effects\DerivedEffects\ReorganizeMinionsEffect.cpp" />
-    <ClCompile Include="SessionInfrastructure\NetSession.cpp" />
     <ClCompile Include="TheApp.cpp" />
     <ClCompile Include="Triggers\Trigger.cpp" />
     <ClCompile Include="Effects\DerivedEffects\TurnChangeEffect.cpp" />

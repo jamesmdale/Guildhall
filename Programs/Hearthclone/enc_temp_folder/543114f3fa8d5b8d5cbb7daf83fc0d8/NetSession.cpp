@@ -49,11 +49,6 @@ NetSession* NetSession::CreateInstance()
 void NetSession::Startup()
 {
 	//register messages
-	//register app commands
-	CommandRegister("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", ""));
-	CommandRegister("send_ping", CommandRegistration(SendPing, ": Send ping to index: idx", ""));
-	CommandRegister("send_add", CommandRegistration(SendAdd, ": Send add request to index: idx var1 var2", ""));
-	
 }
 
 //  =============================================================================
@@ -203,7 +198,7 @@ NetMessageCallback GetRegisteredNetCallbackById(int id)
 //  =========================================================================================
 //  Console Commands
 //  =========================================================================================
-void AddConnectionToIndex(Command& cmd)
+void AddConnection(Command& cmd)
 {
 	int index = cmd.GetNextInt();
 	std::string address = cmd.GetNextString();
@@ -271,7 +266,5 @@ void SendAdd(Command& cmd)
 	message = nullptr;
 	theNetSession = nullptr;
 }
-
-
 
 
