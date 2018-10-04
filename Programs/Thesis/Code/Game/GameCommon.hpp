@@ -25,6 +25,9 @@ extern float g_halfTileSize;
 extern bool g_showBlockedTileData;
 extern float g_maxCoordinateDistanceSquared;
 
+//general globals
+extern int g_maxHealth;
+
 //poi globals
 extern float g_baseResourceRefillTimePerSecond;
 extern int g_maxResourceCarryAmount;
@@ -33,6 +36,8 @@ extern int g_maxResourceCarryAmount;
 extern float g_baseRepairAmountPerPerformance;
 extern float g_baseShootDamageAmountPerPerformance;
 extern float g_maxActionPerformanceRatePerSecond;
+
+extern float g_minSkillEfficiency;
 
 //bombardment globals
 extern float g_bombardmentRatePerSecond;

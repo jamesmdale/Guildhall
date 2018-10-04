@@ -50,6 +50,9 @@ public:
 	Tile* GetTileAtCoordinate(const IntVector2 & coordinate);
 	Agent* GetAgentById(int agentId);
 
+	float GetAveragePOIHealth();
+	float GetAverageAgentHealth();
+
 	//point of interest helpers
 	PointOfInterest* GeneratePointOfInterest(int poiType);
 	PointOfInterest* GetPointOfInterestById(int poiId);	

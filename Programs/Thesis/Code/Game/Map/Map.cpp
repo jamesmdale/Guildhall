@@ -191,6 +191,34 @@ Agent* Map::GetAgentById(int agentId)
 	return nullptr;
 }
 
+//  =============================================================================
+float Map::GetAveragePOIHealth()
+{
+	int totalHealth = 0;
+	int numPointsOfInterest = (int)m_pointsOfInterest.size();
+
+	for (int poiIndex = 0; poiIndex < numPointsOfInterest; ++poiIndex)
+	{
+		totalHealth += m_pointsOfInterest[poiIndex]->m_health;
+	}
+
+	return (float)totalHealth / (float)numPointsOfInterest;
+}
+
+//  =============================================================================
+float Map::GetAverageAgentHealth()
+{
+	int totalHealth = 0;
+	int numAgents = (int)m_agents.size();
+
+	for (int agentIndex = 0; agentIndex < numAgents; ++agentIndex)
+	{
+		totalHealth += m_agents[agentIndex]->m_health;
+	}
+
+	return (float)totalHealth / (float)numAgents;
+}
+
 //  =========================================================================================
 PointOfInterest* Map::GetPointOfInterestById(int poiId)
 {

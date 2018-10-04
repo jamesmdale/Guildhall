@@ -19,7 +19,7 @@ PointOfInterest::PointOfInterest(ePointOfInterestType poiType, const IntVector2&
 
 	//start stopwatch
 	m_refillTimer = new Stopwatch();
-	m_refillTimer->SetTimer(g_baseRefillTimePerSecond);
+	m_refillTimer->SetTimer(g_baseResourceRefillTimePerSecond);
 }
 
 //  =========================================================================================

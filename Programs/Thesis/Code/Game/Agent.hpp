@@ -49,8 +49,8 @@ public:
 	int m_health = 100;
 
 	// bias ----------------------------------------------
-	float m_combatBias = 0.33f;
-	float m_repairBias = 0.33f;
+	float m_combatBias = 0.1f;
+	float m_repairBias = 0.8f;
 	float m_healBias = 0.33f;
 
 	// skill ----------------------------------------------
@@ -79,8 +79,6 @@ public:
 
 	//helper references
 	Planner* m_planner = nullptr;
-
-	Stopwatch* actionPerformanceTimer = nullptr;
 };
 
 
