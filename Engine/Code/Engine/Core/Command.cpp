@@ -7,11 +7,13 @@
 
 std::map<std::string, CommandRegistration> s_registeredDefinitions;
 
+//  =========================================================================================
 Command::Command( char const *str )
 {
 	m_commandString = str;
 }
 
+//  =========================================================================================
 bool CommandRun( char const *command )
 {
 	bool isValidCommand = false;
@@ -52,6 +54,7 @@ bool CommandRun( char const *command )
 	return isValidCommand;
 }
 
+//  =========================================================================================
 //currently supported characters for special parsing is \" and parenthesis (,).
 //These cases must be handled specifically for parsing.  Will parse actual input again in the function itself.
 std::string Command::ParseCommandStringForValidFormatting()
@@ -157,11 +160,13 @@ std::string Command::ParseCommandStringForValidFormatting()
 	return std::string(""); //no errors so we return an empty string
 }
 
+//  =========================================================================================
 const char* Command::GetName()
 {
 	return m_commandTokens[0].c_str(); //the fist should always be the name of the command.
 }
 
+//  =========================================================================================
 std::string Command::GetNextString()
 {
 	m_tokenIndex++;
@@ -176,6 +181,7 @@ std::string Command::GetNextString()
 	}
 }
 
+//  =========================================================================================
 std::string Command::GetRemainingContentAsString()
 {
 	std::string outString = "";
@@ -189,26 +195,31 @@ std::string Command::GetRemainingContentAsString()
 	return outString;
 }
 
+//  =========================================================================================
 int Command::GetNextInt()
 {
 	return ConvertStringToInt(GetNextString());
 }
 
+//  =========================================================================================
 Rgba Command::GetNextColor()
 {
 	return ConvertStringToRGBA(GetNextString());
 }
 
+//  =========================================================================================
 float Command::GetNextFloat()
 {
 	return ConvertStringToFloat(GetNextString());
 }
 
+//  =========================================================================================
 bool Command::GetNextBool()
 {
 	return ConvertStringToBool(GetNextString());
 }
 
+//  =========================================================================================
 std::string Command::PeekNextString()
 {
 	if (m_tokenIndex >= (int)m_commandTokens.size())
@@ -221,6 +232,7 @@ std::string Command::PeekNextString()
 	}
 }
 
+//  =========================================================================================
 void CommandRegister(char const* name, CommandRegistration definition)
 {
 	std::string cmdName(name);
@@ -228,6 +240,7 @@ void CommandRegister(char const* name, CommandRegistration definition)
 	s_registeredDefinitions.insert(std::make_pair(cmdName, definition));
 }
 
+//  =========================================================================================
 std::vector<std::string> GetRegisteredCommandList()
 {
 	std::vector<std::string> commandsAsText;
@@ -239,6 +252,7 @@ std::vector<std::string> GetRegisteredCommandList()
 	return commandsAsText;
 }
 
+//  =========================================================================================
 bool Command::IsCorrectNumberOfParameters(int expectedParamCount)
 {
 	//subtract one to account for the name

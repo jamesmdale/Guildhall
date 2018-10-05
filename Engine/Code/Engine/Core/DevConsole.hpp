@@ -125,6 +125,7 @@ void LogBlacklistMode(Command& cmd);
 void LogWhiteListMode(Command& cmd);
 void LogShowTag(Command& cmd);
 void LogHideTag(Command& cmd);
+void SaveCommandHistory(Command& cmd);
 
 //log system hooks
 void WriteLogToDevconsole(const LogEntry& log, void* filePointer);

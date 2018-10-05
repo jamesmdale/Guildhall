@@ -124,6 +124,7 @@ void DevConsole::Startup()
 	CommandRegister("log_whitelist", CommandRegistration(LogWhiteListMode, ": only prints items that match tags in list"));
 	CommandRegister("log_show_tag", CommandRegistration(LogShowTag, ": adds tags to be shown in print"));
 	CommandRegister("log_hide_tag", CommandRegistration(LogHideTag, ": adds tags to be hidden in print"));
+	CommandRegister("save_session", CommandRegistration(SaveCommandHistory, ": saves command history to 'Data\\ConsoleLogs\\history.txt", "History saved!"));
 
 	//set camera info
 	m_consoleCamera = new Camera();
@@ -140,7 +141,7 @@ void DevConsole::Startup()
 void DevConsole::Shutdown()
 {
 	//on shutdown write out the history to a file so it can be used on the next session
-	SaveCommandInputHistory("history");
+	//SaveCommandInputHistory("history");
 
 	delete(g_theDevConsole);
 	g_theDevConsole = nullptr;
@@ -619,6 +620,7 @@ bool DevConsole::SaveCommandInputHistory(std::string fileName)
 	return didSucceed;
 }
 
+//  =========================================================================================
 bool DevConsole::LoadPreviousConsoleSession(std::string fileName)
 {
 	std::string filePath = Stringf("%s%s%s", "Data\\ConsoleLogs\\", fileName.c_str(), ".txt");
@@ -637,8 +639,12 @@ bool DevConsole::LoadPreviousConsoleSession(std::string fileName)
 
 	std::string buffer = (const char*) FileReadToNewBuffer(filePath.c_str());
 
-	if(IsStringNullOrEmpty(buffer))
+	if (IsStringNullOrEmpty(buffer))
+	{
+		errno_t errorVal = fopen_s(&fp, filePath.c_str(), "r");
 		return false;
+	}
+		
 
 	std::vector<std::string> lines = SplitStringOnCharacter(buffer, '\n');
 
@@ -654,6 +660,7 @@ bool DevConsole::LoadPreviousConsoleSession(std::string fileName)
 
 	m_historyStack = previousHistory;
 
+	errorVal = fopen_s(&fp, filePath.c_str(), "r");
 	return true;
 }
 
@@ -880,6 +887,14 @@ void LogHideTag(Command & cmd)
 	}
 }
 
+//  =========================================================================================
+void SaveCommandHistory(Command& cmd)
+{
+	if(DevConsole::GetInstance()->SaveCommandInputHistory("history"))
+		DevConsolePrintf("History saved!");
+	else
+		DevConsolePrintf(Rgba::RED, "History not saved!");
+}
 
 //  =========================================================================================
 //  Log System Hooks =========================================================================================

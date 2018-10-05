@@ -10,8 +10,15 @@ NetMessage::NetMessage(const std::string& stringName)
 
 	if (definition != nullptr)
 	{
+		m_header = new NetMessageHeader();
 		m_header->m_messageCallbackDefinitionIndex = (uint8_t)definition->m_callbackId;
 		m_definition = definition;
+
+		//write empty bytes that we will refill later with total size
+		WriteBytes(sizeof(uint16_t), nullptr, false);
+
+		//write index of defintion
+		WriteBytes(sizeof(uint8_t), (void*)m_header->m_messageCallbackDefinitionIndex, false);
 	}
 
 	//cleanup

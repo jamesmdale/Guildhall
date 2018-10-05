@@ -253,7 +253,22 @@ void SendPing(Command& cmd)
 	uint8_t index = (uint8_t)cmd.GetNextInt();
 
 	NetSession* theNetSession = NetSession::GetInstance();
-	//NetConnection* connection = theNetSession->GetConnection(index);
+
+	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)index);
+	if (connection == nullptr)
+	{
+		DevConsolePrintf("No connection at index %u", index);
+		return;
+	}
+
+	NetMessage* message = new NetMessage("ping");
+	//char const *str = args.get_next_string();
+	//msg.write_string( str ); 
+
+	// messages are sent to connections (not sessions)
+	connection->QueueMessage(message);
+
+	message = nullptr;
 
 	theNetSession = nullptr;
 }
