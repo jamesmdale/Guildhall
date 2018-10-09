@@ -19,6 +19,8 @@ public:
 	NetAddress(const char* string, int port);
 	NetAddress(const sockaddr* address);
 
+	bool operator==( const NetAddress& compare ) const;				// vec2 == vec2
+
 	bool ToSockAddr(const sockaddr* addr, size_t* outSize) const;
 	bool FromSockAddr(const sockaddr* sa);
 

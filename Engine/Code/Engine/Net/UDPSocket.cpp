@@ -90,6 +90,9 @@ size_t UDPSocket::SendTo(const NetAddress& address, const void* data, const size
 
 	size_t addressLength = 0;
 
+	std::string addressString = address.ToString();
+	UNUSED(addressString);
+
 	address.ToSockAddr((sockaddr*)&sockAddr, &addressLength);
 
 	SOCKET sock = (SOCKET)GetSocketHandle();
@@ -100,6 +103,8 @@ size_t UDPSocket::SendTo(const NetAddress& address, const void* data, const size
 		0,						//unused flags
 		(sockaddr*)&sockAddr,	//address we're sending to;
 		(int)addressLength);
+
+	int errorCode = WSAGetLastError();
 
 	if (sent > 0) 
 	{
@@ -120,14 +125,14 @@ size_t UDPSocket::SendTo(const NetAddress& address, const void* data, const size
 }
 
 //  =============================================================================
-size_t UDPSocket::ReceiveFrom(NetAddress* outAddress, const void* outBuffer, const size_t maxReadSize)
+size_t UDPSocket::Receive(NetAddress* outAddress, void* outBuffer, const size_t maxReadSize)
 {
 	if (IsClosed())
 	{
 		return 0U;
 	}
 
-	sockaddr_storage fromAddr; //who am i getting the data from;
+	sockaddr_storage fromAddr; //who am I getting the data from;
 	int addressLength = sizeof(sockaddr_storage);
 
 	SOCKET sock = (SOCKET)GetSocketHandle();

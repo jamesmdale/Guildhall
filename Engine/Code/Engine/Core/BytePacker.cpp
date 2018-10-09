@@ -4,6 +4,16 @@
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\EndianHelper.hpp"
 
+//  owns buffer, growable (Default - LITTLE_ENDIAN =============================================================================
+BytePacker::BytePacker()
+{
+	m_endianness = LITTLE_ENDIAN;
+	m_bufferSize = sizeof(uint);
+	m_buffer = malloc(m_bufferSize);
+
+	m_bytePackerOptions = (eBytePackerOptionBit)EnableBits<uint>((uint)m_bytePackerOptions, (uint)BYTEPACKER_OWNS_MEMORY);
+	m_bytePackerOptions = (eBytePackerOptionBit)EnableBits<uint>((uint)m_bytePackerOptions, (uint)BYTEPACKER_CAN_GROW);
+}
 
 //  owns buffer, growable =============================================================================
 BytePacker::BytePacker(eEndianness byteOrder)
@@ -78,6 +88,8 @@ bool BytePacker::WriteBytes(size_t byteCount, const void* data, bool doesConside
 		if(!success)
 			return false;
 	}
+
+	uint8_t val = *(uint8_t*)data;
 
 	memcpy((byte_t*)m_buffer + m_writtenByteCount, data, byteCount);
 
@@ -224,9 +236,22 @@ void BytePacker::ResetRead()
 }
 
 //  =============================================================================
-void BytePacker::MoveReadHead(size_t bytes)
+void BytePacker::MoveWriteHead(size_t numBytes)
 {
-	size_t numByteCount = m_readByteCount + bytes;
+	size_t numByteCount = m_writtenByteCount + numBytes;
+
+	if (numByteCount > m_bufferSize)
+		m_writtenByteCount = m_bufferSize;
+	else if (numByteCount < 0)
+		m_writtenByteCount = 0;
+	else
+		m_writtenByteCount = numByteCount;
+}
+
+//  =============================================================================
+void BytePacker::MoveReadHead(size_t numBytes)
+{
+	size_t numByteCount = m_readByteCount + numBytes;
 
 	if(numByteCount > m_writtenByteCount)
 		m_readByteCount = m_writtenByteCount;

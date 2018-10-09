@@ -24,21 +24,63 @@ void NetConnection::FlushOutgoingMessages()
 	if(m_outgoingMessages.size() == 0)
 		return;
 
-	NetSession* theNetSession = new NetSession();
-	for (int messageIndex = 0; messageIndex < (int)m_outgoingMessages.size(); ++messageIndex)
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	bool areMessagesPacked = false;
+	int currentMessageIndex = 0;
+
+	std::vector<NetPacket*> packetsToSend;
+	NetPacket* packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
+	packet->WriteUpdatedHeaderData();
+	packet->MoveWriteHead(packet->GetBufferSize());
+	
+	while (!areMessagesPacked)
 	{
-		//pack all of the NetMessages
-		m_outgoingMessages[messageIndex]->ResetWrite();
-		m_outgoingMessages[messageIndex]->WriteBytes(sizeof(uint16_t), (void*)(uint16_t)m_outgoingMessages[messageIndex]->GetBufferSize(), false);
+		if (packet->GetBufferSize() + m_outgoingMessages[currentMessageIndex]->GetBufferSize() <= PACKET_MTU)
+		{
+			//write message to packet
+			packet->WriteMessage(*m_outgoingMessages[currentMessageIndex]);
+		}
+		else
+		{
+			//in order to pack the next message, we need to make a new packet
+			//first add old packet to list
+			packetsToSend.push_back(packet);
+
+			//make a new packet
+			delete(packet);
+			packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
+
+			//write new message to new packet
+			packet->WriteMessage(*m_outgoingMessages[currentMessageIndex]);
+		}
+
+		//if we have read all the messages we are done
+		if (currentMessageIndex == (int)m_outgoingMessages.size() - 1)
+		{
+			areMessagesPacked = true;
+			
+			//add the last packet to the list to send
+			packetsToSend.push_back(packet);
+		}
+		else
+		{
+			currentMessageIndex++;		
+		}
 	}
 
-	//we have messages to send so start at the packet header
-	NetPacket* packet = new NetPacket();
+	//send each packet
+	for(int packetIndex = 0; packetIndex < (int)packetsToSend.size(); ++packetIndex)
+	{
+		theNetSession->m_socket->SendTo(*m_address, packetsToSend[packetIndex]->GetBuffer(), packetsToSend[packetIndex]->GetBufferSize());
+	}
 
-	packet->m_packetHeader.m_senderIndex = m_index;
-	packet->m_packetHeader.m_messageCount =
+	//cleanup outgoing message queue
+	packetsToSend.clear();
+	m_outgoingMessages.clear();
 
-	//once packet is 
-	theNetSession->m_socket->SendTo(, byteCount);
+	/*delete(packet);
+	packet = nullptr;*/
 
+	theNetSession = nullptr;
 }

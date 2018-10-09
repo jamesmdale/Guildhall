@@ -18,15 +18,15 @@ public:
 	NetPacket(uint8_t senderIndex, uint8_t messageCount);
 
 	//Need to reset buffer when processin a whole packet
-
-	void WriteHeader(const NetPacketHeader& packetHeader);
 	bool ReadHeader(NetPacketHeader& packetHeader);
 
-	bool WriteMessage(const NetMessage& netMessage);
+	bool WriteMessage(NetMessage& netMessage);
 	bool ReadMessage(NetMessage& netMessage);
+
+	void WriteUpdatedHeaderData();
 
 	bool CheckIsValid();
 
 public:
-	NetPacketHeader m_packetHeader;
+	NetPacketHeader* m_packetHeader = nullptr;;
 };

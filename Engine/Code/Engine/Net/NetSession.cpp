@@ -1,5 +1,6 @@
 #include "Engine\Net\NetSession.hpp"
 #include "Engine\Net\NetAddress.hpp"
+#include "Engine\Net\NetPacket.hpp"
 #include "Engine\Core\WindowsCommon.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\EngineCommon.hpp"
@@ -44,6 +45,13 @@ NetSession* NetSession::CreateInstance()
 		g_theNetSession = new NetSession();
 	}
 	return g_theNetSession;
+}
+
+//  =========================================================================================
+void NetSession::Update()
+{
+	ProcessOutgoingMessages();
+	ProcessIncomingMessages();
 }
 
 //  =========================================================================================
@@ -100,13 +108,98 @@ bool NetSession::AddConnection(uint8_t connectionIndex, NetAddress* address)
 	connection->m_address = address;	
 
 	m_connections.push_back(connection);
+
+	//if the connection we are mapping is our own netsession, we need to store off our own index for ease of access
+	if (m_sessionConnectionIndex == UINT8_MAX)
+	{
+		if (*address == m_socket->m_address)
+		{
+			m_sessionConnectionIndex = connectionIndex;
+		}
+	}
+
 	return true;
 }
 
 //  =============================================================================
 void NetSession::ProcessIncomingMessages()
 {
-	//read from socket until I can't read anymore
+	std::vector<NetPacket> packetsToProcess;
+
+	size_t receivedAmount = INT_MAX;
+
+	NetPacket receivedPacket = NetPacket(UINT8_MAX, 0);
+	receivedPacket.ExtendBufferSize(PACKET_MTU);
+	NetAddress senderAddress;
+
+	//read until no more packets are in the socket
+	while (receivedAmount > 0)
+	{
+		receivedAmount = m_socket->Receive(&senderAddress, receivedPacket.GetBuffer(), PACKET_MTU);
+		
+		if (receivedAmount != 0)
+		{
+			//check packet validity
+			if (!receivedPacket.CheckIsValid())
+			{
+				continue;
+			}
+
+			//get the header data
+			receivedPacket.MoveWriteHead(receivedPacket.GetBufferSize());
+			receivedPacket.ReadBytes(&receivedPacket.m_packetHeader, sizeof(NetPacketHeader), false);
+
+			NetConnection* connection = GetConnectionById(receivedPacket.m_packetHeader->m_senderIndex);
+
+			for(int messageIndex = 0; messageIndex < (int)receivedPacket.m_packetHeader->m_messageCount; ++messageIndex)
+			{
+				uint16_t totalSize = UINT16_MAX;
+				uint8_t callbackId = UINT8_MAX;
+
+				receivedPacket.ReadBytes(&totalSize, sizeof(uint16_t), false);
+				receivedPacket.ReadBytes(&callbackId, sizeof(uint8_t), false);
+
+				
+				NetMessageDefinition* definition = GetRegisteredDefinitionById((int)callbackId);
+				NetMessage* message = new NetMessage(definition->m_callbackName);
+
+				receivedPacket.ReadBytes(message->GetBuffer(), totalSize - sizeof(NetMessageHeader), false);
+
+				definition->m_callback(*message, connection);
+
+				//cleanup
+				delete(message);
+				message = nullptr;
+
+				delete(definition);
+				definition = nullptr;
+			}
+			
+			//cleanup
+			connection = nullptr;			
+			
+			//packetsToProcess.push_back(receivedPacket);			
+		}
+	}
+
+	//process each packet
+	//for (int packetIndex = 0; packetIndex < (int)packetsToProcess.size(); ++packetIndex)
+	//{
+	//	//first check if valid
+	//	if (!packetsToProcess[packetIndex].CheckIsValid())
+	//	{
+	//		DebuggerPrintf("Received bad packet from %s", senderAddress.ToString());
+	//		continue;
+	//	}
+
+	//	for (int messageIndex = 0; messageIndex < packetsToProcess[packetIndex].m_packetHeader->m_messageCount; ++messageIndex)
+	//	{
+	//		TODO("Get message registration index out of packet data");
+	//		TODO("Get sender connection idnex out of packet data");
+	//		TODO("If connection index is valid process the function");
+	//		//NetMessage message = NetMessage();
+	//	}
+	//}
 }
 
 //  =============================================================================
@@ -164,7 +257,7 @@ NetConnection* NetSession::GetConnectionById(uint8_t id)
 //  Callback
 //  =========================================================================================
 
-NetMessageDefinition* GetRgisteredDefinitionById(int id)
+NetMessageDefinition* GetRegisteredDefinitionById(int id)
 {
 	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator;
 	std::advance(definitionIterator, id);
@@ -202,7 +295,7 @@ NetMessageCallback GetRegisteredCallbackByName(const std::string& name)
 //  =========================================================================================
 NetMessageCallback GetRegisteredNetCallbackById(int id)
 {
-	NetMessageDefinition* definition = GetRgisteredDefinitionById(id);
+	NetMessageDefinition* definition = GetRegisteredDefinitionById(id);
 	if (definition != nullptr)
 		return definition->m_callback;
 
@@ -262,14 +355,24 @@ void SendPing(Command& cmd)
 	}
 
 	NetMessage* message = new NetMessage("ping");
-	//char const *str = args.get_next_string();
-	//msg.write_string( str ); 
+	message->InitializeHeaderData();
 
-	// messages are sent to connections (not sessions)
-	connection->QueueMessage(message);
+	//now that the message is complete, write the final size into the header
+	bool success = message->WriteFinalSizeToHeader();
 
+	if (!success)
+	{
+		DevConsolePrintf(Rgba::RED, "Message length incompatible with MTU size.");
+		delete(message);
+	}
+	else
+	{
+		// messages are sent to connections (not sessions)
+		connection->QueueMessage(message);
+	}
+	
+	//cleanup
 	message = nullptr;
-
 	theNetSession = nullptr;
 }
 

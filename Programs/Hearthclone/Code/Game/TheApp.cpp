@@ -15,6 +15,7 @@
 #include "Engine\Net\TCPSocket.hpp"
 #include "Engine\Core\BytePacker.hpp"
 #include "Engine\Net\RemoteCommandService.hpp"
+#include "Engine\Net\NetSession.hpp"
 
 TheApp* g_theApp = nullptr;
 TCPSocket* hostTest = nullptr;
@@ -137,6 +138,8 @@ void TheApp::Update()
 	deltaSeconds = UpdateInput(deltaSeconds);
 
 	//ProcessHost(nullptr);	
+
+	NetSession::GetInstance()->Update();
 	
 	if(DebugRender::GetInstance()->IsEnabled())
 	{

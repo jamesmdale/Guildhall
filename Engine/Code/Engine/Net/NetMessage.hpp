@@ -25,6 +25,9 @@ public:
 	NetMessage(const std::string& messageName);
 	~NetMessage();
 
+	void InitializeHeaderData();
+	bool WriteFinalSizeToHeader();
+
 public:
 	NetMessageHeader* m_header = nullptr;
 	NetMessageDefinition* m_definition = nullptr;

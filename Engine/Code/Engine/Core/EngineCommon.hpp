@@ -60,6 +60,8 @@ typedef unsigned int uint;
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 
+constexpr uint16_t UNSIGNED_WORD_MAX = 32'767;
+
 
 // Methods =============================================================================
 void EngineStartup();

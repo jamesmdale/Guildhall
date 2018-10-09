@@ -3,24 +3,25 @@
 //  =============================================================================
 NetPacket::NetPacket()
 {
+	m_packetHeader = new NetPacketHeader();
 }
 
 //  =============================================================================
 NetPacket::~NetPacket()
 {
+	if (m_packetHeader != nullptr)
+	{
+		delete(m_packetHeader);
+		m_packetHeader = nullptr;
+	}	
 }
 
 //  =============================================================================
 NetPacket::NetPacket(uint8_t senderIndex, uint8_t messageCount)
 {
-	m_packetHeader.m_senderIndex = senderIndex;
-	m_packetHeader.m_messageCount = messageCount;
-}
-
-//  =============================================================================
-void NetPacket::WriteHeader(const NetPacketHeader& packetHeader)
-{
-	WriteBytes(sizeof(packetHeader), &packetHeader, false);
+	m_packetHeader = new NetPacketHeader();
+	m_packetHeader->m_senderIndex = senderIndex;
+	m_packetHeader->m_messageCount = messageCount;
 }
 
 //  =============================================================================
@@ -30,23 +31,19 @@ bool NetPacket::ReadHeader(NetPacketHeader& packetHeader)
 }
 
 //  =============================================================================
-bool NetPacket::WriteMessage(const NetMessage& netMessage)
+bool NetPacket::WriteMessage(NetMessage& netMessage)
 {
+	//write size
 	bool success = false;
 
-	//write size
-	uint16_t messageSize = netMessage.GetBufferSize() + sizeof(netMessage.m_header);	
-	success = WriteBytes(sizeof(uint16_t), &messageSize, false);
-	if(!success)
-		return false;
+	success = WriteBytes(netMessage.GetBufferSize(), netMessage.GetBuffer(), false);
 
-	WriteBytes(sizeof(netMessage.m_header), &netMessage.m_header, false);
-	if(!success)
-		return false;
-
-	WriteBytes(netMessage.GetBufferSize(), netMessage.GetBuffer(), false);
-	if(!success)
-		return false;
+	//we succeeded so update message count and updat the header info
+	if (success)
+	{
+		m_packetHeader->m_messageCount++;
+		WriteUpdatedHeaderData();
+	}
 
 	return success;
 }
@@ -70,9 +67,28 @@ bool NetPacket::ReadMessage(NetMessage& netMessage)
 
 	//get total payload size and write that many bytes into netmessage
 	uint16_t totalPayloadSize = totalMessageSize - sizeof(NetMessageHeader);	
-	success = netMessage.WriteBytes(totalPayloadSize, GetBuffer(), false);
+	//success = netMessage.ReadBytes(&totalPayloadSize, GetBuffer(), false);
 
 	return success;
+}
+
+//  =============================================================================
+void NetPacket::WriteUpdatedHeaderData()
+{
+	//get written byte count to preserve count before we move the head
+	size_t byteCount = GetBufferSize() - 1;
+
+	//set write head to 0
+	ResetWrite();
+
+	//update the packet data with the current packet header count
+	WriteBytes(sizeof(NetPacketHeader), (void*)m_packetHeader, false);
+
+	//reset the write head back to 0
+	ResetWrite();
+
+	//move the write head back to it's original position
+	MoveWriteHead(byteCount);	
 }
 
 //  =============================================================================
@@ -80,8 +96,10 @@ bool NetPacket::CheckIsValid()
 {
 	bool success = false;
 	ResetHeads();
-
+	
+	//move write head to the end of the buffer
 	size_t totalBufferSize = GetBufferSize();
+	MoveWriteHead(totalBufferSize);
 
 	NetPacketHeader headerData;
 	success = ReadBytes(&headerData, sizeof(headerData), false);
@@ -91,35 +109,45 @@ bool NetPacket::CheckIsValid()
 		return success;
 	}
 	
-	int remainingMessageSize = (int)(totalBufferSize - sizeof(NetPacketHeader));
+	int remainingPacketSize = (int)(totalBufferSize - sizeof(NetPacketHeader));
 	
 	for (int messageIndex = 0; messageIndex < (int)headerData.m_messageCount; ++messageIndex)
 	{
 		//read message header
-		uint8_t messageHeader;
-		success = ReadBytes(&messageHeader, sizeof(NetMessageHeader), false);
+		uint16_t totalMessageSize = 4;
+		success = ReadBytes(&totalMessageSize, sizeof(uint16_t), false);
 		if (!success)
 		{
 			ResetHeads();
 			return success;
 		}
 
-		//read total payload size
-		uint8_t payloadSize;
-		success = ReadBytes(&payloadSize, sizeof(uint8_t), false);
-		if (!success)
-		{
-			ResetHeads();
-			return success;
-		}
+		//message index
+		//NetMessageHeader netMessageHeader;
+		//success = ReadBytes(&netMessageHeader, sizeof(NetMessageHeader), false);
+		//if (!success)
+		//{
+		//	ResetHeads();
+		//	return success;
+		//}
+
+		////read total payload size
+		//size_t payloadSize = totalMessageSize - sizeof(netMessageHeader);
+		//void* payload = malloc(payloadSize);
+		//success = ReadBytes(&payload, payloadSize, false);
+		//if (!success)
+		//{
+		//	ResetHeads();
+		//	return success;
+		//}
 
 		//get the total message size by adding the size of the header + size of the payload size + actual payload size
-		int totalmessageSize = (int)(sizeof(messageHeader) + sizeof(payloadSize) + payloadSize);
+		//int totalmessageSize = (int)(sizeof(messageHeader) + sizeof(payloadSize) + payloadSize);
 
-		if (remainingMessageSize - totalmessageSize >= 0)
+		if (remainingPacketSize - totalMessageSize >= 0)
 		{
-			remainingMessageSize -= totalmessageSize;
-			MoveReadHead(payloadSize);			
+			remainingPacketSize -= totalMessageSize;
+			MoveReadHead(totalMessageSize);			
 		}
 		else
 		{

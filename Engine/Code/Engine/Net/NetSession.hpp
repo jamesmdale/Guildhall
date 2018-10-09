@@ -16,10 +16,12 @@ public:
 	static NetSession* GetInstance();
 	static NetSession* CreateInstance();
 
+	void Update();
+
 	void Startup();
 
 	bool BindPort(uint port, uint range);
-	bool AddConnection(uint8_t connectionIndex, NetAddress* address);
+	bool AddConnection(uint8_t connectionIndex, NetAddress* address);	
 
 	//message processing
 	void ProcessIncomingMessages();
@@ -34,6 +36,7 @@ public:
 public:
 	UDPSocket* m_socket = nullptr;
 	std::vector<NetConnection*> m_connections;
+	uint8_t m_sessionConnectionIndex = UINT8_MAX;
 
 public:
 	bool m_isDefinitionRegistrationLocked = false;
@@ -42,7 +45,7 @@ public:
 //net callbacks
 NetMessageCallback GetRegisteredNetCallbackById(int id);
 NetMessageCallback GetRegisteredCallbackByName(const std::string& name);
-NetMessageDefinition* GetRgisteredDefinitionById(int id);
+NetMessageDefinition* GetRegisteredDefinitionById(int id);
 NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 
 static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;

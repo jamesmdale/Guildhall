@@ -48,7 +48,7 @@ void UDPTest::Update()
 	byte_t buffer[PACKET_MTU];
 	NetAddress fromAddress;
 
-	size_t read = m_socket.ReceiveFrom(&fromAddress, buffer, PACKET_MTU);
+	size_t read = m_socket.Receive(&fromAddress, buffer, PACKET_MTU);
 
 	if (read > 0U) 
 	{

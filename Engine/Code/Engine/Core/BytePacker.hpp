@@ -16,8 +16,11 @@ typedef uint eBytePackerOptions;
 class BytePacker
 {
 public:
+
+	BytePacker();
+
 	//owns buffer. growable
-	BytePacker(eEndianness byteOrder = LITTLE_ENDIAN);		
+	BytePacker(eEndianness byteOrder);		
 
 	//owns buffer. can't grow
 	BytePacker(size_t bufferSize, eEndianness byteOrder = LITTLE_ENDIAN);	
@@ -43,6 +46,7 @@ public:
 	void ResetHeads();
 	void ResetWrite();
 	void ResetRead();
+	void MoveWriteHead(size_t numBytes);
 	void MoveReadHead(size_t numBytes);
 
 	uint16_t BytePacker::PeekBuffer(bool doesChangeToPlatformEndianness);

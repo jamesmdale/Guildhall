@@ -58,6 +58,15 @@ NetAddress::NetAddress(const sockaddr* address)
 	FromSockAddr(address);
 }
 
+//  =========================================================================================
+bool NetAddress::operator==(const NetAddress& compare) const
+{
+	if (compare.m_Ipv4Address == m_Ipv4Address && compare.m_port == m_port)
+		return true;
+
+	return false;
+}
+
 //  =============================================================================
 bool NetAddress::ToSockAddr(const sockaddr* addr, size_t* outSize) const
 {
