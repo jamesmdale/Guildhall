@@ -28,5 +28,5 @@ public:
 	bool CheckIsValid();
 
 public:
-	NetPacketHeader* m_packetHeader = nullptr;;
+	NetPacketHeader* m_packetHeader = nullptr;
 };

@@ -8,7 +8,7 @@
 BytePacker::BytePacker()
 {
 	m_endianness = LITTLE_ENDIAN;
-	m_bufferSize = sizeof(uint);
+	m_bufferSize = sizeof(uint8_t);
 	m_buffer = malloc(m_bufferSize);
 
 	m_bytePackerOptions = (eBytePackerOptionBit)EnableBits<uint>((uint)m_bytePackerOptions, (uint)BYTEPACKER_OWNS_MEMORY);
@@ -19,7 +19,7 @@ BytePacker::BytePacker()
 BytePacker::BytePacker(eEndianness byteOrder)
 {
 	m_endianness = byteOrder;
-	m_bufferSize = sizeof(uint);
+	m_bufferSize = sizeof(uint8_t);
 	m_buffer = malloc(m_bufferSize);
 
 	m_bytePackerOptions = (eBytePackerOptionBit)EnableBits<uint>((uint)m_bytePackerOptions, (uint)BYTEPACKER_OWNS_MEMORY);
@@ -70,34 +70,62 @@ bool BytePacker::SetReadableByteCount(size_t byteCount)
 	return true;
 }
 
+//  =========================================================================================
+void BytePacker::SetWriteHeadToMaxWritten()
+{
+	m_writeHead = m_writtenByteCount;
+}
+
+void BytePacker::SetWrittenByteCountToBufferSize()
+{
+	m_writtenByteCount = m_bufferSize;
+}
+
 //  =============================================================================
 bool BytePacker::WriteBytes(size_t byteCount, const void* data, bool doesConsiderEndianness /* = true */)
 {
-	if(m_writtenByteCount + byteCount > m_bufferSize)
+	size_t numNewBytesToWrite = 0;
+	if (m_writeHead != m_writtenByteCount)
+	{
+		if (m_writeHead + byteCount > m_writtenByteCount)
+		{
+			numNewBytesToWrite = (m_writeHead + byteCount) - m_writtenByteCount;
+		}
+	}
+	else
+	{
+		numNewBytesToWrite = byteCount;
+	}
+
+	if (m_writtenByteCount + numNewBytesToWrite > m_bufferSize)
 	{
 		size_t newBufferSize = m_bufferSize * 2;
 		//if greater than double, we will just go ahead and double the size according to the requested amount
-		if (m_writtenByteCount + byteCount > m_bufferSize)
+		if (m_writtenByteCount + numNewBytesToWrite > m_bufferSize)
 		{
-			newBufferSize =  m_writtenByteCount + byteCount * 2;
+			newBufferSize = m_writtenByteCount + numNewBytesToWrite * 2;
 		}
 		//we are beyond the buffersize and need to grow if possible (doubles)
 		bool success = ExtendBufferSize(newBufferSize);
 
 		//we weren't allowed to extend the buffer and therefore can't write
-		if(!success)
+		if (!success)
 			return false;
 	}
 
 	uint8_t val = *(uint8_t*)data;
 
-	memcpy((byte_t*)m_buffer + m_writtenByteCount, data, byteCount);
+	//write data
+	memcpy((byte_t*)m_buffer + m_writeHead, data, byteCount);
 
 	if(doesConsiderEndianness)
 		ToEndianness(m_buffer, m_bufferSize, m_endianness);
 
-	//update written byte count
-	m_writtenByteCount += byteCount;
+	//update written byte count if we wrote to the end of the buffer
+	m_writeHead += byteCount;
+	m_writtenByteCount += numNewBytesToWrite;
+
+	GUARANTEE_OR_DIE(m_writeHead <= m_writtenByteCount, "BYTEPACKER WRITE HEAD PAST WRITTEN AMOUNT");
 
 	return true;
 }
@@ -108,12 +136,12 @@ bool BytePacker::ReadBytes(void* outData, size_t maxByteCount, bool doesConsider
 	if(GetReadableByteCount() < maxByteCount)
 		return false;
 
-	memcpy(outData, (byte_t*)m_buffer + m_readByteCount, maxByteCount);
+	memcpy(outData, (byte_t*)m_buffer + m_readHead, maxByteCount);
 
 	if(doesConsiderEndianness)
 		ToEndianness(m_buffer, m_bufferSize, m_endianness);
 
-	m_readByteCount += maxByteCount;	
+	m_readHead += maxByteCount;	
 
 	return true;
 }
@@ -150,7 +178,7 @@ size_t BytePacker::ReadSize(size_t* outsize)
 	while (!sizeReadComplete)
 	{
 		nextRead = 0;
-		memcpy(&nextRead, (byte_t*)m_buffer + m_readByteCount, 1);
+		memcpy(&nextRead, (byte_t*)m_buffer + m_readHead, 1);
 
 		byte_t bitMaskCheck = nextRead & 0b1000'0000;
 		if (bitMaskCheck != 0b1000'0000)
@@ -163,7 +191,7 @@ size_t BytePacker::ReadSize(size_t* outsize)
 		outSizeLocal = outSizeLocal | (decodedByte << (7 * readIteration));
 
 		readIteration++;
-		m_readByteCount++;
+		m_readHead++;
 	}
 
 	*outsize = outSizeLocal;
@@ -224,41 +252,39 @@ void BytePacker::ResetHeads()
 //  =============================================================================
 void BytePacker::ResetWrite()
 {
-	//must move readbytecount to be less than written bytecount
-	m_writtenByteCount = 0;
-	m_readByteCount = 0;
+	m_writeHead = 0;
 }
 
 //  =============================================================================
 void BytePacker::ResetRead()
 {
-	m_readByteCount = 0;
+	m_readHead = 0;
 }
 
 //  =============================================================================
 void BytePacker::MoveWriteHead(size_t numBytes)
 {
-	size_t numByteCount = m_writtenByteCount + numBytes;
+	size_t numByteCount = m_writeHead + numBytes;
 
-	if (numByteCount > m_bufferSize)
-		m_writtenByteCount = m_bufferSize;
+	if (m_writeHead > m_writtenByteCount)
+		m_writeHead = m_writtenByteCount;
 	else if (numByteCount < 0)
-		m_writtenByteCount = 0;
+		m_writeHead = 0;
 	else
-		m_writtenByteCount = numByteCount;
+		m_writeHead = numByteCount;
 }
 
 //  =============================================================================
 void BytePacker::MoveReadHead(size_t numBytes)
 {
-	size_t numByteCount = m_readByteCount + numBytes;
+	size_t numByteCount = m_readHead + numBytes;
 
 	if(numByteCount > m_writtenByteCount)
-		m_readByteCount = m_writtenByteCount;
+		m_readHead = m_writtenByteCount;
 	else if(numByteCount < 0)
-		m_readByteCount = 0;
+		m_readHead = 0;
 	else
-		m_readByteCount = numByteCount;
+		m_readHead = numByteCount;
 }
 
 // =============================================================================
@@ -296,7 +322,7 @@ size_t BytePacker::GetWriteableByteCount() const
 //  =============================================================================
 size_t BytePacker::GetReadableByteCount() const
 {
-	return m_writtenByteCount - m_readByteCount;
+	return m_writtenByteCount - m_readHead;
 }
 //  =============================================================================
 size_t BytePacker::GetBufferSize() const

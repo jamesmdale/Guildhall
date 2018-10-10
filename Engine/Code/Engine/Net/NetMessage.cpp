@@ -37,7 +37,7 @@ bool NetMessage::WriteFinalSizeToHeader()
 	//write empty bytes that we will refill later with total size
 	ResetWrite();
 
-	uint16_t messageSize = (uint16_t)GetBufferSize();
+	uint16_t messageSize = (uint16_t)GetWrittenByteCount();
 
 	if (messageSize > PACKET_MTU)
 	{
@@ -45,6 +45,8 @@ bool NetMessage::WriteFinalSizeToHeader()
 	}
 
 	WriteBytes(sizeof(uint16_t), (void*)&messageSize, false);
+
+	SetWriteHeadToMaxWritten();
 	return true;
 }
 

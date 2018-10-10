@@ -28,10 +28,14 @@ public:
 	//doesn't own buffer, can't grow
 	BytePacker(size_t bufferSize, void* buffer, eEndianness byteOrder = LITTLE_ENDIAN);
 	~BytePacker();
-
+	
+	// setters ----------------------------------------------
 	void SetEndianness(eEndianness endianness);
 	bool SetReadableByteCount(size_t byteCount);
+	void SetWriteHeadToMaxWritten();
+	void SetWrittenByteCountToBufferSize();
 
+	// read/write ----------------------------------------------
 	bool WriteBytes(size_t byteCount, const void* data, bool doesConsiderEndianness = true);
 	bool ReadBytes(void* outData, size_t maxByteCount, bool doesConsiderEndianness);
 
@@ -41,7 +45,7 @@ public:
 	bool WriteString(const char* writeString);
 	bool ReadString(char* outString, size_t maxByteSize);
 
-	//read/write head helpers
+	// Helpers ----------------------------------------------
 	void ResetBuffer();
 	void ResetHeads();
 	void ResetWrite();
@@ -51,6 +55,7 @@ public:
 
 	uint16_t BytePacker::PeekBuffer(bool doesChangeToPlatformEndianness);
 
+	// Getters ----------------------------------------------
 	eEndianness GetEndianness() const;
 	size_t GetWrittenByteCount() const;
 	size_t GetWriteableByteCount() const;
@@ -66,7 +71,10 @@ private:
 	size_t m_bufferSize = 0;
 
 	size_t m_writtenByteCount = 0;
-	size_t m_readByteCount = 0;
+
+	//heads
+	size_t m_writeHead = 0;
+	size_t m_readHead = 0;
 
 	eBytePackerOptionBit m_bytePackerOptions = BYTEPACKER_DEFAULT;
 	void* m_buffer = nullptr;

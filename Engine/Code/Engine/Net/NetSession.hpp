@@ -40,6 +40,7 @@ public:
 
 public:
 	bool m_isDefinitionRegistrationLocked = false;
+	static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
 };
 
 //net callbacks
@@ -48,7 +49,6 @@ NetMessageCallback GetRegisteredCallbackByName(const std::string& name);
 NetMessageDefinition* GetRegisteredDefinitionById(int id);
 NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 
-static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
 
 //console commands
 void AddConnectionToIndex(Command& cmd);

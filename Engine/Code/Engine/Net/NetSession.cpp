@@ -9,6 +9,7 @@
 #include <string>
 
 NetSession* g_theNetSession = nullptr;
+std::map<std::string, NetMessageDefinition*> NetSession::s_registeredMessageDefinitions;
 
 //  =============================================================================
 NetSession::NetSession()
@@ -146,8 +147,7 @@ void NetSession::ProcessIncomingMessages()
 			}
 
 			//get the header data
-			receivedPacket.MoveWriteHead(receivedPacket.GetBufferSize());
-			receivedPacket.ReadBytes(&receivedPacket.m_packetHeader, sizeof(NetPacketHeader), false);
+			receivedPacket.ReadBytes(receivedPacket.m_packetHeader, sizeof(NetPacketHeader), false);
 
 			NetConnection* connection = GetConnectionById(receivedPacket.m_packetHeader->m_senderIndex);
 
@@ -159,11 +159,17 @@ void NetSession::ProcessIncomingMessages()
 				receivedPacket.ReadBytes(&totalSize, sizeof(uint16_t), false);
 				receivedPacket.ReadBytes(&callbackId, sizeof(uint8_t), false);
 
-				
 				NetMessageDefinition* definition = GetRegisteredDefinitionById((int)callbackId);
 				NetMessage* message = new NetMessage(definition->m_callbackName);
 
-				receivedPacket.ReadBytes(message->GetBuffer(), totalSize - sizeof(NetMessageHeader), false);
+				//if there is more to the message we must read that in before calling the return function
+
+				size_t remainingAmountToRead = totalSize - sizeof(uint16_t) - sizeof(uint8_t);
+				if (remainingAmountToRead > 0)
+				{
+					message->ExtendBufferSize(remainingAmountToRead);
+					receivedPacket.ReadBytes(message->GetBuffer(), remainingAmountToRead, false);
+				}			
 
 				definition->m_callback(*message, connection);
 
@@ -181,25 +187,6 @@ void NetSession::ProcessIncomingMessages()
 			//packetsToProcess.push_back(receivedPacket);			
 		}
 	}
-
-	//process each packet
-	//for (int packetIndex = 0; packetIndex < (int)packetsToProcess.size(); ++packetIndex)
-	//{
-	//	//first check if valid
-	//	if (!packetsToProcess[packetIndex].CheckIsValid())
-	//	{
-	//		DebuggerPrintf("Received bad packet from %s", senderAddress.ToString());
-	//		continue;
-	//	}
-
-	//	for (int messageIndex = 0; messageIndex < packetsToProcess[packetIndex].m_packetHeader->m_messageCount; ++messageIndex)
-	//	{
-	//		TODO("Get message registration index out of packet data");
-	//		TODO("Get sender connection idnex out of packet data");
-	//		TODO("If connection index is valid process the function");
-	//		//NetMessage message = NetMessage();
-	//	}
-	//}
 }
 
 //  =============================================================================
@@ -259,9 +246,9 @@ NetConnection* NetSession::GetConnectionById(uint8_t id)
 
 NetMessageDefinition* GetRegisteredDefinitionById(int id)
 {
-	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator;
+	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator = NetSession::s_registeredMessageDefinitions.begin();
 	std::advance(definitionIterator, id);
-	if (definitionIterator != s_registeredMessageDefinitions.end())
+	if (definitionIterator != NetSession::s_registeredMessageDefinitions.end())
 	{
 		return definitionIterator->second;
 	}
@@ -273,8 +260,8 @@ NetMessageDefinition* GetRegisteredDefinitionById(int id)
 NetMessageDefinition* GetRegisteredDefinitionByName(const std::string & name)
 {
 	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator;
-	definitionIterator = s_registeredMessageDefinitions.find(name);
-	if (definitionIterator != s_registeredMessageDefinitions.end())
+	definitionIterator = NetSession::s_registeredMessageDefinitions.find(name);
+	if (definitionIterator != NetSession::s_registeredMessageDefinitions.end())
 	{
 		return definitionIterator->second;
 	}

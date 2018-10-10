@@ -32,11 +32,10 @@ void NetConnection::FlushOutgoingMessages()
 	std::vector<NetPacket*> packetsToSend;
 	NetPacket* packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
 	packet->WriteUpdatedHeaderData();
-	packet->MoveWriteHead(packet->GetBufferSize());
 	
 	while (!areMessagesPacked)
 	{
-		if (packet->GetBufferSize() + m_outgoingMessages[currentMessageIndex]->GetBufferSize() <= PACKET_MTU)
+		if (packet->GetBufferSize() + m_outgoingMessages[currentMessageIndex]->GetWrittenByteCount() <= PACKET_MTU)
 		{
 			//write message to packet
 			packet->WriteMessage(*m_outgoingMessages[currentMessageIndex]);
@@ -72,7 +71,7 @@ void NetConnection::FlushOutgoingMessages()
 	//send each packet
 	for(int packetIndex = 0; packetIndex < (int)packetsToSend.size(); ++packetIndex)
 	{
-		theNetSession->m_socket->SendTo(*m_address, packetsToSend[packetIndex]->GetBuffer(), packetsToSend[packetIndex]->GetBufferSize());
+		theNetSession->m_socket->SendTo(*m_address, packetsToSend[packetIndex]->GetBuffer(), packetsToSend[packetIndex]->GetWrittenByteCount());
 	}
 
 	//cleanup outgoing message queue
