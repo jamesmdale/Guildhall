@@ -17,7 +17,6 @@ constexpr int MAX_HISTORY_COUNT = 256;
 
 class ProfilerReport;
 
-// profile measurement =============================================================================
 struct ProfileMeasurement
 {
 	~ProfileMeasurement()

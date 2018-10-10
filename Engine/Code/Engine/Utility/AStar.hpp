@@ -457,7 +457,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 	}
 
 	if (!isDestinationFound)
-		DevConsolePrintf("A* SEARCH INCOMPLETE!!");
+		DebuggerPrintf("A* SEARCH INCOMPLETE!!");
 
 	return isDestinationFound;
 };

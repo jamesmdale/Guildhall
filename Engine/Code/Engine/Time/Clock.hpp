@@ -74,6 +74,8 @@ private:
 Clock* GetMasterClock();
 float GetMasterFPS();
 float GetMasterDeltaSeconds();
+float GetUnclampedFPS();
+float GetUnclampedMasterDeltaSeconds();
 void MasterClockBeginFrame();
 
 

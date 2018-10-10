@@ -9,6 +9,7 @@
 #include "Engine\Window\Window.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Math\MathUtils.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 
 
 //  =========================================================================================
@@ -80,7 +81,6 @@ void Map::Update(float deltaSeconds)
 		m_activeBombardments.push_back(bombardment);
 	}
 	
-
 	//udpate agents
 	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
 	{
@@ -97,6 +97,7 @@ void Map::Update(float deltaSeconds)
 //  =========================================================================================
 void Map::Render()
 {
+	PROFILER_PUSH();
 	for (int tileIndex = 0; tileIndex < (int)m_tiles.size(); ++tileIndex)
 	{
 		m_tiles[tileIndex]->Render();

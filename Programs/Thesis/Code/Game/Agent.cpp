@@ -11,6 +11,7 @@
 #include "Engine\Window\Window.hpp"
 #include "Engine\Utility\AStar.hpp"
 #include "Engine\Time\Stopwatch.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 
 bool isFirstLoopThroughAction = true;
 Stopwatch* actionTimer = nullptr;
@@ -45,6 +46,7 @@ Agent::~Agent()
 //  =========================================================================================
 void Agent::Update(float deltaSeconds)
 {
+	PROFILER_PUSH();
 	m_planner->ProcessActionStack(deltaSeconds);	
 
 	UpdateSpriteRenderDirection();
@@ -54,6 +56,7 @@ void Agent::Update(float deltaSeconds)
 //  =========================================================================================
 void Agent::Render()
 {
+	PROFILER_PUSH();
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	Sprite sprite = *m_animationSet->GetCurrentSprite(m_spriteDirection);

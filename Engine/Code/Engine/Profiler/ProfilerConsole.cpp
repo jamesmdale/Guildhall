@@ -180,6 +180,7 @@ void ProfilerConsole::Update()
 
 void ProfilerConsole::Render()
 {
+	PROFILER_PUSH();
 	Renderer* theRenderer = Renderer::GetInstance();
 	theRenderer->SetCamera(m_profilerCamera);
 
@@ -277,7 +278,8 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	mb.CreateQuad2D(fpsQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
 	reportContentRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
 
-	std::string fpsAsString = Stringf("FPS: %-4.2f", GetMasterFPS());
+	float value = 1.f/Profiler::GetInstance()->ProfileGetPreviousFrame(0)->GetElapsedTimeHPC();
+	std::string fpsAsString = Stringf("FPS: %-4.2f", GetUnclampedFPS());
 
 	mb.CreateText2DInAABB2(fpsQuad.GetCenter(), fpsQuad.GetDimensions() - Vector2(20.f, 20.f), 4.f/3.f, fpsAsString, Rgba::WHITE);
 	reportContentRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
@@ -287,7 +289,8 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	mb.CreateQuad2D(frameQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
 	reportContentRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
 
-	std::string frameAsString = Stringf("FRAME: %-4.5f", GetMasterDeltaSeconds());
+	value = Profiler::GetInstance()->ProfileGetPreviousFrame(0)->GetElapsedTimeHPC();
+	std::string frameAsString = Stringf("FRAME: %-4.5f", GetUnclampedMasterDeltaSeconds());
 
 	mb.CreateText2DInAABB2(frameQuad.GetCenter(), frameQuad.GetDimensions() - Vector2(20.f, 20.f), 4.f/3.f, frameAsString, Rgba::WHITE);
 	reportContentRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));

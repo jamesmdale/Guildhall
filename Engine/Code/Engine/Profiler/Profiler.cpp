@@ -11,14 +11,17 @@ bool g_isProfilerPaused = false;
 bool g_isProfilerPausing = false;
 bool g_isProfilerResuming = false;
 
+//  =========================================================================================
 Profiler::Profiler()
 {
 }
 
+//  =========================================================================================
 Profiler::~Profiler()
 {
 }
 
+//  =========================================================================================
 Profiler* Profiler::CreateInstance()
 {
 	if (g_theProfiler == nullptr)
@@ -29,13 +32,13 @@ Profiler* Profiler::CreateInstance()
 	return g_theProfiler;
 }
 
+//  =========================================================================================
 Profiler* Profiler::GetInstance()
 {
 	return g_theProfiler;
 }
 
-
-
+//  =========================================================================================
 void Profiler::Startup()
 {
 #ifdef PROFILER_ENABLED
@@ -46,14 +49,16 @@ void Profiler::Startup()
 #endif
 }
 
+//  =========================================================================================
 void Profiler::Shutdown()
 {
 	delete(g_theProfiler);
 	g_theProfiler = nullptr;
 }
 
+//  =========================================================================================
 // utility methods =========================================================================================
-
+//  =========================================================================================
 #ifdef PROFILER_ENABLED
 ProfileMeasurement* Profiler::CreateMeasurement(const char* id)
 {
@@ -65,6 +70,7 @@ ProfileMeasurement* Profiler::CreateMeasurement(const char* id)
 	return measure;
 }
 
+//  =========================================================================================
 void Profiler::DestroyMeasurementTreeRecurssive()
 {	
 	bool isTreeTraversed = false;
@@ -73,6 +79,7 @@ void Profiler::DestroyMeasurementTreeRecurssive()
 	m_measurementHistory[m_frameIndex] = nullptr;	
 }
 
+//  =========================================================================================
 void Profiler::PrintHistory()
 {
 	int currentIndex = m_frameIndex;
@@ -92,6 +99,7 @@ void Profiler::PrintHistory()
 	}
 }
 
+//  =========================================================================================
 ProfileMeasurement* Profiler::ProfileGetPreviousFrame(int skipCount)
 {
 	int returnIndex = 0;
@@ -112,6 +120,7 @@ ProfileMeasurement* Profiler::ProfileGetPreviousFrame(int skipCount)
 	return m_measurementHistory[returnIndex];
 }
 
+//  =========================================================================================
 bool Profiler::ProfilerGetPreviousFrames(std::vector<ProfileMeasurement*>& history, int numFrames)
 {
 	int currentIndex = m_frameIndex;
@@ -128,6 +137,7 @@ bool Profiler::ProfilerGetPreviousFrames(std::vector<ProfileMeasurement*>& histo
 	return true;
 }
 
+//  =========================================================================================
 void Profiler::MarkFrame()
 {
 	// move stack into measurementHistory
@@ -159,6 +169,7 @@ void Profiler::MarkFrame()
 	m_frameIndex = Modulus((m_frameIndex + 1), MAX_HISTORY_COUNT);
 }
 
+//  =========================================================================================
 void Profiler::Push(const char* id)
 {
 	if (!g_isProfilerPaused)
@@ -180,6 +191,7 @@ void Profiler::Push(const char* id)
 	}	
 }
 
+//  =========================================================================================
 void Profiler::Pop()
 {
 	if (!g_isProfilerPaused)
@@ -193,17 +205,20 @@ void Profiler::Pop()
 	}
 }
 
+//  =========================================================================================
 void Profiler::PauseProfiler()
 {
 	//when the frame is completed in the next MarkFrame(), the profiler system will be pause.
 	g_isProfilerPausing = true;
 }
 
+//  =========================================================================================
 bool Profiler::IsPaused()
 {
 	return g_isProfilerPaused;
 }
 
+//  =========================================================================================
 void Profiler::ResumeProfiler()
 {
 	//when the frame is completed in the next MarkFrame(), the profiler system will be unpause and allow captures again.
@@ -211,22 +226,28 @@ void Profiler::ResumeProfiler()
 }
 
 
+//  =========================================================================================
 // console commands =============================================================================
+//  =========================================================================================
 void Pause(Command & cmd)
 {
 	Profiler::GetInstance()->PauseProfiler();
 }
 
+
+//  =========================================================================================
 void Resume(Command & cmd)
 {
 	Profiler::GetInstance()->ResumeProfiler();
 }
 
+//  =========================================================================================
 void LogHistory(Command & cmd)
 {
 	Profiler::GetInstance()->PrintHistory();
 }
 
+//  =========================================================================================
 void Report(Command& cmd)
 {
 	ProfileMeasurement* measurement = Profiler::GetInstance()->ProfileGetPreviousFrame();
@@ -252,6 +273,8 @@ void Report(Command& cmd)
 	measurement = nullptr;
 }
 #else
+
+//  =========================================================================================
 ProfileMeasurement* Profiler::CreateMeasurement(const char* id)
 {
 	UNUSED(id);
@@ -260,11 +283,14 @@ ProfileMeasurement* Profiler::CreateMeasurement(const char* id)
 void Profiler::DestroyMeasurementTreeRecurssive(){}
 void Profiler::PrintHistory(){}
 
+//  =========================================================================================
 ProfileMeasurement* Profiler::ProfileGetPreviousFrame(int skipCount)
 {
 	UNUSED(skipCount);
 	return nullptr;
 }
+
+//  =========================================================================================
 bool Profiler::ProfilerGetPreviousFrames(std::vector<ProfileMeasurement*>& history, int numFrames)
 {
 	UNUSED(history);
@@ -272,33 +298,47 @@ bool Profiler::ProfilerGetPreviousFrames(std::vector<ProfileMeasurement*>& histo
 	return false;
 }
 
+
+//  =========================================================================================
 void Profiler::MarkFrame(){}
+
+//  =========================================================================================
 void Profiler::Push(const char* id){UNUSED(id);}
+
+//  =========================================================================================
 void Profiler::Pop(){}
 
+//  =========================================================================================
 void Profiler::PauseProfiler(){}
+
+//  =========================================================================================
 void Profiler::ResumeProfiler(){}
 
+//  =========================================================================================
 bool Profiler::IsPaused(){return false;}
 
+//  =========================================================================================
 void Pause(Command& cmd)
 {
 	UNUSED(cmd);
 	DevConsolePrintf("Profiler disabled\n");
 }
 
+//  =========================================================================================
 void Resume(Command& cmd)
 {
 	UNUSED(cmd);
 	DevConsolePrintf("Profiler disabled\n");
 }
 
+//  =========================================================================================
 void LogHistory(Command& cmd)
 {
 	UNUSED(cmd);
 	DevConsolePrintf("Profiler disabled\n");
 }
 
+//  =========================================================================================
 void Report(Command& cmd)
 {
 	UNUSED(cmd);

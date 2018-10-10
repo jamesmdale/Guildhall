@@ -96,6 +96,10 @@ void TheApp::Update()
 
 	float deltaSeconds = GetMasterDeltaSeconds();
 
+	//test for getting master delta seconds
+	double unclampedFrameTime = GetUnclampedMasterDeltaSeconds();
+	double unclampedFPS = GetUnclampedFPS();
+
 	//update global menu data (handles transitions and timers)
 	GameState::UpdateGlobalGameState(deltaSeconds);
 
@@ -118,13 +122,12 @@ void TheApp::Update()
 	{
 		DevConsole::GetInstance()->Update(deltaSeconds);
 	}
-
 }
 
 //  =============================================================================
 void TheApp::PreRender()
 {
-	//PROFILER_PUSH();
+	PROFILER_PUSH();
 
 	Game::GetInstance()->PreRender();
 

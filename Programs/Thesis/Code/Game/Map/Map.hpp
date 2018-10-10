@@ -25,8 +25,8 @@ public:
 	void SetMapType(MapDefinition* newMapDefintion) { m_mapDefinition = newMapDefintion; }
 	IntVector2 GetDimensions() { return m_dimensions; }
 
-	void Render();
 	void Update(float deltaSeconds);
+	void Render();	
 
 	//Cleanup functions
 	void DeleteDeadEntities();

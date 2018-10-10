@@ -1,3 +1,4 @@
+#include "Engine\Profiler\Profiler.hpp"
 #include "Game\Planner.hpp"
 #include "Game\Map\Map.hpp"
 #include "Game\Agent.hpp"
@@ -64,6 +65,7 @@ void Planner::ClearStack()
 //  =========================================================================================
 void Planner::UpdatePlan()
 {
+	PROFILER_PUSH();
 	ClearStack();
 
 	ePlanTypes chosenOutcome = NONE_PLAN_TYPE;
