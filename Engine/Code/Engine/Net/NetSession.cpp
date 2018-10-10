@@ -385,8 +385,6 @@ void SendAdd(Command& cmd)
 	}
 
 	NetMessage* message = new NetMessage("ping");
-	//char const *str = args.get_next_string();
-	//msg.write_string( str ); 
 
 	// messages are sent to connections (not sessions)
 	connection->QueueMessage( message ); 
@@ -400,12 +398,32 @@ void SendAdd(Command& cmd)
 //  =============================================================================
 bool OnPing(const NetMessage& message, NetConnection* fromConnection)
 {
+	DevConsolePrintf("Received PING from %s (Connection:%i)", fromConnection->m_address->ToString().c_str(), (int)fromConnection->m_index);
+
+	NetMessage* pongMessage = new NetMessage("pong");
+	pongMessage->InitializeHeaderData();
+
+	//now that the message is complete, write the final size into the header
+	bool success = pongMessage->WriteFinalSizeToHeader();
+
+	if (!success)
+	{
+		DevConsolePrintf(Rgba::RED, "Message length incompatible with MTU size.");
+		delete(pongMessage);
+	}
+	else
+	{
+		// messages are sent to connections (not sessions)
+		fromConnection->QueueMessage(pongMessage);
+	}
+
 	return true;
 }
 
 //  =============================================================================
 bool OnPong(const NetMessage& message, NetConnection* fromConnection)
 {
+	DevConsolePrintf("Received PONG from %s (Connection:%i)", fromConnection->m_address->ToString().c_str(), (int)fromConnection->m_index);
 	return true;
 }
 
