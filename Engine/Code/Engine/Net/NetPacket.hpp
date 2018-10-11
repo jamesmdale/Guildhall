@@ -20,7 +20,7 @@ public:
 	//Need to reset buffer when processin a whole packet
 	bool ReadHeader(NetPacketHeader& packetHeader);
 
-	bool WriteMessage(NetMessage& netMessage);
+	bool WriteMessage(NetMessage netMessage);
 	bool ReadMessage(NetMessage& netMessage);
 
 	void WriteUpdatedHeaderData();

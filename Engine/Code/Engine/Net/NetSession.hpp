@@ -27,6 +27,8 @@ public:
 	void ProcessIncomingMessages();
 	void ProcessOutgoingMessages();
 
+	bool SendMessageWithoutConnection(NetMessage* message, NetConnection* connection);
+
 	//message registration
 	bool RegisterMessageDefinition(const std::string& name, NetMessageCallback callback);
 	void LockMessageDefinitionRegistration();
@@ -56,6 +58,7 @@ void SendPing(Command& cmd);
 void SendAdd(Command& cmd);
 
 //message registrations
-bool OnPing(const NetMessage& message, NetConnection* fromConnection);
-bool OnPong(const NetMessage& message, NetConnection* fromConnection);
-bool OnAdd(const NetMessage& message, NetConnection* fromConnection);
+bool OnPing(NetMessage& message, NetConnection* fromConnection);
+bool OnPong(NetMessage& message, NetConnection* fromConnection);
+bool OnAdd(NetMessage& message, NetConnection* fromConnection);
+bool OnAddResponse(NetMessage& message, NetConnection* fromConnection);

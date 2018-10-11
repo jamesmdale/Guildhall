@@ -1,4 +1,5 @@
 #include "NetPacket.hpp"
+#include <type_traits>
 
 //  =============================================================================
 NetPacket::NetPacket()
@@ -31,11 +32,19 @@ bool NetPacket::ReadHeader(NetPacketHeader& packetHeader)
 }
 
 //  =============================================================================
-bool NetPacket::WriteMessage(NetMessage& netMessage)
+bool NetPacket::WriteMessage(NetMessage netMessage)
 {
 	//write size
 	bool success = false;
 
+	//write total size
+	uint16_t numSize = sizeof(NetMessageHeader) + netMessage.GetWrittenByteCount();
+	success = WriteBytes(sizeof(uint16_t), &numSize, false);
+
+	//write header
+	success = WriteBytes(sizeof(NetMessageHeader), netMessage.m_header, false);
+
+	//write payload
 	success = WriteBytes(netMessage.GetWrittenByteCount(), netMessage.GetBuffer(), false);
 
 	//we succeeded so update message count and updat the header info

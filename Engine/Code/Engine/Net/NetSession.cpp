@@ -65,6 +65,7 @@ void NetSession::Startup()
 	RegisterMessageDefinition("ping", OnPing);
 	RegisterMessageDefinition("pong", OnPong);
 	RegisterMessageDefinition("add", OnAdd);
+	RegisterMessageDefinition("add_response", OnAddResponse);
 
 	LockMessageDefinitionRegistration();
 
@@ -151,6 +152,13 @@ void NetSession::ProcessIncomingMessages()
 
 			NetConnection* connection = GetConnectionById(receivedPacket.m_packetHeader->m_senderIndex);
 
+			//we don't have a connection on this index (probably invalid)
+			if (connection == nullptr)
+			{
+				connection = new NetConnection();
+				connection->m_address = &senderAddress;
+			}
+
 			for(int messageIndex = 0; messageIndex < (int)receivedPacket.m_packetHeader->m_messageCount; ++messageIndex)
 			{
 				uint16_t totalSize = UINT16_MAX;
@@ -160,22 +168,27 @@ void NetSession::ProcessIncomingMessages()
 				receivedPacket.ReadBytes(&callbackId, sizeof(uint8_t), false);
 
 				NetMessageDefinition* definition = GetRegisteredDefinitionById((int)callbackId);
-				NetMessage* message = new NetMessage(definition->m_callbackName);
 
-				//if there is more to the message we must read that in before calling the return function
-
-				size_t remainingAmountToRead = totalSize - sizeof(uint16_t) - sizeof(uint8_t);
-				if (remainingAmountToRead > 0)
+				if (definition != nullptr)
 				{
-					message->ExtendBufferSize(remainingAmountToRead);
-					receivedPacket.ReadBytes(message->GetBuffer(), remainingAmountToRead, false);
-				}			
+					NetMessage* message = new NetMessage(definition->m_callbackName);
 
-				definition->m_callback(*message, connection);
+					//if there is more to the message we must read that in before calling the return function
 
-				//cleanup
-				delete(message);
-				message = nullptr;
+					size_t remainingAmountToRead = totalSize - sizeof(NetMessageHeader);
+					if (remainingAmountToRead > 0)
+					{
+						message->ExtendBufferSize(remainingAmountToRead);
+						receivedPacket.ReadBytes(message->GetBuffer(), remainingAmountToRead, false);
+						message->SetWrittenByteCountToBufferSize();
+					}			
+
+					definition->m_callback(*message, connection);
+
+					//cleanup
+					delete(message);
+					message = nullptr;
+				}				
 
 				delete(definition);
 				definition = nullptr;
@@ -196,6 +209,47 @@ void NetSession::ProcessOutgoingMessages()
 	{
 		m_connections[connectionIndex]->FlushOutgoingMessages();
 	}
+}
+
+//  =============================================================================
+bool NetSession::SendMessageWithoutConnection(NetMessage* message, NetConnection* connection)
+{
+	bool success = false;
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	bool areMessagesPacked = false;
+	int currentMessageIndex = 0;
+
+	std::vector<NetPacket*> packetsToSend;
+	NetPacket* packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
+	packet->WriteUpdatedHeaderData();
+
+	if (packet->GetBufferSize() + message->GetWrittenByteCount() <= PACKET_MTU)
+	{
+		//write message to packet
+		packet->WriteMessage(*message);
+		packetsToSend.push_back(packet);
+	}
+
+	//send each packet
+	for(int packetIndex = 0; packetIndex < (int)packetsToSend.size(); ++packetIndex)
+	{
+		size_t amountSent = theNetSession->m_socket->SendTo(*connection->m_address, packetsToSend[packetIndex]->GetBuffer(), packetsToSend[packetIndex]->GetWrittenByteCount());
+	
+		if(amountSent > 0)
+			success = true;
+		else
+			success = false;
+	}
+
+	//cleanup outgoing message queue
+	packetsToSend.clear();
+
+	delete(packet);
+	packet = nullptr;
+	theNetSession = nullptr;
+
+	return success;
 }
 
 //  =============================================================================
@@ -342,10 +396,14 @@ void SendPing(Command& cmd)
 	}
 
 	NetMessage* message = new NetMessage("ping");
-	message->InitializeHeaderData();
 
-	//now that the message is complete, write the final size into the header
-	bool success = message->WriteFinalSizeToHeader();
+	std::string pingString = cmd.GetNextString(); 
+	if (pingString == "")
+	{
+		pingString = "ping";
+	}
+
+	bool success = message->WriteString(pingString.c_str());
 
 	if (!success)
 	{
@@ -384,52 +442,144 @@ void SendAdd(Command& cmd)
 		return; 
 	}
 
-	NetMessage* message = new NetMessage("ping");
+	NetMessage* message = new NetMessage("add");
 
-	// messages are sent to connections (not sessions)
-	connection->QueueMessage( message ); 
+	//add float data
+	bool success = message->WriteBytes(sizeof(float), &parameter1, false);
+	success = message->WriteBytes(sizeof(float), &parameter2, false);
+
+	if (!success)
+	{
+		DevConsolePrintf(Rgba::RED, "Message length incompatible with MTU size.");
+		delete(message);
+	}
+	else
+	{
+		// messages are sent to connections (not sessions)
+		connection->QueueMessage(message);
+	}
 
 	message = nullptr;
 	theNetSession = nullptr;
 }
 
+
 //  =============================================================================
 //	NetMessage Definition Callbacks
 //  =============================================================================
-bool OnPing(const NetMessage& message, NetConnection* fromConnection)
+bool OnPing(NetMessage& message, NetConnection* fromConnection)
 {
 	DevConsolePrintf("Received PING from %s (Connection:%i)", fromConnection->m_address->ToString().c_str(), (int)fromConnection->m_index);
 
 	NetMessage* pongMessage = new NetMessage("pong");
-	pongMessage->InitializeHeaderData();
 
-	//now that the message is complete, write the final size into the header
-	bool success = pongMessage->WriteFinalSizeToHeader();
-
-	if (!success)
+	// messages are sent to connections (not sessions)
+	if (fromConnection->m_index != UINT8_MAX)
 	{
-		DevConsolePrintf(Rgba::RED, "Message length incompatible with MTU size.");
-		delete(pongMessage);
+		fromConnection->QueueMessage(pongMessage);
 	}
 	else
 	{
-		// messages are sent to connections (not sessions)
-		fromConnection->QueueMessage(pongMessage);
-	}
+		NetSession::GetInstance()->SendMessageWithoutConnection(pongMessage, fromConnection);
+	}			
 
 	return true;
 }
 
 //  =============================================================================
-bool OnPong(const NetMessage& message, NetConnection* fromConnection)
+bool OnPong(NetMessage& message, NetConnection* fromConnection)
 {
 	DevConsolePrintf("Received PONG from %s (Connection:%i)", fromConnection->m_address->ToString().c_str(), (int)fromConnection->m_index);
 	return true;
 }
 
 //  =============================================================================
-bool OnAdd(const NetMessage& message, NetConnection* fromConnection)
+bool OnAdd(NetMessage& message, NetConnection* fromConnection)
 {
+	float parameter1 = 0;
+	float parameter2 = 0;
+
+	bool success = message.ReadBytes(&parameter1, sizeof(float), false);
+
+	if (!success)
+	{
+		DevConsolePrintf("Received ADD function from connection %i. Could not read param1", fromConnection->m_index);
+		return success;
+	}
+
+	success = message.ReadBytes(&parameter2, sizeof(float), false);
+
+	if (!success)
+	{
+		DevConsolePrintf("Received ADD function from connection %i. Could not read param2", fromConnection->m_index);
+		return success;
+	}
+
+	float sum = parameter1 + parameter2;
+	DevConsolePrintf("Received ADD function from connection %i: %f + %f = %f", fromConnection->m_index
+	,parameter1
+	,parameter2
+	,sum);
+
+	//send 
+	NetMessage* responseMessage = new NetMessage("add");
+
+	//add float data
+	success = responseMessage->WriteBytes(sizeof(float), &parameter1, false);
+	success = responseMessage->WriteBytes(sizeof(float), &parameter2, false);
+	success = responseMessage->WriteBytes(sizeof(float), &sum, false);
+
+	if (!success)
+	{
+		DevConsolePrintf(Rgba::RED, "Message length incompatible with MTU size.");
+		delete(responseMessage);
+	}
+	else
+	{
+		// messages are sent to connections (not sessions)
+		if (fromConnection->m_index != UINT8_MAX)
+		{
+			fromConnection->QueueMessage(responseMessage);
+		}
+		else
+		{
+			NetSession::GetInstance()->SendMessageWithoutConnection(responseMessage, fromConnection);
+		}		
+	}
+
+	return true;
+}
+
+//  =============================================================================
+bool OnAddResponse(NetMessage& message, NetConnection* fromConnection)
+{
+	float parameter1 = 0;
+	float parameter2 = 0;
+	float sum = 0;
+
+	bool success = message.ReadBytes(&parameter1, sizeof(float), false);
+
+	if (!success)
+	{
+		DevConsolePrintf("Received ADD function from connection %i. Could not read param1", fromConnection->m_index);
+		return success;
+	}
+
+	success = message.ReadBytes(&parameter2, sizeof(float), false);
+
+	if (!success)
+	{
+		DevConsolePrintf("Received ADD function from connection %i. Could not read param2", fromConnection->m_index);
+		return success;
+	}
+
+	success = message.ReadBytes(&sum, sizeof(float), false);
+
+	DevConsolePrintf("Received ADD response from connection %i: %f + %f = %f", fromConnection->m_index
+		,parameter1
+		,parameter2
+		,sum);
+
 	return true;
 }
 

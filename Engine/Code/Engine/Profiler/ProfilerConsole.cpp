@@ -175,7 +175,8 @@ void ProfilerConsole::Update()
 		history[historyItem] = nullptr;
 	}	
 
-	RefreshDynamicWidgets();
+	if(!Profiler::GetInstance()->IsPaused())
+		RefreshDynamicWidgets();	
 }
 
 void ProfilerConsole::Render()

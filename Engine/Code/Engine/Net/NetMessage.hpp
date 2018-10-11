@@ -5,7 +5,7 @@
 class NetMessage;
 class NetConnection;
 
-typedef bool (*NetMessageCallback)(const NetMessage& message, NetConnection* fromConnection);
+typedef bool (*NetMessageCallback)(NetMessage& message, NetConnection* fromConnection);
 
 struct NetMessageHeader
 {

@@ -35,7 +35,8 @@ void NetConnection::FlushOutgoingMessages()
 	
 	while (!areMessagesPacked)
 	{
-		if (packet->GetBufferSize() + m_outgoingMessages[currentMessageIndex]->GetWrittenByteCount() <= PACKET_MTU)
+		//total buffer size + payload size + header size + total message size (header + payload sizes)
+		if (packet->GetBufferSize() + m_outgoingMessages[currentMessageIndex]->GetWrittenByteCount() + sizeof(NetMessageHeader) + sizeof(uint16_t) <= PACKET_MTU)
 		{
 			//write message to packet
 			packet->WriteMessage(*m_outgoingMessages[currentMessageIndex]);
