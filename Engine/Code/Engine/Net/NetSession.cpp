@@ -73,6 +73,7 @@ void NetSession::Startup()
 	CommandRegister("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", "Successfully added connection!"));
 	CommandRegister("send_ping", CommandRegistration(SendPing, ": Send ping to index: idx", ""));
 	CommandRegister("send_add", CommandRegistration(SendAdd, ": Send add request to index: idx var1 var2", ""));
+	CommandRegister("send_multi_ping", CommandRegistration(SendMultiPing, ": Send two pings to index (tests multi message in single packet): idx", ""));
 }
 
 //  =============================================================================
@@ -190,7 +191,6 @@ void NetSession::ProcessIncomingMessages()
 					message = nullptr;
 				}				
 
-				delete(definition);
 				definition = nullptr;
 			}
 			
@@ -418,6 +418,51 @@ void SendPing(Command& cmd)
 	
 	//cleanup
 	message = nullptr;
+	theNetSession = nullptr;
+}
+
+//  =============================================================================
+void SendMultiPing(Command & cmd)
+{
+	uint8_t index = (uint8_t)cmd.GetNextInt();
+
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)index);
+	if (connection == nullptr)
+	{
+		DevConsolePrintf("No connection at index %u", index);
+		return;
+	}
+
+	NetMessage* message1 = new NetMessage("ping");
+	NetMessage* message2 = new NetMessage("ping");
+
+	std::string pingString = cmd.GetNextString(); 
+	if (pingString == "")
+	{
+		pingString = "ping";
+	}
+
+	bool success = message1->WriteString(pingString.c_str());
+	success = message2->WriteString(pingString.c_str());
+
+	if (!success)
+	{
+		DevConsolePrintf(Rgba::RED, "Message length incompatible with MTU size.");
+		delete(message1);
+		delete(message2);
+	}
+	else
+	{
+		// messages are sent to connections (not sessions)
+		connection->QueueMessage(message1);
+		connection->QueueMessage(message2);
+	}
+
+	//cleanup
+	message1 = nullptr;
+	message2 = nullptr;
 	theNetSession = nullptr;
 }
 

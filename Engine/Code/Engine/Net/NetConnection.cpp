@@ -29,7 +29,7 @@ void NetConnection::FlushOutgoingMessages()
 	bool areMessagesPacked = false;
 	int currentMessageIndex = 0;
 
-	std::vector<NetPacket*> packetsToSend;
+	std::vector<NetPacket> packetsToSend;
 	NetPacket* packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
 	packet->WriteUpdatedHeaderData();
 	
@@ -45,7 +45,7 @@ void NetConnection::FlushOutgoingMessages()
 		{
 			//in order to pack the next message, we need to make a new packet
 			//first add old packet to list
-			packetsToSend.push_back(packet);
+			packetsToSend.push_back(*packet);
 
 			//make a new packet
 			delete(packet);
@@ -61,7 +61,7 @@ void NetConnection::FlushOutgoingMessages()
 			areMessagesPacked = true;
 			
 			//add the last packet to the list to send
-			packetsToSend.push_back(packet);
+			packetsToSend.push_back(*packet);
 		}
 		else
 		{
@@ -72,7 +72,7 @@ void NetConnection::FlushOutgoingMessages()
 	//send each packet
 	for(int packetIndex = 0; packetIndex < (int)packetsToSend.size(); ++packetIndex)
 	{
-		theNetSession->m_socket->SendTo(*m_address, packetsToSend[packetIndex]->GetBuffer(), packetsToSend[packetIndex]->GetWrittenByteCount());
+		theNetSession->m_socket->SendTo(*m_address, packetsToSend[packetIndex].GetBuffer(), packetsToSend[packetIndex].GetWrittenByteCount());
 	}
 
 	//cleanup outgoing message queue

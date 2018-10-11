@@ -55,6 +55,7 @@ NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 //console commands
 void AddConnectionToIndex(Command& cmd);
 void SendPing(Command& cmd);
+void SendMultiPing(Command& cmd);
 void SendAdd(Command& cmd);
 
 //message registrations
