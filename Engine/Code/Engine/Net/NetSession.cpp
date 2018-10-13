@@ -6,6 +6,8 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\DevConsole.hpp"
 #include "Engine\Core\Command.hpp"
+#include "Engine\Time\Clock.hpp"
+#include "Engine\Time\Time.hpp"
 #include <string>
 
 NetSession* g_theNetSession = nullptr;
@@ -53,6 +55,7 @@ void NetSession::Update()
 {
 	ProcessOutgoingMessages();
 	ProcessIncomingMessages();
+	CheckDelayedPackets();	
 }
 
 //  =========================================================================================
@@ -74,6 +77,8 @@ void NetSession::Startup()
 	CommandRegister("send_ping", CommandRegistration(SendPing, ": Send ping to index: idx", ""));
 	CommandRegister("send_add", CommandRegistration(SendAdd, ": Send add request to index: idx var1 var2", ""));
 	CommandRegister("send_multi_ping", CommandRegistration(SendMultiPing, ": Send two pings to index (tests multi message in single packet): idx", ""));
+	CommandRegister("net_sim_loss", CommandRegistration(SetNetSimLoss, ": Set the simulated loss: amount (value 0.0 to 1.0)", ""));
+	CommandRegister("net_sim", CommandRegistration(SetNetSimLag, ": Set the simulated network latency (in MS): min max ", ""));
 }
 
 //  =============================================================================
@@ -130,76 +135,123 @@ void NetSession::ProcessIncomingMessages()
 	std::vector<NetPacket> packetsToProcess;
 
 	size_t receivedAmount = INT_MAX;
-
-	NetPacket receivedPacket = NetPacket(UINT8_MAX, 0);
-	receivedPacket.ExtendBufferSize(PACKET_MTU);
 	NetAddress senderAddress;
 
 	//read until no more packets are in the socket
 	while (receivedAmount > 0)
 	{
-		receivedAmount = m_socket->Receive(&senderAddress, receivedPacket.GetBuffer(), PACKET_MTU);
+		void* buffer = malloc(PACKET_MTU);
+		receivedAmount = m_socket->Receive(&senderAddress, buffer, PACKET_MTU);
 		
 		if (receivedAmount != 0)
 		{
+			NetPacket* receivedPacket = new NetPacket();
+			receivedPacket->ExtendBufferSize(PACKET_MTU);
+			receivedPacket->WriteBytes(receivedAmount, buffer, false);
+
 			//check packet validity
-			if (!receivedPacket.CheckIsValid())
+			if (!receivedPacket->CheckIsValid())
 			{
+				delete(receivedPacket);
+				receivedPacket = nullptr;
+
 				continue;
 			}
 
-			//get the header data
-			receivedPacket.ReadBytes(receivedPacket.m_packetHeader, sizeof(NetPacketHeader), false);
-
-			NetConnection* connection = GetConnectionById(receivedPacket.m_packetHeader->m_senderIndex);
-
-			//we don't have a connection on this index (probably invalid)
-			if (connection == nullptr)
+			//decide whether to randomly toss packet out
+			if (GetRandomFloatZeroToOne() <= m_simulationLossAmount)
 			{
-				connection = new NetConnection();
-				connection->m_address = &senderAddress;
-			}
+				delete(receivedPacket);
+				receivedPacket = nullptr;
 
-			for(int messageIndex = 0; messageIndex < (int)receivedPacket.m_packetHeader->m_messageCount; ++messageIndex)
+				continue;
+			}
+			else
 			{
-				uint16_t totalSize = UINT16_MAX;
-				uint8_t callbackId = UINT8_MAX;
+				//store the packet in a vector with a generated latency
+				float delayAmountInMilliseconds = GetRandomFloatInRange((float)m_minAddedLatencyInMilliseconds, (float)m_maxAddedLatencyInMilliseconds);
 
-				receivedPacket.ReadBytes(&totalSize, sizeof(uint16_t), false);
-				receivedPacket.ReadBytes(&callbackId, sizeof(uint8_t), false);
+				uint64_t hpcDelay = SecondsToPerformanceCounter(delayAmountInMilliseconds/1000.f);
 
-				NetMessageDefinition* definition = GetRegisteredDefinitionById((int)callbackId);
+				DelayedReceivedPacket* delayedPacket = new DelayedReceivedPacket();
+				delayedPacket->m_timeToProcess = GetMasterClock()->GetLastHPC() + hpcDelay;
+				delayedPacket->m_packet = receivedPacket;
+				delayedPacket->m_senderAddress = senderAddress;
 
-				if (definition != nullptr)
-				{
-					NetMessage* message = new NetMessage(definition->m_callbackName);
-
-					//if there is more to the message we must read that in before calling the return function
-
-					size_t remainingAmountToRead = totalSize - sizeof(NetMessageHeader);
-					if (remainingAmountToRead > 0)
-					{
-						message->ExtendBufferSize(remainingAmountToRead);
-						receivedPacket.ReadBytes(message->GetBuffer(), remainingAmountToRead, false);
-						message->SetWrittenByteCountToBufferSize();
-					}			
-
-					definition->m_callback(*message, connection);
-
-					//cleanup
-					delete(message);
-					message = nullptr;
-				}				
-
-				definition = nullptr;
+				m_delayedPackets.push_back(delayedPacket);
 			}
-			
-			//cleanup
-			connection = nullptr;			
-			
-			//packetsToProcess.push_back(receivedPacket);			
+		}
+		free(buffer);
+	}
+}
+
+//  =============================================================================
+void NetSession::CheckDelayedPackets()
+{
+	for (int delayedPacketIndex = 0; delayedPacketIndex < (int)m_delayedPackets.size(); ++delayedPacketIndex)
+	{
+		if (GetMasterClock()->GetLastHPC() > m_delayedPackets[delayedPacketIndex]->m_timeToProcess)
+		{
+			ProcessDelayedPacket(m_delayedPackets[delayedPacketIndex]);
+			m_delayedPackets.erase(m_delayedPackets.begin() + delayedPacketIndex);
+			delayedPacketIndex--;
 		}
 	}
+}
+
+//  =============================================================================
+void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
+{
+	//get the header data
+	packet->m_packet->ReadBytes(&packet->m_packet->m_packetHeader, sizeof(NetPacketHeader), false);
+
+	NetConnection* connection = GetConnectionById(packet->m_packet->m_packetHeader.m_senderIndex);
+
+	//we don't have a connection on this index (probably invalid)
+	if (connection == nullptr)
+	{
+		connection = new NetConnection();
+		connection->m_address = &packet->m_senderAddress;
+	}
+
+	for(int messageIndex = 0; messageIndex < (int)packet->m_packet->m_packetHeader.m_messageCount; ++messageIndex)
+	{
+		uint16_t totalSize = UINT16_MAX;
+		uint8_t callbackId = UINT8_MAX;
+		
+		packet->m_packet->ReadBytes(&totalSize, sizeof(uint16_t), false);
+		packet->m_packet->ReadBytes(&callbackId, sizeof(uint8_t), false);
+
+		NetMessageDefinition* definition = GetRegisteredDefinitionById((int)callbackId);
+
+		if (definition != nullptr)
+		{
+			NetMessage* message = new NetMessage(definition->m_callbackName);
+
+			//if there is more to the message we must read that in before calling the return function
+
+			size_t remainingAmountToRead = totalSize - sizeof(NetMessageHeader);
+			if (remainingAmountToRead > 0)
+			{
+				message->ExtendBufferSize(remainingAmountToRead);
+				packet->m_packet->ReadBytes(message->GetBuffer(), remainingAmountToRead, false);
+				message->SetWrittenByteCountToBufferSize();
+			}			
+
+			definition->m_callback(*message, connection);
+
+			//cleanup
+			delete(message);
+			message = nullptr;
+		}				
+
+		definition = nullptr;
+	}
+
+	//cleanup
+	connection = nullptr;			
+
+	//packetsToProcess.push_back(receivedPacket);			
 }
 
 //  =============================================================================
@@ -292,6 +344,21 @@ NetConnection* NetSession::GetConnectionById(uint8_t id)
 	}
 
 	return nullptr;	
+}
+
+//  =============================================================================
+// Simulated Latency/Etc =============================================================================
+//  =============================================================================
+void NetSession::SetSimulatedLossAmount(float lossAmount)
+{
+	m_simulationLossAmount = lossAmount;
+}
+
+//  =============================================================================
+void NetSession::SetSimulatedLatency(uint minLatencyInMilliseconds, uint maxLatencyInMilliseconds)
+{
+	m_minAddedLatencyInMilliseconds = minLatencyInMilliseconds;
+	m_maxAddedLatencyInMilliseconds = maxLatencyInMilliseconds;
 }
 
 //  =========================================================================================
@@ -506,6 +573,37 @@ void SendAdd(Command& cmd)
 
 	message = nullptr;
 	theNetSession = nullptr;
+}
+
+//  =============================================================================
+void SetNetSimLag(Command& cmd)
+{
+	float minimumLatency = cmd.GetNextFloat();
+	float maximumLatency = cmd.GetNextFloat();
+
+	if (minimumLatency > maximumLatency)
+	{
+		DevConsolePrintf(Rgba::RED, "ERROR: Minimum latency cannot be greater than maximum latency");
+		return;
+	}
+
+	NetSession::GetInstance()->SetSimulatedLatency(minimumLatency, maximumLatency);
+	DevConsolePrintf("Latency set to Min:%f and Max%f", minimumLatency, maximumLatency);
+}
+
+//  =============================================================================
+void SetNetSimLoss(Command& cmd)
+{
+	float simLoss = cmd.GetNextFloat();
+
+	if (simLoss > 1 || simLoss < 0)
+	{
+		DevConsolePrintf(Rgba::RED, "ERROR: Loss should be a rate between 0.0 to 1.0");
+		return;
+	}
+
+	NetSession::GetInstance()->SetSimulatedLossAmount(simLoss);
+	DevConsolePrintf("Loss rate set to %f", simLoss);
 }
 
 

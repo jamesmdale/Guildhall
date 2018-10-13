@@ -4,25 +4,18 @@
 //  =============================================================================
 NetPacket::NetPacket()
 {
-	m_packetHeader = new NetPacketHeader();
 }
 
 //  =============================================================================
 NetPacket::~NetPacket()
 {
-	if (m_packetHeader != nullptr)
-	{
-		delete(m_packetHeader);
-		m_packetHeader = nullptr;
-	}	
 }
 
 //  =============================================================================
 NetPacket::NetPacket(uint8_t senderIndex, uint8_t messageCount)
 {
-	m_packetHeader = new NetPacketHeader();
-	m_packetHeader->m_senderIndex = senderIndex;
-	m_packetHeader->m_messageCount = messageCount;
+	m_packetHeader.m_senderIndex = senderIndex;
+	m_packetHeader.m_messageCount = messageCount;
 }
 
 //  =============================================================================
@@ -32,7 +25,7 @@ bool NetPacket::ReadHeader(NetPacketHeader& packetHeader)
 }
 
 //  =============================================================================
-bool NetPacket::WriteMessage(NetMessage netMessage)
+bool NetPacket::WriteMessage(NetMessage& netMessage)
 {
 	//write size
 	bool success = false;
@@ -50,7 +43,7 @@ bool NetPacket::WriteMessage(NetMessage netMessage)
 	//we succeeded so update message count and updat the header info
 	if (success)
 	{
-		m_packetHeader->m_messageCount++;
+		m_packetHeader.m_messageCount++;
 		WriteUpdatedHeaderData();
 	}
 
@@ -88,8 +81,8 @@ void NetPacket::WriteUpdatedHeaderData()
 	ResetWrite();
 
 	//update the packet data with the current packet header count
-	WriteBytes(sizeof(uint8_t), &m_packetHeader->m_senderIndex, false);
-	WriteBytes(sizeof(uint8_t), &m_packetHeader->m_messageCount, false);
+	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_senderIndex, false);
+	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_messageCount, false);
 
 	//move the write head back to the end of the amount we've written
 	SetWriteHeadToMaxWritten();	

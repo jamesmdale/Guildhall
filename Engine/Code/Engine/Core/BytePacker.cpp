@@ -47,13 +47,31 @@ BytePacker::BytePacker(size_t bufferSize, void* buffer, eEndianness byteOrder)
 	m_bytePackerOptions = BYTEPACKER_DEFAULT;
 }
 
+//  deep copy constructor =============================================================================
+BytePacker::BytePacker(const BytePacker& packer)
+{
+	m_bufferSize = packer.GetBufferSize();
+	m_endianness = packer.GetEndianness();
+
+	m_writtenByteCount = packer.GetWrittenByteCount();	
+	m_writeHead = packer.GetWriteHead();
+	m_readHead = packer.GetReadHead();
+
+	m_buffer = malloc(m_bufferSize);
+
+	memcpy(m_buffer, (void*)packer.GetBuffer(), m_bufferSize);	
+}
+
 //  =============================================================================
 BytePacker::~BytePacker()
 {
 	if (AreBitsSet<uint>((uint)m_bytePackerOptions, (uint)BYTEPACKER_OWNS_MEMORY))
 	{
-		free(m_buffer);
-		m_buffer = nullptr;
+		if (m_buffer != nullptr)
+		{
+			free(m_buffer);
+			m_buffer = nullptr;
+		}
 	}
 }
 
@@ -324,10 +342,23 @@ size_t BytePacker::GetReadableByteCount() const
 {
 	return m_writtenByteCount - m_readHead;
 }
+
 //  =============================================================================
 size_t BytePacker::GetBufferSize() const
 {
 	return m_bufferSize;
+}
+
+//  =============================================================================
+size_t BytePacker::GetWriteHead() const
+{
+	return m_writeHead;
+}
+
+//  =============================================================================
+size_t BytePacker::GetReadHead() const
+{
+	return m_readHead;
 }
 
 //  =============================================================================

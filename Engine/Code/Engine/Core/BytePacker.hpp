@@ -27,6 +27,7 @@ public:
 
 	//doesn't own buffer, can't grow
 	BytePacker(size_t bufferSize, void* buffer, eEndianness byteOrder = LITTLE_ENDIAN);
+	BytePacker(const BytePacker& packer);
 	~BytePacker();
 	
 	// setters ----------------------------------------------
@@ -61,6 +62,8 @@ public:
 	size_t GetWriteableByteCount() const;
 	size_t GetReadableByteCount() const;
 	size_t GetBufferSize() const;
+	size_t GetWriteHead() const;
+	size_t GetReadHead() const;
 
 	void* GetBuffer() const;
 
