@@ -5,11 +5,27 @@
 //  =============================================================================
 NetConnection::NetConnection()
 {
+	m_connectionSendLatencyInMilliseconds = 0.f;
+	m_sendWatch = new Stopwatch(GetMasterClock());
+
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	if (theNetSession->m_sessionSendLatencyInMilliseconds > m_connectionSendLatencyInMilliseconds)
+	{
+		m_sendWatch->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
+	}
+	else
+	{
+		m_sendWatch->SetTimerInMilliseconds(m_connectionSendLatencyInMilliseconds);
+	}
+		
 }
 
 //  =============================================================================
 NetConnection::~NetConnection()
 {
+	delete(m_sendWatch);
+	m_sendWatch = nullptr;
 }
 
 //  =============================================================================
@@ -29,7 +45,6 @@ void NetConnection::FlushOutgoingMessages()
 	bool areMessagesPacked = false;
 	int currentMessageIndex = 0;
 
-	std::vector<NetPacket> packetsToSend;
 	NetPacket* packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
 	packet->WriteUpdatedHeaderData();
 	
@@ -45,7 +60,7 @@ void NetConnection::FlushOutgoingMessages()
 		{
 			//in order to pack the next message, we need to make a new packet
 			//first add old packet to list
-			packetsToSend.push_back(*packet);
+			m_readyPackets.push_back(*packet);
 
 			//make a new packet
 			delete(packet);
@@ -61,7 +76,7 @@ void NetConnection::FlushOutgoingMessages()
 			areMessagesPacked = true;
 			
 			//add the last packet to the list to send
-			packetsToSend.push_back(*packet);
+			m_readyPackets.push_back(*packet);
 		}
 		else
 		{
@@ -69,18 +84,21 @@ void NetConnection::FlushOutgoingMessages()
 		}
 	}
 
-	//send each packet
-	for(int packetIndex = 0; packetIndex < (int)packetsToSend.size(); ++packetIndex)
-	{
-		theNetSession->m_socket->SendTo(*m_address, packetsToSend[packetIndex].GetBuffer(), packetsToSend[packetIndex].GetWrittenByteCount());
-	}
-
-	//cleanup outgoing message queue
-	packetsToSend.clear();
 	m_outgoingMessages.clear();
 
 	/*delete(packet);
 	packet = nullptr;*/
 
 	theNetSession = nullptr;
+}
+
+void NetConnection::SendPackets()
+{
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	while (m_sendWatch->ResetAndDecrementIfElapsed() && m_readyPackets.size() > 0)
+	{		
+		theNetSession->m_socket->SendTo(*m_address, m_readyPackets[0].GetBuffer(), m_readyPackets[0].GetWrittenByteCount());
+		m_readyPackets.erase(m_readyPackets.begin());
+	}
 }

@@ -2,7 +2,7 @@
 #include "Engine\Time\Time.hpp"
 #include "Engine\Math\MathUtils.hpp"
 
-
+//  =========================================================================================
 Stopwatch::Stopwatch(Clock* referenceClock)
 {
 	SetClock(referenceClock);
@@ -10,6 +10,7 @@ Stopwatch::Stopwatch(Clock* referenceClock)
 	m_startHPC = m_referenceClock->m_total.hpc;	
 }
 
+//  =========================================================================================
 Stopwatch::~Stopwatch()
 {
 	if(m_referenceClock != nullptr)
@@ -18,6 +19,7 @@ Stopwatch::~Stopwatch()
 	}	
 }
 
+//  =========================================================================================
 void Stopwatch::SetClock(Clock* referenceClock)
 {
 	if (m_referenceClock == nullptr)
@@ -31,11 +33,19 @@ void Stopwatch::SetClock(Clock* referenceClock)
 	
 }
 
+//  =========================================================================================
 void Stopwatch::SetTimer(float seconds)
 {
 	m_intervalHPC = SecondsToPerformanceCounter(seconds);
 }
 
+//  =========================================================================================
+void Stopwatch::SetTimerInMilliseconds(float milliseconds)
+{
+	m_intervalHPC = SecondsToPerformanceCounter(milliseconds/1000.f);
+}
+
+//  =========================================================================================
 double Stopwatch::GetElapsedTimeInSeconds()
 {
 	uint64_t elapsedHPC = m_referenceClock->m_total.hpc - m_startHPC;
@@ -43,6 +53,7 @@ double Stopwatch::GetElapsedTimeInSeconds()
 	return PerformanceCounterToSeconds(elapsedHPC);
 }
 
+//  =========================================================================================
 void Stopwatch::GetElapsedTimeMinutesAndSecondsOut(float& outMinutes, float& outSeconds)
 {
 	double seconds = GetElapsedTimeInSeconds();
@@ -51,13 +62,14 @@ void Stopwatch::GetElapsedTimeMinutesAndSecondsOut(float& outMinutes, float& out
 	outSeconds = Modulus((float)seconds, 60.f);
 }
 
+//  =========================================================================================
 uint64_t Stopwatch::GetElapsedTimeInHPC()
 {
 	uint64_t elapsedHPC = m_referenceClock->m_total.hpc - m_startHPC;
 	return elapsedHPC;
 }
 
-
+//  =========================================================================================
 double Stopwatch::GetNormalizedElapsedTimeInSeconds()
 {
 	double normalizedElapsedTime = GetElapsedTimeInSeconds()/PerformanceCounterToSeconds(m_intervalHPC);
@@ -65,6 +77,7 @@ double Stopwatch::GetNormalizedElapsedTimeInSeconds()
 	return normalizedElapsedTime;
 }
 
+//  =========================================================================================
 bool Stopwatch::HasElapsed()
 {
 	bool elapsed = false;
@@ -77,14 +90,16 @@ bool Stopwatch::HasElapsed()
 	return elapsed;
 }
 
+//  =========================================================================================
 void Stopwatch::Reset()
 {
 	m_startHPC = m_referenceClock->m_total.hpc;
 }
 
-bool Stopwatch::ResetIfElapsed()
+//  =========================================================================================
+bool Stopwatch::ResetAndDecrementIfElapsed()
 {
-	bool hasElapsed = HasElapsed();
+	bool hasElapsed = DecrementAll();
 	
 	if(hasElapsed)
 		Reset();
@@ -92,6 +107,7 @@ bool Stopwatch::ResetIfElapsed()
 	return hasElapsed;
 }
 
+//  =========================================================================================
 bool Stopwatch::CheckAndReset()
 {
 	bool elapsed = HasElapsed();
@@ -100,6 +116,7 @@ bool Stopwatch::CheckAndReset()
 	return elapsed;
 }
 
+//  =========================================================================================
 bool Stopwatch::Decrement()
 {
 	bool elapsed = HasElapsed();
@@ -113,6 +130,7 @@ bool Stopwatch::Decrement()
 	return elapsed;
 }
 
+//  =========================================================================================
 int Stopwatch::DecrementAll()
 {
 	bool elapsed = HasElapsed();

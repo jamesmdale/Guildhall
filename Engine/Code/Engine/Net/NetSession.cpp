@@ -54,6 +54,7 @@ NetSession* NetSession::CreateInstance()
 void NetSession::Update()
 {
 	ProcessOutgoingMessages();
+
 	ProcessIncomingMessages();
 	CheckDelayedPackets();	
 }
@@ -260,6 +261,7 @@ void NetSession::ProcessOutgoingMessages()
 	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
 	{
 		m_connections[connectionIndex]->FlushOutgoingMessages();
+		m_connections[connectionIndex]->SendPackets();
 	}
 }
 
@@ -604,6 +606,79 @@ void SetNetSimLoss(Command& cmd)
 
 	NetSession::GetInstance()->SetSimulatedLossAmount(simLoss);
 	DevConsolePrintf("Loss rate set to %f", simLoss);
+}
+
+//  =========================================================================================
+void SetSessionSendRate(Command& cmd)
+{
+	float sendRate = cmd.GetNextFloat();
+
+	if(sendRate < 0.f)
+		sendRate = 0.f;
+
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	//set net session sendrate
+	if (sendRate > 0)
+	{
+		theNetSession->m_sessionSendLatencyInMilliseconds = (1.f / sendRate) * 1000.f;
+	}
+	else
+	{
+		theNetSession->m_sessionSendLatencyInMilliseconds = 0.f;
+	}
+	
+	//set connection send rates to the netsession send rate for every rate that is faster than the new rate
+	for (int connectionIndex = 0; connectionIndex < (int)theNetSession->m_connections.size(); ++connectionIndex)
+	{
+		if (theNetSession->m_sessionSendLatencyInMilliseconds > theNetSession->m_connections[connectionIndex]->m_connectionSendLatencyInMilliseconds)
+		{
+			theNetSession->m_connections[connectionIndex]->m_sendWatch->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
+		}
+	}
+}
+
+//  =========================================================================================
+void SetConnectionSendRate(Command& cmd)
+{
+	int connectionIndex = cmd.GetNextInt();
+	float sendRate = cmd.GetNextFloat();
+
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)connectionIndex);
+	if (connection == nullptr)
+	{
+		DevConsolePrintf("No connection at index %u", connectionIndex);
+	}
+	else
+	{
+		if(sendRate < 0)
+			sendRate = 0;
+
+		//update latency
+		if (sendRate > 0)
+		{
+			connection->m_connectionSendLatencyInMilliseconds = (1.f / sendRate) * 1000.f;
+		}
+		else
+		{
+			connection->m_connectionSendLatencyInMilliseconds = 0.f;
+		}
+
+		//update timer
+		if (theNetSession->m_sessionSendLatencyInMilliseconds > connection->m_connectionSendLatencyInMilliseconds)
+		{
+			connection->m_sendWatch->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
+		}
+		else
+		{
+			connection->m_sendWatch->SetTimerInMilliseconds(connection->m_connectionSendLatencyInMilliseconds);
+		}
+	}
+
+	connection = nullptr;
+	theNetSession = nullptr;
 }
 
 

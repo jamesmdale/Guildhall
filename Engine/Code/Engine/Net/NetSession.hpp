@@ -70,6 +70,8 @@ public:
 	uint m_minAddedLatencyInMilliseconds = 50;
 	uint m_maxAddedLatencyInMilliseconds = 100;
 
+	float m_sessionSendLatencyInMilliseconds = 0.1;
+
 public:
 	bool m_isDefinitionRegistrationLocked = false;
 	static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
@@ -91,6 +93,8 @@ void SendMultiPing(Command& cmd);
 void SendAdd(Command& cmd);
 void SetNetSimLag(Command& cmd);
 void SetNetSimLoss(Command& cmd);
+void SetSessionSendRate(Command& cmd);
+void SetConnectionSendRate(Command& cmd);
 
 //message registrations
 bool OnPing(NetMessage& message, NetConnection* fromConnection);
