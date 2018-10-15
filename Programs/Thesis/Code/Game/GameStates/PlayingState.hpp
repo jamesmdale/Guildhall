@@ -22,6 +22,7 @@ public:
 	virtual void PostRender() override;
 	virtual float UpdateFromInput(float deltaSeconds) override;
 
+	void RenderGame();
 	void RenderUI();
 
 	//bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);

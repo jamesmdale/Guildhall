@@ -61,7 +61,7 @@ void Agent::Render()
 
 	Sprite sprite = *m_animationSet->GetCurrentSprite(m_spriteDirection);
 
-	float dimensions = Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow;
+	float dimensions = 1.f;
 
 	Texture* texture = sprite.GetSpriteTexture();
 	Vector2 spritePivot = sprite.m_definition->m_pivot;
@@ -424,7 +424,7 @@ bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 	switch (targetPoi->m_type)
 	{
 	case ARMORY_POI_TYPE:
-		if (targetPoi->m_refillTimer->ResetIfElapsed())
+		if (targetPoi->m_refillTimer->ResetAndDecrementIfElapsed())
 		{
 			agent->m_arrowCount++;
 		}
@@ -439,7 +439,7 @@ bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 		}
 		break;
 	case LUMBERYARD_POI_TYPE:
-		if (targetPoi->m_refillTimer->ResetIfElapsed())
+		if (targetPoi->m_refillTimer->ResetAndDecrementIfElapsed())
 		{
 			agent->m_lumberCount++;
 		}
@@ -454,7 +454,7 @@ bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 		}
 		break;
 	case MED_STATION_POI_TYPE:
-		if (targetPoi->m_refillTimer->ResetIfElapsed())
+		if (targetPoi->m_refillTimer->ResetAndDecrementIfElapsed())
 		{
 			agent->m_bandageCount++;
 		}

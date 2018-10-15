@@ -14,8 +14,7 @@ float ORTHO_MAX = 0.f;
 float ORTHO_MIN = 0.f;
 float g_orthoZoom = 0.f;
 
-float ZOOM_RATE = 100.f;
-
+float ZOOM_RATE = 5.f;
 
 //  =============================================================================
 PlayingState::~PlayingState()
@@ -34,12 +33,18 @@ void PlayingState::Initialize()
 	//setup cameras
 	m_uiCamera = new Camera();
 	m_uiCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
-	m_uiCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
+	m_uiCamera->SetOrtho(0.f, theWindow->GetClientWidth(), 0.f, theWindow->GetClientHeight(), -1.f, 1.f);
 	m_uiCamera->SetView(Matrix44::IDENTITY);
 
-	g_orthoZoom = Window::GetInstance()->GetClientHeight();
-	ORTHO_MAX = g_orthoZoom * 5.f;
-	ORTHO_MIN = g_orthoZoom;
+	//set game camera
+	m_camera = new Camera();
+	m_camera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
+	m_camera->SetOrtho(0.f, 32.f, 0.f, 18.f, -1000.f, 1000.f);
+	m_camera->SetView(Matrix44::IDENTITY);
+
+	g_orthoZoom = 1.f;
+	ORTHO_MAX = 20.f;
+	ORTHO_MIN = 0.f;
 
 	// map creation
 	MapDefinition* definition = MapDefinition::s_definitions["Grass"];
@@ -48,7 +53,7 @@ void PlayingState::Initialize()
 	//set globals based on map
 	g_maxCoordinateDistanceSquared = GetDistanceSquared(IntVector2::ZERO, m_map->GetDimensions());
 	
-	for (int armoryIndex = 0; armoryIndex < 10; ++armoryIndex)
+	for (int armoryIndex = 0; armoryIndex < 2; ++armoryIndex)
 	{
 		//add random point of interest
 		PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
@@ -58,7 +63,7 @@ void PlayingState::Initialize()
 		poiLocation = nullptr;
 	}
 	
-	for (int lumberyardIndex = 0; lumberyardIndex < 10; ++lumberyardIndex)
+	for (int lumberyardIndex = 0; lumberyardIndex < 2; ++lumberyardIndex)
 	{
 		//add random point of interest
 		PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(LUMBERYARD_POI_TYPE);
@@ -74,7 +79,7 @@ void PlayingState::Initialize()
 
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
 	
-	for (int i = 0; i < 500; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		IsoSpriteAnimSet* animSet = nullptr;
 		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
@@ -119,8 +124,7 @@ void PlayingState::Render()
 
 	Game::GetInstance()->m_forwardRenderingPath2D->Render(m_renderScene2D);
 
-	m_map->Render();
-
+	RenderGame();
 	RenderUI();
 
 	theRenderer = nullptr;
@@ -139,19 +143,19 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	if (theInput->IsKeyPressed(theInput->KEYBOARD_DOWN_ARROW))
 	{
-		m_camera->Translate(Vector3(Vector2::DOWN * 100.f * deltaSeconds));
+		m_camera->Translate(Vector3(Vector2::DOWN * 5.f * deltaSeconds));
 	}
 	if (theInput->IsKeyPressed(theInput->KEYBOARD_UP_ARROW))
 	{
-		m_camera->Translate(Vector3(Vector2::UP * 100.f * deltaSeconds));
+		m_camera->Translate(Vector3(Vector2::UP * 5.f * deltaSeconds));
 	}
 	if (theInput->IsKeyPressed(theInput->KEYBOARD_RIGHT_ARROW))
 	{
-		m_camera->Translate(Vector3(Vector2::RIGHT * 100.f * deltaSeconds));
+		m_camera->Translate(Vector3(Vector2::RIGHT * 5.f * deltaSeconds));
 	}
 	if (theInput->IsKeyPressed(theInput->KEYBOARD_LEFT_ARROW))
 	{
-		m_camera->Translate(Vector3(Vector2::LEFT * 100.f * deltaSeconds));
+		m_camera->Translate(Vector3(Vector2::LEFT * 5.f * deltaSeconds));
 	}
 
 	if (theInput->IsKeyPressed(theInput->KEYBOARD_PAGEUP))
@@ -190,6 +194,16 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 }
 
 //  =========================================================================================
+void PlayingState::RenderGame()
+{
+	Renderer* theRenderer = Renderer::GetInstance();
+	theRenderer->SetCamera(m_camera);
+	m_map->Render();
+
+	theRenderer = nullptr;
+}
+
+//  =========================================================================================
 void PlayingState::RenderUI()
 {
 	TODO("Render UI");
@@ -203,7 +217,7 @@ void PlayingState::RenderUI()
 
 	////cleanup
 	//theRenderer->SetCamera(m_camera);
-	//theRenderer = nullptr;
+	theRenderer = nullptr;
 }
 
 

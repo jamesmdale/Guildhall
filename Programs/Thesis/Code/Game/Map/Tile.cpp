@@ -1,4 +1,3 @@
-//TODO: update for functions and etc if necessary. Empty cpp for now
 #include "Game\Map\Tile.hpp"
 #include "Game\GameCommon.hpp"
 #include "Engine\Renderer\Renderer.hpp"
@@ -8,10 +7,12 @@
 #include "Game\GameCommon.hpp"
 #include "Engine\Core\StringUtils.hpp"
 
+//  =========================================================================================
 Tile::Tile()
 {
 }
 
+//  =========================================================================================
 Tile::~Tile()
 {
 	delete(m_tags);
@@ -20,11 +21,9 @@ Tile::~Tile()
 	m_tileDefinition = nullptr;
 }
 
+//  =========================================================================================
 void Tile::Initialize()
 {
-	m_worldBounds = AABB2(Vector2((float)m_tileCoords.x * g_tileSize, (float)m_tileCoords.y * g_tileSize),
-		Vector2(((float)m_tileCoords.x + 1) * g_tileSize, ((float)m_tileCoords.y + 1) * g_tileSize));
-
 	//m_lockPosition = Vector2(m_tileCoords);
 	//m_isPositionLocked = true;
 
@@ -59,16 +58,13 @@ void Tile::Initialize()
 	//theRenderer = nullptr;
 }
 
-Vector2 Tile::GetWorldSpaceCoordinates()
-{
-	return m_worldBounds.mins;
-}
-
+//  =========================================================================================
 AABB2 Tile::GetWorldSpaceBounds()
 {
-	return m_worldBounds;	
+	return AABB2(m_tileCoords, Vector2(m_tileCoords.x + 1, m_tileCoords.y + 1));	
 }
 
+//  =========================================================================================
 void Tile::Render()
 {
 	Renderer* theRenderer = Renderer::GetInstance();

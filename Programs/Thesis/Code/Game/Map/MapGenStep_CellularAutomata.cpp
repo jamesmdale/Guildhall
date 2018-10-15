@@ -82,10 +82,9 @@ void MapGenStep_CellularAutomata::Run( Map& map )
 std::vector<int> MapGenStep_CellularAutomata::GetNeighboringTiles(int currentTileIndex, const Map& map)
 {
 	std::vector<int> neighboringTilesIndexes;	
-	IntVector2 currentTileCoords = map.m_tiles[currentTileIndex]->m_tileCoords;
+	Vector2 currentTileCoords = map.m_tiles[currentTileIndex]->m_tileCoords;
 
-
-	IntVector2 eastTile = IntVector2(currentTileCoords.x + 1, currentTileCoords.y);
+	Vector2 eastTile = Vector2(currentTileCoords.x + 1, currentTileCoords.y);
 	int eastIndex = (eastTile.x * map.m_dimensions.y) + eastTile.y;
 
 	if(eastIndex > 0 && eastIndex < (int)map.m_tiles.size())
@@ -94,49 +93,49 @@ std::vector<int> MapGenStep_CellularAutomata::GetNeighboringTiles(int currentTil
 	}
 	
 
-	IntVector2 westTile = IntVector2(currentTileCoords.x - 1 , currentTileCoords.y);
+	Vector2 westTile = Vector2(currentTileCoords.x - 1 , currentTileCoords.y);
 	int westIndex = (westTile.x * map.m_dimensions.y) + westTile.y;
 	if(westIndex > 0 && westIndex < (int)map.m_tiles.size())
 	{
 		neighboringTilesIndexes.push_back(westIndex);
 	}
 
-	IntVector2 northTile = IntVector2(currentTileCoords.x, currentTileCoords.y + 1);
+	Vector2 northTile = Vector2(currentTileCoords.x, currentTileCoords.y + 1);
 	int northIndex = (northTile.x * map.m_dimensions.y) + northTile.y;
 	if(northIndex > 0 && northIndex < (int)map.m_tiles.size())
 	{
 		neighboringTilesIndexes.push_back(northIndex);
 	}
 
-	IntVector2 southTile = IntVector2(currentTileCoords.x, currentTileCoords.y - 1);
+	Vector2 southTile = Vector2(currentTileCoords.x, currentTileCoords.y - 1);
 	int southIndex = (southTile.x * map.m_dimensions.y) + southTile.y;
 	if(southIndex > 0 && southIndex < (int)map.m_tiles.size())
 	{
 		neighboringTilesIndexes.push_back(southIndex);
 	}
 
-	IntVector2 northEastTile = IntVector2(currentTileCoords.x + 1, currentTileCoords.y + 1);
+	Vector2 northEastTile = Vector2(currentTileCoords.x + 1, currentTileCoords.y + 1);
 	int northEastIndex = (northEastTile.x * map.m_dimensions.y) + northEastTile.y;
 	if(northEastIndex > 0 && northEastIndex < (int)map.m_tiles.size())
 	{
 		neighboringTilesIndexes.push_back(northEastIndex);
 	}
 
-	IntVector2 northWestTile = IntVector2(currentTileCoords.x - 1, currentTileCoords.y + 1);
+	Vector2 northWestTile = Vector2(currentTileCoords.x - 1, currentTileCoords.y + 1);
 	int northWestIndex = (northWestTile.x * map.m_dimensions.y) + northWestTile.y;
 	if(northWestIndex > 0 && northWestIndex < (int)map.m_tiles.size())
 	{
 		neighboringTilesIndexes.push_back(northWestIndex);
 	}
 
-	IntVector2 southEastTile = IntVector2(currentTileCoords.x + 1, currentTileCoords.y - 1);
+	Vector2 southEastTile = Vector2(currentTileCoords.x + 1, currentTileCoords.y - 1);
 	int southEastIndex = (southEastTile.x * map.m_dimensions.y) + southEastTile.y;
 	if(southEastIndex > 0 && southEastIndex < (int)map.m_tiles.size())
 	{
 		neighboringTilesIndexes.push_back(southEastIndex);
 	}
 
-	IntVector2 southWestTile = IntVector2(currentTileCoords.x - 1, currentTileCoords.y - 1);
+	Vector2 southWestTile = Vector2(currentTileCoords.x - 1, currentTileCoords.y - 1);
 	int southWestIndex = (southWestTile.x * map.m_dimensions.y) + southWestTile.y;
 	if(southWestIndex > 0 && southWestIndex < (int)map.m_tiles.size())
 	{

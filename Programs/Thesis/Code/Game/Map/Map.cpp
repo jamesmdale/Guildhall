@@ -29,7 +29,7 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 		{		
 			Tile* newTile = new Tile();
 
-			newTile->m_tileCoords = IntVector2(xCoordinate, yCoordinate);
+			newTile->m_tileCoords = Vector2(xCoordinate, yCoordinate);
 			newTile->m_tileDefinition = TileDefinition::s_tileDefinitions[m_mapDefinition->m_defaultTile->m_name];
 
 			newTile->Initialize();

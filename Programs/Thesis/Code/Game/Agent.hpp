@@ -68,7 +68,7 @@ public:
 	Vector2 m_forward;
 	Vector2 m_intermediateGoalPosition;	//used for temp locations while pathing
 	Transform2D m_transform;
-	float m_movespeed = 50.f;
+	float m_movespeed = 1.f;
 
 	//goal logic	
 	std::vector<Vector2> m_currentPath;

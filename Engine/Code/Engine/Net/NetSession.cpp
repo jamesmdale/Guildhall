@@ -70,6 +70,7 @@ void NetSession::Startup()
 	RegisterMessageDefinition("pong", OnPong);
 	RegisterMessageDefinition("add", OnAdd);
 	RegisterMessageDefinition("add_response", OnAddResponse);
+	RegisterMessageDefinition("heartbeat", OnHeartbeat);
 
 	LockMessageDefinitionRegistration();
 
@@ -80,6 +81,7 @@ void NetSession::Startup()
 	CommandRegister("send_multi_ping", CommandRegistration(SendMultiPing, ": Send two pings to index (tests multi message in single packet): idx", ""));
 	CommandRegister("net_sim_loss", CommandRegistration(SetNetSimLoss, ": Set the simulated loss: amount (value 0.0 to 1.0)", ""));
 	CommandRegister("net_sim", CommandRegistration(SetNetSimLag, ": Set the simulated network latency (in MS): min max ", ""));
+	CommandRegister("net_set_heart_rate", CommandRegistration(SetGlobalHeartRate, ": Set the heartbeat rate for all connections: rate", ""));
 }
 
 //  =============================================================================
@@ -128,6 +130,39 @@ bool NetSession::AddConnection(uint8_t connectionIndex, NetAddress* address)
 	}
 
 	return true;
+}
+
+//  =========================================================================================
+void NetSession::CheckHeartbeats()
+{
+	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
+	{
+		if (m_connections[connectionIndex]->m_heartbeatTimer->ResetAndDecrementIfElapsed())
+		{
+			SendHeartBeat(m_connections[connectionIndex]->m_index);
+		}
+	}
+}
+
+//  =========================================================================================
+void NetSession::SendHeartBeat(int index)
+{
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)index);
+	if (connection == nullptr)
+	{
+		DevConsolePrintf("No connection at index %u", index);
+		return;
+	}
+
+	NetMessage* message = new NetMessage("heartbeat");
+
+	// messages are sent to connections (not sessions)
+	connection->QueueMessage(message);	
+
+	message = nullptr;
+	theNetSession = nullptr;
 }
 
 //  =============================================================================
@@ -346,6 +381,23 @@ NetConnection* NetSession::GetConnectionById(uint8_t id)
 	}
 
 	return nullptr;	
+}
+
+//  =========================================================================================
+void NetSession::SetHeartbeatRate(float hertz)
+{
+	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
+	{
+		if (hertz == 0)
+		{
+			m_connections[connectionIndex]->m_heartbeatTimer->SetTimer(0);
+		}
+		else
+		{
+			m_connections[connectionIndex]->m_heartbeatTimer->SetTimer(1.f / hertz);
+		}
+		
+	}
 }
 
 //  =============================================================================
@@ -633,7 +685,7 @@ void SetSessionSendRate(Command& cmd)
 	{
 		if (theNetSession->m_sessionSendLatencyInMilliseconds > theNetSession->m_connections[connectionIndex]->m_connectionSendLatencyInMilliseconds)
 		{
-			theNetSession->m_connections[connectionIndex]->m_sendWatch->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
+			theNetSession->m_connections[connectionIndex]->m_latencySendTimer->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
 		}
 	}
 }
@@ -669,16 +721,29 @@ void SetConnectionSendRate(Command& cmd)
 		//update timer
 		if (theNetSession->m_sessionSendLatencyInMilliseconds > connection->m_connectionSendLatencyInMilliseconds)
 		{
-			connection->m_sendWatch->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
+			connection->m_latencySendTimer->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
 		}
 		else
 		{
-			connection->m_sendWatch->SetTimerInMilliseconds(connection->m_connectionSendLatencyInMilliseconds);
+			connection->m_latencySendTimer->SetTimerInMilliseconds(connection->m_connectionSendLatencyInMilliseconds);
 		}
 	}
 
 	connection = nullptr;
 	theNetSession = nullptr;
+}
+
+//  =========================================================================================
+void SetGlobalHeartRate(Command& cmd)
+{
+	int heartbeatHzRate = cmd.GetNextInt();
+	
+	if(heartbeatHzRate < 0)
+		heartbeatHzRate = 0;
+
+	NetSession::GetInstance()->SetHeartbeatRate((float)heartbeatHzRate);
+
+	DevConsolePrintf("Set global heart rate to %i hz", heartbeatHzRate);
 }
 
 
@@ -798,6 +863,12 @@ bool OnAddResponse(NetMessage& message, NetConnection* fromConnection)
 		,parameter2
 		,sum);
 
+	return true;
+}
+
+//  =========================================================================================
+bool OnHeartbeat(NetMessage & message, NetConnection * fromConnection)
+{
 	return true;
 }
 

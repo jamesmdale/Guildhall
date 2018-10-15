@@ -67,8 +67,8 @@ void Game::Initialize()
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	//set game common values after window has been started up
-	g_tileSize = Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow;
-	g_divideTileSize = 1 / (Window::GetInstance()->GetClientWidth() * g_tilePercentageOfWindow);
+	g_tileSize = 1.f;
+	g_divideTileSize = 1 / g_tileSize;
 	g_halfTileSize = g_tileSize * 0.5f;
 	g_bombardmentExplosionSize = g_halfTileSize * 4;
 

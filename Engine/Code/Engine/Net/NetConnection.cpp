@@ -5,27 +5,32 @@
 //  =============================================================================
 NetConnection::NetConnection()
 {
+	//setup simulated latency timer
 	m_connectionSendLatencyInMilliseconds = 0.f;
-	m_sendWatch = new Stopwatch(GetMasterClock());
+	m_latencySendTimer = new Stopwatch(GetMasterClock());
 
 	NetSession* theNetSession = NetSession::GetInstance();
 
 	if (theNetSession->m_sessionSendLatencyInMilliseconds > m_connectionSendLatencyInMilliseconds)
 	{
-		m_sendWatch->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
+		m_latencySendTimer->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
 	}
 	else
 	{
-		m_sendWatch->SetTimerInMilliseconds(m_connectionSendLatencyInMilliseconds);
+		m_latencySendTimer->SetTimerInMilliseconds(m_connectionSendLatencyInMilliseconds);
 	}
 		
+
+	//setup heartbeat timer
+	m_heartbeatTimer = new Stopwatch(GetMasterClock());
+	m_heartbeatTimer->SetTimer(0.f);
 }
 
 //  =============================================================================
 NetConnection::~NetConnection()
 {
-	delete(m_sendWatch);
-	m_sendWatch = nullptr;
+	delete(m_latencySendTimer);
+	m_latencySendTimer = nullptr;
 }
 
 //  =============================================================================
@@ -96,7 +101,7 @@ void NetConnection::SendPackets()
 {
 	NetSession* theNetSession = NetSession::GetInstance();
 
-	while (m_sendWatch->ResetAndDecrementIfElapsed() && m_readyPackets.size() > 0)
+	while (m_latencySendTimer->ResetAndDecrementIfElapsed() && m_readyPackets.size() > 0)
 	{		
 		theNetSession->m_socket->SendTo(*m_address, m_readyPackets[0].GetBuffer(), m_readyPackets[0].GetWrittenByteCount());
 		m_readyPackets.erase(m_readyPackets.begin());

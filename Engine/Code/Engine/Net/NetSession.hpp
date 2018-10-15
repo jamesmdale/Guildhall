@@ -42,6 +42,8 @@ public:
 	bool AddConnection(uint8_t connectionIndex, NetAddress* address);	
 
 	//message processing
+	void CheckHeartbeats();
+	void SendHeartBeat(int connectionIndex);
 	void ProcessIncomingMessages();
 	void CheckDelayedPackets();
 	void ProcessDelayedPacket(DelayedReceivedPacket* packet);
@@ -55,7 +57,10 @@ public:
 
 	NetConnection* GetConnectionById(uint8_t id);
 
-	//simulation helpers
+	//helpers
+	void SetHeartbeatRate(float hertz);
+
+	//simulation latency helpers
 	void SetSimulatedLossAmount(float lossAmount);
 	void SetSimulatedLatency(uint minLatencyInMilliseconds, uint maxLatencyInMilliseconds);
 
@@ -71,6 +76,8 @@ public:
 	uint m_maxAddedLatencyInMilliseconds = 100;
 
 	float m_sessionSendLatencyInMilliseconds = 0.1;
+
+	Stopwatch* m_heartbeatRate = nullptr;
 
 public:
 	bool m_isDefinitionRegistrationLocked = false;
@@ -95,9 +102,11 @@ void SetNetSimLag(Command& cmd);
 void SetNetSimLoss(Command& cmd);
 void SetSessionSendRate(Command& cmd);
 void SetConnectionSendRate(Command& cmd);
+void SetGlobalHeartRate(Command& cmd);
 
 //message registrations
 bool OnPing(NetMessage& message, NetConnection* fromConnection);
 bool OnPong(NetMessage& message, NetConnection* fromConnection);
 bool OnAdd(NetMessage& message, NetConnection* fromConnection);
 bool OnAddResponse(NetMessage& message, NetConnection* fromConnection);
+bool OnHeartbeat(NetMessage& message, NetConnection* fromConnection);

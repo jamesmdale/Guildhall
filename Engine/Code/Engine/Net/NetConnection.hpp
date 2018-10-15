@@ -19,7 +19,8 @@ public:
 	NetAddress* m_address = nullptr;
 	float m_connectionSendLatencyInMilliseconds = 0;
 	
-	Stopwatch* m_sendWatch = nullptr;
+	Stopwatch* m_latencySendTimer = nullptr;
+	Stopwatch* m_heartbeatTimer = nullptr;
 
 	std::vector<NetMessage*> m_outgoingMessages;
 	std::vector<NetPacket> m_readyPackets;
