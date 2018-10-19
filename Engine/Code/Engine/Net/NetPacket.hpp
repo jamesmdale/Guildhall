@@ -34,7 +34,7 @@ public:
 	bool ReadMessage(NetMessage& netMessage);
 
 	void WriteUpdatedHeaderData();
-
+	 
 	bool CheckIsValid();
 	uint16_t GetAck();
 
