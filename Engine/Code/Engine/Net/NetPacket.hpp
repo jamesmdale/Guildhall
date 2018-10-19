@@ -24,7 +24,7 @@ public:
 	bool ReadMessage(NetMessage& netMessage);
 
 	void WriteUpdatedHeaderData();
-
+	 
 	bool CheckIsValid();
 
 public:
