@@ -59,7 +59,7 @@ void Tile::Initialize()
 }
 
 //  =========================================================================================
-AABB2 Tile::GetWorldSpaceBounds()
+AABB2 Tile::GetBounds()
 {
 	return AABB2(m_tileCoords, Vector2(m_tileCoords.x + 1, m_tileCoords.y + 1));	
 }
@@ -69,7 +69,7 @@ void Tile::Render()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
 
-	theRenderer->DrawTexturedAABB(GetWorldSpaceBounds(), *theRenderer->CreateOrGetTexture("Data/Images/Terrain_8x8.png"), m_tileDefinition->m_baseSpriteUVCoords.mins, m_tileDefinition->m_baseSpriteUVCoords.maxs, m_tint);
+	theRenderer->DrawTexturedAABB(GetBounds(), *theRenderer->CreateOrGetTexture("Data/Images/Terrain_8x8.png"), m_tileDefinition->m_baseSpriteUVCoords.mins, m_tileDefinition->m_baseSpriteUVCoords.maxs, m_tint);
 	
 	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("default"));
 
@@ -77,7 +77,7 @@ void Tile::Render()
 	{
 		int value = m_tileDefinition->m_allowsWalking == true ? 0 : 1;
 		std::string doesBlock = Stringf("%i", value);
-		theRenderer->DrawText2DCentered(GetWorldSpaceBounds().GetCenter(), doesBlock.c_str(), g_tileSize, Rgba::WHITE, 1.f, theRenderer->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		theRenderer->DrawText2DCentered(GetBounds().GetCenter(), doesBlock.c_str(), g_tileSize, Rgba::WHITE, 1.f, theRenderer->CreateOrGetBitmapFont("SquirrelFixedFont"));
 	}
 
 	theRenderer = nullptr;

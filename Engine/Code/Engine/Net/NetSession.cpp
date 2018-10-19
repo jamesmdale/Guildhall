@@ -250,7 +250,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 		connection->m_address = &packet->m_senderAddress;
 	}
 
-	for(int messageIndex = 0; messageIndex < (int)packet->m_packet->m_packetHeader.m_messageCount; ++messageIndex)
+	for(int messageIndex = 0; messageIndex < (int)packet->m_packet->m_packetHeader.m_unreliableMessageCount; ++messageIndex)
 	{
 		uint16_t totalSize = UINT16_MAX;
 		uint8_t callbackId = UINT8_MAX;
@@ -867,9 +867,21 @@ bool OnAddResponse(NetMessage& message, NetConnection* fromConnection)
 }
 
 //  =========================================================================================
-bool OnHeartbeat(NetMessage & message, NetConnection * fromConnection)
+bool OnHeartbeat(NetMessage& message, NetConnection * fromConnection)
 {
 	return true;
+}
+
+//  =========================================================================================
+bool OnAck(NetMessage& message, NetConnection* fromConnection)
+{
+	uint16_t ack = INVALID_PACKET_ACK;
+	bool success = message.ReadBytes(&ack, sizeof(uint16_t), false);
+
+	if (success)
+	{
+		fromConnection->OnAckReceived(ack);
+	}	
 }
 
 

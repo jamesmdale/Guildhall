@@ -50,6 +50,13 @@ void NetConnection::FlushOutgoingMessages()
 	bool areMessagesPacked = false;
 	int currentMessageIndex = 0;
 
+	//setup header
+	NetPacketHeader header;
+	header.m_senderIndex = theNetSession->m_sessionConnectionIndex;
+	header.m_ack = GetNextAckToSend();
+	header.m_lastReceivedAck = m_lastReceivedAck;
+	header.m_receivedAckBitfield = m_previousReceivedAckBitfield;
+
 	NetPacket* packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
 	packet->WriteUpdatedHeaderData();
 	
@@ -97,6 +104,7 @@ void NetConnection::FlushOutgoingMessages()
 	theNetSession = nullptr;
 }
 
+//  =========================================================================================
 void NetConnection::SendPackets()
 {
 	NetSession* theNetSession = NetSession::GetInstance();
@@ -106,4 +114,34 @@ void NetConnection::SendPackets()
 		theNetSession->m_socket->SendTo(*m_address, m_readyPackets[0].GetBuffer(), m_readyPackets[0].GetWrittenByteCount());
 		m_readyPackets.erase(m_readyPackets.begin());
 	}
+}
+
+//  =========================================================================================
+void NetConnection::OnPacketSend(NetPacket* packet)
+{
+	++m_nextSentAck;
+	if (m_nextSentAck == INVALID_PACKET_ACK)
+	{
+		++m_nextSentAck;
+	}
+	
+	m_sentPacketAcks.push_back(packet->GetAck());
+}
+
+//  =========================================================================================
+void NetConnection::OnReceivePacket(uint16_t ack)
+{
+	for (int packetAckIndex = 0; packetAckIndex < (int)m_sentPacketAcks.size(); ++packetAckIndex)
+	{
+		if (ack == m_sentPacketAcks[packetAckIndex])
+		{
+			DevConsole::GetInstance()->DevConsolePrintf("Packet Received: %u", ack);
+		}
+	}
+}
+
+//  =========================================================================================
+void NetConnection::OnAckReceived(uint16_t ack)
+{
+
 }

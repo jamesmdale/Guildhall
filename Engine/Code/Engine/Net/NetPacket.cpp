@@ -11,11 +11,17 @@ NetPacket::~NetPacket()
 {
 }
 
+//  =========================================================================================
+NetPacket::NetPacket(const NetPacketHeader& header)
+{
+	m_packetHeader = header;
+}
+
 //  =============================================================================
 NetPacket::NetPacket(uint8_t senderIndex, uint8_t messageCount)
 {
 	m_packetHeader.m_senderIndex = senderIndex;
-	m_packetHeader.m_messageCount = messageCount;
+	m_packetHeader.m_unreliableMessageCount = messageCount;
 }
 
 //  =============================================================================
@@ -43,7 +49,7 @@ bool NetPacket::WriteMessage(NetMessage& netMessage)
 	//we succeeded so update message count and updat the header info
 	if (success)
 	{
-		m_packetHeader.m_messageCount++;
+		m_packetHeader.m_unreliableMessageCount++;
 		WriteUpdatedHeaderData();
 	}
 
@@ -82,7 +88,7 @@ void NetPacket::WriteUpdatedHeaderData()
 
 	//update the packet data with the current packet header count
 	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_senderIndex, false);
-	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_messageCount, false);
+	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_unreliableMessageCount, false);
 
 	//move the write head back to the end of the amount we've written
 	SetWriteHeadToMaxWritten();	
@@ -109,7 +115,7 @@ bool NetPacket::CheckIsValid()
 	
 	int remainingPacketSize = (int)(totalBufferSize - sizeof(NetPacketHeader));
 	
-	for (int messageIndex = 0; messageIndex < (int)headerData.m_messageCount; ++messageIndex)
+	for (int messageIndex = 0; messageIndex < (int)headerData.m_unreliableMessageCount; ++messageIndex)
 	{
 		//read message header
 		uint16_t totalMessageSize;
@@ -162,4 +168,9 @@ bool NetPacket::CheckIsValid()
 	//we read through the entire packet and our message count and sizes are consistent with total size of Packet
 	ResetRead();
 	return true;	
+}
+
+uint16_t NetPacket::GetAck()
+{
+	return m_packetHeader.m_ack;
 }

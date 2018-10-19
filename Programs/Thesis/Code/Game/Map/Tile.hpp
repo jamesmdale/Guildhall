@@ -23,8 +23,7 @@ public:
 
 	void SetTileType(TileDefinition* newTileDefintion){ m_tileDefinition = newTileDefintion;}
 	Vector2 GetTileCoordinates(){ return m_tileCoords;}
-	Vector2 GetWorldSpaceCoordinates();
-	AABB2 GetWorldSpaceBounds();
+	AABB2 GetBounds();
 
 	void Render();
 

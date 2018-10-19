@@ -71,11 +71,11 @@ void Planner::UpdatePlan()
 	ePlanTypes chosenOutcome = NONE_PLAN_TYPE;
 	float lowestCost = 0;
 
-	float shootCost = GetShootCost();
+	float shootCost = GetShootUtility();
 	chosenOutcome = SHOOT_PLAN_TYPE;
 	lowestCost = shootCost;
 
-	float repairCost = GetRepairCost();
+	float repairCost = GetRepairUtility();
 	if (repairCost < lowestCost)
 	{
 		chosenOutcome = REPAIR_PLAN_TYPE;
@@ -238,7 +238,28 @@ void Planner::QueueHealActions()
 }
 
 //  =========================================================================================
-float Planner::GetShootCost()
+UtilityInfo Planner::GetGatherArrowsUtility()
+{
+	//for every building determine cost of going to gether arrows
+
+
+	return 0.0f;
+}
+
+//  =========================================================================================
+UtilityInfo Planner::GetGatherLumberUtility()
+{
+	return 0.0f;
+}
+
+//  =========================================================================================
+UtilityInfo Planner::GetGatherBandagesUtility()
+{
+	return 0.0f;
+}
+
+//  =========================================================================================
+UtilityInfo Planner::GetShootUtility()
 {
 	/*factors to consider:
 		arrowCount
@@ -253,14 +274,14 @@ float Planner::GetShootCost()
 		return 9999.f;
 
 	//agent's tile coord to be used throughout calculations
-	IntVector2 agentTileCoord = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
+	Vector2 agentTileCoord = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
 
 	//get arrow capacity efficiency
 	float percentageOfArrowCapacity = (float)m_agent->m_arrowCount/(float)g_maxResourceCarryAmount;
 	
 	//only if we aren't full should we consider distance to armory and gathering costs
 	float distanceSquaredToArmorySquared = 0.f;
-	IntVector2 startingCoordToWall = agentTileCoord;
+	Vector2 startingCoordToWall = agentTileCoord;
 	float timeToGatherToFull = 0.f;
 
 	if (percentageOfArrowCapacity < 0.75f)
@@ -300,7 +321,7 @@ float Planner::GetShootCost()
 }
 
 //  =========================================================================================
-float Planner::GetRepairCost()
+UtilityInfo Planner::GetRepairUtility()
 {
 	//if there is no threat, we shouldn't shoot
 
@@ -355,12 +376,87 @@ float Planner::GetRepairCost()
 	return (5.f * (1.f - ClampFloat(poiHealthUrgency, 0.f, 1.f)) + (0.25f * totalDistanceSquaredRequirement) + totalTimeToCompleteTask) / (5.f + 0.25f + 1.f);
 }
 
+UtilityInfo Planner::GetRepairUtilityPerBuilding(PointOfInterest* poi)
+{
+	UtilityInfo info;
+
+	//easy out if building is at full health
+	if (poi->m_health == g_maxHealth)
+	{
+		info.utility = 0.f;
+		info.endLocation = poi->m_accessCoordinate;
+		info.targetEntityId = poi->m_id;
+		return info;
+	}
+
+	// distance to building squared ----------------------------------------------
+	float distanceToBuildingSquared = GetDistanceSquared(m_agent->m_position, poi->m_accessCoordinate);
+	
+	//get max distance
+	float maxDistanceSquared = GetDistanceSquared(Vector2::ZERO, Vector2(m_map->GetDimensions()));
+
+	//normalize distance
+	float normalizedDistance = distanceToBuildingSquared/maxDistanceSquared;
+
+	//apply distance utility formula for utility value
+	float distanceUtility = CalculateDistanceUtility(normalizedDistance);
+
+
+	//building health ----------------------------------------------
+	float normalizedHealth = poi->m_health/g_maxHealth;
+
+	//apply health utility formula for utility value
+	float healthUtility = CalculateBuildingHealthUtility(normalizedHealth);
+
+
+	// combine distance and health utilities for final utility ----------------------------------------------
+
+	float adjustedUtility = 1.f - (1.f - distanceUtility) * (1.f - healthUtility);
+
+
+	return info;
+}
+
 //  =========================================================================================
-float Planner::GetHealCost()
+UtilityInfo Planner::GetHealUtilityPerAgent(Agent * agent)
+{
+	UtilityInfo info;
+	return info;
+}
+
+
+//  =========================================================================================
+UtilityInfo Planner::GetHealUtility()
 {
 	float cost = 99999.f;
 
-	return cost;
+	UtilityInfo info;
+	return info;
+}
+
+//  =========================================================================================
+//  Utility Function Calculations =========================================================================================
+//  =========================================================================================
+float Planner::CalculateDistanceUtility(float normalizedDistance)
+{
+	//  ((1-x)^3 * 0.4f) + 0.1f = y
+	float oneMinusNormalizedDistance = 1 - normalizedDistance;
+	float utility = ((oneMinusNormalizedDistance * oneMinusNormalizedDistance * oneMinusNormalizedDistance) * 0.4f) + 0.1f;
+
+	return utility;
+}
+
+//  =========================================================================================
+float Planner::CalculateBuildingHealthUtility(float normalizedBuildingHealth)
+{
+	//  ((1 - x)^2x * 0.8) = y
+
+	float oneMinusNormalizedBuildingHealth = 1 - normalizedBuildingHealth;
+
+	float poweredHealth = std::pow(oneMinusNormalizedBuildingHealth, 2 * normalizedBuildingHealth);
+	float utility = poweredHealth * 0.8f;
+
+	return utility;
 }
 
 //  =========================================================================================
@@ -409,7 +505,7 @@ IntVector2 Planner::GetNearestTileCoordinateOfMapEdgeFromCoordinate(const IntVec
 	IntVector2 closestCoordinate = coordinate;
 
 	//maxs of map (walkable is -2).  (assumed mins are 0,0)
-	IntVector2 maxTileCoordinates = IntVector2(m_map->m_dimensions.x - 2, m_map->m_dimensions.y - 2);
+	IntVector2 maxTileCoordinates = IntVector2(m_map->m_dimensions.x - 2.f, m_map->m_dimensions.y - 2.f);
 
 	/*ex:
 	the coordinate (3,6) on a map the size of (8,8) will return (3,7);

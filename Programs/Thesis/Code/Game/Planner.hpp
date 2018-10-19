@@ -16,6 +16,13 @@ enum ePlanTypes
 	NUM_PLAN_TYPE
 };
 
+struct UtilityInfo
+{
+	float utility = 0.0f;
+	Vector2 endLocation = Vector2::ZERO;
+	int targetEntityId = -1;
+};
+
 class Planner
 {
 public:
@@ -34,9 +41,21 @@ public:
 	void QueueRepairActions();
 	void QueueHealActions();
 
-	float GetShootCost();
-	float GetRepairCost();
-	float GetHealCost();
+	//utility cost calculations
+	UtilityInfo GetGatherArrowsUtility();
+	UtilityInfo GetGatherLumberUtility();
+	UtilityInfo GetGatherBandagesUtility();
+
+	UtilityInfo GetShootUtility();
+	UtilityInfo GetRepairUtility();
+	UtilityInfo GetHealUtility();
+
+	UtilityInfo GetRepairUtilityPerBuilding(PointOfInterest* poi);
+	UtilityInfo GetHealUtilityPerAgent(Agent* agent);
+
+	//utility functions
+	float CalculateDistanceUtility(float normalizedDistance);
+	float CalculateBuildingHealthUtility(float normalizedBuildingHealth);
 
 	//agent helpers
 	float GetAverageAgentHealth();

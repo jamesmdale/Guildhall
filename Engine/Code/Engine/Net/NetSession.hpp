@@ -110,3 +110,4 @@ bool OnPong(NetMessage& message, NetConnection* fromConnection);
 bool OnAdd(NetMessage& message, NetConnection* fromConnection);
 bool OnAddResponse(NetMessage& message, NetConnection* fromConnection);
 bool OnHeartbeat(NetMessage& message, NetConnection* fromConnection);
+bool OnAck(NetMessage& message, NetConnection* fromConnection);

@@ -28,7 +28,7 @@ float g_maxActionPerformanceRatePerSecond = 1.f;
 float g_minSkillEfficiency = 0.1f;
 
 //bombardment globals
-float g_bombardmentRatePerSecond = 4.f;
+float g_bombardmentRatePerSecond = 0.5f;
 float g_bombardmentExplosionTime = 1.f;
 float g_bombardmentExplosionSize = 1.f;
 int g_bombardmentDamage = 10.f;

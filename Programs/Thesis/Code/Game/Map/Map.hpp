@@ -14,6 +14,7 @@ class Agent;
 class PointOfInterest;
 class Bombardment;
 class Stopwatch;
+class Mesh;
 
 class Map
 {
@@ -22,11 +23,18 @@ public:
 
 	Map::~Map();
 
+	void Initialize();
+
+	void Update(float deltaSeconds);
+	void Render();
+
 	void SetMapType(MapDefinition* newMapDefintion) { m_mapDefinition = newMapDefintion; }
 	IntVector2 GetDimensions() { return m_dimensions; }
 
-	void Update(float deltaSeconds);
-	void Render();	
+	//optimized mesh generation
+	void CreateMapMesh();
+	Mesh* CreateDynamicAgentMesh();
+	Mesh* CreateDynamicBombardmentMesh();	
 
 	//Cleanup functions
 	void DeleteDeadEntities();
@@ -37,7 +45,7 @@ public:
 
 	//Conversion functions for Tile Coordinates to World Coordinates
 	IntVector2 GetTileCoordinateOfPosition(const Vector2& position);
-	Vector2 GetWorldPositionOfMapCoordinate(const IntVector2& position);
+	Vector2 GetWorldPositionOfMapCoordinate(const IntVector2& coordinate);
 
 	//helpers
 	bool CheckIsPositionValid(const Vector2& position);
@@ -47,7 +55,7 @@ public:
 	IntVector2 GetRandomCoordinateInMapBounds();
 	Grid<int>* GetAsGrid();
 	bool IsTileBlockingAtCoordinate(const IntVector2& coordinate);
-	Tile* GetTileAtCoordinate(const IntVector2 & coordinate);
+	Tile* GetTileAtCoordinate(const IntVector2& coordinate);
 	Agent* GetAgentById(int agentId);
 
 	float GetAveragePOIHealth();
@@ -72,6 +80,9 @@ public:
 	std::vector<Agent*> m_agents;
 	std::vector<PointOfInterest*> m_pointsOfInterest;
 	std::vector<Bombardment*> m_activeBombardments;
+
+	//meshes for rendering
+	Mesh* m_mapMesh = nullptr;
 
 	Stopwatch* m_bombardmentTimer = nullptr;
 	Stopwatch* m_threatTimer = nullptr;
