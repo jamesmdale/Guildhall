@@ -49,52 +49,7 @@ void PlayingState::Initialize()
 	// map creation
 	MapDefinition* definition = MapDefinition::s_definitions["Grass"];
 	m_map = new Map(definition, "TestMap", m_renderScene2D);	
-
-	//set globals based on map
-	g_maxCoordinateDistanceSquared = GetDistanceSquared(IntVector2::ZERO, m_map->GetDimensions());
-	
-	for (int armoryIndex = 0; armoryIndex < 2; ++armoryIndex)
-	{
-		//add random point of interest
-		PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(ARMORY_POI_TYPE);
-		poiLocation->m_map = m_map;
-
-		m_map->m_pointsOfInterest.push_back(poiLocation);
-		poiLocation = nullptr;
-	}
-	
-	for (int lumberyardIndex = 0; lumberyardIndex < 2; ++lumberyardIndex)
-	{
-		//add random point of interest
-		PointOfInterest* poiLocation = m_map->GeneratePointOfInterest(LUMBERYARD_POI_TYPE);
-		poiLocation->m_map = m_map;
-
-		m_map->m_pointsOfInterest.push_back(poiLocation);
-		poiLocation = nullptr;
-	}
-
-	//test agent
-	
-	IntVector2 dimensions = m_map->GetDimensions();
-
-	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
-	
-	for (int i = 0; i < 1; ++i)
-	{
-		IsoSpriteAnimSet* animSet = nullptr;
-		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
-		if (spriteDefIterator != IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.end())
-		{
-			animSet = new IsoSpriteAnimSet(spriteDefIterator->second);
-		}
-
-		Vector2 randomStartingLocation = m_map->GetRandomNonBlockedPositionInMapBounds();
-		Agent* agent = new Agent(randomStartingLocation, animSet, m_map);
-		m_map->m_agents.push_back(agent);
-
-		animSet = nullptr;
-		agent = nullptr;
-	}
+	m_map->Initialize();
 	
 	//re-adjust camera center
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();

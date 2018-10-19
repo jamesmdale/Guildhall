@@ -4,13 +4,15 @@
 #include "Game\GameCommon.hpp"
 #include "Game\PointOfInterest.hpp"
 #include "Game\Agent.hpp"
+#include "Game\Planner.hpp"
 #include "Game\Map\Tile.hpp"
 #include "Game\Bombardment.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Math\MathUtils.hpp"
 #include "Engine\Profiler\Profiler.hpp"
-
+#include "Engine\Renderer\MeshBuilder.hpp"
+#include "Engine\Renderer\Mesh.hpp"
 
 //  =========================================================================================
 Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* renderScene)
@@ -69,6 +71,61 @@ Map::~Map()
 }
 
 //  =========================================================================================
+void Map::Initialize()
+{
+	g_maxCoordinateDistanceSquared = GetDistanceSquared(IntVector2::ZERO, GetDimensions());
+	IntVector2 dimensions = GetDimensions();
+	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
+
+	//add armories
+	for (int armoryIndex = 0; armoryIndex < 2; ++armoryIndex)
+	{
+		//add random point of interest
+		PointOfInterest* poi = GeneratePointOfInterest(ARMORY_POI_TYPE);
+		poi->m_map = this;
+
+		m_armories.push_back(poi);
+		m_pointsOfInterest.push_back(poi);
+		poi = nullptr;
+	}
+
+	//add lumberyards
+	for (int lumberyardIndex = 0; lumberyardIndex < 2; ++lumberyardIndex)
+	{
+		//add random point of interest
+		PointOfInterest* poi = GeneratePointOfInterest(LUMBERYARD_POI_TYPE);
+		poi->m_map = this;
+
+		m_lumberyards.push_back(poi);
+		m_pointsOfInterest.push_back(poi);
+		poi = nullptr;
+	}
+
+	//add medstations
+	TODO("Add medstations");
+
+	for (int i = 0; i < 1; ++i)
+	{
+		IsoSpriteAnimSet* animSet = nullptr;
+		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
+		if (spriteDefIterator != IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.end())
+		{
+			animSet = new IsoSpriteAnimSet(spriteDefIterator->second);
+		}
+
+		Vector2 randomStartingLocation = GetRandomNonBlockedPositionInMapBounds();
+		Agent* agent = new Agent(randomStartingLocation, animSet, this);
+		m_agents.push_back(agent);
+
+		animSet = nullptr;
+		agent = nullptr;
+	}
+
+	CreateMapMesh();
+}
+
+
+//  =========================================================================================
 void Map::Update(float deltaSeconds)
 {
 	//udpate timers
@@ -80,7 +137,7 @@ void Map::Update(float deltaSeconds)
 		Bombardment* bombardment = new Bombardment(GetWorldPositionOfMapCoordinate(GetRandomCoordinateInMapBounds()));
 		m_activeBombardments.push_back(bombardment);
 	}
-	
+
 	//udpate agents
 	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
 	{
@@ -98,25 +155,123 @@ void Map::Update(float deltaSeconds)
 void Map::Render()
 {
 	PROFILER_PUSH();
+
+	Renderer* theRenderer = Renderer::GetInstance();
+
+	//render tile mesh
+	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("Data/Images/Terrain_8x8.png"));
+	theRenderer->SetShader(theRenderer->m_defaultShader);
+	theRenderer->DrawMesh(m_mapMesh);
+
+	//create and render agent mesh
+	Mesh* agentMesh = CreateDynamicAgentMesh();
+	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture(m_agents[0]->m_animationSet->GetCurrentSprite(m_agents[0]->m_spriteDirection)->m_definition->m_diffuseSource));
+	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
+	theRenderer->DrawMesh(agentMesh);
+
+	Mesh* bombardmentMesh = CreateDynamicBombardmentMesh();
+	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("Data/Images/AirStrike.png"));
+	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
+	theRenderer->DrawMesh(bombardmentMesh);
+
+	//set back to default
+	theRenderer->SetTexture(*theRenderer->m_defaultTexture);
+	theRenderer->SetShader(theRenderer->m_defaultShader);
+
+	//cleanup
+	delete(agentMesh);
+	agentMesh = nullptr;
+
+	delete(bombardmentMesh);
+	bombardmentMesh = nullptr;
+
+	theRenderer = nullptr;
+}
+
+
+//  =========================================================================================
+void Map::CreateMapMesh()
+{
+	MeshBuilder* builder = new MeshBuilder();
+	
+	//create mesh for static tiles and buildings
 	for (int tileIndex = 0; tileIndex < (int)m_tiles.size(); ++tileIndex)
 	{
-		m_tiles[tileIndex]->Render();
+		builder->CreateTexturedQuad2D(m_tiles[tileIndex]->GetBounds().GetCenter(), Vector2::ONE, m_tiles[tileIndex]->m_tileDefinition->m_baseSpriteUVCoords.mins,  m_tiles[tileIndex]->m_tileDefinition->m_baseSpriteUVCoords.maxs, m_tiles[tileIndex]->m_tint );
 	}
 
-	for (int pointOfInterestIndex = 0; pointOfInterestIndex < (int)m_pointsOfInterest.size(); ++pointOfInterestIndex)
-	{
-		m_pointsOfInterest[pointOfInterestIndex]->Render();
-	}
+	m_mapMesh = builder->CreateMesh<VertexPCU>();
 
+	//cleanup
+	delete(builder);
+	builder = nullptr;
+}
+
+//  =========================================================================================
+Mesh* Map::CreateDynamicAgentMesh()
+{
+	MeshBuilder* builder = new MeshBuilder();
+
+	//create mesh for static tiles and buildings
 	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
 	{
-		m_agents[agentIndex]->Render();
+		Sprite sprite = *m_agents[agentIndex]->m_animationSet->GetCurrentSprite(m_agents[agentIndex]->m_spriteDirection);
+
+		float dimensions = 1.f;
+
+		Vector2 spritePivot = sprite.m_definition->m_pivot;
+		IntVector2 spriteDimensions = sprite.GetDimensions();
+
+		AABB2 bounds;
+		bounds.mins.x = 0.f - (spritePivot.x) * dimensions;
+		bounds.maxs.x = bounds.mins.x + 1.f * dimensions;
+		bounds.mins.y = 0.f - (spritePivot.y) * dimensions;
+		bounds.maxs.y = bounds.mins.y + 1.f * dimensions;
+
+		Rgba agentColor = Rgba::WHITE;
+		switch (m_agents[agentIndex]->m_planner->m_currentPlan)
+		{
+		case SHOOT_PLAN_TYPE:
+			agentColor = Rgba::RED;
+			break;
+		case REPAIR_PLAN_TYPE:
+			agentColor = Rgba::BLUE;
+			break;
+		case HEAL_PLAN_TYPE:
+			agentColor = Rgba::GREEN;
+			break;
+		}
+
+		builder->CreateTexturedQuad2D(m_agents[agentIndex]->m_position, bounds.GetDimensions(), Vector2(sprite.GetNormalizedUV().mins.x, sprite.GetNormalizedUV().maxs.y), Vector2(sprite.GetNormalizedUV().maxs.x, sprite.GetNormalizedUV().mins.y), agentColor);
 	}
 
+	 Mesh* agentMesh = builder->CreateMesh<VertexPCU>();
+
+	//cleanup
+	delete(builder);
+	builder = nullptr;
+
+	return agentMesh;
+}
+
+//  =========================================================================================
+Mesh* Map::CreateDynamicBombardmentMesh()
+{
+	MeshBuilder* builder = new MeshBuilder();
+
 	for (int bombardmentIndex = 0; bombardmentIndex < (int)m_activeBombardments.size(); ++bombardmentIndex)
-	{
-		m_activeBombardments[bombardmentIndex]->Render();
+	{	
+		AABB2 bombardmentBox = AABB2(m_activeBombardments[bombardmentIndex]->m_disc.center, m_activeBombardments[bombardmentIndex]->m_disc.radius, m_activeBombardments[bombardmentIndex]->m_disc.radius);
+		builder->CreateTexturedQuad2D(m_activeBombardments[bombardmentIndex]->m_disc.center, bombardmentBox.GetDimensions(), Vector2::ZERO, Vector2::ONE, Rgba(1.f, 1.f, 1.f, .5f));
 	}
+
+	Mesh* bombardmentMesh = builder->CreateMesh<VertexPCU>();
+
+	//cleanup
+	delete(builder);
+	builder = nullptr;
+
+	return bombardmentMesh;
 }
 
 //  =========================================================================================
@@ -166,7 +321,7 @@ Grid<int>* Map::GetAsGrid()
 }
 
 //  =========================================================================================
-bool Map::IsTileBlockingAtCoordinate(const IntVector2 & coordinate)
+bool Map::IsTileBlockingAtCoordinate(const IntVector2& coordinate)
 {
 	bool isBlocking = !GetTileAtCoordinate(coordinate)->m_tileDefinition->m_allowsWalking;
 	return isBlocking;	
@@ -265,22 +420,22 @@ PointOfInterest* Map::GeneratePointOfInterest(int poiType)
 
 	//determine if random location is unblocked
 	bool isLocationValid = false;
-	IntVector2 randomLocation = IntVector2::ONE;
+	IntVector2 randomCoordinate = IntVector2::ONE;
 	IntVector2 accessCoordinate = IntVector2::ONE;
 
 	while (!isLocationValid)
 	{
-		randomLocation = GetRandomNonBlockedCoordinateInMapBounds();
+		randomCoordinate = GetRandomNonBlockedCoordinateInMapBounds();
 		
 		//check tile to north, to the right, and to the northeast to see if they are even good
-		if(CheckIsCoordianteValid(IntVector2(randomLocation.x + 1, randomLocation.y)) 
-			&& CheckIsCoordianteValid(IntVector2(randomLocation.x, randomLocation.y + 1))
-			&& CheckIsCoordianteValid(IntVector2(randomLocation.x + 1, randomLocation.y + 1)))
+		if(CheckIsCoordianteValid(IntVector2(randomCoordinate.x + 1, randomCoordinate.y)) 
+			&& CheckIsCoordianteValid(IntVector2(randomCoordinate.x, randomCoordinate.y + 1))
+			&& CheckIsCoordianteValid(IntVector2(randomCoordinate.x + 1, randomCoordinate.y + 1)))
 		{
 			//check tile to north, to the right, and to the northeast to see if they are blocked
-			if (!IsTileBlockingAtCoordinate(IntVector2(randomLocation.x + 1, randomLocation.y))
-				&& !IsTileBlockingAtCoordinate(IntVector2(randomLocation.x, randomLocation.y + 1))
-				&& !IsTileBlockingAtCoordinate(IntVector2(randomLocation.x + 1, randomLocation.y + 1)))
+			if (!IsTileBlockingAtCoordinate(IntVector2(randomCoordinate.x + 1, randomCoordinate.y))
+				&& !IsTileBlockingAtCoordinate(IntVector2(randomCoordinate.x, randomCoordinate.y + 1))
+				&& !IsTileBlockingAtCoordinate(IntVector2(randomCoordinate.x + 1, randomCoordinate.y + 1)))
 			{
 				/*now we should get a random location for our access location for the poi
 				there are potentially eight acceptable locations
@@ -299,28 +454,28 @@ PointOfInterest* Map::GeneratePointOfInterest(int poiType)
 					switch (randomAccessLocation)
 					{
 					case 0:
-						accessCoordinate = IntVector2(randomLocation.x, randomLocation.y - 1);
+						accessCoordinate = IntVector2(randomCoordinate.x, randomCoordinate.y - 1);
 						break;
 					case 1:
-						accessCoordinate = IntVector2(randomLocation.x + 2, randomLocation.y - 1);
+						accessCoordinate = IntVector2(randomCoordinate.x + 2, randomCoordinate.y - 1);
 						break;
 					case 2:
-						accessCoordinate = IntVector2(randomLocation.x + 2, randomLocation.y);
+						accessCoordinate = IntVector2(randomCoordinate.x + 2, randomCoordinate.y);
 						break;
 					case 3:
-						accessCoordinate = IntVector2(randomLocation.x + 2, randomLocation.y + 1);
+						accessCoordinate = IntVector2(randomCoordinate.x + 2, randomCoordinate.y + 1);
 						break;
 					case 4:
-						accessCoordinate = IntVector2(randomLocation.x + 1, randomLocation.y + 2);
+						accessCoordinate = IntVector2(randomCoordinate.x + 1, randomCoordinate.y + 2);
 						break;
 					case 5:
-						accessCoordinate = IntVector2(randomLocation.x, randomLocation.y + 2);
+						accessCoordinate = IntVector2(randomCoordinate.x, randomCoordinate.y + 2);
 						break;
 					case 6:
-						accessCoordinate = IntVector2(randomLocation.x - 1, randomLocation.y + 1);
+						accessCoordinate = IntVector2(randomCoordinate.x - 1, randomCoordinate.y + 1);
 						break;
 					case 7:
-						accessCoordinate = IntVector2(randomLocation.x - 1, randomLocation.y);
+						accessCoordinate = IntVector2(randomCoordinate.x - 1, randomCoordinate.y);
 						break;
 					}
 
@@ -343,26 +498,26 @@ PointOfInterest* Map::GeneratePointOfInterest(int poiType)
 	//Location is valid, therefore we can replace tiles with building tiles
 
 	//starting tile
-	Tile* tile = GetTileAtCoordinate(randomLocation);
+	Tile* tile = GetTileAtCoordinate(randomCoordinate);
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("Building")->second;
 
 	//tile to east
-	tile = GetTileAtCoordinate(IntVector2(randomLocation.x + 1, randomLocation.y));
+	tile = GetTileAtCoordinate(IntVector2(randomCoordinate.x + 1, randomCoordinate.y));
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("Building")->second;
 
 	//tile to northeast
-	tile = GetTileAtCoordinate(IntVector2(randomLocation.x + 1, randomLocation.y + 1));
+	tile = GetTileAtCoordinate(IntVector2(randomCoordinate.x + 1, randomCoordinate.y + 1));
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("Building")->second;
 
 	//tile to north
-	tile = GetTileAtCoordinate(IntVector2(randomLocation.x, randomLocation.y + 1));
+	tile = GetTileAtCoordinate(IntVector2(randomCoordinate.x, randomCoordinate.y + 1));
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("Building")->second;
 
 	//building access tile
 	tile = GetTileAtCoordinate(accessCoordinate);
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("BuildingAccess")->second;
 
-	PointOfInterest* poi = new PointOfInterest(type, randomLocation, accessCoordinate, this);
+	PointOfInterest* poi = new PointOfInterest(type, randomCoordinate, accessCoordinate, this);
 
 	//cleanup
 	tile = nullptr;
@@ -383,7 +538,7 @@ IntVector2 Map::GetTileCoordinateOfPosition(const Vector2& position)
 //  =========================================================================================
 Vector2 Map::GetWorldPositionOfMapCoordinate(const IntVector2& position)
 {
-	Vector2 worldPosition = m_tiles[position.x + (position.y * m_dimensions.x)]->GetWorldSpaceCoordinates();
+	Vector2 worldPosition = m_tiles[position.x + (position.y * m_dimensions.x)]->GetTileCoordinates();
 	return worldPosition;
 }
 

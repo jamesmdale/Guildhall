@@ -4,6 +4,7 @@
 #include "Engine\Math\Vector2.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\Transform2D.hpp"
+#include "Engine\Math\AABB2.hpp"
 
 //forward declarations
 class Planner;
@@ -35,13 +36,14 @@ public:
 	void Render();
 
 	void UpdateSpriteRenderDirection();
-	//void DetectAgentToTileCollision(Agent, Vector2 entityCenter, IntVector2 tileCoordinate, int tileDirection);	
 
 	void TakeDamage(int damageAmount);
 
 	//pathing
 	bool GetPathToDestination(const Vector2& goalDestination);
 	bool GetIsAtPosition(const Vector2& goalDestination);
+
+	AABB2 GetBounds();
 
 public:
 
