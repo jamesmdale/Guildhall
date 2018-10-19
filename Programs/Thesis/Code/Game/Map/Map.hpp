@@ -77,8 +77,16 @@ public:
 	std::vector<Tile*> m_tiles;
 	AABB2 m_mapWorldBounds;
 
+	//lists
 	std::vector<Agent*> m_agents;
+
 	std::vector<PointOfInterest*> m_pointsOfInterest;
+
+	//separate lists of each type for ease of sorting
+	std::vector<PointOfInterest*> m_armories;
+	std::vector<PointOfInterest*> m_lumberyards;
+	std::vector<PointOfInterest*> m_medStations;
+
 	std::vector<Bombardment*> m_activeBombardments;
 
 	//meshes for rendering
