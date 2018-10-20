@@ -88,6 +88,9 @@ void NetPacket::WriteUpdatedHeaderData()
 
 	//update the packet data with the current packet header count
 	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_senderIndex, false);
+	WriteBytes(sizeof(uint16_t) &m_packetHeader.m_ack, false);
+	WriteBytes(sizeof(uint16_t) &m_packetHeader.m_lastReceivedAck, false);
+	WriteBytes(sizeof(uint16_t) &m_packetHeader.m_receivedAckBitfield, false);
 	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_unreliableMessageCount, false);
 
 	//move the write head back to the end of the amount we've written

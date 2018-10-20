@@ -52,7 +52,7 @@ const int MAX_MAX_CONSOLE_SIZE = 100;
 
 #define UNIMPLEMENTED()  TODO( "IMPLEMENT: " QUOTE(__FILE__) " (" QUOTE(__LINE__) ")" );// ASSERT_RECOVERABLE(0, "") 
 
-#define PROFILING_ENABLED
+#define PROFILER_ENABLED
 
 // TYPEDEFS =============================================================================
 typedef unsigned char byte_t;

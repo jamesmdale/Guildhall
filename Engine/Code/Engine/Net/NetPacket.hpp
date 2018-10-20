@@ -5,7 +5,13 @@
 #define INVALID_SENDER_ID (UINT8_MAX)
 #define INVALID_PACKET_ACK (UINT16_MAX)
 
-class NetPacketHeader
+struct TrackedPacket
+{
+	uint16_t m_ack = UINT16_MAX;
+	uint64_t m_sendTime = UINT_MAX;
+};
+
+struct NetPacketHeader
 {
 public:
 	uint8_t m_senderIndex = UINT8_MAX;

@@ -31,18 +31,21 @@ NetConnection::~NetConnection()
 {
 	delete(m_latencySendTimer);
 	m_latencySendTimer = nullptr;
+
+	delete(m_heartbeatTimer);
+	m_heartbeatTimer = nullptr;
 }
 
 //  =============================================================================
 void NetConnection::QueueMessage(NetMessage* message)
 {
-	m_outgoingMessages.push_back(message);
+	m_outgoingUnreliableMessages.push_back(message);
 }
 
 //  =============================================================================
 void NetConnection::FlushOutgoingMessages()
 {
-	if(m_outgoingMessages.size() == 0)
+	if(m_outgoingUnreliableMessages.size() == 0)
 		return;
 
 	NetSession* theNetSession = NetSession::GetInstance();
@@ -57,38 +60,45 @@ void NetConnection::FlushOutgoingMessages()
 	header.m_lastReceivedAck = m_lastReceivedAck;
 	header.m_receivedAckBitfield = m_previousReceivedAckBitfield;
 
-	NetPacket* packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
+	NetPacket* packet = new NetPacket(header);
 	packet->WriteUpdatedHeaderData();
 	
 	while (!areMessagesPacked)
 	{
 		//total buffer size + payload size + header size + total message size (header + payload sizes)
-		if (packet->GetBufferSize() + m_outgoingMessages[currentMessageIndex]->GetWrittenByteCount() + sizeof(NetMessageHeader) + sizeof(uint16_t) <= PACKET_MTU)
+		if (packet->GetBufferSize() + m_outgoingUnreliableMessages[currentMessageIndex]->GetWrittenByteCount() + sizeof(NetMessageHeader) + sizeof(uint16_t) <= PACKET_MTU)
 		{
 			//write message to packet
-			packet->WriteMessage(*m_outgoingMessages[currentMessageIndex]);
+			packet->WriteMessage(*m_outgoingUnreliableMessages[currentMessageIndex]);
 		}
 		else
 		{
 			//in order to pack the next message, we need to make a new packet
 			//first add old packet to list
-			m_readyPackets.push_back(*packet);
+			m_readyPackets.push_back(packet);
 
 			//make a new packet
-			delete(packet);
-			packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
+			//setup header
+			NetPacketHeader header;
+			header.m_senderIndex = theNetSession->m_sessionConnectionIndex;
+			header.m_ack = GetNextAckToSend();
+			header.m_lastReceivedAck = m_lastReceivedAck;
+			header.m_receivedAckBitfield = m_previousReceivedAckBitfield;
+
+			NetPacket* packet = new NetPacket(header);
+			packet->WriteUpdatedHeaderData();
 
 			//write new message to new packet
-			packet->WriteMessage(*m_outgoingMessages[currentMessageIndex]);
+			packet->WriteMessage(*m_outgoingUnreliableMessages[currentMessageIndex]);
 		}
 
 		//if we have read all the messages we are done
-		if (currentMessageIndex == (int)m_outgoingMessages.size() - 1)
+		if (currentMessageIndex == (int)m_outgoingUnreliableMessages.size() - 1)
 		{
 			areMessagesPacked = true;
 			
 			//add the last packet to the list to send
-			m_readyPackets.push_back(*packet);
+			m_readyPackets.push_back(packet);
 		}
 		else
 		{
@@ -96,7 +106,7 @@ void NetConnection::FlushOutgoingMessages()
 		}
 	}
 
-	m_outgoingMessages.clear();
+	m_outgoingUnreliableMessages.clear();
 
 	/*delete(packet);
 	packet = nullptr;*/
@@ -111,7 +121,8 @@ void NetConnection::SendPackets()
 
 	while (m_latencySendTimer->ResetAndDecrementIfElapsed() && m_readyPackets.size() > 0)
 	{		
-		theNetSession->m_socket->SendTo(*m_address, m_readyPackets[0].GetBuffer(), m_readyPackets[0].GetWrittenByteCount());
+		theNetSession->m_socket->SendTo(*m_address, m_readyPackets[0]->GetBuffer(), m_readyPackets[0]->GetWrittenByteCount());
+		m_sentPackets.push_back(m_readyPackets[0]);
 		m_readyPackets.erase(m_readyPackets.begin());
 	}
 }
@@ -135,7 +146,7 @@ void NetConnection::OnReceivePacket(uint16_t ack)
 	{
 		if (ack == m_sentPacketAcks[packetAckIndex])
 		{
-			DevConsole::GetInstance()->DevConsolePrintf("Packet Received: %u", ack);
+//			DevConsole::GetInstance()->DevConsolePrintf("Packet Received: %u", ack);
 		}
 	}
 }
@@ -143,5 +154,49 @@ void NetConnection::OnReceivePacket(uint16_t ack)
 //  =========================================================================================
 void NetConnection::OnAckReceived(uint16_t ack)
 {
+	for (int packetAckIndex = 0; packetAckIndex < (int)m_sentPacketAcks.size(); ++packetAckIndex)
+	{
+		if (ack == m_sentPacketAcks[packetAckIndex])
+		{
+			m_sentPacketAcks.erase(m_sentPacketAcks.begin() + packetAckIndex);
+			DebuggerPrintf("Packet Received: %u", ack);
+			return;
+		}
+	}
+}
 
+//  =============================================================================
+uint16_t NetConnection::GetNextAckToSend()
+{
+	return m_nextSentAck;
+}
+
+float NetConnection::GetRoundTripTimeInSeconds()
+{
+	return 0.0f;
+}
+
+float NetConnection::GetLossPercentage()
+{
+	return 0.0f;
+}
+
+float NetConnection::GetLastReceivedTimeInSeconds()
+{
+	return 0.0f;
+}
+
+float NetConnection::GetLastSentTimeInSeconds()
+{
+	return 0.0f;
+}
+
+int NetConnection::GetLastSentAck()
+{
+	return 0;
+}
+
+int NetConnection::GetLastReceivedAck()
+{
+	return 0;
 }

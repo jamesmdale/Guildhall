@@ -185,15 +185,6 @@ void NetSession::ProcessIncomingMessages()
 			receivedPacket->ExtendBufferSize(PACKET_MTU);
 			receivedPacket->WriteBytes(receivedAmount, buffer, false);
 
-			//check packet validity
-			if (!receivedPacket->CheckIsValid())
-			{
-				delete(receivedPacket);
-				receivedPacket = nullptr;
-
-				continue;
-			}
-
 			//decide whether to randomly toss packet out
 			if (GetRandomFloatZeroToOne() <= m_simulationLossAmount)
 			{
@@ -238,12 +229,23 @@ void NetSession::CheckDelayedPackets()
 //  =============================================================================
 void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 {
+	//check packet validity
+	if (!packet->m_packet->CheckIsValid())
+	{
+		return;
+	}
+
 	//get the header data
 	packet->m_packet->ReadBytes(&packet->m_packet->m_packetHeader, sizeof(NetPacketHeader), false);
 
 	NetConnection* connection = GetConnectionById(packet->m_packet->m_packetHeader.m_senderIndex);
 
 	//we don't have a connection on this index (probably invalid)
+	if ((connection->m_index != UINT8_MAX) && (connection == nullptr))
+	{
+		return;
+	}
+
 	if (connection == nullptr)
 	{
 		connection = new NetConnection();
@@ -265,7 +267,6 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 			NetMessage* message = new NetMessage(definition->m_callbackName);
 
 			//if there is more to the message we must read that in before calling the return function
-
 			size_t remainingAmountToRead = totalSize - sizeof(NetMessageHeader);
 			if (remainingAmountToRead > 0)
 			{
@@ -285,9 +286,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 	}
 
 	//cleanup
-	connection = nullptr;			
-
-	//packetsToProcess.push_back(receivedPacket);			
+	connection = nullptr;		
 }
 
 //  =============================================================================
@@ -882,6 +881,8 @@ bool OnAck(NetMessage& message, NetConnection* fromConnection)
 	{
 		fromConnection->OnAckReceived(ack);
 	}	
+
+	return success;
 }
 
 
