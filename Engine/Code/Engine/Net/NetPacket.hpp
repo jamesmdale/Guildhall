@@ -5,7 +5,7 @@
 #define INVALID_SENDER_ID (UINT8_MAX)
 #define INVALID_PACKET_ACK (UINT16_MAX)
 
-struct TrackedPacket
+struct PacketTracker
 {
 	uint16_t m_ack = UINT16_MAX;
 	uint64_t m_sendTime = UINT_MAX;
@@ -17,8 +17,8 @@ public:
 	uint8_t m_senderIndex = UINT8_MAX;
 
 	uint16_t m_ack = UINT16_MAX;
-	uint16_t m_lastReceivedAck = UINT16_MAX;
-	uint16_t m_receivedAckBitfield = UINT16_MAX;
+	uint16_t m_highestReceivedAck = UINT16_MAX;
+	uint16_t m_highestReceivedAckBitfield = UINT16_MAX;
 
 	uint8_t m_unreliableMessageCount = UINT8_MAX;
 };

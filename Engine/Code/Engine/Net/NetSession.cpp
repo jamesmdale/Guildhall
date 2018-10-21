@@ -246,7 +246,11 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 		return;
 	}
 
-	if (connection == nullptr)
+	if (connection != nullptr)
+	{
+		connection->OnReceivePacket(packet->m_packet);
+	}
+	else
 	{
 		connection = new NetConnection();
 		connection->m_address = &packet->m_senderAddress;

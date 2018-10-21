@@ -57,8 +57,8 @@ void NetConnection::FlushOutgoingMessages()
 	NetPacketHeader header;
 	header.m_senderIndex = theNetSession->m_sessionConnectionIndex;
 	header.m_ack = GetNextAckToSend();
-	header.m_lastReceivedAck = m_lastReceivedAck;
-	header.m_receivedAckBitfield = m_previousReceivedAckBitfield;
+	header.m_highestReceivedAck = m_theirHighestReceivedAck;
+	header.m_highestReceivedAckBitfield = m_theirHighestReceivedAckBitfield;
 
 	NetPacket* packet = new NetPacket(header);
 	packet->WriteUpdatedHeaderData();
@@ -82,8 +82,8 @@ void NetConnection::FlushOutgoingMessages()
 			NetPacketHeader header;
 			header.m_senderIndex = theNetSession->m_sessionConnectionIndex;
 			header.m_ack = GetNextAckToSend();
-			header.m_lastReceivedAck = m_lastReceivedAck;
-			header.m_receivedAckBitfield = m_previousReceivedAckBitfield;
+			header.m_highestReceivedAck = m_theirHighestReceivedAck;
+			header.m_highestReceivedAckBitfield = m_theirHighestReceivedAckBitfield;
 
 			NetPacket* packet = new NetPacket(header);
 			packet->WriteUpdatedHeaderData();
@@ -135,34 +135,41 @@ void NetConnection::OnPacketSend(NetPacket* packet)
 	{
 		++m_nextSentAck;
 	}
-	
-	m_sentPacketAcks.push_back(packet->GetAck());
+
+	AddPacketTracker(packet->GetAck());
 }
 
 //  =========================================================================================
-void NetConnection::OnReceivePacket(uint16_t ack)
+void NetConnection::OnReceivePacket(NetPacket* packet)
 {
-	for (int packetAckIndex = 0; packetAckIndex < (int)m_sentPacketAcks.size(); ++packetAckIndex)
-	{
-		if (ack == m_sentPacketAcks[packetAckIndex])
-		{
-//			DevConsole::GetInstance()->DevConsolePrintf("Packet Received: %u", ack);
-		}
-	}
+	NetPacketHeader header = packet->m_packetHeader;
+
+	//process the ack they sent me
+	m_myLastReceivedTimeInHPC = GetMasterClock()->GetLastHPC();
+
+	//update state based on what they say their highest received and bitfield history is
+	OnAckReceived(header.m_highestReceivedAck);
 }
 
 //  =========================================================================================
 void NetConnection::OnAckReceived(uint16_t ack)
 {
-	for (int packetAckIndex = 0; packetAckIndex < (int)m_sentPacketAcks.size(); ++packetAckIndex)
+	//if ack is invalid, just throw it out
+	if (ack == UINT16_MAX)
 	{
-		if (ack == m_sentPacketAcks[packetAckIndex])
-		{
-			m_sentPacketAcks.erase(m_sentPacketAcks.begin() + packetAckIndex);
-			DebuggerPrintf("Packet Received: %u", ack);
-			return;
-		}
-	}
+		return;
+	}		
+
+	int index = ack % MAX_TRACKED_PACKETS;
+
+	if (m_trackedPackets[index].m_ack == ack)
+	{
+		uint64_t rttInHPC = GetMasterClock()->GetLastHPC() - m_trackedPackets[index].m_sendTime;
+		float m_rtt = PerformanceCounterToMilliseconds(rttInHPC);
+
+		//do stuff with the bitfield to confirm 
+		m_myLastReceivedTimeInHPC = GetMasterClock()->GetLastHPC();
+	}	
 }
 
 //  =============================================================================
@@ -171,32 +178,50 @@ uint16_t NetConnection::GetNextAckToSend()
 	return m_nextSentAck;
 }
 
+//  =============================================================================
+void NetConnection::AddPacketTracker(uint16_t ack)
+{
+	PacketTracker tracker;
+	tracker.m_ack = ack;
+	tracker.m_sendTime = GetMasterClock()->GetLastHPC();
+
+	int index = ack % MAX_TRACKED_PACKETS;
+
+	m_trackedPackets[index] = tracker;
+}
+
+//  =============================================================================
 float NetConnection::GetRoundTripTimeInSeconds()
 {
 	return 0.0f;
 }
 
+//  =============================================================================
 float NetConnection::GetLossPercentage()
 {
 	return 0.0f;
 }
 
+//  =============================================================================
 float NetConnection::GetLastReceivedTimeInSeconds()
 {
-	return 0.0f;
+	return m_myLastReceivedTimeInHPC * 1000.f;
 }
 
+//  =============================================================================
 float NetConnection::GetLastSentTimeInSeconds()
 {
-	return 0.0f;
+	return m_lastSendTimeInHPC * 1000.f;
 }
 
+//  =============================================================================
 int NetConnection::GetLastSentAck()
 {
-	return 0;
+	return m_nextSentAck - 1;
 }
 
+//  =============================================================================
 int NetConnection::GetLastReceivedAck()
 {
-	return 0;
+	return m_theirHighestReceivedAck;
 }
