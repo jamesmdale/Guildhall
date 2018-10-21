@@ -23,7 +23,7 @@ public:
 
 	//state manager on receive
 	void OnReceivePacket(NetPacket* packet);
-	void OnAckReceived(uint16_t ack);
+	void OnMyAckReceived(uint16_t ack);
 
 	//getter helpers
 	float GetRoundTripTimeInSeconds();
@@ -43,13 +43,13 @@ public:
 	uint64_t m_lastSendTimeInHPC = 0U;
 
 	// receiving - during a process packet ----------------------------------------------
-	uint16_t m_theirHighestReceivedAck = INVALID_PACKET_ACK;
-	uint16_t m_theirHighestReceivedAckBitfield = 0U;
+	uint16_t m_highestReceivedAck = INVALID_PACKET_ACK;
+	uint16_t m_receivedAckHistoryBitfield = 0U;
 	uint64_t m_myLastReceivedTimeInHPC = 0U; //last time I received anything (regardless of ack)
 
 	// reflects numbers from debug simulation on session ----------------------------------------------
 	float m_loss = 0.f; //loss rate we perceive
-	float m_rtt = 0.f;	//latency perceived on this connection
+	float m_rttInMilliseconds = -1.f;	//latency perceived on this connection
 	
 	// timers ----------------------------------------------
 	Stopwatch* m_latencySendTimer = nullptr;

@@ -8,7 +8,7 @@
 struct PacketTracker
 {
 	uint16_t m_ack = UINT16_MAX;
-	uint64_t m_sendTime = UINT_MAX;
+	uint64_t m_sendTime = UINT64_MAX;
 };
 
 struct NetPacketHeader
@@ -18,9 +18,9 @@ public:
 
 	uint16_t m_ack = UINT16_MAX;
 	uint16_t m_highestReceivedAck = UINT16_MAX;
-	uint16_t m_highestReceivedAckBitfield = UINT16_MAX;
+	uint16_t m_receivedAckHistoryBitfield = 0;
 
-	uint8_t m_unreliableMessageCount = UINT8_MAX;
+	uint8_t m_unreliableMessageCount = 0;
 };
 
 class NetPacket : public BytePacker

@@ -23,7 +23,7 @@ NetConnection::NetConnection()
 
 	//setup heartbeat timer
 	m_heartbeatTimer = new Stopwatch(GetMasterClock());
-	m_heartbeatTimer->SetTimer(0.f);
+	m_heartbeatTimer->SetTimer(5.f);
 }
 
 //  =============================================================================
@@ -57,8 +57,8 @@ void NetConnection::FlushOutgoingMessages()
 	NetPacketHeader header;
 	header.m_senderIndex = theNetSession->m_sessionConnectionIndex;
 	header.m_ack = GetNextAckToSend();
-	header.m_highestReceivedAck = m_theirHighestReceivedAck;
-	header.m_highestReceivedAckBitfield = m_theirHighestReceivedAckBitfield;
+	header.m_highestReceivedAck = m_highestReceivedAck;
+	header.m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield;
 
 	NetPacket* packet = new NetPacket(header);
 	packet->WriteUpdatedHeaderData();
@@ -82,8 +82,8 @@ void NetConnection::FlushOutgoingMessages()
 			NetPacketHeader header;
 			header.m_senderIndex = theNetSession->m_sessionConnectionIndex;
 			header.m_ack = GetNextAckToSend();
-			header.m_highestReceivedAck = m_theirHighestReceivedAck;
-			header.m_highestReceivedAckBitfield = m_theirHighestReceivedAckBitfield;
+			header.m_highestReceivedAck = m_highestReceivedAck;
+			header.m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield;
 
 			NetPacket* packet = new NetPacket(header);
 			packet->WriteUpdatedHeaderData();
@@ -122,6 +122,7 @@ void NetConnection::SendPackets()
 	while (m_latencySendTimer->ResetAndDecrementIfElapsed() && m_readyPackets.size() > 0)
 	{		
 		theNetSession->m_socket->SendTo(*m_address, m_readyPackets[0]->GetBuffer(), m_readyPackets[0]->GetWrittenByteCount());
+		OnPacketSend(m_readyPackets[0]);
 		m_sentPackets.push_back(m_readyPackets[0]);
 		m_readyPackets.erase(m_readyPackets.begin());
 	}
@@ -136,6 +137,7 @@ void NetConnection::OnPacketSend(NetPacket* packet)
 		++m_nextSentAck;
 	}
 
+	m_lastSendTimeInHPC = GetMasterClock()->GetLastHPC();
 	AddPacketTracker(packet->GetAck());
 }
 
@@ -148,11 +150,44 @@ void NetConnection::OnReceivePacket(NetPacket* packet)
 	m_myLastReceivedTimeInHPC = GetMasterClock()->GetLastHPC();
 
 	//update state based on what they say their highest received and bitfield history is
-	OnAckReceived(header.m_highestReceivedAck);
+	OnMyAckReceived(header.m_highestReceivedAck);
+
+	//mark received acks
+	for (int bitfieldIndex = 0; bitfieldIndex < 16; ++bitfieldIndex)
+	{
+		uint bitFlag = 1 << bitfieldIndex;
+
+		if (header.m_receivedAckHistoryBitfield & bitFlag)
+		{
+			OnMyAckReceived(header.m_highestReceivedAck - (bitfieldIndex + 1U));
+		}
+	}
+
+	//update bitfield
+	uint16_t distance = header.m_ack - m_highestReceivedAck;
+	if (distance == 0)
+	{
+		return;  //this should never happen as acks increment in order
+	}
+
+	if ((distance > 0))
+	{
+		m_highestReceivedAck = header.m_ack;
+
+		//update bitfield
+		m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield << distance;	//how many should I skip?
+		m_receivedAckHistoryBitfield |= (1 << (distance - 1)); //set the old highest's bit
+	}
+	else
+	{
+		//we got one older than the highest. We need to confirm that bit is set
+		distance = m_highestReceivedAck - header.m_ack; //distance from highest
+		m_receivedAckHistoryBitfield |= (1 << (distance - 1));
+	}
 }
 
 //  =========================================================================================
-void NetConnection::OnAckReceived(uint16_t ack)
+void NetConnection::OnMyAckReceived(uint16_t ack)
 {
 	//if ack is invalid, just throw it out
 	if (ack == UINT16_MAX)
@@ -165,10 +200,20 @@ void NetConnection::OnAckReceived(uint16_t ack)
 	if (m_trackedPackets[index].m_ack == ack)
 	{
 		uint64_t rttInHPC = GetMasterClock()->GetLastHPC() - m_trackedPackets[index].m_sendTime;
-		float m_rtt = PerformanceCounterToMilliseconds(rttInHPC);
 
-		//do stuff with the bitfield to confirm 
+		//take blend of the two
+		if (m_rttInMilliseconds > 0.f)
+		{
+			m_rttInMilliseconds = (m_rttInMilliseconds * 0.9f) + (PerformanceCounterToMilliseconds(rttInHPC) * 0.1f);
+		}			
+		else
+		{
+			m_rttInMilliseconds = PerformanceCounterToMilliseconds(rttInHPC);
+		}
+		
+
 		m_myLastReceivedTimeInHPC = GetMasterClock()->GetLastHPC();
+		m_trackedPackets[index].m_ack = UINT16_MAX;
 	}	
 }
 
@@ -205,13 +250,15 @@ float NetConnection::GetLossPercentage()
 //  =============================================================================
 float NetConnection::GetLastReceivedTimeInSeconds()
 {
-	return m_myLastReceivedTimeInHPC * 1000.f;
+	uint64_t time = GetMasterClock()->GetLastHPC() - m_myLastReceivedTimeInHPC;
+	return PerformanceCounterToSeconds(time);
 }
 
 //  =============================================================================
 float NetConnection::GetLastSentTimeInSeconds()
 {
-	return m_lastSendTimeInHPC * 1000.f;
+	uint64_t time = GetMasterClock()->GetLastHPC() - m_lastSendTimeInHPC;
+	return PerformanceCounterToSeconds(time);
 }
 
 //  =============================================================================
@@ -223,5 +270,5 @@ int NetConnection::GetLastSentAck()
 //  =============================================================================
 int NetConnection::GetLastReceivedAck()
 {
-	return m_theirHighestReceivedAck;
+	return m_highestReceivedAck;
 }

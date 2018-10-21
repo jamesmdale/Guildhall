@@ -53,6 +53,7 @@ NetSession* NetSession::CreateInstance()
 //  =========================================================================================
 void NetSession::Update()
 {
+	CheckHeartbeats();
 	ProcessOutgoingMessages();
 
 	ProcessIncomingMessages();
@@ -71,6 +72,7 @@ void NetSession::Startup()
 	RegisterMessageDefinition("add", OnAdd);
 	RegisterMessageDefinition("add_response", OnAddResponse);
 	RegisterMessageDefinition("heartbeat", OnHeartbeat);
+	RegisterMessageDefinition("ack", OnAck);
 
 	LockMessageDefinitionRegistration();
 
@@ -241,7 +243,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 	NetConnection* connection = GetConnectionById(packet->m_packet->m_packetHeader.m_senderIndex);
 
 	//we don't have a connection on this index (probably invalid)
-	if ((connection->m_index != UINT8_MAX) && (connection == nullptr))
+	if ((packet->m_packet->m_packetHeader.m_senderIndex != UINT8_MAX) && (connection == nullptr))
 	{
 		return;
 	}
@@ -883,7 +885,7 @@ bool OnAck(NetMessage& message, NetConnection* fromConnection)
 
 	if (success)
 	{
-		fromConnection->OnAckReceived(ack);
+		fromConnection->OnMyAckReceived(ack);
 	}	
 
 	return success;

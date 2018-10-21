@@ -264,21 +264,22 @@ void DevConsole::Render()
 	theRenderer->ClearDepth(1.0f);
 	theRenderer->EnableDepth(ALWAYS_DEPTH_TYPE, true);	
 
-	theRenderer->SetTexture(*theRenderer->m_defaultTexture);
+	//draw background
+	Texture* texture = theRenderer->CreateOrGetTexture("Data/Images/DevConsole/background.png");
+	float percentageOfWindowSizeX = texture->GetDimensions().x / consoleBounds.GetDimensions().x;
+	AABB2 backgroundImageBounds = AABB2(consoleBounds, Vector2(percentageOfWindowSizeX, 0.0f), Vector2(1.f, 1.f));
 	theRenderer->SetShader(theRenderer->m_defaultShader);
-
 	theRenderer->m_defaultShader->EnableColorBlending(BLEND_OP_ADD, BLEND_SOURCE_ALPHA, BLEND_ONE_MINUS_SOURCE_ALPHA);
 
+	theRenderer->SetTexture(*theRenderer->m_defaultTexture);
+	theRenderer->DrawAABB(consoleBounds, Rgba(0.f, 0.f, 0.f, 0.85f));	
+
+	theRenderer->DrawTexturedAABB(backgroundImageBounds, *theRenderer->CreateOrGetTexture("Data/Images/DevConsole/background.png"), Vector2::ZERO, Vector2::ONE, Rgba(1.f, 1.f, 1.f, 0.075f));
+
+	//draw console bounds
+	theRenderer->SetTexture(*theRenderer->m_defaultTexture);
 	TODO("Convert devconsole to use meshes.");
-	//MeshBuilder meshBuilder;
 
-	/*meshBuilder.CreateQuad2D(consoleBounds, Rgba(0.f, 0.f, 0.f, .85f));
-	theRenderer->DrawMesh(meshBuilder.CreateMesh<VertexPCU>());
-
-	meshBuilder.CreateQuad2D(consoleInputBounds, Rgba(.5f, .5f, .5f, .90f));
-	theRenderer->DrawMesh(meshBuilder.CreateMesh<VertexPCU>());*/
-
-	theRenderer->DrawAABB(consoleBounds, Rgba(0.f, 0.f, 0.f, .85f));	
 	theRenderer->DrawAABB(consoleInputBounds, Rgba(.5f, .5f, .5f, .90f));
 	theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, 0.f), modifiedInputWithCursor, TEXT_CELL_HEIGHT, Rgba::WHITE, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 
@@ -452,7 +453,7 @@ void DevConsole::RenderNetSession()
 	for (int connectionIndex = 0; connectionIndex < connectionCount; ++connectionIndex)
 	{
 		std::string connectionIP = theNetSession->m_connections[connectionIndex]->m_address->ToString();
-		std::bitset<16> bitsForReceived(theNetSession->m_connections[connectionIndex]->m_previousReceivedAckBitfield);
+		std::bitset<16> bitsForReceived(theNetSession->m_connections[connectionIndex]->m_receivedAckHistoryBitfield);
 		std::string bitsetString = bitsForReceived.to_string();
 
 		//format string entry
