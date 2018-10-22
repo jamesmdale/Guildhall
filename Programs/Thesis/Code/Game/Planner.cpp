@@ -68,329 +68,303 @@ void Planner::UpdatePlan()
 	PROFILER_PUSH();
 	ClearStack();
 
+	//set preset to 
 	ePlanTypes chosenOutcome = NONE_PLAN_TYPE;
-	float lowestCost = 0;
+	UtilityInfo highestUtilityInfo = GetIdleUtilityInfo();
+	UtilityInfo compareUtilityInfo;
 
-	float shootCost = GetShootUtility();
-	chosenOutcome = SHOOT_PLAN_TYPE;
-	lowestCost = shootCost;
-
-	float repairCost = GetRepairUtility();
-	if (repairCost < lowestCost)
+	//utility for gathering arrows
+	compareUtilityInfo = GetHighestGatherArrowsUtility();
+	if (compareUtilityInfo.utility > highestUtilityInfo.utility)
 	{
+		highestUtilityInfo = compareUtilityInfo;
+		chosenOutcome = GATHER_ARROWS_PLAN_TYPE;
+	}
+		
+
+	//utility for gathering lumber
+	compareUtilityInfo = GetHighestGatherLumberUtility();
+	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
+	{
+		highestUtilityInfo = compareUtilityInfo;
+		chosenOutcome = GATHER_LUMBER_PLAN_TYPE;
+	}
+
+	//utility for gathering bandages
+	compareUtilityInfo = GetHighestGatherBandagesUtility();
+	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
+	{
+		highestUtilityInfo = compareUtilityInfo;
+		chosenOutcome = GATHER_BANDAGES_PLAN_TYPE;
+	}
+
+	//utility for shooting	
+	compareUtilityInfo = GetHighestShootUtility();
+	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
+	{
+		highestUtilityInfo = compareUtilityInfo;
+		chosenOutcome = SHOOT_PLAN_TYPE;
+	}
+
+
+	//utility for repairing buildings
+	compareUtilityInfo = GetHighestRepairUtility();
+	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
+	{
+		highestUtilityInfo = compareUtilityInfo;
 		chosenOutcome = REPAIR_PLAN_TYPE;
-		lowestCost = repairCost;
 	}
 
-	float healCost = GetHealCost();
-	if (healCost < lowestCost)
+	//utility for healing agents
+	compareUtilityInfo = GetHighestHealUtility();
+	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
 	{
-		chosenOutcome = HEAL_PLAN_TYPE;
-		lowestCost = healCost;
+		highestUtilityInfo = compareUtilityInfo;
+		chosenOutcome = REPAIR_PLAN_TYPE;
 	}
 
-	m_currentPlan = chosenOutcome;
 
-	QueueActionsFromCurrentPlan(m_currentPlan);
+	QueueActionsFromCurrentPlan(m_currentPlan, highestUtilityInfo);
 }
 
 //  =========================================================================================
-void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType)
+void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo& info)
 {
 	switch (planType)
 	{
+	case GATHER_ARROWS_PLAN_TYPE:
+		QueueGatherArrowsAction(info);
+		break;
+	case GATHER_LUMBER_PLAN_TYPE:
+		QueueGatherLumberAction(info);
+		break;
+	case GATHER_BANDAGES_PLAN_TYPE:
+		QueueGatherBandagesAction(info);
+		break;
 	case SHOOT_PLAN_TYPE:
-		QueueShootActions();
+		QueueShootActions(info);
 		break;
 	case REPAIR_PLAN_TYPE:
-		QueueRepairActions();
+		QueueRepairActions(info);
 		break;
 	case HEAL_PLAN_TYPE:
-		QueueShootActions();
+		QueueShootActions(info);
+		break;
+	default:
+		//idle QueueIdleAction(info);
 		break;
 	}
 }
 
-//  =========================================================================================
-void Planner::QueueShootActions()
+//  =============================================================================
+// Queue Actions Functions
+//  =============================================================================
+void Planner::QueueGatherArrowsAction(const UtilityInfo& info)
 {
-	//get coordinate of agent position
-	IntVector2 agentCoordinate = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
+	ActionData* gatherActionData = new ActionData();
+	gatherActionData->m_action = GatherAction;
+	gatherActionData->m_finalGoalDestination = info.endLocation;
+	gatherActionData->m_interactEntityId = info.targetEntityId;
 
-	if (m_agent->m_arrowCount < g_maxResourceCarryAmount)
-	{
-		//if we need arrows, we must first gather arrows
-		PointOfInterest* gatherPoi = GetNearestPointOfInterestOfTypeFromCoordinate(ARMORY_POI_TYPE, agentCoordinate);
-
-		ActionData* gatherActionData = new ActionData();
-		gatherActionData->m_action = GatherAction;
-		gatherActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(gatherPoi->m_accessCoordinate);
-		gatherActionData->m_interactEntityId = gatherPoi->m_id;
-
-		//after we gather arrows, we will find the nearest map edge and move there from the access coordinate
-		IntVector2 shootDestinationCoordinate = GetNearestTileCoordinateOfMapEdgeFromCoordinate(gatherPoi->m_accessCoordinate);
-		
-		ActionData* shootActionData = new ActionData();
-		shootActionData->m_action = ShootAction;
-		shootActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(shootDestinationCoordinate);
-		shootActionData->m_interactEntityId = -1;
-
-		//push both actions onto stack;
-		m_actionStack.push(shootActionData);
-		m_actionStack.push(gatherActionData);
-	}
-	else
-	{
-		IntVector2 finalDestinationCoordinate = GetNearestTileCoordinateOfMapEdgeFromCoordinate(agentCoordinate);
-		ActionData* shootActionData = new ActionData();
-		shootActionData->m_action = ShootAction;
-		shootActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(finalDestinationCoordinate);
-		shootActionData->m_interactEntityId = -1;
-
-		m_actionStack.push(shootActionData);
-	}
+	m_actionStack.push(gatherActionData);
 }
 
 //  =========================================================================================
-void Planner::QueueRepairActions()
+void Planner::QueueGatherLumberAction(const UtilityInfo& info)
 {
-	//get coordinate of agent position
-	IntVector2 agentCoordinate = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
+	ActionData* gatherActionData = new ActionData();
+	gatherActionData->m_action = GatherAction;
+	gatherActionData->m_finalGoalDestination = info.endLocation;
+	gatherActionData->m_interactEntityId = info.targetEntityId;
 
-	if (m_agent->m_lumberCount < g_maxResourceCarryAmount)
-	{
-		//if we need arrows, we must first gather arrows
-		PointOfInterest* gatherPoi = GetNearestPointOfInterestOfTypeFromCoordinate(LUMBERYARD_POI_TYPE, agentCoordinate);
-
-		ActionData* gatherActionData = new ActionData();
-		gatherActionData->m_action = GatherAction;
-		gatherActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(gatherPoi->m_accessCoordinate);
-		gatherActionData->m_interactEntityId = gatherPoi->m_id;
-
-		//after we gather lumber, we will find the nearest/lowest health poi to repair. Then we get the closest wall on that building as our coordinate
-		PointOfInterest* finalDestinationPoi = GetNearestPointOfInterestWithLowestHealthFromCoordinate(agentCoordinate);
-		IntVector2 closestPoiWallCoordiante = finalDestinationPoi->GetCoordinateBoundsClosestToCoordinate(agentCoordinate);
-
-		ActionData* repairActionData = new ActionData();
-		repairActionData->m_action = RepairAction;
-		repairActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(closestPoiWallCoordiante);
-		repairActionData->m_interactEntityId = finalDestinationPoi->m_id;
-
-		//push both actions onto stack;
-		m_actionStack.push(repairActionData);
-		m_actionStack.push(gatherActionData);
-	}
-	else
-	{
-		//we will find the nearest/lowest health poi to repair. Then we get the closest wall on that building as our coordinate
-		PointOfInterest* finalDestinationPoi = GetNearestPointOfInterestWithLowestHealthFromCoordinate(agentCoordinate);
-		IntVector2 closestPoiWallCoordiante = finalDestinationPoi->GetCoordinateBoundsClosestToCoordinate(agentCoordinate);		
-
-		ActionData* repairActionData = new ActionData();
-		repairActionData->m_action = RepairAction;
-		repairActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(closestPoiWallCoordiante);
-		repairActionData->m_interactEntityId = finalDestinationPoi->m_id;
-
-		m_actionStack.push(repairActionData);
-	}
+	m_actionStack.push(gatherActionData);
 }
 
 //  =========================================================================================
-void Planner::QueueHealActions()
+void Planner::QueueGatherBandagesAction(const UtilityInfo& info)
 {
-	//get coordinate of agent position
-	IntVector2 agentCoordinate = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
+	ActionData* gatherActionData = new ActionData();
+	gatherActionData->m_action = GatherAction;
+	gatherActionData->m_finalGoalDestination = info.endLocation;
+	gatherActionData->m_interactEntityId = info.targetEntityId;
 
-	if (m_agent->m_bandageCount < g_maxResourceCarryAmount)
+	m_actionStack.push(gatherActionData);
+}
+
+//  =========================================================================================
+void Planner::QueueShootActions(const UtilityInfo& info)
+{
+	ActionData* shootActionData = new ActionData();
+	shootActionData->m_action = ShootAction;
+	shootActionData->m_finalGoalDestination = info.endLocation;
+	shootActionData->m_interactEntityId = info.targetEntityId;
+
+	m_actionStack.push(shootActionData);
+}
+
+//  =========================================================================================
+void Planner::QueueRepairActions(const UtilityInfo& info)
+{
+	ActionData* repairActionData = new ActionData();
+	repairActionData->m_action = RepairAction;
+	repairActionData->m_finalGoalDestination = info.endLocation;
+	repairActionData->m_interactEntityId = info.targetEntityId;
+
+	m_actionStack.push(repairActionData);
+}
+
+//  =========================================================================================
+void Planner::QueueHealActions(const UtilityInfo& info)
+{
+	ActionData* healActionData = new ActionData();
+	healActionData->m_action = HealAction;
+	healActionData->m_finalGoalDestination = info.endLocation;
+	healActionData->m_interactEntityId = info.targetEntityId;
+
+	m_actionStack.push(healActionData);
+}
+
+//  =========================================================================================
+// Get utilities
+//  =========================================================================================
+UtilityInfo Planner::GetHighestGatherArrowsUtility()
+{
+	UtilityInfo highestGatherArrowsUtility;
+
+	if (m_map->m_armories.size() > 0)
 	{
-		//if we need arrows, we must first gather arrows
-		PointOfInterest* gatherPoi = GetNearestPointOfInterestOfTypeFromCoordinate(MED_STATION_POI_TYPE, agentCoordinate);
-
-		ActionData* gatherActionData = new ActionData();
-		gatherActionData->m_action = GatherAction;
-		gatherActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(gatherPoi->m_accessCoordinate);
-		gatherActionData->m_interactEntityId = gatherPoi->m_id;
-
-		//after we gather arrows, we will find the nearest map edge and move there from the access coordinate
-		IntVector2 shootDestinationCoordinate = GetNearestTileCoordinateOfMapEdgeFromCoordinate(gatherPoi->m_accessCoordinate);
-
-		ActionData* repairActionData = new ActionData();
-		repairActionData->m_action = ShootAction;
-		repairActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(shootDestinationCoordinate);
-		repairActionData->m_interactEntityId = -1;
-
-		//push both actions onto stack;
-		m_actionStack.push(repairActionData);
-		m_actionStack.push(gatherActionData);
-	}
-	else
-	{
-		PointOfInterest* finalDestinationPoi = GetNearestPointOfInterestWithLowestHealthFromCoordinate(agentCoordinate);
-		IntVector2 closestWallCoordiante = finalDestinationPoi->GetCoordinateBoundsClosestToCoordinate(agentCoordinate);
-
-		ActionData* repairActionData = new ActionData();
-		repairActionData->m_action = RepairAction;
-		repairActionData->m_finalGoalDestination = m_map->GetWorldPositionOfMapCoordinate(closestWallCoordiante);
-		repairActionData->m_interactEntityId = finalDestinationPoi->m_id;
-
-		m_actionStack.push(repairActionData);
-	}
-}
-
-//  =========================================================================================
-UtilityInfo Planner::GetGatherArrowsUtility()
-{
-	//for every building determine cost of going to gether arrows
-
-
-	return 0.0f;
-}
-
-//  =========================================================================================
-UtilityInfo Planner::GetGatherLumberUtility()
-{
-	return 0.0f;
-}
-
-//  =========================================================================================
-UtilityInfo Planner::GetGatherBandagesUtility()
-{
-	return 0.0f;
-}
-
-//  =========================================================================================
-UtilityInfo Planner::GetShootUtility()
-{
-	/*factors to consider:
-		arrowCount
-		positionFromNearestWall
-		currentThreat
-		skill
-		bias
-	*/
-
-	//if there is no threat, we shouldn't shoot
-	if(m_map->m_threat == 0)
-		return 9999.f;
-
-	//agent's tile coord to be used throughout calculations
-	Vector2 agentTileCoord = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
-
-	//get arrow capacity efficiency
-	float percentageOfArrowCapacity = (float)m_agent->m_arrowCount/(float)g_maxResourceCarryAmount;
-	
-	//only if we aren't full should we consider distance to armory and gathering costs
-	float distanceSquaredToArmorySquared = 0.f;
-	Vector2 startingCoordToWall = agentTileCoord;
-	float timeToGatherToFull = 0.f;
-
-	if (percentageOfArrowCapacity < 0.75f)
-	{
-		PointOfInterest* nearestPoi = GetNearestPointOfInterestOfTypeFromCoordinate(ARMORY_POI_TYPE, agentTileCoord);
-
-		distanceSquaredToArmorySquared = (float)GetDistanceSquared(agentTileCoord, nearestPoi->m_accessCoordinate);	
-
-		timeToGatherToFull = (g_maxResourceCarryAmount - m_agent->m_arrowCount) * (1/g_baseResourceRefillTimePerSecond);
-		startingCoordToWall = nearestPoi->m_accessCoordinate;
-		percentageOfArrowCapacity = 1.f;
-
-		//cleanup
-		nearestPoi = nullptr;
-	}
-	
-	//get distance to nearest wall
-	float distanceToNearestWallSquared = (float)GetDistanceSquared(GetNearestTileCoordinateOfMapEdgeFromCoordinate(startingCoordToWall), startingCoordToWall);
-	
-	//get combatefficiency * performance rate * numArrows = total time
-	float timeToDepleteInventory = (g_maxActionPerformanceRatePerSecond * (percentageOfArrowCapacity * g_maxResourceCarryAmount)) / m_agent->m_combatEfficiency;
-
-	//get max calculations for gather and depletion
-	float maxTimeToGatherToFull = g_maxResourceCarryAmount / g_baseResourceRefillTimePerSecond;
-	float maxTimeToDepleteInventory = (g_maxActionPerformanceRatePerSecond * g_maxResourceCarryAmount) / g_minSkillEfficiency;
-
-	//	threat score graph
-	// https://www.desmos.com/calculator/rw09ludgqr
-
-	//combine it all for score.
-	float threatScore = ((g_maxThreat - m_map->m_threat + (std::pow( (g_maxThreat - (g_maxThreat * 0.8f)),3)))/std::pow(g_maxThreat,3)) / (1 - m_agent->m_combatBias);														//amount we care about threat
-	float totalDistanceSquaredRequirement = (distanceSquaredToArmorySquared + distanceToNearestWallSquared)/g_maxCoordinateDistanceSquared;				//total distance we'd have to travel
-	float totalTimeToCompleteTask =  (timeToGatherToFull + timeToDepleteInventory) / (maxTimeToGatherToFull +  maxTimeToDepleteInventory);																		//total time to complete task			
-
-	//take weighted mean
-	return (5.f * (1.f - ClampFloat(threatScore, 0.f, 1.f)) + (0.25f * totalDistanceSquaredRequirement) + totalTimeToCompleteTask) / (5.f + 0.25f + 1.f);
-}
-
-//  =========================================================================================
-UtilityInfo Planner::GetRepairUtility()
-{
-	//if there is no threat, we shouldn't shoot
-
-	float averageHealth = m_map->GetAveragePOIHealth();
-	if(averageHealth == (float)g_maxHealth)
-		return 9999.f;
-
-	//agent's tile coord to be used throughout calculations
-	IntVector2 agentTileCoord = m_map->GetTileCoordinateOfPosition(m_agent->m_position);
-
-	//get arrow capacity efficiency
-	float percentOfLumberCapacity = (float)m_agent->m_lumberCount/(float)g_maxResourceCarryAmount;
-
-	//only if we aren't full should we consider distance to armory and gathering costs
-	float distanceSquaredToLumberyardSquared = 0.f;
-	IntVector2 startingCoordToMostDamagedPOI = agentTileCoord;
-	float timeToGatherToFull = 0.f;
-
-	if (percentOfLumberCapacity < 0.75f)
-	{
-		PointOfInterest* nearestPoi = GetNearestPointOfInterestOfTypeFromCoordinate(LUMBERYARD_POI_TYPE, agentTileCoord);
-
-		distanceSquaredToLumberyardSquared = (float)GetDistanceSquared(agentTileCoord, nearestPoi->m_accessCoordinate);	
-
-		timeToGatherToFull = (g_maxResourceCarryAmount - m_agent->m_arrowCount) * (1/g_baseResourceRefillTimePerSecond);
-		startingCoordToMostDamagedPOI = nearestPoi->m_accessCoordinate;
-		percentOfLumberCapacity = 1.f;
-
-		//cleanup
-		nearestPoi = nullptr;
+		for (int armoryIndex = 0; armoryIndex < (int)m_map->m_armories.size(); ++armoryIndex)
+		{
+			UtilityInfo infoForBuilding = GetGatherUitlityPerBuilding(m_map->m_armories[armoryIndex]);
+			if (infoForBuilding.utility > highestGatherArrowsUtility.utility)
+			{
+				highestGatherArrowsUtility = infoForBuilding;
+			}
+		}
 	}
 
-	//get distance to nearest wall
-	float distanceToNearestDamagedPOI = (float)GetDistanceSquared(GetNearestPointOfInterestWithLowestHealthFromCoordinate(startingCoordToMostDamagedPOI)->GetCoordinateBoundsClosestToCoordinate(startingCoordToMostDamagedPOI), startingCoordToMostDamagedPOI);
-
-	//get combatefficiency * performance rate * numArrows = total time
-	float timeToDepleteInventory = (g_maxActionPerformanceRatePerSecond * (percentOfLumberCapacity * g_maxResourceCarryAmount)) / m_agent->m_repairEfficiency;
-
-	//get max calculations for gather and depletion
-	float maxTimeToGatherToFull = g_maxResourceCarryAmount / g_baseResourceRefillTimePerSecond;
-	float maxTimeToDepleteInventory = (g_maxActionPerformanceRatePerSecond * g_maxResourceCarryAmount) / g_minSkillEfficiency;
-
-	//	threat score graph
-	// https://www.desmos.com/calculator/rw09ludgqr
-
-	//combine it all for score.
-	float poiHealthUrgency = ((g_maxHealth - averageHealth + (std::pow( (g_maxHealth - (g_maxHealth * 0.8f)),3)))/std::pow(g_maxHealth,3)) / (1 - m_agent->m_repairBias);														//amount we care about threat
-	float totalDistanceSquaredRequirement = (distanceSquaredToLumberyardSquared + distanceToNearestDamagedPOI)/g_maxCoordinateDistanceSquared;				//total distance we'd have to travel
-	float totalTimeToCompleteTask =  (timeToGatherToFull + timeToDepleteInventory) / (maxTimeToGatherToFull +  maxTimeToDepleteInventory);																		//total time to complete task			
-
-																																																				//take weighted mean
-	return (5.f * (1.f - ClampFloat(poiHealthUrgency, 0.f, 1.f)) + (0.25f * totalDistanceSquaredRequirement) + totalTimeToCompleteTask) / (5.f + 0.25f + 1.f);
+	return highestGatherArrowsUtility;
 }
 
-UtilityInfo Planner::GetRepairUtilityPerBuilding(PointOfInterest* poi)
+//  =========================================================================================
+UtilityInfo Planner::GetHighestGatherLumberUtility()
+{
+	UtilityInfo highestGatherLumberUtility;
+
+	if (m_map->m_lumberyards.size() > 0)
+	{
+		for (int lumberyardIndex = 0; lumberyardIndex < (int)m_map->m_lumberyards.size(); ++lumberyardIndex)
+		{
+			UtilityInfo infoForBuilding = GetGatherUitlityPerBuilding(m_map->m_lumberyards[lumberyardIndex]);
+			if (infoForBuilding.utility > highestGatherLumberUtility.utility)
+			{
+				highestGatherLumberUtility = infoForBuilding;
+			}
+		}
+	}
+
+	return highestGatherLumberUtility;
+}
+
+//  =========================================================================================
+UtilityInfo Planner::GetHighestGatherBandagesUtility()
+{
+	UtilityInfo highestGatherBandagesUtility;
+
+	if (m_map->m_medStations.size() > 0)
+	{
+		for (int medStationIndex = 0; medStationIndex < (int)m_map->m_medStations.size(); ++medStationIndex)
+		{
+			UtilityInfo infoForBuilding = GetGatherUitlityPerBuilding(m_map->m_medStations[medStationIndex]);
+			if (infoForBuilding.utility > highestGatherBandagesUtility.utility)
+			{
+				highestGatherBandagesUtility = infoForBuilding;
+			}
+		}
+	}
+
+	return highestGatherBandagesUtility;
+}
+
+//  =========================================================================================
+UtilityInfo Planner::GetHighestShootUtility()
 {
 	UtilityInfo info;
 
-	//easy out if building is at full health
-	if (poi->m_health == g_maxHealth)
+	if (m_map->m_threat == 0 || m_agent->m_arrowCount == 0)
 	{
-		info.utility = 0.f;
-		info.endLocation = poi->m_accessCoordinate;
-		info.targetEntityId = poi->m_id;
+		return info;
+	}
+
+	Vector2 nearestWallPosition = (Vector2)GetNearestTileCoordinateOfMapEdgeFromCoordinate((IntVector2)m_agent->m_position);
+
+	// distance to nearest wall squared ----------------------------------------------
+	float distanceToBuildingSquared = GetDistanceSquared(m_agent->m_position, nearestWallPosition);
+
+	//get max distance
+	float maxDistanceSquared = GetDistanceSquared(Vector2::ZERO, Vector2(m_map->GetDimensions()));
+
+	//normalize distance
+	float normalizedDistance = distanceToBuildingSquared/maxDistanceSquared;
+
+	//apply distance utility formula for utility value
+	float distanceUtility = CalculateDistanceUtility(normalizedDistance);
+
+
+	//normalized threat ----------------------------------------------
+	float normalizedThreat = m_map->m_threat/g_maxThreat;
+
+	//apply shoot utility formula for utility value
+	float threatUtility = CalculateShootUtility(normalizedThreat);
+
+
+	//combine distance and health utilities for final utility ----------------------------------------------
+	float adjustedShootUtility = distanceUtility * threatUtility;
+	info.utility = adjustedShootUtility;
+
+	return info;
+}
+
+//  =========================================================================================
+UtilityInfo Planner::GetHighestRepairUtility()
+{
+	UtilityInfo highestRepairUtility = GetRepairUtilityPerBuilding(m_map->m_pointsOfInterest[0]);
+
+	for (int buildingIndex = 1; buildingIndex < (int)m_map->m_pointsOfInterest.size(); ++buildingIndex)
+	{
+		UtilityInfo utilityInfoForBuilding = GetRepairUtilityPerBuilding(m_map->m_pointsOfInterest[buildingIndex]);
+		if (utilityInfoForBuilding.utility > highestRepairUtility.utility)
+		{
+			highestRepairUtility = utilityInfoForBuilding;
+		}
+	}
+
+	return highestRepairUtility;
+}
+
+//  =========================================================================================
+UtilityInfo Planner::GetHighestHealUtility()
+{
+	UtilityInfo info;
+	return info;
+}
+
+//  =============================================================================
+UtilityInfo Planner::GetRepairUtilityPerBuilding(PointOfInterest* poi)
+{
+	UtilityInfo info;
+	info.utility = 0.f;
+	info.endLocation = (Vector2)poi->m_accessCoordinate;
+	info.targetEntityId = poi->m_id;
+
+	//easy out if building is at full health
+	if (poi->m_health == g_maxHealth || m_agent->m_lumberCount == 0)
+	{
 		return info;
 	}
 
 	// distance to building squared ----------------------------------------------
-	float distanceToBuildingSquared = GetDistanceSquared(m_agent->m_position, poi->m_accessCoordinate);
+	float distanceToBuildingSquared = GetDistanceSquared(m_agent->m_position, (Vector2)poi->m_accessCoordinate);
 	
 	//get max distance
 	float maxDistanceSquared = GetDistanceSquared(Vector2::ZERO, Vector2(m_map->GetDimensions()));
@@ -410,9 +384,63 @@ UtilityInfo Planner::GetRepairUtilityPerBuilding(PointOfInterest* poi)
 
 
 	// combine distance and health utilities for final utility ----------------------------------------------
+	float adjustedUtility = distanceUtility * healthUtility;
+	info.utility = adjustedUtility;
 
-	float adjustedUtility = 1.f - (1.f - distanceUtility) * (1.f - healthUtility);
+	return info;
+}
 
+//  =============================================================================
+UtilityInfo Planner::GetGatherUitlityPerBuilding(PointOfInterest* poi)
+{
+	UtilityInfo info;
+	info.utility = 0.f;
+	info.endLocation = (Vector2)poi->m_accessCoordinate;
+	info.targetEntityId = poi->m_id;
+
+	int inventoryCountPerType = 0;
+	switch (poi->m_type)
+	{
+	case ARMORY_POI_TYPE:
+		inventoryCountPerType = m_agent->m_arrowCount;
+		break;
+	case LUMBERYARD_POI_TYPE:
+		inventoryCountPerType = m_agent->m_lumberCount;
+		break;
+	case MED_STATION_POI_TYPE:
+		inventoryCountPerType = m_agent->m_bandageCount;
+		break;
+	}
+
+	//easy out if we don't need to gather for this building type
+	if (inventoryCountPerType == 0)
+	{
+		return info;
+	}
+
+	// distance to building squared ----------------------------------------------
+	float distanceToBuildingSquared = GetDistanceSquared(m_agent->m_position, (Vector2)poi->m_accessCoordinate);
+
+	//get max distance
+	float maxDistanceSquared = GetDistanceSquared(Vector2::ZERO, Vector2(m_map->GetDimensions()));
+
+	//normalize distance
+	float normalizedDistance = distanceToBuildingSquared/maxDistanceSquared;
+
+	//apply distance utility formula for utility value
+	float distanceUtility = CalculateDistanceUtility(normalizedDistance);
+
+
+	//building health ----------------------------------------------
+	float normalizedResourceAmount = inventoryCountPerType/g_maxResourceCarryAmount;
+
+	//apply health utility formula for utility value
+	float healthUtility = CalculateAgentGatherUtility(normalizedResourceAmount);
+
+
+	// combine distance and health utilities for final utility ----------------------------------------------
+	float adjustedUtility = distanceUtility * healthUtility;
+	info.utility = adjustedUtility;
 
 	return info;
 }
@@ -424,18 +452,17 @@ UtilityInfo Planner::GetHealUtilityPerAgent(Agent * agent)
 	return info;
 }
 
-
-//  =========================================================================================
-UtilityInfo Planner::GetHealUtility()
+//  =============================================================================
+UtilityInfo Planner::GetIdleUtilityInfo()
 {
-	float cost = 99999.f;
-
 	UtilityInfo info;
+	info.utility = CalculateIdleUtility();
 	return info;
 }
 
+
 //  =========================================================================================
-//  Utility Function Calculations =========================================================================================
+//  Utility Function Calculations
 //  =========================================================================================
 float Planner::CalculateDistanceUtility(float normalizedDistance)
 {
@@ -450,55 +477,59 @@ float Planner::CalculateDistanceUtility(float normalizedDistance)
 float Planner::CalculateBuildingHealthUtility(float normalizedBuildingHealth)
 {
 	//  ((1 - x)^2x * 0.8) = y
+	float oneMinusNormalizedBuildingHealth = 1.f - normalizedBuildingHealth;
 
-	float oneMinusNormalizedBuildingHealth = 1 - normalizedBuildingHealth;
-
-	float poweredHealth = std::pow(oneMinusNormalizedBuildingHealth, 2 * normalizedBuildingHealth);
+	float poweredHealth = std::pow(oneMinusNormalizedBuildingHealth, 2.f * normalizedBuildingHealth);
 	float utility = poweredHealth * 0.8f;
 
 	return utility;
 }
 
+//  =============================================================================
+float Planner::CalculateAgentHealthUtility(float normalizedAgentHealth)
+{
+	//  ((1 - x)^2x * 0.8) = y
+	float oneMinusNormalizedAgentHealth= 1.f - normalizedAgentHealth;
+
+	float poweredHealth = std::pow(oneMinusNormalizedAgentHealth, 2.f * normalizedAgentHealth);
+	float utility = poweredHealth * 0.8f;
+
+	return utility;
+}
+
+//  =============================================================================
+float Planner::CalculateAgentGatherUtility(float normalizedResourceCarryAmount)
+{
+	// ((1-x)^8x * 0.8) = y
+	float oneMinusNormalizedGatherUtility = 1.f - normalizedResourceCarryAmount;
+	
+	float poweredGather = std::pow(oneMinusNormalizedGatherUtility, 8.f * normalizedResourceCarryAmount);
+	float utility = poweredGather * 0.8f;
+
+	return utility;
+}
+
+//  =============================================================================
+float Planner::CalculateShootUtility(float normalizedThreatUtility)
+{
+	// ((1-(1-x)^2x) * 0.8 = y
+	float oneMinusNormalizedThreatUtility = 1.f - normalizedThreatUtility;
+
+	float poweredThreat = 1.f - std::pow(oneMinusNormalizedThreatUtility, 2.f * normalizedThreatUtility);
+	float utility = poweredThreat * 0.8f;
+
+	return utility;
+}
+
+//  =============================================================================
+float Planner::CalculateIdleUtility()
+{
+	//flat rate for idle.  (very small but will always trump anything of value 0)
+	return 0.01f;
+}
+
 //  =========================================================================================
 //  Helpers
-//  =========================================================================================
-float Planner::GetAverageAgentHealth()
-{
-	int numAgents = (int)m_map->m_agents.size();
-	int totalHealthOfAllAgents = 0;
-
-	for (int agentIndex = 0; agentIndex < numAgents; ++agentIndex)
-	{
-		totalHealthOfAllAgents += m_map->m_agents[agentIndex]->m_health;
-	}
-
-	return (float)(totalHealthOfAllAgents / numAgents);
-}
-
-//  =========================================================================================
-PointOfInterest* Planner::GetNearestPointOfInterestOfTypeFromCoordinate(int poiType, const IntVector2& coodinate)
-{
-	ePointOfInterestType poiTypeCasted = (ePointOfInterestType)poiType;
-
-	int smallestDistanceToPOI = INT_MAX;
-	PointOfInterest* closestPoi = nullptr;
-
-	for(int poiIndex = 0; poiIndex < (int)m_map->m_pointsOfInterest.size(); ++poiIndex)
-	{
-		if(m_map->m_pointsOfInterest[poiIndex]->m_type == poiTypeCasted)
-		{
-			int distanceSquared = GetDistanceSquared(m_map->m_pointsOfInterest[poiIndex]->m_accessCoordinate, coodinate);
-			if(distanceSquared < smallestDistanceToPOI)
-			{
-				smallestDistanceToPOI = distanceSquared;
-				closestPoi = m_map->m_pointsOfInterest[poiIndex];
-			}
-		}
-	}
-
-	return closestPoi;
-}
-
 //  =========================================================================================
 IntVector2 Planner::GetNearestTileCoordinateOfMapEdgeFromCoordinate(const IntVector2& coordinate)
 {
@@ -552,58 +583,4 @@ IntVector2 Planner::GetNearestTileCoordinateOfMapEdgeFromCoordinate(const IntVec
 	}
 
 	return closestCoordinate;
-}
-
-//  =========================================================================================
-PointOfInterest* Planner::GetPointOfInterestWithLowestHealth()
-{
-	PointOfInterest* poiWithLowestHealth = m_map->m_pointsOfInterest[0];
-
-	for (int poiIndex = 1; poiIndex < (int)m_map->m_pointsOfInterest.size(); ++poiIndex)
-	{
-		if (m_map->m_pointsOfInterest[poiIndex]->m_health < poiWithLowestHealth->m_health)
-		{
-			poiWithLowestHealth = m_map->m_pointsOfInterest[poiIndex];
-		}
-	}
-
-	return poiWithLowestHealth;
-}
-
-//  =========================================================================================
-PointOfInterest* Planner::GetNearestPointOfInterestWithLowestHealthFromCoordinate(const IntVector2& coordinate)
-{
-	PointOfInterest* poiWithLowestHealth = m_map->m_pointsOfInterest[0];
-
-	for (int poiIndex = 1; poiIndex < (int)m_map->m_pointsOfInterest.size(); ++poiIndex)
-	{
-		if (m_map->m_pointsOfInterest[poiIndex]->m_health < poiWithLowestHealth->m_health)
-		{
-			poiWithLowestHealth = m_map->m_pointsOfInterest[poiIndex];
-		}
-		else if (m_map->m_pointsOfInterest[poiIndex]->m_health == poiWithLowestHealth->m_health)
-		{
-			int distanceToCurrentPoi = GetDistanceSquared(poiWithLowestHealth->m_accessCoordinate, coordinate);
-			int distanceToNewPoi = GetDistanceSquared(m_map->m_pointsOfInterest[poiIndex]->m_accessCoordinate, coordinate);
-
-			if(distanceToNewPoi < distanceToCurrentPoi)
-				poiWithLowestHealth = m_map->m_pointsOfInterest[poiIndex];
-		}
-	}
-
-	return poiWithLowestHealth;
-}
-
-//  =========================================================================================
-float Planner::GetAveragePointOfInterestHealth()
-{
-	int numPoi = (int)m_map->m_pointsOfInterest.size();
-	int totalPOIHealth = 0;
-
-	for (int poiIndex = 0; poiIndex < numPoi; ++poiIndex)
-	{
-		totalPOIHealth += m_map->m_pointsOfInterest[poiIndex]->m_health;
-	}
-
-	return (float)(totalPOIHealth / numPoi);
 }
