@@ -27,6 +27,7 @@ extern float g_maxCoordinateDistanceSquared;
 
 //general globals
 extern int g_maxHealth;
+extern float g_skewForCurrentPlan;
 
 //poi globals
 extern float g_baseResourceRefillTimePerSecond;

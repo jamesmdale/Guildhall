@@ -15,6 +15,7 @@ float g_maxCoordinateDistanceSquared = 0.f;
 
 //general globals
 int g_maxHealth = 100;
+float g_skewForCurrentPlan = 0.1f;
 
 //poi globals
 float g_baseResourceRefillTimePerSecond = 0.5f;

@@ -6,14 +6,9 @@
 
 const Rgba Rgba::RED = Rgba(255, 0, 0, 255);
 const Rgba Rgba::ORANGE = Rgba(255, 140, 0, 255);
-const Rgba Rgba::LIGHT_ORANGE_TRANSPARENT = Rgba(255, 140, 0, 100);
-const Rgba Rgba::LIGHT_RED_TRANSPARENT = Rgba(248, 124, 124, 150);
 const Rgba Rgba::GREEN = Rgba(0, 255, 0, 255);
 const Rgba Rgba::BLUE = Rgba(0, 0, 255, 255);
 const Rgba Rgba::LIGHT_BLUE = Rgba(126, 221, 214, 255);
-const Rgba Rgba::LIGHT_BLUE_TRANSPARENT = Rgba(126, 221, 214, 200);
-const Rgba Rgba::LIGHT_GREEN_TRANSPARENT = Rgba(124, 124, 248, 150);
-const Rgba Rgba::LIGHT_WHITE_TRANSPARENT = Rgba(255, 255, 255, 50);
 const Rgba Rgba::WHITE = Rgba(255, 255, 255, 255);
 const Rgba Rgba::YELLOW = Rgba(255, 255, 0, 255);
 const Rgba Rgba::PURPLE = Rgba(255, 0, 255, 255);
@@ -22,7 +17,15 @@ const Rgba Rgba::NEAR_BLACK = Rgba(3, 3, 3, 255);
 const Rgba Rgba::CLEAR = Rgba(0, 0, 0, 0);
 const Rgba Rgba::GRAY = Rgba(100, 100, 100, 255);
 const Rgba Rgba::PINK = Rgba (255, 0, 255, 255);
+
+//transparent colors
+const Rgba Rgba::LIGHT_ORANGE_TRANSPARENT = Rgba(255, 140, 0, 100);
+const Rgba Rgba::LIGHT_RED_TRANSPARENT = Rgba(248, 124, 124, 200);
+const Rgba Rgba::LIGHT_BLUE_TRANSPARENT = Rgba(124, 124, 248, 200);
+const Rgba Rgba::LIGHT_GREEN_TRANSPARENT = Rgba(124, 248, 124, 200);
+const Rgba Rgba::LIGHT_WHITE_TRANSPARENT = Rgba(255, 255, 255, 50);
 const Rgba Rgba::LIGHT_PINK_TRANSPARENT = Rgba (255, 0, 255, 100);
+
 const Rgba Rgba::NORMAL_MAP_FLAT = Rgba(127, 127, 255, 255);
 
 Rgba::Rgba()//default constructs to opaque white (255, 255, 255, 255)

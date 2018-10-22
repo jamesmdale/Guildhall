@@ -75,15 +75,22 @@ void Planner::UpdatePlan()
 
 	//utility for gathering arrows
 	compareUtilityInfo = GetHighestGatherArrowsUtility();
+	if (m_currentPlan == GATHER_ARROWS_PLAN_TYPE)
+	{
+		SkewCurrentPlanUtilityValue(compareUtilityInfo);
+	}
 	if (compareUtilityInfo.utility > highestUtilityInfo.utility)
 	{
 		highestUtilityInfo = compareUtilityInfo;
 		chosenOutcome = GATHER_ARROWS_PLAN_TYPE;
 	}
 		
-
 	//utility for gathering lumber
 	compareUtilityInfo = GetHighestGatherLumberUtility();
+	if (m_currentPlan == GATHER_LUMBER_PLAN_TYPE)
+	{
+		SkewCurrentPlanUtilityValue(compareUtilityInfo);
+	}
 	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
 	{
 		highestUtilityInfo = compareUtilityInfo;
@@ -92,6 +99,10 @@ void Planner::UpdatePlan()
 
 	//utility for gathering bandages
 	compareUtilityInfo = GetHighestGatherBandagesUtility();
+	if (m_currentPlan == GATHER_BANDAGES_PLAN_TYPE)
+	{
+		SkewCurrentPlanUtilityValue(compareUtilityInfo);
+	}
 	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
 	{
 		highestUtilityInfo = compareUtilityInfo;
@@ -100,15 +111,22 @@ void Planner::UpdatePlan()
 
 	//utility for shooting	
 	compareUtilityInfo = GetHighestShootUtility();
+	if (m_currentPlan == SHOOT_PLAN_TYPE)
+	{
+		SkewCurrentPlanUtilityValue(compareUtilityInfo);
+	}
 	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
 	{
 		highestUtilityInfo = compareUtilityInfo;
 		chosenOutcome = SHOOT_PLAN_TYPE;
 	}
 
-
 	//utility for repairing buildings
 	compareUtilityInfo = GetHighestRepairUtility();
+	if (m_currentPlan == REPAIR_PLAN_TYPE)
+	{
+		SkewCurrentPlanUtilityValue(compareUtilityInfo);
+	}
 	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
 	{
 		highestUtilityInfo = compareUtilityInfo;
@@ -117,13 +135,17 @@ void Planner::UpdatePlan()
 
 	//utility for healing agents
 	compareUtilityInfo = GetHighestHealUtility();
+	if (m_currentPlan == HEAL_PLAN_TYPE)
+	{
+		SkewCurrentPlanUtilityValue(compareUtilityInfo);
+	}
 	if(compareUtilityInfo.utility > highestUtilityInfo.utility)
 	{
 		highestUtilityInfo = compareUtilityInfo;
-		chosenOutcome = REPAIR_PLAN_TYPE;
+		chosenOutcome = HEAL_PLAN_TYPE;
 	}
 
-
+	m_currentPlan = chosenOutcome;
 	QueueActionsFromCurrentPlan(m_currentPlan, highestUtilityInfo);
 }
 
@@ -321,6 +343,7 @@ UtilityInfo Planner::GetHighestShootUtility()
 	//combine distance and health utilities for final utility ----------------------------------------------
 	float adjustedShootUtility = distanceUtility * threatUtility;
 	info.utility = adjustedShootUtility;
+	info.endLocation = nearestWallPosition;
 
 	return info;
 }
@@ -413,7 +436,7 @@ UtilityInfo Planner::GetGatherUitlityPerBuilding(PointOfInterest* poi)
 	}
 
 	//easy out if we don't need to gather for this building type
-	if (inventoryCountPerType == 0)
+	if (inventoryCountPerType == g_maxResourceCarryAmount)
 	{
 		return info;
 	}
@@ -460,6 +483,11 @@ UtilityInfo Planner::GetIdleUtilityInfo()
 	return info;
 }
 
+//  =========================================================================================
+void Planner::SkewCurrentPlanUtilityValue(UtilityInfo & outInfo)
+{
+	outInfo.utility += g_skewForCurrentPlan;
+}
 
 //  =========================================================================================
 //  Utility Function Calculations

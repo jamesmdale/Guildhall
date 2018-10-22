@@ -82,6 +82,7 @@ void Map::Initialize()
 		poiLocation->m_map = this;
 
 		m_pointsOfInterest.push_back(poiLocation);
+		m_armories.push_back(poiLocation);
 		poiLocation = nullptr;
 	}
 
@@ -89,19 +90,17 @@ void Map::Initialize()
 	{
 		//add random point of interest
 		PointOfInterest* poiLocation = GeneratePointOfInterest(LUMBERYARD_POI_TYPE);
+		m_lumberyards.push_back(poiLocation);
 		poiLocation->m_map = this;
 
 		m_pointsOfInterest.push_back(poiLocation);
 		poiLocation = nullptr;
 	}
 
-	//test agent
-
 	IntVector2 dimensions = GetDimensions();
-
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
 
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 10; ++i)
 	{
 		IsoSpriteAnimSet* animSet = nullptr;
 		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
@@ -127,7 +126,13 @@ void Map::Update(float deltaSeconds)
 {
 	//udpate timers
 	if (m_threatTimer->DecrementAll() > 0)
-		m_threat++;
+	{
+		if (m_threat != g_maxThreat)
+		{
+			m_threat++;
+		}		
+	}
+		
 
 	if (m_bombardmentTimer->DecrementAll() > 0)
 	{
@@ -194,7 +199,7 @@ void Map::CreateMapMesh()
 	//create mesh for static tiles and buildings
 	for (int tileIndex = 0; tileIndex < (int)m_tiles.size(); ++tileIndex)
 	{
-		builder->CreateTexturedQuad2D(m_tiles[tileIndex]->GetBounds().GetCenter(), Vector2::ONE, m_tiles[tileIndex]->m_tileDefinition->m_baseSpriteUVCoords.mins,  m_tiles[tileIndex]->m_tileDefinition->m_baseSpriteUVCoords.maxs, m_tiles[tileIndex]->m_tint );
+		builder->CreateTexturedQuad2D(m_tiles[tileIndex]->GetBounds().GetCenter(), Vector2::ONE, m_tiles[tileIndex]->m_tileDefinition->m_baseSpriteUVCoords.mins, m_tiles[tileIndex]->m_tileDefinition->m_baseSpriteUVCoords.maxs, m_tiles[tileIndex]->m_tint );
 	}
 
 	m_mapMesh = builder->CreateMesh<VertexPCU>();
@@ -228,6 +233,15 @@ Mesh* Map::CreateDynamicAgentMesh()
 		Rgba agentColor = Rgba::WHITE;
 		switch (m_agents[agentIndex]->m_planner->m_currentPlan)
 		{
+		case GATHER_ARROWS_PLAN_TYPE:
+			agentColor = Rgba::RED;
+			break;
+		case GATHER_LUMBER_PLAN_TYPE:
+			agentColor = Rgba::BLUE;
+			break;
+		case GATHER_BANDAGES_PLAN_TYPE:
+			agentColor = Rgba::GREEN;
+			break;
 		case SHOOT_PLAN_TYPE:
 			agentColor = Rgba::RED;
 			break;
@@ -342,34 +356,6 @@ Agent* Map::GetAgentById(int agentId)
 
 	//if we never found the agent, return nullptr;
 	return nullptr;
-}
-
-//  =============================================================================
-float Map::GetAveragePOIHealth()
-{
-	int totalHealth = 0;
-	int numPointsOfInterest = (int)m_pointsOfInterest.size();
-
-	for (int poiIndex = 0; poiIndex < numPointsOfInterest; ++poiIndex)
-	{
-		totalHealth += m_pointsOfInterest[poiIndex]->m_health;
-	}
-
-	return (float)totalHealth / (float)numPointsOfInterest;
-}
-
-//  =============================================================================
-float Map::GetAverageAgentHealth()
-{
-	int totalHealth = 0;
-	int numAgents = (int)m_agents.size();
-
-	for (int agentIndex = 0; agentIndex < numAgents; ++agentIndex)
-	{
-		totalHealth += m_agents[agentIndex]->m_health;
-	}
-
-	return (float)totalHealth / (float)numAgents;
 }
 
 //  =========================================================================================
@@ -494,21 +480,39 @@ PointOfInterest* Map::GeneratePointOfInterest(int poiType)
 
 	//Location is valid, therefore we can replace tiles with building tiles
 
+	Rgba buildingColor = Rgba::WHITE;
+	switch (poiType)
+	{
+	case ARMORY_POI_TYPE:
+		buildingColor = Rgba::LIGHT_RED_TRANSPARENT;
+		break;
+	case LUMBERYARD_POI_TYPE:
+		buildingColor = Rgba::LIGHT_BLUE_TRANSPARENT;
+		break;
+	case MED_STATION_POI_TYPE:
+		buildingColor = Rgba::LIGHT_GREEN_TRANSPARENT;
+		break;
+	}
+
 	//starting tile
 	Tile* tile = GetTileAtCoordinate(randomCoordinate);
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("Building")->second;
+	tile->m_tint = buildingColor;
 
 	//tile to east
 	tile = GetTileAtCoordinate(IntVector2(randomCoordinate.x + 1, randomCoordinate.y));
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("Building")->second;
+	tile->m_tint = buildingColor;
 
 	//tile to northeast
 	tile = GetTileAtCoordinate(IntVector2(randomCoordinate.x + 1, randomCoordinate.y + 1));
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("Building")->second;
+	tile->m_tint = buildingColor;
 
 	//tile to north
 	tile = GetTileAtCoordinate(IntVector2(randomCoordinate.x, randomCoordinate.y + 1));
 	tile->m_tileDefinition = TileDefinition::s_tileDefinitions.find("Building")->second;
+	tile->m_tint = buildingColor;
 
 	//building access tile
 	tile = GetTileAtCoordinate(accessCoordinate);
