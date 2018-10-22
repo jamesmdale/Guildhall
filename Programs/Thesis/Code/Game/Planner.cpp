@@ -72,7 +72,7 @@ void Planner::UpdatePlan()
 	ePlanTypes chosenOutcome = NONE_PLAN_TYPE;
 	UtilityInfo highestUtilityInfo = GetIdleUtilityInfo();
 	UtilityInfo compareUtilityInfo;
-
+	 
 	//utility for gathering arrows
 	compareUtilityInfo = GetHighestGatherArrowsUtility();
 	if (compareUtilityInfo.utility > highestUtilityInfo.utility)
