@@ -23,7 +23,7 @@ NetConnection::NetConnection()
 
 	//setup heartbeat timer
 	m_heartbeatTimer = new Stopwatch(GetMasterClock());
-	m_heartbeatTimer->SetTimer(5.f);
+	m_heartbeatTimer->SetTimer(0.05f);
 }
 
 //  =============================================================================
@@ -232,6 +232,18 @@ void NetConnection::AddPacketTracker(uint16_t ack)
 
 	int index = ack % MAX_TRACKED_PACKETS;
 
+	if (m_trackedPackets[index].m_ack != INVALID_PACKET_ACK)
+	{
+		++m_numLostPackets;
+		m_numLostPackets = ClampInt(m_numLostPackets, 0, MAX_TRACKED_PACKETS);
+	}
+
+	if (ack % MAX_TRACKED_PACKETS == 0)
+	{
+		m_lossPercentage = UpdateLossPercentage();
+		m_numLostPackets = 0;
+	}
+
 	m_trackedPackets[index] = tracker;
 }
 
@@ -242,9 +254,15 @@ float NetConnection::GetRoundTripTimeInSeconds()
 }
 
 //  =============================================================================
+float NetConnection::UpdateLossPercentage()
+{
+	return ((float)m_numLostPackets / (float)MAX_TRACKED_PACKETS) * 100.f;
+}
+
+//  =============================================================================
 float NetConnection::GetLossPercentage()
 {
-	return 0.0f;
+	return m_lossPercentage;
 }
 
 //  =============================================================================

@@ -27,7 +27,37 @@ NetPacket::NetPacket(uint8_t senderIndex, uint8_t messageCount)
 //  =============================================================================
 bool NetPacket::ReadHeader(NetPacketHeader& packetHeader)
 {
-	return ReadBytes(&packetHeader, sizeof(NetPacketHeader), false);
+	bool success = ReadBytes(&packetHeader.m_senderIndex, sizeof(uint8_t), false);
+	if (!success)
+	{
+		return success;
+	}		
+
+	success = ReadBytes(&packetHeader.m_ack, sizeof(uint16_t), false);
+	if (!success)
+	{
+		return success;
+	}		
+
+	success = ReadBytes(&packetHeader.m_highestReceivedAck, sizeof(uint16_t), false);
+	if (!success)
+	{
+		return success;
+	}		
+
+	success = ReadBytes(&packetHeader.m_receivedAckHistoryBitfield, sizeof(uint16_t), false);
+	if (!success)
+	{
+		return success;
+	}		
+
+	success = ReadBytes(&packetHeader.m_unreliableMessageCount, sizeof(uint8_t), false);
+	if (!success)
+	{
+		return success;
+	}		
+
+	return success;
 }
 
 //  =============================================================================
@@ -87,13 +117,11 @@ void NetPacket::WriteUpdatedHeaderData()
 	ResetWrite();
 
 	//update the packet data with the current packet header count
-	WriteBytes(sizeof(NetPacketHeader), &m_packetHeader, false);
-
-	/*WriteBytes(sizeof(uint8_t), &m_packetHeader.m_senderIndex, false);
+	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_senderIndex, false);
 	WriteBytes(sizeof(uint16_t), &m_packetHeader.m_ack, false);
 	WriteBytes(sizeof(uint16_t), &m_packetHeader.m_highestReceivedAck, false);
 	WriteBytes(sizeof(uint16_t), &m_packetHeader.m_receivedAckHistoryBitfield, false);
-	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_unreliableMessageCount, false);*/
+	WriteBytes(sizeof(uint8_t), &m_packetHeader.m_unreliableMessageCount, false);
 
 	//move the write head back to the end of the amount we've written
 	SetWriteHeadToMaxWritten();	
@@ -111,7 +139,7 @@ bool NetPacket::CheckIsValid()
 	SetWriteHeadToMaxWritten();
 
 	NetPacketHeader headerData;
-	success = ReadBytes(&headerData, sizeof(NetPacketHeader), false);
+	success = ReadHeader(headerData);
 	if (!success)
 	{
 		ResetRead();
@@ -131,33 +159,8 @@ bool NetPacket::CheckIsValid()
 			return success;
 		}
 
-		////message index
-		//NetMessageHeader netMessageHeader;
-		//success = ReadBytes(&netMessageHeader, sizeof(NetMessageHeader), false);
-		//if (!success)
-		//{
-		//	ResetHeads();
-		//	return success;
-		//}
-
-
-		////read total payload size
-		//size_t payloadSize = totalMessageSize - sizeof(uint16_t) - sizeof(netMessageHeader);
-
-		//if (payloadSize > 0)
-		//{
-		//	void* payload = malloc(payloadSize);
-		//	success = ReadBytes(&payload, payloadSize, false);
-		//	if (!success)
-		//	{
-		//		ResetHeads();
-		//		return success;
-		//	}
-		//}		
-
 		//get the total message size by adding the size of the header + size of the payload size + actual payload size
 		//int totalmessageSize = (int)(sizeof(netMessageHeader) + sizeof(payloadSize) + payloadSize);
-
 		if (remainingPacketSize - totalMessageSize >= 0)
 		{
 			remainingPacketSize -= totalMessageSize;
