@@ -22,6 +22,9 @@ NetSession::NetSession()
 //  =============================================================================
 NetSession::~NetSession()
 {
+	delete(m_heartbeatRate);
+	m_heartbeatRate = nullptr;
+
 	delete(m_socket);
 	m_socket = nullptr;
 
@@ -84,6 +87,13 @@ void NetSession::Startup()
 	CommandRegister("net_sim_loss", CommandRegistration(SetNetSimLoss, ": Set the simulated loss: amount (value 0.0 to 1.0)", ""));
 	CommandRegister("net_sim", CommandRegistration(SetNetSimLag, ": Set the simulated network latency (in MS): min max ", ""));
 	CommandRegister("net_set_heart_rate", CommandRegistration(SetGlobalHeartRate, ": Set the heartbeat rate for all connections: rate", ""));
+}
+
+//  =========================================================================================
+void NetSession::Shutdown()
+{
+	delete(g_theNetSession);
+	g_theNetSession = nullptr;
 }
 
 //  =============================================================================

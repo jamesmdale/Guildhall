@@ -387,97 +387,100 @@ void DevConsole::RenderNetSession()
 	AABB2 netSessionBounds = AABB2(consoleBounds, Vector2(0.f, 0.8f), Vector2(1.f, 1.f));
 
 	//  ----------------------------------------------
-	int netSessionTextCount = 2;
-	int startingPostionFromTop = REMOTE_TEXT_CELL_HEIGHT;
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-		Stringf("NET SESSION SERVICE"),
-		REMOTE_TEXT_CELL_HEIGHT,
-		Rgba::WHITE,
-		1.f,
-		Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	netSessionTextCount++;
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-		Stringf("Sim Lag: %ims-%ims  Sim Loss: %3.2f %%", theNetSession->m_minAddedLatencyInMilliseconds, theNetSession->m_maxAddedLatencyInMilliseconds, theNetSession->m_simulationLossAmount),
-		REMOTE_TEXT_CELL_HEIGHT,
-		Rgba::WHITE,
-		1.f,
-		Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	netSessionTextCount++;
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-		"SESSION IP:",
-		REMOTE_TEXT_CELL_HEIGHT,
-		Rgba::WHITE,
-		1.f,
-		Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	netSessionTextCount++;
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-		theNetSession->m_socket->m_address.ToString().c_str(),
-		REMOTE_TEXT_CELL_HEIGHT,
-		Rgba::WHITE,
-		1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	netSessionTextCount++;
-
-	//connectionsw
-	int connectionCount = (int)theNetSession->m_connections.size();
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-		Stringf("(%i) NUM CONNECTIONS...", connectionCount),
-		REMOTE_TEXT_CELL_HEIGHT,
-		Rgba::WHITE,
-		1.f,
-		Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	netSessionTextCount++;
-
-	theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-		Stringf("%-5s %-5s %-20s %-5s %-5s %-20s %-20s %-8s %-8s %-16s",
-			"",
-			"index",
-			"address",
-			"rtt",
-			"loss",
-			"lastRcvTime(sec)",
-			"lastSntTime(sec)",
-			"sntAck",
-			"recAck",
-			"recvBits"),
-		REMOTE_TEXT_CELL_HEIGHT,
-		Rgba::WHITE,
-		1.f,
-		Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	netSessionTextCount++;
-
-	for (int connectionIndex = 0; connectionIndex < connectionCount; ++connectionIndex)
+	if (theNetSession != nullptr)
 	{
-		std::string connectionIP = theNetSession->m_connections[connectionIndex]->m_address->ToString();
-		std::bitset<16> bitsForReceived(theNetSession->m_connections[connectionIndex]->m_receivedAckHistoryBitfield);
-		std::string bitsetString = bitsForReceived.to_string();
-
-		//format string entry
-		std::string formattedConnectionInput = Stringf("%-5s %-5i %-20s %-5.2f %-5.2f %-20.2f %-20.2f %-8i %-8i %-16s", 
-			"",
-			theNetSession->m_connections[connectionIndex]->m_index,
-			theNetSession->m_connections[connectionIndex]->m_address->ToString().c_str(),
-			theNetSession->m_connections[connectionIndex]->GetRoundTripTimeInSeconds(),
-			theNetSession->m_connections[connectionIndex]->GetLossPercentage(),
-			theNetSession->m_connections[connectionIndex]->GetLastReceivedTimeInSeconds(),
-			theNetSession->m_connections[connectionIndex]->GetLastSentTimeInSeconds(),
-			theNetSession->m_connections[connectionIndex]->GetLastSentAck(),
-			theNetSession->m_connections[connectionIndex]->GetLastReceivedAck(),
-			bitsForReceived.to_string().c_str());
+		int netSessionTextCount = 2;
+		int startingPostionFromTop = REMOTE_TEXT_CELL_HEIGHT;
 
 		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-			formattedConnectionInput.c_str(),
+			Stringf("NET SESSION SERVICE"),
 			REMOTE_TEXT_CELL_HEIGHT,
 			Rgba::WHITE,
 			1.f,
 			Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 		netSessionTextCount++;
+
+		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
+			Stringf("Sim Lag: %ims-%ims  Sim Loss: %3.2f %%", theNetSession->m_minAddedLatencyInMilliseconds, theNetSession->m_maxAddedLatencyInMilliseconds, theNetSession->m_simulationLossAmount),
+			REMOTE_TEXT_CELL_HEIGHT,
+			Rgba::WHITE,
+			1.f,
+			Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 		netSessionTextCount++;
-	}
+
+		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
+			"SESSION IP:",
+			REMOTE_TEXT_CELL_HEIGHT,
+			Rgba::WHITE,
+			1.f,
+			Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		netSessionTextCount++;
+
+		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
+			theNetSession->m_socket->m_address.ToString().c_str(),
+			REMOTE_TEXT_CELL_HEIGHT,
+			Rgba::WHITE,
+			1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		netSessionTextCount++;
+
+		//connectionsw
+		int connectionCount = (int)theNetSession->m_connections.size();
+
+		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
+			Stringf("(%i) NUM CONNECTIONS...", connectionCount),
+			REMOTE_TEXT_CELL_HEIGHT,
+			Rgba::WHITE,
+			1.f,
+			Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		netSessionTextCount++;
+
+		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
+			Stringf("%-5s %-5s %-20s %-5s %-5s %-20s %-20s %-8s %-8s %-16s",
+				"",
+				"index",
+				"address",
+				"rtt",
+				"loss",
+				"lastRcvTime(sec)",
+				"lastSntTime(sec)",
+				"sntAck",
+				"recAck",
+				"recvBits"),
+			REMOTE_TEXT_CELL_HEIGHT,
+			Rgba::WHITE,
+			1.f,
+			Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+		netSessionTextCount++;
+
+		for (int connectionIndex = 0; connectionIndex < connectionCount; ++connectionIndex)
+		{
+			std::string connectionIP = theNetSession->m_connections[connectionIndex]->m_address->ToString();
+			std::bitset<16> bitsForReceived(theNetSession->m_connections[connectionIndex]->m_receivedAckHistoryBitfield);
+			std::string bitsetString = bitsForReceived.to_string();
+
+			//format string entry
+			std::string formattedConnectionInput = Stringf("%-5s %-5i %-20s %-5.2f %-5.2f %-20.2f %-20.2f %-8i %-8i %-16s",
+				"",
+				theNetSession->m_connections[connectionIndex]->m_index,
+				theNetSession->m_connections[connectionIndex]->m_address->ToString().c_str(),
+				theNetSession->m_connections[connectionIndex]->GetRoundTripTimeInSeconds(),
+				theNetSession->m_connections[connectionIndex]->GetLossPercentage(),
+				theNetSession->m_connections[connectionIndex]->GetLastReceivedTimeInSeconds(),
+				theNetSession->m_connections[connectionIndex]->GetLastSentTimeInSeconds(),
+				theNetSession->m_connections[connectionIndex]->GetLastSentAck(),
+				theNetSession->m_connections[connectionIndex]->GetLastReceivedAck(),
+				bitsForReceived.to_string().c_str());
+
+			theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
+				formattedConnectionInput.c_str(),
+				REMOTE_TEXT_CELL_HEIGHT,
+				Rgba::WHITE,
+				1.f,
+				Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
+			netSessionTextCount++;
+			netSessionTextCount++;
+		}
+	}	
 
 	//cleanup
 	theNetSession = nullptr;

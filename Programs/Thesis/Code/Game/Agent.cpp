@@ -191,6 +191,7 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 	{
 		//do first pass logic
 		agent->m_currentPath.clear();
+		agent->m_currentPathIndex = -1;
 		isFirstLoopThroughAction = false;
 	}
 
@@ -206,32 +207,35 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 	{
 		//reset first loop action
 		isFirstLoopThroughAction = true;
+		agent->m_currentPathIndex = -1;
 		return true;
 	}
 		
 
-	//if we don't have a path to the destination, get a new path
-	if (agent->m_currentPath.size() == 0)
+	//if we don't have a path to the destination or have completed our previous path, get a new path
+	if (agent->m_currentPath.size() == 0 || agent->m_currentPathIndex == -1)
+	{
 		agent->GetPathToDestination(goalDestination);
-
+		agent->m_currentPathIndex = agent->m_currentPath.size() - 1;
+	}	
 
 	//We have a path, follow it.
-	if (agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_position) != agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_currentPath.at(agent->m_currentPath.size() - 1)))
+	if (agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_position) != agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_currentPath[agent->m_currentPathIndex]))
 	{
-		agent->m_intermediateGoalPosition = agent->m_currentPath.at(agent->m_currentPath.size() - 1);
+		agent->m_intermediateGoalPosition = agent->m_currentPath[agent->m_currentPathIndex];
 
 		agent->m_forward = agent->m_intermediateGoalPosition - agent->m_position;
 		agent->m_forward.NormalizeAndGetLength();
 
 		agent->m_position += (agent->m_forward * (agent->m_movespeed * GetMasterDeltaSeconds()));
-	}
+	}		
 	else
 	{
 		//if we are down to our final destination and we are in the same tile, just snap to the location in that tile
-		if (agent->m_currentPath.size() == 1)
+		if (agent->m_currentPathIndex == 0)
 		{
-			agent->m_position = agent->m_currentPath.at(agent->m_currentPath.size() - 1);
-			agent->m_currentPath.erase(agent->m_currentPath.end() - 1);
+			agent->m_position = agent->m_currentPath[agent->m_currentPathIndex];
+			--agent->m_currentPathIndex;
 
 			//reset first loop action
 			isFirstLoopThroughAction = true;
@@ -239,10 +243,10 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 		}
 		else
 		{
-			agent->m_currentPath.erase(agent->m_currentPath.end() - 1);
+			--agent->m_currentPathIndex;
 
 			if (agent->m_currentPath.size() != 0)
-				agent->m_intermediateGoalPosition = agent-> m_currentPath.at(agent->m_currentPath.size() - 1);
+				agent->m_intermediateGoalPosition = agent-> m_currentPath[agent->m_currentPathIndex];
 
 			agent->m_forward = agent->m_intermediateGoalPosition - agent->m_position;
 			agent->m_forward.NormalizeAndGetLength();

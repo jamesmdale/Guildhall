@@ -24,6 +24,7 @@ public:
 	static RemoteCommandService* GetInstance();
 	static  RemoteCommandService* CreateInstance();
 	void Startup();
+	void Shutdown();
 
 public:
 	void Update();

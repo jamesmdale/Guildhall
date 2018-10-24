@@ -33,7 +33,6 @@ RemoteCommandService::~RemoteCommandService()
 	//delete remote thread
 	if (m_remoteThread != nullptr)
 	{
-		m_remoteThread->join();
 		delete(m_remoteThread);
 		m_remoteThread = nullptr;
 	}
@@ -81,6 +80,13 @@ void RemoteCommandService::Startup()
 	auto func = [=](){g_theRemoteCommandService->Update();};
 	g_theRemoteCommandService->m_remoteThread = new std::thread(func);
 	g_theRemoteCommandService->m_remoteThread->detach();
+}
+
+//  =========================================================================================
+void RemoteCommandService::Shutdown()
+{
+	delete(g_theRemoteCommandService);
+	g_theRemoteCommandService = nullptr;
 }
 
 //  =============================================================================

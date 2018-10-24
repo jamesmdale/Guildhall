@@ -37,6 +37,7 @@ public:
 	void Update();
 
 	void Startup();
+	void Shutdown();
 
 	bool BindPort(uint port, uint range);
 	bool AddConnection(uint8_t connectionIndex, NetAddress* address);	

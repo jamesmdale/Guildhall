@@ -1,3 +1,4 @@
+#include "Game\EngineBuildPreferences.hpp"
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\LogSystem.hpp"
 #include "Engine\Core\DevConsole.hpp"
@@ -40,18 +41,36 @@ void EngineStartup()
 	ProfilerConsole::CreateInstance();
 	ProfilerConsole::GetInstance()->Startup();
 
+#ifdef REMOTE_COMMAND_ENABLED || NET_SESSION_ENABLED
 	Net::Startup();
+#endif
 
+#ifdef REMOTE_COMMAND_ENABLED
 	RemoteCommandService::CreateInstance();
 	RemoteCommandService::GetInstance()->Startup();
+#endif
 
+#ifdef NET_SESSION_ENABLED
 	NetSession::CreateInstance();
 	NetSession::GetInstance()->Startup();
+#endif
 }
 
 //  =============================================================================
 void EngineShutdown()
 {
+#ifdef REMOTE_COMMAND_ENABLED
+	RemoteCommandService::GetInstance()->Shutdown();
+#endif
+
+#ifdef NET_SESSION_ENABLED
+	NetSession::GetInstance()->Shutdown();
+#endif
+
+#ifdef REMOTE_COMMAND_ENABLED || NET_SESSION_ENABLED
+	Net::Shutdown();	
+#endif
+
 	ProfilerConsole::GetInstance()->Shutdown();
 
 	Profiler::GetInstance()->Shutdown();

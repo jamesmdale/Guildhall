@@ -74,6 +74,7 @@ public:
 
 	//goal logic	
 	std::vector<Vector2> m_currentPath;
+	int m_currentPathIndex = -1;
 
 	//sprites
 	IntVector2 m_spriteDirection;

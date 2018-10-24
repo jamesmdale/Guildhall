@@ -92,7 +92,7 @@ public:
 	Stopwatch* m_bombardmentTimer = nullptr;
 	Stopwatch* m_threatTimer = nullptr;
 
-	float m_threat = 0.f;
+	float m_threat = 500.f;
 
 private:
 	bool m_isFullMapView = false;
