@@ -6,6 +6,7 @@ struct ActionData;
 class Agent;
 class Map;
 class PointOfInterest;
+enum eAgentSortType;
 
 enum ePlanTypes
 {
@@ -22,7 +23,7 @@ enum ePlanTypes
 struct UtilityInfo
 {
 	float utility = 0.0f;
-	Vector2 endLocation = Vector2::ZERO;
+	Vector2 endPosition = Vector2::ZERO;
 	int targetEntityId = -1;
 };
 
@@ -38,7 +39,7 @@ public:
 	void ClearStack();
 
 	//planning
-	void UpdatePlan();
+	void UpdatePlan();	
 	void QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo& info);
 
 	void QueueGatherArrowsAction(const UtilityInfo& info);
@@ -64,6 +65,7 @@ public:
 	UtilityInfo GetIdleUtilityInfo();
 
 	void SkewCurrentPlanUtilityValue(UtilityInfo& outInfo);
+	void SkewUtilityForBias(UtilityInfo& outInfo, float biasValue);
 
 	//utility functions
 	float CalculateDistanceUtility(float normalizedDistance);
@@ -75,6 +77,11 @@ public:
 
 	//shooting helpers
 	IntVector2 GetNearestTileCoordinateOfMapEdgeFromCoordinate(const IntVector2& coordinate);					//O(1)
+
+	//optimizations
+	bool FindAgentAndCopyPath();
+	void CopyPath(Agent* toAgent, Agent* fromAgent, uint8_t startingIndex);
+	Agent* GetAgentFromSortedList(uint16_t agentIndex, eAgentSortType sortType);
 
 public:
 	Map * m_map = nullptr;

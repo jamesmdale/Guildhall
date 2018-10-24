@@ -7,6 +7,7 @@
 #include "Game\Planner.hpp"
 #include "Game\Map\Tile.hpp"
 #include "Game\Bombardment.hpp"
+#include "Game\GameStates\PlayingState.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Math\MathUtils.hpp"
@@ -100,7 +101,7 @@ void Map::Initialize()
 	IntVector2 dimensions = GetDimensions();
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
 
-	for (int i = 0; i < 5; ++i)
+	for (int agentIndex = 0; agentIndex < 5; ++agentIndex)
 	{
 		IsoSpriteAnimSet* animSet = nullptr;
 		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
@@ -111,11 +112,19 @@ void Map::Initialize()
 
 		Vector2 randomStartingLocation = GetRandomNonBlockedPositionInMapBounds();
 		Agent* agent = new Agent(randomStartingLocation, animSet, this);
-		m_agents.push_back(agent);
+		m_agentsOrderedByXPosition.push_back(agent);
+		m_agentsOrderedByYPosition.push_back(agent);
+
+		agent->m_indexInSortedXList = agentIndex;
+		agent->m_indexInSortedYList = agentIndex;
 
 		animSet = nullptr;
 		agent = nullptr;
 	}
+
+	//sort agents for the first time
+	SortAgentsByX();
+	SortAgentsByY();
 
 	CreateMapMesh();
 }
@@ -131,22 +140,29 @@ void Map::Update(float deltaSeconds)
 		{
 			m_threat++;
 		}		
-	}
-		
+	}		
 
+	//update agents
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByXPosition.size(); ++agentIndex)
+	{
+		m_agentsOrderedByXPosition[agentIndex]->Update(deltaSeconds);
+	}
+
+	//check optimization flags
+	//sort for Y drawing for render AND for next frame's agent update
+	if (m_gameState->m_isOptimized)
+	{		
+		SortAgentsByX();
+		SortAgentsByY();
+	}
+
+	// Update bombardments
 	if (m_bombardmentTimer->DecrementAll() > 0)
 	{
 		Bombardment* bombardment = new Bombardment(GetWorldPositionOfMapCoordinate(GetRandomCoordinateInMapBounds()));
 		m_activeBombardments.push_back(bombardment);
 	}
 
-	//udpate agents
-	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
-	{
-		m_agents[agentIndex]->Update(deltaSeconds);
-	}
-
-	//udpate bombardments
 	for (int bombardmentIndex = 0; bombardmentIndex < (int)m_activeBombardments.size(); ++bombardmentIndex)
 	{
 		m_activeBombardments[bombardmentIndex]->Update(deltaSeconds);
@@ -167,7 +183,7 @@ void Map::Render()
 
 	//create and render agent mesh
 	Mesh* agentMesh = CreateDynamicAgentMesh();
-	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture(m_agents[0]->m_animationSet->GetCurrentSprite(m_agents[0]->m_spriteDirection)->m_definition->m_diffuseSource));
+	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture(m_agentsOrderedByXPosition[0]->m_animationSet->GetCurrentSprite(m_agentsOrderedByXPosition[0]->m_spriteDirection)->m_definition->m_diffuseSource));
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
 	theRenderer->DrawMesh(agentMesh);
 
@@ -189,7 +205,6 @@ void Map::Render()
 
 	theRenderer = nullptr;
 }
-
 
 //  =========================================================================================
 void Map::CreateMapMesh()
@@ -215,9 +230,9 @@ Mesh* Map::CreateDynamicAgentMesh()
 	MeshBuilder* builder = new MeshBuilder();
 
 	//create mesh for static tiles and buildings
-	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByYPosition.size(); ++agentIndex)
 	{
-		Sprite sprite = *m_agents[agentIndex]->m_animationSet->GetCurrentSprite(m_agents[agentIndex]->m_spriteDirection);
+		Sprite sprite = *m_agentsOrderedByXPosition[agentIndex]->m_animationSet->GetCurrentSprite(m_agentsOrderedByXPosition[agentIndex]->m_spriteDirection);
 
 		float dimensions = 1.f;
 
@@ -231,7 +246,7 @@ Mesh* Map::CreateDynamicAgentMesh()
 		bounds.maxs.y = bounds.mins.y + 1.f * dimensions;
 
 		Rgba agentColor = Rgba::WHITE;
-		switch (m_agents[agentIndex]->m_planner->m_currentPlan)
+		switch (m_agentsOrderedByXPosition[agentIndex]->m_planner->m_currentPlan)
 		{
 		case GATHER_ARROWS_PLAN_TYPE:
 			agentColor = Rgba::RED;
@@ -253,7 +268,7 @@ Mesh* Map::CreateDynamicAgentMesh()
 			break;
 		}
 
-		builder->CreateTexturedQuad2D(m_agents[agentIndex]->m_position, bounds.GetDimensions(), Vector2(sprite.GetNormalizedUV().mins.x, sprite.GetNormalizedUV().maxs.y), Vector2(sprite.GetNormalizedUV().maxs.x, sprite.GetNormalizedUV().mins.y), agentColor);
+		builder->CreateTexturedQuad2D(m_agentsOrderedByXPosition[agentIndex]->m_position, bounds.GetDimensions(), Vector2(sprite.GetNormalizedUV().mins.x, sprite.GetNormalizedUV().maxs.y), Vector2(sprite.GetNormalizedUV().maxs.x, sprite.GetNormalizedUV().mins.y), agentColor);
 	}
 
 	 Mesh* agentMesh = builder->CreateMesh<VertexPCU>();
@@ -313,6 +328,91 @@ int Map::GetActorIndex()
 	return 0;
 }
 
+// Bubble sort. Once sorted, will rarely require more than one pass =========================================================================================
+void Map::SortAgentsByX()
+{
+	int i = 0;
+	int j = 0;
+	bool swapped = false;
+
+	for (int i = 0; i < (int)m_agentsOrderedByXPosition.size() - 1; ++i)
+	{
+		swapped = false;
+		for (int j = 0; j < (int)m_agentsOrderedByXPosition.size() - i - 1; ++j)
+		{
+			if(m_agentsOrderedByXPosition[j]->m_position.x > m_agentsOrderedByXPosition[j+1]->m_position.x)
+			{
+				SwapAgents(j, j+1, X_AGENT_SORT_TYPE);
+				swapped = true;
+			}
+		}
+
+		//if none were swapped on the inner loop, we are sorted.
+		if(swapped == false)
+			break;
+	}
+}
+
+// Bubble sort. Once sorted, will rarely require more than one pass =========================================================================================
+void Map::SortAgentsByY()
+{
+	int i = 0;
+	int j = 0;
+	bool swapped = false;
+
+	for (int i = 0; i < (int)m_agentsOrderedByYPosition.size(); ++i)
+	{
+		swapped = false;
+		for (int j = 0; j < (int)m_agentsOrderedByYPosition.size() - i - 1; ++j)
+		{
+			if (m_agentsOrderedByYPosition[j]->m_position.y > m_agentsOrderedByYPosition[j + 1]->m_position.y)
+			{
+				SwapAgents(j, j + 1, Y_AGENT_SORT_TYPE);
+				swapped = true;
+			}
+		}
+
+		//if none were swappe don the inner loop, we are sorted.
+		if (swapped == false)
+			break;
+	}
+}
+
+//  =========================================================================================
+void Map::SwapAgents(int indexI, int indexJ, eAgentSortType type)
+{
+	Agent* tempAgent = nullptr;
+
+	//swap stored indices
+	switch (type)
+	{
+	case X_AGENT_SORT_TYPE:
+		tempAgent = m_agentsOrderedByXPosition[indexI];
+
+		//swap first
+		m_agentsOrderedByXPosition[indexI] = m_agentsOrderedByXPosition[indexJ];
+		m_agentsOrderedByXPosition[indexJ] = tempAgent;
+
+		//set new indexes
+		m_agentsOrderedByXPosition[indexI]->m_indexInSortedXList = indexI;
+		m_agentsOrderedByXPosition[indexJ]->m_indexInSortedXList = indexJ;
+		break;
+	case Y_AGENT_SORT_TYPE:
+		tempAgent = m_agentsOrderedByYPosition[indexI];
+
+		//swap first
+		m_agentsOrderedByYPosition[indexI] = m_agentsOrderedByYPosition[indexJ];
+		m_agentsOrderedByYPosition[indexJ] = tempAgent;
+
+		//set new indexes
+		m_agentsOrderedByYPosition[indexI]->m_indexInSortedYList = indexI;
+		m_agentsOrderedByYPosition[indexJ]->m_indexInSortedYList = indexJ;
+		break;
+	}
+
+	tempAgent = nullptr;
+}
+
 //  =========================================================================================
 Grid<int>* Map::GetAsGrid()
 {
@@ -348,10 +448,10 @@ Tile* Map::GetTileAtCoordinate(const IntVector2& coordinate)
 Agent* Map::GetAgentById(int agentId)
 {
 	//assume in order and just search
-	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByXPosition.size(); ++agentIndex)
 	{
-		if(agentId == m_agents[agentIndex]->m_id)
-			return m_agents[agentIndex];
+		if(agentId == m_agentsOrderedByXPosition[agentIndex]->m_id)
+			return m_agentsOrderedByXPosition[agentIndex];
 	}
 
 	//if we never found the agent, return nullptr;
@@ -374,11 +474,11 @@ PointOfInterest* Map::GetPointOfInterestById(int poiId)
 //  =========================================================================================
 void Map::DetectBombardmentToAgentCollision(Bombardment* bombardment)
 {
-	for (int agentIndex = 0; agentIndex < (int)m_agents.size(); ++agentIndex)
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByXPosition.size(); ++agentIndex)
 	{
-		if (bombardment->m_disc.IsPointInside(m_agents[agentIndex]->m_position))
+		if (bombardment->m_disc.IsPointInside(m_agentsOrderedByXPosition[agentIndex]->m_position))
 		{
-			m_agents[agentIndex]->TakeDamage(g_bombardmentDamage);
+			m_agentsOrderedByXPosition[agentIndex]->TakeDamage(g_bombardmentDamage);
 		}
 	}
 }

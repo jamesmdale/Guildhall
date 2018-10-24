@@ -19,7 +19,7 @@ typedef bool (*ActionCallback)(Agent* agent, const Vector2& goalDestination, int
 struct ActionData
 {
 	ActionCallback m_action = nullptr;
-	Vector2 m_finalGoalDestination;
+	Vector2 m_finalGoalPosition;
 	int m_interactEntityId = -1;
 };
 
@@ -30,6 +30,8 @@ public:
 
 	Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapReference);
 	~Agent();
+
+	void GenerateRandomBiasses();
 
 	//overriden classes
 	void Update(float deltaSeconds);
@@ -51,9 +53,9 @@ public:
 	int m_health = 100;
 
 	// bias ----------------------------------------------
-	float m_combatBias = 0.1f;
-	float m_repairBias = 0.8f;
-	float m_healBias = 0.33f;
+	float m_combatBias = 0.5f;
+	float m_repairBias = 0.5f;
+	float m_healBias = 0.5f;
 
 	// skill ----------------------------------------------
 	float m_combatEfficiency = 1.f;
@@ -69,12 +71,13 @@ public:
 	Vector2 m_position;
 	Vector2 m_forward;
 	Vector2 m_intermediateGoalPosition;	//used for temp locations while pathing
+	Vector2 m_currentActionGoalPosition;
 	Transform2D m_transform;
 	float m_movespeed = 1.f;
 
 	//goal logic	
 	std::vector<Vector2> m_currentPath;
-	int m_currentPathIndex = -1;
+	uint8_t m_currentPathIndex = UINT8_MAX;
 
 	//sprites
 	IntVector2 m_spriteDirection;
@@ -82,6 +85,13 @@ public:
 
 	//helper references
 	Planner* m_planner = nullptr;
+	uint16_t m_indexInSortedXList = UINT16_MAX;
+	uint16_t m_indexInSortedYList = UINT16_MAX;
+
+
+	//optimization members
+	//std::vector<Agent*> m_subordinateAgents;
+	//Agent* m_commandingAgent = nullptr;
 };
 
 

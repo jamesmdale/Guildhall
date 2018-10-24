@@ -50,6 +50,7 @@ void PlayingState::Initialize()
 	MapDefinition* definition = MapDefinition::s_definitions["Grass"];
 	m_map = new Map(definition, "TestMap", m_renderScene2D);	
 	m_map->Initialize();
+	m_map->m_gameState = this;
 	
 	//re-adjust camera center
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();

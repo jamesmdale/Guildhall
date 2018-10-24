@@ -32,15 +32,25 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 
 	m_animationSet->SetCurrentAnim("idle");
 
-	m_id = mapReference->m_agents.size();
+	m_id = mapReference->m_agentsOrderedByXPosition.size();
 
 	actionTimer = new Stopwatch(GetMasterClock());
+
+	GenerateRandomBiasses();
 }
 
 //  =========================================================================================
 Agent::~Agent()
 {
 	m_planner = nullptr;
+}
+
+//  =========================================================================================
+void Agent::GenerateRandomBiasses()
+{
+	m_combatBias = GetRandomFloatZeroToOne();
+	m_repairBias = GetRandomFloatZeroToOne();
+	m_healBias = GetRandomFloatZeroToOne();
 }
 
 //  =========================================================================================
@@ -191,7 +201,7 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 	{
 		//do first pass logic
 		agent->m_currentPath.clear();
-		agent->m_currentPathIndex = -1;
+		agent->m_currentPathIndex = UINT8_MAX;
 		isFirstLoopThroughAction = false;
 	}
 
@@ -207,13 +217,13 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 	{
 		//reset first loop action
 		isFirstLoopThroughAction = true;
-		agent->m_currentPathIndex = -1;
+		agent->m_currentPathIndex = UINT8_MAX;
 		return true;
 	}
 		
 
 	//if we don't have a path to the destination or have completed our previous path, get a new path
-	if (agent->m_currentPath.size() == 0 || agent->m_currentPathIndex == -1)
+	if (agent->m_currentPath.size() == 0 || agent->m_currentPathIndex == UINT8_MAX)
 	{
 		agent->GetPathToDestination(goalDestination);
 		agent->m_currentPathIndex = agent->m_currentPath.size() - 1;
@@ -273,18 +283,6 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 
 	agent->m_animationSet->SetCurrentAnim("shoot");
 
-	if (!agent->GetIsAtPosition(goalDestination))
-	{
-		isFirstLoopThroughAction = true;
-
-		ActionData* data = new ActionData();
-		data->m_action = MoveAction;
-		data->m_finalGoalDestination = goalDestination;
-
-		agent->m_planner->AddActionToStack(data);
-		return false;
-	}
-
 	//if we are at our destination, we are ready to shoot	
 	if (actionTimer->DecrementAll() > 0)
 	{
@@ -318,21 +316,6 @@ bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 	}
 
 	agent->m_animationSet->SetCurrentAnim("cast");
-
-	// easy outs ----------------------------------------------
-	if (!agent->GetIsAtPosition(goalDestination))
-	{
-		isFirstLoopThroughAction = true;
-
-		ActionData* data = new ActionData();
-		data->m_action = MoveAction;
-		data->m_finalGoalDestination = goalDestination;
-		data->m_interactEntityId = -1;	//move actions don't have a target entity to interact with
-
-		agent->m_planner->AddActionToStack(data);
-		data = nullptr;
-		return false;
-	}
 
 	//if we are at our destination, we are ready to repair
 	PointOfInterest* targetPoi = agent->m_planner->m_map->GetPointOfInterestById(interactEntityId);
@@ -377,21 +360,6 @@ bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 {
 	agent->m_animationSet->SetCurrentAnim("cast");
 
-	// easy outs ----------------------------------------------
-	if (!agent->GetIsAtPosition(goalDestination))
-	{
-		isFirstLoopThroughAction = true;
-
-		ActionData* data = new ActionData();
-		data->m_action = MoveAction;
-		data->m_finalGoalDestination = goalDestination;
-		data->m_interactEntityId = -1;	//move actions don't have a target entity to interact with
-
-		agent->m_planner->AddActionToStack(data);
-		data = nullptr;
-		return false;
-	}
-
 	//if we are at our destination, we are ready to gather
 	PointOfInterest* targetPoi = agent->m_planner->m_map->GetPointOfInterestById(interactEntityId);
 
@@ -400,7 +368,7 @@ bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 	{	
 		ActionData* data = new ActionData();
 		data->m_action = MoveAction;
-		data->m_finalGoalDestination = targetPoi->m_map->GetWorldPositionOfMapCoordinate(targetPoi->m_accessCoordinate);
+		data->m_finalGoalPosition = targetPoi->m_map->GetWorldPositionOfMapCoordinate(targetPoi->m_accessCoordinate);
 		data->m_interactEntityId = -1; //move actions don't have a target entity to interact with
 
 		agent->m_planner->AddActionToStack(data);

@@ -34,6 +34,8 @@ public:
 	Widget* m_currentSelectedWidget = nullptr;
 
 	Camera* m_uiCamera = nullptr;
-
 	Map* m_map = nullptr;
+
+	//optimization method flags
+	bool m_isOptimized = true;
 };

@@ -15,6 +15,14 @@ class PointOfInterest;
 class Bombardment;
 class Stopwatch;
 class Mesh;
+class PlayingState;
+
+enum eAgentSortType
+{
+	X_AGENT_SORT_TYPE,
+	Y_AGENT_SORT_TYPE,
+	NUM_SORT_TYPES
+};
 
 class Map
 {
@@ -30,6 +38,7 @@ public:
 
 	void SetMapType(MapDefinition* newMapDefintion) { m_mapDefinition = newMapDefintion; }
 	IntVector2 GetDimensions() { return m_dimensions; }
+	float GetMapDistanceSquared(){ return (m_dimensions.x * m_dimensions.y) * (m_dimensions.x * m_dimensions.y);}
 
 	//optimized mesh generation
 	void CreateMapMesh();
@@ -42,6 +51,11 @@ public:
 	//General functions
 	void UpdatePlayerInput();
 	int GetActorIndex();
+
+	//agent sorting
+	void SortAgentsByX();
+	void SortAgentsByY();
+	void SwapAgents(int indexI, int indexJ, eAgentSortType type);
 
 	//Conversion functions for Tile Coordinates to World Coordinates
 	IntVector2 GetTileCoordinateOfPosition(const Vector2& position);
@@ -75,7 +89,8 @@ public:
 	AABB2 m_mapWorldBounds;
 
 	//lists
-	std::vector<Agent*> m_agents;
+	std::vector<Agent*> m_agentsOrderedByXPosition;
+	std::vector<Agent*> m_agentsOrderedByYPosition;
 
 	std::vector<PointOfInterest*> m_pointsOfInterest;
 
@@ -91,6 +106,8 @@ public:
 
 	Stopwatch* m_bombardmentTimer = nullptr;
 	Stopwatch* m_threatTimer = nullptr;
+
+	PlayingState* m_gameState = nullptr;
 
 	float m_threat = 500.f;
 
