@@ -248,7 +248,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 	}
 
 	//get the header data
-	packet->m_packet->ReadBytes(&packet->m_packet->m_packetHeader, sizeof(NetPacketHeader), false);
+	packet->m_packet->ReadHeader(packet->m_packet->m_packetHeader);
 
 	NetConnection* connection = GetConnectionById(packet->m_packet->m_packetHeader.m_senderIndex);
 

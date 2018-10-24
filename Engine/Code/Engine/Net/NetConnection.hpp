@@ -27,6 +27,7 @@ public:
 
 	//getter helpers
 	float GetRoundTripTimeInSeconds();
+	float UpdateLossPercentage();
 	float GetLossPercentage();
 	float GetLastReceivedTimeInSeconds();
 	float GetLastSentTimeInSeconds();
@@ -48,7 +49,8 @@ public:
 	uint64_t m_myLastReceivedTimeInHPC = 0U; //last time I received anything (regardless of ack)
 
 	// reflects numbers from debug simulation on session ----------------------------------------------
-	float m_loss = 0.f; //loss rate we perceive
+	int m_numLostPackets = 0; //loss rate we perceive
+	float m_lossPercentage = 0.f;
 	float m_rttInMilliseconds = -1.f;	//latency perceived on this connection
 	
 	// timers ----------------------------------------------
