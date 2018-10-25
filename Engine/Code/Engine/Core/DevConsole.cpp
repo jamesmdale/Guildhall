@@ -272,7 +272,7 @@ void DevConsole::Render()
 	theRenderer->m_defaultShader->EnableColorBlending(BLEND_OP_ADD, BLEND_SOURCE_ALPHA, BLEND_ONE_MINUS_SOURCE_ALPHA);
 
 	theRenderer->SetTexture(*theRenderer->m_defaultTexture);
-	theRenderer->DrawAABB(consoleBounds, Rgba(0.f, 0.f, 0.f, 0.85f));	
+	theRenderer->DrawAABB(consoleBounds, Rgba(0.f, 0.f, 0.f, 0.5f));	
 
 	theRenderer->DrawTexturedAABB(backgroundImageBounds, *theRenderer->CreateOrGetTexture("Data/Images/DevConsole/background.png"), Vector2::ZERO, Vector2::ONE, Rgba(1.f, 1.f, 1.f, 0.075f));
 
@@ -293,9 +293,15 @@ void DevConsole::Render()
 		float currentCellStartPosition = (float)(historyIndex + 1.f) * (TEXT_CELL_HEIGHT + TEXT_DRAW_PADDING_Y);
 		theRenderer->DrawText2D(Vector2(TEXT_DRAW_PADDING_X, currentCellStartPosition), m_historyStack[historyIndex].m_printText, 15.f, m_historyStack[historyIndex].m_printColor, 1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 	}	
-
+	
+#ifdef REMOTE_COMMAND_ENABLED
 	RenderRemoteCommandService();
+#endif
+
+#ifdef REMOTE_COMMAND_ENABLED
 	RenderNetSession();
+	#endif
+
 
 	theRenderer->m_defaultShader->DisableBlending();
 

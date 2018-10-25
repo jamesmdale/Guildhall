@@ -108,6 +108,7 @@ void Agent::Render()
 //  =========================================================================================
 bool Agent::GetPathToDestination(const Vector2& goalDestination)
 {
+	PROFILER_PUSH();
 	m_currentPath = std::vector<Vector2>(); //clear vector
 
 	IntVector2 startCoord = m_planner->m_map->GetTileCoordinateOfPosition(m_position);

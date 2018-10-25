@@ -114,26 +114,26 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 		m_camera->Translate(Vector3(Vector2::LEFT * 5.f * deltaSeconds));
 	}
 
-	if (theInput->IsKeyPressed(theInput->KEYBOARD_PAGEUP))
-	{
-		g_orthoZoom -= deltaSeconds * ZOOM_RATE;
-		if(g_orthoZoom < ORTHO_MIN)
-		{
-			g_orthoZoom = ORTHO_MIN;
-		}
-		m_camera->SetProjectionOrtho(g_orthoZoom, CLIENT_ASPECT, -1000.f, 1000.f);
-	}
+	//if (theInput->IsKeyPressed(theInput->KEYBOARD_PAGEUP))
+	//{
+	//	g_orthoZoom -= deltaSeconds * ZOOM_RATE;
+	//	if(g_orthoZoom < ORTHO_MIN)
+	//	{
+	//		g_orthoZoom = ORTHO_MIN;
+	//	}
+	//	m_camera->SetProjectionOrtho(g_orthoZoom, CLIENT_ASPECT, -1000.f, 1000.f);
+	//}
 
-	if (theInput->IsKeyPressed(theInput->KEYBOARD_PAGEDOWN))
-	{
-		g_orthoZoom += deltaSeconds * ZOOM_RATE;
-		if(g_orthoZoom > ORTHO_MAX)
-		{
-			g_orthoZoom = ORTHO_MAX;
-		}
+	//if (theInput->IsKeyPressed(theInput->KEYBOARD_PAGEDOWN))
+	//{
+	//	g_orthoZoom += deltaSeconds * ZOOM_RATE;
+	//	if(g_orthoZoom > ORTHO_MAX)
+	//	{
+	//		g_orthoZoom = ORTHO_MAX;
+	//	}
 
-		m_camera->SetProjectionOrtho(g_orthoZoom, CLIENT_ASPECT, -1000.f, 1000.f);
-	}
+	//	m_camera->SetProjectionOrtho(g_orthoZoom, CLIENT_ASPECT, -1000.f, 1000.f);
+	//}
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_R))
 	{
@@ -143,7 +143,12 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_T))
 	{
-		g_showBlockedTileData = !g_showBlockedTileData;
+		g_showBlockedTileData = !g_showBlockedTileData;	
+	}
+
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_O))
+	{
+		m_isOptimized = !m_isOptimized;
 	}
 
 	return deltaSeconds; //new deltaSeconds

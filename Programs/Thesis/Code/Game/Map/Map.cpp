@@ -101,7 +101,7 @@ void Map::Initialize()
 	IntVector2 dimensions = GetDimensions();
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
 
-	for (int agentIndex = 0; agentIndex < 5; ++agentIndex)
+	for (int agentIndex = 0; agentIndex < 500; ++agentIndex)
 	{
 		IsoSpriteAnimSet* animSet = nullptr;
 		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");

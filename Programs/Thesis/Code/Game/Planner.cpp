@@ -5,7 +5,18 @@
 #include "Game\PointOfInterest.hpp"
 #include "Game\Agent.hpp"
 #include "Game\GameCommon.hpp"
+#include "Game\GameStates\PlayingState.hpp"
 
+int iterationsOfUpdatePlan = 0;
+uint64_t averageTimeForUpdatePlan = 0.0;
+
+int iterationsOfQueueActionsStd = 0;
+uint64_t averageTimeForQueueActionsStd = 0.0;
+
+int iterationsOfQueueActionsOpt = 0;
+uint64_t averageTimeForQueueActionsOpt = 0.0;
+
+//int iterationsOfUp
 
 //  =========================================================================================
 Planner::Planner(Map* mapReference, Agent* agentReference)
@@ -65,6 +76,11 @@ void Planner::ClearStack()
 //  =========================================================================================
 void Planner::UpdatePlan()
 {
+	// function profling ----------------------------------------------
+	++iterationsOfUpdatePlan;
+	uint64_t startHPC = GetPerformanceCounter();
+	//  ----------------------------------------------
+
 	PROFILER_PUSH();
 	ClearStack();
 
@@ -149,12 +165,45 @@ void Planner::UpdatePlan()
 	}
 
 	m_currentPlan = chosenOutcome;
+
+	// profiling ----------------------------------------------
+	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+	//calculate new average
+	averageTimeForUpdatePlan = ((averageTimeForUpdatePlan * (iterationsOfUpdatePlan - 1)) + totalHPC) / iterationsOfUpdatePlan;
+	//  ----------------------------------------------
+
 	QueueActionsFromCurrentPlan(m_currentPlan, highestUtilityInfo);
+
+	if (iterationsOfQueueActionsOpt == 100)
+	{
+		float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForQueueActionsOpt);
+		DevConsolePrintf("Average Time After 1000 iterations (QueueActionsOptimized) %f", secondsAverage);
+		iterationsOfQueueActionsOpt = 0;
+		averageTimeForQueueActionsOpt = 0.0;
+	}
+
+	if (iterationsOfUpdatePlan == 100)
+	{
+		float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForUpdatePlan);
+		DevConsolePrintf("Average Time After 1000 iterations (UpdatePlan) %f", secondsAverage);
+		iterationsOfUpdatePlan = 0;
+		averageTimeForUpdatePlan = 0.0;
+	}
 }
 
 //  =========================================================================================
 void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo& info)
 {
+	// function profling ----------------------------------------------
+		++iterationsOfQueueActionsOpt;
+		uint64_t startHPC = GetPerformanceCounter();
+	//  ----------------------------------------------
+
+	//// function profling ----------------------------------------------
+	//	++iterationsOfQueueActionsStd;
+	//	uint64_t startHPC = GetPerformanceCounter();
+	////  ----------------------------------------------
+
 	switch (planType)
 	{
 	case GATHER_ARROWS_PLAN_TYPE:
@@ -190,14 +239,35 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 		m_agent->m_planner->AddActionToStack(data);
 
 		//figure out if we can skip doing an A* by borrowing someone else's path
-		bool success = FindAgentAndCopyPath();
-		
-		//Generate our own path and queue move action
-		if (!success)
+		if (m_map->m_gameState->m_isOptimized)
 		{
-			m_agent->GetPathToDestination(info.endPosition);
+			PROFILER_PUSH();
+			bool success = FindAgentAndCopyPath();
+
+			//Generate our own path and queue move action
+			if (!success)
+			{
+				m_agent->GetPathToDestination(info.endPosition);
+			}
 		}
+		else
+		{
+			PROFILER_PUSH();
+			m_agent->GetPathToDestination(info.endPosition);
+		}		
 	}
+
+	// profiling ----------------------------------------------
+		uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+		//calculate new average
+		averageTimeForQueueActionsOpt = ((averageTimeForQueueActionsOpt * (iterationsOfQueueActionsOpt - 1)) + totalHPC) / iterationsOfQueueActionsOpt;
+	//  ----------------------------------------------
+
+	// profiling ----------------------------------------------
+		//uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+		////calculate new average
+		//averageTimeForQueueActionsStd = ((averageTimeForQueueActionsStd * (iterationsOfQueueActionsStd - 1)) + totalHPC) / iterationsOfQueueActionsStd;
+	//  ----------------------------------------------
 }
 
 //  =============================================================================
@@ -718,7 +788,7 @@ bool Planner::FindAgentAndCopyPath()
 
 	// cleanup ----------------------------------------------
 	//should all be marked as nullptr by the end
-	delete(matchingAgents);
+	mostResembledAgent = nullptr;
 
 	return didSuccessfullyCopyMatchingAgent;
 }

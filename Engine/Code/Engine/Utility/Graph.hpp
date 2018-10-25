@@ -33,6 +33,19 @@ public:
 		return largestValue;
 	}
 
+	double GetAverageForDataPointCount(int count)
+	{
+		double sum = 0.0;
+		for (int dataIndex = 0; dataIndex < count; ++dataIndex)
+		{
+			if (dataIndex < (int)m_dataPoints.size())
+			{
+				sum += m_dataPoints[dataIndex];
+			}			
+		}
+		return sum/count;
+	}
+
 	template <class T>
 	void UpdateDataSet(const std::vector<T*>& objects, const std::vector<double>& dataPoints)
 	{

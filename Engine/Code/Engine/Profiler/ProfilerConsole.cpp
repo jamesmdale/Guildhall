@@ -304,11 +304,13 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	graphRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
 
 	double maxValueInDataRange = m_reportGraph->GetLargestDataPoint();
+	double averageForLastFrames = m_reportGraph->GetAverageForDataPointCount(MAX_HISTORY_COUNT);
 	AABB2 textBounds = AABB2(graphQuad, Vector2(0.8f, 0.8f), Vector2(0.99f, 0.99f));
 	AABB2 textBounds2 = AABB2(graphQuad, Vector2(0.8f, 0.7f), Vector2(0.99f, 0.79f));
+	AABB2 textBounds3 = AABB2(graphQuad, Vector2(0.8f, 0.6f), Vector2(0.99f, 0.69f));
 	mb.CreateText2DInAABB2(textBounds.GetCenter(), textBounds.GetDimensions(), 1.f, Stringf("Range in Seconds: 0.0-1.0"), Rgba::WHITE);
 	mb.CreateText2DInAABB2(textBounds2.GetCenter(), textBounds2.GetDimensions(), 1.f, Stringf("Max: %f", maxValueInDataRange), Rgba::WHITE);
-	
+	mb.CreateText2DInAABB2(textBounds3.GetCenter(), textBounds3.GetDimensions(), 1.f, Stringf("Average: %f", averageForLastFrames), Rgba::WHITE);	
 
 	graphRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
 
