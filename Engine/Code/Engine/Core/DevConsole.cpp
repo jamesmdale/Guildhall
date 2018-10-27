@@ -14,6 +14,7 @@
 #include "Engine\Net\RemoteCommandService.hpp"
 #include "Engine\Net\NetSession.hpp"
 #include "Engine\Net\NetAddress.hpp"
+#include "Game\EngineBuildPreferences.hpp"
 #include <ctime>
 #include <stdarg.h>
 #include <bitset>

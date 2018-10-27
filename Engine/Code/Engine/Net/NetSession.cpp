@@ -54,27 +54,17 @@ NetSession* NetSession::CreateInstance()
 }
 
 //  =========================================================================================
-void NetSession::Update()
-{
-	CheckHeartbeats();
-	ProcessOutgoingMessages();
-
-	ProcessIncomingMessages();
-	CheckDelayedPackets();	
-}
-
-//  =========================================================================================
 void NetSession::Startup()
 {
 	m_socket = new UDPSocket();
 	m_socket->BindToPort(GAME_PORT);
 
-	//register messages
-	RegisterMessageDefinition("ping", OnPing);
-	RegisterMessageDefinition("pong", OnPong);
+	//register core messages
+	RegisterCoreMessageTypes();
+
+	//register other messages
 	RegisterMessageDefinition("add", OnAdd);
 	RegisterMessageDefinition("add_response", OnAddResponse);
-	RegisterMessageDefinition("heartbeat", OnHeartbeat);
 	RegisterMessageDefinition("ack", OnAck);
 
 	LockMessageDefinitionRegistration();
@@ -94,6 +84,25 @@ void NetSession::Shutdown()
 {
 	delete(g_theNetSession);
 	g_theNetSession = nullptr;
+}
+
+//  =========================================================================================
+void NetSession::Update()
+{
+	CheckHeartbeats();
+	ProcessOutgoingMessages();
+
+	ProcessIncomingMessages();
+	CheckDelayedPackets();	
+}
+
+
+//  =============================================================================
+void NetSession::RegisterCoreMessageTypes()
+{
+	RegisterMessageDefinition(PING_CORE_NET_MESSAGE_TYPE, "ping", OnPing, CONNECTIONLESS_NET_MESSAGE_FLAG);
+	RegisterMessageDefinition(PONG_CORE_NET_MESSAGE_TYPE, "pong", OnPong, CONNECTIONLESS_NET_MESSAGE_FLAG);
+	RegisterMessageDefinition(HEARTBEAT_CORE_NET_MESSAGE_TYPE, "heartbeat", OnHeartbeat, HEARTBEAT_NET_MESSAGE_FLAG);
 }
 
 //  =============================================================================
@@ -372,6 +381,12 @@ bool NetSession::RegisterMessageDefinition(const std::string& name, NetMessageCa
 	}
 
 	return success;
+}
+
+//  =============================================================================
+bool NetSession::RegisterMessageDefinition(int netMessageId, const std::string & name, NetMessageCallback callback, const eNetMessageFlag & flag)
+{
+	return false;
 }
 
 //  =========================================================================================

@@ -1,10 +1,5 @@
 #include <stdlib.h>
 #include "Game\Game.hpp"
-#include "Game\GameCommon.hpp"
-#include "Game\GameStates\GameState.hpp"
-#include "Game\GameStates\MainMenuState.hpp"
-#include "Game\GameStates\LoadingState.hpp"
-#include "Game\GameStates\PlayingState.hpp"
 #include "Engine\Math\MathUtils.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Engine\Math\Matrix44.hpp"
@@ -19,12 +14,21 @@
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\EngineCommon.hpp"
-#include <vector>
-#include <string>
 #include "Game\Definitions\DeckDefinition.hpp"
 #include "Game\Actions\Action.hpp"
 #include "Game\Effects\Effect.hpp"
 #include "Game\Definitions\HeroDefinition.hpp"
+#include "Game\GameCommon.hpp"
+#include "Game\GameStates\GameState.hpp"
+#include "Game\GameStates\MainMenuState.hpp"
+#include "Game\GameStates\LoadingState.hpp"
+#include "Game\GameStates\PlayingState.hpp"
+#include "Engine\Net\NetSession.hpp"
+#include "Engine\Net\NetConnection.hpp"
+#include "Engine\Net\NetMessage.hpp"
+
+#include <vector>
+#include <string>
 
 //game instance
 static Game* g_theGame = nullptr;
@@ -141,6 +145,17 @@ void Game::PostRender()
 	GameState::GetCurrentGameState()->PostRender();
 }
 
+//  =============================================================================
+void Game::RegisterGameMessages()
+{
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	theNetSession->RegisterMessageDefinition(UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE, "unreliable_test", OnUnreliableTest);
+	theNetSession->RegisterMessageDefinition("test", OnTest);
+
+	theNetSession = nullptr;
+}
+
 //  =========================================================================================
 float Game::UpdateInput(float deltaSeconds)
 {
@@ -148,5 +163,22 @@ float Game::UpdateInput(float deltaSeconds)
 
 	return deltaSeconds;
 }
+
+
+//  =============================================================================
+//	Net Callbacks
+//  =============================================================================
+bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection)
+{
+	return false;
+}
+
+//  =============================================================================
+bool OnTest(NetMessage & message, NetConnection * fromConnection)
+{
+	//out of order should still work
+	return false;
+}
+
 
 

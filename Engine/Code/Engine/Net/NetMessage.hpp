@@ -4,6 +4,7 @@
 //forward dec netmessage for callback
 class NetMessage;
 class NetConnection;
+enum eNetMessageFlag;
 
 typedef bool (*NetMessageCallback)(NetMessage& message, NetConnection* fromConnection);
 
@@ -17,6 +18,7 @@ struct NetMessageDefinition
 	int m_callbackId = -1;
 	std::string m_callbackName;
 	NetMessageCallback m_callback = nullptr;
+	eNetMessageFlag m_messageFlag;
 };
 
 class NetMessage : public BytePacker

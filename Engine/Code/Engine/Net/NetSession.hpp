@@ -9,6 +9,26 @@
 #include <string>
 #include <vector>
 
+enum eCoreNetMessageType
+{
+	PING_CORE_NET_MESSAGE_TYPE = 0,
+	PONG_CORE_NET_MESSAGE_TYPE,
+	HEARTBEAT_CORE_NET_MESSAGE_TYPE,
+	NUM_CORE_NET_MESSAGE_TYPES
+};
+
+enum eNetMessageFlag
+{
+	CONNECTIONLESS_NET_MESSAGE_FLAG = BIT_FLAG(0),
+	RELIABLE_NET_MESSAGE_FLAG = BIT_FLAG(1),
+	INORDER_NET_MESSAGE_FLAG = BIT_FLAG(2),
+	HEARTBEAT_NET_MESSAGE_FLAG = BIT_FLAG(3),
+
+	RELIABLE_INORDER_NET_MESSAGE_FLAG = RELIABLE_NET_MESSAGE_FLAG | INORDER_NET_MESSAGE_FLAG,
+
+	NUM_NET_MESSAGE_FLAGS
+};
+
 struct DelayedReceivedPacket
 {
 	DelayedReceivedPacket(){}
@@ -34,10 +54,12 @@ public:
 	static NetSession* GetInstance();
 	static NetSession* CreateInstance();
 
-	void Update();
-
 	void Startup();
 	void Shutdown();
+
+	void Update();
+
+	void RegisterCoreMessageTypes();
 
 	bool BindPort(uint port, uint range);
 	bool AddConnection(uint8_t connectionIndex, NetAddress* address);	
@@ -54,6 +76,7 @@ public:
 
 	//message registration
 	bool RegisterMessageDefinition(const std::string& name, NetMessageCallback callback);
+	bool RegisterMessageDefinition(int netMessageId, const std::string& name, NetMessageCallback callback, const eNetMessageFlag& flag = (eNetMessageFlag)0);
 	void LockMessageDefinitionRegistration();
 
 	NetConnection* GetConnectionById(uint8_t id);
@@ -112,3 +135,4 @@ bool OnAdd(NetMessage& message, NetConnection* fromConnection);
 bool OnAddResponse(NetMessage& message, NetConnection* fromConnection);
 bool OnHeartbeat(NetMessage& message, NetConnection* fromConnection);
 bool OnAck(NetMessage& message, NetConnection* fromConnection);
+bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection);

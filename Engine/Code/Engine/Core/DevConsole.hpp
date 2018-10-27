@@ -46,7 +46,6 @@ public:
 	void RenderRemoteCommandService();
 	void RenderNetSession();
 	
-
 	void Open(); 
 	void Close(); 
 	bool IsOpen(){return m_isDevConsoleOpen;}; 

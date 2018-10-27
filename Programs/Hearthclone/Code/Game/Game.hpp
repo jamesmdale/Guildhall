@@ -1,10 +1,24 @@
 #pragma once
-#include "Game\GameCommon.hpp"
 #include "Engine\Time\Clock.hpp"
-#include "Engine\Camera\Camera.hpp"
-#include <vector>
 #include "Engine\Renderer\ForwardRenderingPath2D.hpp"
+#include "Engine\Net\NetSession.hpp"
+#include "Engine\Camera\Camera.hpp"
 #include "Game\Definitions\CardDefinition.hpp"
+#include "Game\GameCommon.hpp"
+#include <vector>
+
+class NetMessage;
+class NetConnection;
+enum eNetMessageFlag;
+
+enum eGameNetMessageType
+{
+	//start at end of other message type list
+	TEST_GAME_NET_MESSAGE_TYPE = NUM_CORE_NET_MESSAGE_TYPES,
+
+	//... more types
+	UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE = 128
+};
 
 class Game
 {
@@ -26,14 +40,21 @@ public:
 	static Game* GetInstance();
 	static Game* CreateInstance();
 
+	void Initialize();
+
 	void Update(); //use internal clock for delta seconds;
 	void PreRender();
 	void Render();
 	void PostRender();
-	void Initialize();
+
+	void RegisterGameMessages();
+
 	float UpdateInput(float deltaSeconds);
 };
 
+//Net message definition callbacks
+bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection);
+bool OnTest(NetMessage& message, NetConnection* fromConnection);
 
 
 
