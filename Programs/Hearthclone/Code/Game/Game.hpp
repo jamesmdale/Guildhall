@@ -52,6 +52,9 @@ public:
 	float UpdateInput(float deltaSeconds);
 };
 
+//command
+void UnreliableTest(Command& cmd);
+
 //Net message definition callbacks
 bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection);
 bool OnTest(NetMessage& message, NetConnection* fromConnection);
