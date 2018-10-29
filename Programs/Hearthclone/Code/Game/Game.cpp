@@ -87,6 +87,10 @@ void Game::Initialize()
 
 	m_gameClock = new Clock(GetMasterClock());
 
+	//command
+	CommandRegister("help", CommandRegistration(Help, ": Use to show all supported commands", "All commands displayed!"));
+
+
 	// add cameras
 	m_gameCamera = new Camera();
 	m_gameCamera->SetColorTarget(theRenderer->GetDefaultRenderTarget());
@@ -170,6 +174,25 @@ float Game::UpdateInput(float deltaSeconds)
 	return deltaSeconds;
 }
 
+//  =============================================================================
+void UnreliableTest(Command& cmd)
+{
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	int connectionIndex = cmd.GetNextInt();
+
+	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
+	if(connection == nullptr)
+		DevConsolePrintf("Connection index invalid");
+
+	int numSends = cmd.GetNextInt();
+	if (numSends <= 0)
+	{
+		DevConsolePrintf("Invalid number of sends");
+	}
+
+
+}
 
 //  =============================================================================
 //	Net Callbacks
