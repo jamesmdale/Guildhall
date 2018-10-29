@@ -103,7 +103,7 @@ bool CompareStringAlphabeticalLessThan(const std::string& stringOne, const std::
 
 	int compare = stringOne.compare(stringTwo);
 
-	if (compare < 0)
+	if (compare > 0)
 	{
 		return true;
 	}

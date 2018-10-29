@@ -114,7 +114,7 @@ public:
 public:
 	bool m_isDefinitionRegistrationLocked = false;
 
-	int m_registeredDefinitionIndex = 0;
+	int m_nextRegisteredDefinitionIndex = 0;
 	static NetMessageDefinition* s_registeredMessageDefinitions[UINT8_MAX];
 	//static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
 

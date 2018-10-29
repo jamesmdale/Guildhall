@@ -89,7 +89,10 @@ void Game::Initialize()
 
 	//command
 	CommandRegister("help", CommandRegistration(Help, ": Use to show all supported commands", "All commands displayed!"));
+	CommandRegister("net_unreliable_test", CommandRegistration(AddConnectionToIndex, ": Send X number of unreliable tests to connection. (int conIdx, idx count)", ""));
 
+	//net message registration
+	RegisterGameNetMessages();
 
 	// add cameras
 	m_gameCamera = new Camera();
@@ -114,12 +117,6 @@ void Game::Initialize()
 	CardDefinition::Initialize("Data/Definitions/Cards/cards.xml");
 	HeroDefinition::Initialize("Data/Definitions/Heroes/heroes.xml");
 	DeckDefinition::Initialize("Data/Definitions/Decks/decks.xml");
-
-	//register console commands
-	NetSession::GetInstance()->RegisterMessageDefinition(UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE, "unreliable_test", OnUnreliableTest);
-
-	//register net definitions
-	CommandRegister("net_unreliable_test", CommandRegistration(AddConnectionToIndex, ": Send X number of unreliable tests to connection. (int conIdx, idx count)", ""));
 
 	// cleanup
 	theRenderer = nullptr;
@@ -156,7 +153,7 @@ void Game::PostRender()
 }
 
 //  =============================================================================
-void Game::RegisterGameMessages()
+void Game::RegisterGameNetMessages()
 {
 	NetSession* theNetSession = NetSession::GetInstance();
 

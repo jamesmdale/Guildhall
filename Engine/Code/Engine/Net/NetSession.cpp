@@ -381,23 +381,20 @@ bool NetSession::RegisterMessageDefinition(const std::string& name, NetMessageCa
 		definition->m_callback = callback;
 
 		bool isPositionValid = false;
-
-		while (isPositionValid)
+		while (!isPositionValid)
 		{
-			if (s_registeredMessageDefinitions[m_registeredDefinitionIndex] == nullptr)
+			//we are out of space
+			if (m_nextRegisteredDefinitionIndex > MAX_NET_DEFINITION_REGISTRATIONS)
+				return false;
+
+			if (s_registeredMessageDefinitions[m_nextRegisteredDefinitionIndex] == nullptr)
 			{
-				s_registeredMessageDefinitions[m_registeredDefinitionIndex] = definition;
+				s_registeredMessageDefinitions[m_nextRegisteredDefinitionIndex] = definition;
 				isPositionValid = true;
 				success = true;
-			}
-			else
-			{
-				++m_registeredDefinitionIndex;
+			}	
 
-				//we are out of space
-				if(m_registeredDefinitionIndex > MAX_NET_DEFINITION_REGISTRATIONS)
-					return false;
-			}
+			++m_nextRegisteredDefinitionIndex;
 		}
 	}
 
@@ -420,19 +417,11 @@ bool NetSession::RegisterMessageDefinition(int netMessageId, const std::string &
 		{
 			s_registeredMessageDefinitions[netMessageId] = definition;
 
-			if (m_registeredDefinitionIndex == netMessageId)
+			if (m_nextRegisteredDefinitionIndex == netMessageId)
 			{
-				++m_registeredDefinitionIndex;
+				++m_nextRegisteredDefinitionIndex;
 			}
-		}
-		else
-		{
-			++m_registeredDefinitionIndex;
-
-			//we are out of space
-			if (m_registeredDefinitionIndex > MAX_NET_DEFINITION_REGISTRATIONS)
-				return false;
-		}		
+		}	
 	}
 
 	return success;
@@ -457,16 +446,17 @@ void NetSession::SortMessageDefinitionsByName()
 	{
 		for (j = 0; j < (int)MAX_NET_DEFINITION_REGISTRATIONS - i - 1; ++j)
 		{
-			//check if one of these two definitions is fixed
-			if (s_registeredMessageDefinitions[j] >= 0 || s_registeredMessageDefinitions[j+1] >= 0)
+			if (s_registeredMessageDefinitions[j] != nullptr && s_registeredMessageDefinitions[j + 1] != nullptr)
 			{
-				continue;
-			}
-
-			if (CompareStringAlphabeticalLessThan(s_registeredMessageDefinitions[j]->m_callbackName, s_registeredMessageDefinitions[j + 1]->m_callbackName))
-			{
-				std::swap(s_registeredMessageDefinitions[j], s_registeredMessageDefinitions[j+1]);
-			}			
+				//check if one of these two definitions is fixed
+				if (s_registeredMessageDefinitions[j]->m_callbackId < 0 && s_registeredMessageDefinitions[j + 1]->m_callbackId < 0)
+				{
+					if (CompareStringAlphabeticalLessThan(s_registeredMessageDefinitions[j]->m_callbackName, s_registeredMessageDefinitions[j + 1]->m_callbackName))
+					{
+						std::swap(s_registeredMessageDefinitions[j], s_registeredMessageDefinitions[j + 1]);
+					}
+				}
+			}					
 		}
 	}
 }
@@ -476,11 +466,14 @@ void NetSession::AssignFinalDefinitionIds()
 {
 	for (int definitionIndex = 0; definitionIndex < (int)MAX_NET_DEFINITION_REGISTRATIONS; ++definitionIndex)
 	{
-		//if the callback is still unassigned, make the callbackid equal the current index
-		if (s_registeredMessageDefinitions[definitionIndex]->m_callbackId < 0)
+		if (s_registeredMessageDefinitions[definitionIndex] != nullptr)
 		{
-			s_registeredMessageDefinitions[definitionIndex]->m_callbackId = definitionIndex;
-		}	
+			//if the callback is still unassigned, make the callbackid equal the current index
+			if (s_registeredMessageDefinitions[definitionIndex]->m_callbackId < 0)
+			{
+				s_registeredMessageDefinitions[definitionIndex]->m_callbackId = definitionIndex;
+			}
+		}			
 	}
 }
 

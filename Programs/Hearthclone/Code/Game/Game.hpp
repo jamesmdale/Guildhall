@@ -47,7 +47,7 @@ public:
 	void Render();
 	void PostRender();
 
-	void RegisterGameMessages();
+	void RegisterGameNetMessages();
 
 	float UpdateInput(float deltaSeconds);
 };
