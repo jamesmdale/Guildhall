@@ -111,6 +111,12 @@ void Game::Initialize()
 	HeroDefinition::Initialize("Data/Definitions/Heroes/heroes.xml");
 	DeckDefinition::Initialize("Data/Definitions/Decks/decks.xml");
 
+	//register console commands
+	NetSession::GetInstance()->RegisterMessageDefinition(UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE, "unreliable_test", OnUnreliableTest);
+
+	//register net definitions
+	CommandRegister("net_unreliable_test", CommandRegistration(AddConnectionToIndex, ": Send X number of unreliable tests to connection. (int conIdx, idx count)", ""));
+
 	// cleanup
 	theRenderer = nullptr;
 	theWindow = nullptr;
@@ -174,10 +180,44 @@ bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection)
 }
 
 //  =============================================================================
-bool OnTest(NetMessage & message, NetConnection * fromConnection)
+bool OnTest(NetMessage& message, NetConnection* fromConnection)
 {
 	//out of order should still work
 	return false;
+}
+
+//  =========================================================================================
+//  DevConsole Commands
+//  =========================================================================================
+void SendUnreliableTest(Command& cmd)
+{
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	int connectionIndex = cmd.GetNextInt();
+	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
+	if (connection == nullptr)
+	{
+		DevConsolePrintf(Rgba::RED, "INVALID CONNECTION AT INDEX %i", connectionIndex);
+	}
+
+	int sendCount = cmd.GetNextInt();
+	if (sendCount <= 0)
+	{
+		DevConsolePrintf(Rgba::RED, "INVALID SEND COUNT: MUST BE >= 0");
+	}
+
+	//parameters are valid. Send messages equal to the sendcount
+	for (int messageIndex = 0; messageIndex < sendCount; ++messageIndex)
+	{
+		NetMessage* message = new NetMessage("unreliable_test");
+
+		connection->QueueMessage(message);
+
+		message = nullptr;
+	}
+
+	//cleanup
+	theNetSession = nullptr;
 }
 
 

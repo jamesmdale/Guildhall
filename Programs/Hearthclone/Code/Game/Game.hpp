@@ -56,6 +56,11 @@ public:
 bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection);
 bool OnTest(NetMessage& message, NetConnection* fromConnection);
 
+//dev console commands
+void SendUnreliableTest(Command& cmd);
+
+
+
 
 
 

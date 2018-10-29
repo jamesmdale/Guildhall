@@ -16,6 +16,7 @@ size_t GetStringSize(const std::string& inputString);
 bool IsStringNullOrEmpty(const char* inputString);
 bool IsStringNullOrEmpty(const std::string& inputString);
 bool DoesStringContainCharacter(const std::string& inputString, const char character);
+bool CompareStringAlphabeticalLessThan(const std::string& stringOne, const std::string& stringTwo);
 
 //removal
 void RemoveEmptyStrings(std::vector<std::string>& outStrings);

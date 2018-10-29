@@ -92,6 +92,25 @@ bool DoesStringContainCharacter(const std::string& inputString, const char chara
 	return !(inputString.find(character) == std::string::npos);
 }
 
+//  =========================================================================================
+bool CompareStringAlphabeticalLessThan(const std::string& stringOne, const std::string& stringTwo)
+{
+	std::string stringOneLower = stringOne;
+	std::string stringTwoLower = stringTwo;
+
+	ToLower(stringOneLower);
+	ToLower(stringTwoLower);
+
+	int compare = stringOne.compare(stringTwo);
+
+	if (compare < 0)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 //  =============================================================================
 void RemoveEmptyStrings(std::vector<std::string>& outStrings)
 {

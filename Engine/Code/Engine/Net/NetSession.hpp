@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#define MAX_NET_DEFINITION_REGISTRATIONS (UINT8_MAX)
+
 enum eCoreNetMessageType
 {
 	PING_CORE_NET_MESSAGE_TYPE = 0,
@@ -64,27 +66,33 @@ public:
 	bool BindPort(uint port, uint range);
 	bool AddConnection(uint8_t connectionIndex, NetAddress* address);	
 
-	//message processing
+	// message processing ----------------------------------------------
+	
+	// outgoing
 	void CheckHeartbeats();
 	void SendHeartBeat(int connectionIndex);
-	void ProcessIncomingMessages();
-	void CheckDelayedPackets();
-	void ProcessDelayedPacket(DelayedReceivedPacket* packet);
 	void ProcessOutgoingMessages();
-
 	bool SendMessageWithoutConnection(NetMessage* message, NetConnection* connection);
 
-	//message registration
+	//incoming
+	void ProcessIncomingMessages();
+	void CheckDelayedPackets();
+	void ProcessDelayedPacket(DelayedReceivedPacket* packet);	
+
+	// message registration ----------------------------------------------
 	bool RegisterMessageDefinition(const std::string& name, NetMessageCallback callback);
 	bool RegisterMessageDefinition(int netMessageId, const std::string& name, NetMessageCallback callback, const eNetMessageFlag& flag = (eNetMessageFlag)0);
 	void LockMessageDefinitionRegistration();
+	void SortMessageDefinitionsByName();
+
+	void AssignFinalDefinitionIds();
 
 	NetConnection* GetConnectionById(uint8_t id);
 
-	//helpers
+	// helpers ----------------------------------------------
 	void SetHeartbeatRate(float hertz);
 
-	//simulation latency helpers
+	// simulation latency helpers ----------------------------------------------
 	void SetSimulatedLossAmount(float lossAmount);
 	void SetSimulatedLatency(uint minLatencyInMilliseconds, uint maxLatencyInMilliseconds);
 
@@ -105,19 +113,22 @@ public:
 
 public:
 	bool m_isDefinitionRegistrationLocked = false;
-	static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
+
+	int m_registeredDefinitionIndex = 0;
+	static NetMessageDefinition* s_registeredMessageDefinitions[UINT8_MAX];
+	//static std::map<std::string, NetMessageDefinition*> s_registeredMessageDefinitions;
 
 	//delayed packets to process with latency
 	std::vector<DelayedReceivedPacket*> m_delayedPackets;
 };
 
-//net callbacks
+// net callbacks ----------------------------------------------
 NetMessageCallback GetRegisteredNetCallbackById(int id);
 NetMessageCallback GetRegisteredCallbackByName(const std::string& name);
 NetMessageDefinition* GetRegisteredDefinitionById(int id);
 NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 
-//console commands
+// console commands ----------------------------------------------
 void AddConnectionToIndex(Command& cmd);
 void SendPing(Command& cmd);
 void SendMultiPing(Command& cmd);
@@ -128,7 +139,7 @@ void SetSessionSendRate(Command& cmd);
 void SetConnectionSendRate(Command& cmd);
 void SetGlobalHeartRate(Command& cmd);
 
-//message registrations
+// message registrations ----------------------------------------------
 bool OnPing(NetMessage& message, NetConnection* fromConnection);
 bool OnPong(NetMessage& message, NetConnection* fromConnection);
 bool OnAdd(NetMessage& message, NetConnection* fromConnection);

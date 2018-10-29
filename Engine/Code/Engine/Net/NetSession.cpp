@@ -11,7 +11,7 @@
 #include <string>
 
 NetSession* g_theNetSession = nullptr;
-std::map<std::string, NetMessageDefinition*> NetSession::s_registeredMessageDefinitions;
+NetMessageDefinition* NetSession::s_registeredMessageDefinitions[UINT8_MAX];
 
 //  =============================================================================
 NetSession::NetSession()
@@ -67,8 +67,6 @@ void NetSession::Startup()
 	RegisterMessageDefinition("add_response", OnAddResponse);
 	RegisterMessageDefinition("ack", OnAck);
 
-	LockMessageDefinitionRegistration();
-
 	//register app commands
 	CommandRegister("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", "Successfully added connection!"));
 	CommandRegister("send_ping", CommandRegistration(SendPing, ": Send ping to index: idx", ""));
@@ -89,6 +87,12 @@ void NetSession::Shutdown()
 //  =========================================================================================
 void NetSession::Update()
 {
+	//all registrations must be done BEFORE the first update
+	if (!m_isDefinitionRegistrationLocked)
+	{
+		LockMessageDefinitionRegistration();
+	}	
+
 	CheckHeartbeats();
 	ProcessOutgoingMessages();
 
@@ -376,8 +380,25 @@ bool NetSession::RegisterMessageDefinition(const std::string& name, NetMessageCa
 		definition->m_callbackName = name;
 		definition->m_callback = callback;
 
-		s_registeredMessageDefinitions.insert(std::pair<std::string, NetMessageDefinition*>(name, definition));
-		success = true;
+		bool isPositionValid = false;
+
+		while (isPositionValid)
+		{
+			if (s_registeredMessageDefinitions[m_registeredDefinitionIndex] == nullptr)
+			{
+				s_registeredMessageDefinitions[m_registeredDefinitionIndex] = definition;
+				isPositionValid = true;
+				success = true;
+			}
+			else
+			{
+				++m_registeredDefinitionIndex;
+
+				//we are out of space
+				if(m_registeredDefinitionIndex > MAX_NET_DEFINITION_REGISTRATIONS)
+					return false;
+			}
+		}
 	}
 
 	return success;
@@ -386,19 +407,80 @@ bool NetSession::RegisterMessageDefinition(const std::string& name, NetMessageCa
 //  =============================================================================
 bool NetSession::RegisterMessageDefinition(int netMessageId, const std::string & name, NetMessageCallback callback, const eNetMessageFlag & flag)
 {
-	return false;
+	bool success = false;
+
+	if (!m_isDefinitionRegistrationLocked)
+	{
+		NetMessageDefinition* definition = new NetMessageDefinition();
+		definition->m_callbackName = name;
+		definition->m_callback = callback;
+		definition->m_callbackId = netMessageId;
+
+		if (s_registeredMessageDefinitions[netMessageId] == nullptr)
+		{
+			s_registeredMessageDefinitions[netMessageId] = definition;
+
+			if (m_registeredDefinitionIndex == netMessageId)
+			{
+				++m_registeredDefinitionIndex;
+			}
+		}
+		else
+		{
+			++m_registeredDefinitionIndex;
+
+			//we are out of space
+			if (m_registeredDefinitionIndex > MAX_NET_DEFINITION_REGISTRATIONS)
+				return false;
+		}		
+	}
+
+	return success;
 }
 
 //  =========================================================================================
 void NetSession::LockMessageDefinitionRegistration()
 {
 	m_isDefinitionRegistrationLocked = true;
+	SortMessageDefinitionsByName();
+	AssignFinalDefinitionIds();
+}
 
-	int idCount = 0;
-	for (std::map<std::string, NetMessageDefinition*>::iterator defIterator = s_registeredMessageDefinitions.begin(); defIterator != s_registeredMessageDefinitions.end(); ++defIterator)
+//  =========================================================================================
+void NetSession::SortMessageDefinitionsByName()
+{
+	//sort by name. excluding callbackids that are already assigned
+	int i = 0;
+	int j = 0;
+
+	for (i = 0; i < (int)MAX_NET_DEFINITION_REGISTRATIONS - 1; ++i)
 	{
-		defIterator->second->m_callbackId = idCount;
-		++idCount;
+		for (j = 0; j < (int)MAX_NET_DEFINITION_REGISTRATIONS - i - 1; ++j)
+		{
+			//check if one of these two definitions is fixed
+			if (s_registeredMessageDefinitions[j] >= 0 || s_registeredMessageDefinitions[j+1] >= 0)
+			{
+				continue;
+			}
+
+			if (CompareStringAlphabeticalLessThan(s_registeredMessageDefinitions[j]->m_callbackName, s_registeredMessageDefinitions[j + 1]->m_callbackName))
+			{
+				std::swap(s_registeredMessageDefinitions[j], s_registeredMessageDefinitions[j+1]);
+			}			
+		}
+	}
+}
+
+//  =========================================================================================
+void NetSession::AssignFinalDefinitionIds()
+{
+	for (int definitionIndex = 0; definitionIndex < (int)MAX_NET_DEFINITION_REGISTRATIONS; ++definitionIndex)
+	{
+		//if the callback is still unassigned, make the callbackid equal the current index
+		if (s_registeredMessageDefinitions[definitionIndex]->m_callbackId < 0)
+		{
+			s_registeredMessageDefinitions[definitionIndex]->m_callbackId = definitionIndex;
+		}	
 	}
 }
 
@@ -451,24 +533,28 @@ void NetSession::SetSimulatedLatency(uint minLatencyInMilliseconds, uint maxLate
 
 NetMessageDefinition* GetRegisteredDefinitionById(int id)
 {
-	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator = NetSession::s_registeredMessageDefinitions.begin();
-	std::advance(definitionIterator, id);
-	if (definitionIterator != NetSession::s_registeredMessageDefinitions.end())
+	if (id < 0 || id > MAX_NET_DEFINITION_REGISTRATIONS)
 	{
-		return definitionIterator->second;
+		return nullptr;
 	}
 
-	return nullptr;
+	return NetSession::GetInstance()->s_registeredMessageDefinitions[id];
 }
 
 //  =========================================================================================
-NetMessageDefinition* GetRegisteredDefinitionByName(const std::string & name)
+NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name)
 {
-	std::map<std::string, NetMessageDefinition*>::iterator definitionIterator;
-	definitionIterator = NetSession::s_registeredMessageDefinitions.find(name);
-	if (definitionIterator != NetSession::s_registeredMessageDefinitions.end())
+	//registered messages SHOULD be sorted by name unless they had a set value
+	//for loop should be adequate most of the time
+
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	for (int definitionIndex = 0; definitionIndex < MAX_NET_DEFINITION_REGISTRATIONS; ++definitionIndex)
 	{
-		return definitionIterator->second;
+		if (theNetSession->s_registeredMessageDefinitions[definitionIndex]->m_callbackName.compare(name) == 0)
+		{
+			return theNetSession->s_registeredMessageDefinitions[definitionIndex];
+		}
 	}
 
 	return nullptr;
