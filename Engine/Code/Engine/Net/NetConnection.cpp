@@ -164,26 +164,29 @@ void NetConnection::OnReceivePacket(NetPacket* packet)
 	}
 
 	//update bitfield
-	uint16_t distance = header.m_ack - m_highestReceivedAck;
-	if (distance == 0)
+	if (header.m_ack != INVALID_PACKET_ACK)
 	{
-		return;  //this should never happen as acks increment in order
-	}
+		uint16_t distance = header.m_ack - m_highestReceivedAck;
+		if (distance == 0)
+		{
+			return;  //this should never happen as acks increment in order
+		}
 
-	if ((distance > 0))
-	{
-		m_highestReceivedAck = header.m_ack;
+		if (distance < (0xffff / 2))
+		{
+			m_highestReceivedAck = header.m_ack;
 
-		//update bitfield
-		m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield << distance;	//how many should I skip?
-		m_receivedAckHistoryBitfield |= (1 << (distance - 1)); //set the old highest's bit
-	}
-	else
-	{
-		//we got one older than the highest. We need to confirm that bit is set
-		distance = m_highestReceivedAck - header.m_ack; //distance from highest
-		m_receivedAckHistoryBitfield |= (1 << (distance - 1));
-	}
+			//update bitfield
+			m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield << distance;	//how many should I skip?
+			m_receivedAckHistoryBitfield |= (1 << (distance - 1)); //set the old highest's bit
+		}
+		else
+		{
+			//we got one older than the highest. We need to confirm that bit is set
+			distance = m_highestReceivedAck - header.m_ack; //distance from highest
+			m_receivedAckHistoryBitfield |= (1 << (distance - 1));
+		}
+	}	
 }
 
 //  =========================================================================================

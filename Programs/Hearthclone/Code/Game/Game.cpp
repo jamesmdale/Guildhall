@@ -180,15 +180,24 @@ void UnreliableTest(Command& cmd)
 
 	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
 	if(connection == nullptr)
-		DevConsolePrintf("Connection index invalid");
+		DevConsolePrintf(Rgba::RED, "Connection index (%i) is invalid!!", connectionIndex);
 
 	int numSends = cmd.GetNextInt();
 	if (numSends <= 0)
 	{
-		DevConsolePrintf("Invalid number of sends");
+		DevConsolePrintf(Rgba::RED, "Invalid number of desired messages. Must be greater than zero");
 	}
 
+	for (int sendIndex = 0; sendIndex < numSends; ++sendIndex)
+	{
+		NetMessage* message = new NetMessage("net_unreliable_test");
 
+		// messages are sent to connections (not sessions)
+		connection->QueueMessage(message);	
+
+		//cleanup
+		message = nullptr;
+	}
 }
 
 //  =============================================================================

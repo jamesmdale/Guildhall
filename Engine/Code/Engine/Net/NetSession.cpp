@@ -285,7 +285,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 	{
 		uint16_t totalSize = UINT16_MAX;
 		uint8_t callbackId = UINT8_MAX;
-		
+
 		packet->m_packet->ReadBytes(&totalSize, sizeof(uint16_t), false);
 		packet->m_packet->ReadBytes(&callbackId, sizeof(uint8_t), false);
 
