@@ -42,7 +42,6 @@ public:
 	unsigned char a; //alpha (opacity) byte, 0-255; 0 is transparent, 255 is opaque	
 
 	static const Rgba RED;
-	
 	static const Rgba GREEN;
 	static const Rgba BLUE;
 	static const Rgba WHITE;
@@ -56,6 +55,7 @@ public:
 	static const Rgba LIGHT_BLUE;
 	static const Rgba LIGHT_BLUE_TRANSPARENT;
 	static const Rgba PINK;
+	static const Rgba BLUE_TRANSPARENT;
 	static const Rgba LIGHT_PINK_TRANSPARENT;
 	static const Rgba LIGHT_WHITE_TRANSPARENT;
 	static const Rgba LIGHT_GREEN_TRANSPARENT;

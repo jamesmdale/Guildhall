@@ -19,6 +19,7 @@ const Rgba Rgba::GRAY = Rgba(100, 100, 100, 255);
 const Rgba Rgba::PINK = Rgba (255, 0, 255, 255);
 
 //transparent colors
+const Rgba Rgba::BLUE_TRANSPARENT = Rgba(0, 0, 255, 200);
 const Rgba Rgba::LIGHT_ORANGE_TRANSPARENT = Rgba(255, 140, 0, 100);
 const Rgba Rgba::LIGHT_RED_TRANSPARENT = Rgba(248, 124, 124, 200);
 const Rgba Rgba::LIGHT_BLUE_TRANSPARENT = Rgba(124, 124, 248, 200);

@@ -69,12 +69,10 @@ static void GetPath(std::vector<Vector2>& outIndicies, Grid<SearchCell>& cellLis
 	//complete
 }
 
-static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& startPosition, const IntVector2& destinationPosition, Map* currentMap)
+static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& startPosition, const IntVector2& destinationPosition, Grid<int>* grid, Map* currentMap)
 {
-	Grid<int> grid = *currentMap->GetAsGrid();
-
-	ASSERT_OR_DIE(grid.IsCellValid(startPosition) && grid.IsCellValid(destinationPosition), "Search cells out of range");
-	int value = grid.GetValueAtCoordinate(destinationPosition);
+	ASSERT_OR_DIE(grid->IsCellValid(startPosition) && grid->IsCellValid(destinationPosition), "Search cells out of range");
+	int value = grid->GetValueAtCoordinate(destinationPosition);
 	//ASSERT_OR_DIE(grid.GetValueAtCoordinate(startPosition) == 0 && grid.GetValueAtCoordinate(destinationPosition) == 0, "Search cell is blocked (inaccessible)");
 
 	if (startPosition == destinationPosition)
@@ -83,12 +81,12 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 	//as we loop over the grid, we need to mark cells as searched
 	bool defaultCheckVal = false;
 	Grid<bool> checkedList = Grid<bool>();
-	checkedList.InitializeGrid(false, grid.m_dimensions.x, grid.m_dimensions.y);
+	checkedList.InitializeGrid(false, grid->m_dimensions.x, grid->m_dimensions.y);
 
 	//each cell will continue data about it's coordinate and relative costs
 	SearchCell defaultSearchCell;
 	Grid<SearchCell> cellList = Grid<SearchCell>();	
-	cellList.InitializeGrid(defaultSearchCell, grid.m_dimensions.x, grid.m_dimensions.y);
+	cellList.InitializeGrid(defaultSearchCell, grid->m_dimensions.x, grid->m_dimensions.y);
 
 	//set starting indices to the startposition
 	IntVector2 currentCoordinate = startPosition;
@@ -144,7 +142,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 			IntVector2 upCoordinates = IntVector2(currentCoordinate.x , currentCoordinate.y + 1);
 
 			//confirm cell is even on grid
-			if (grid.IsCellValid(upCoordinates))
+			if (grid->IsCellValid(upCoordinates))
 			{
 				if (upCoordinates == destinationPosition)
 				{
@@ -160,7 +158,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 				}
 
 				//if we haven't checked the coordinate yet and the coordinate isn't blocked...
-				else if (checkedList.GetValueAtCoordinate(upCoordinates) == false && grid.GetValueAtCoordinate(upCoordinates) == 0)
+				else if (checkedList.GetValueAtCoordinate(upCoordinates) == false && grid->GetValueAtCoordinate(upCoordinates) == 0)
 				{
 					tempMovementCost = originCell.movementCost + 1;
 					tempHeuristicCost = CalculateHeuristicValue(upCoordinates, destinationPosition);
@@ -185,7 +183,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 		// GET DOWN =========================================================================================
 		{			
 			IntVector2 downCoordinates = IntVector2(currentCoordinate.x, currentCoordinate.y - 1);
-			if (grid.IsCellValid(downCoordinates))
+			if (grid->IsCellValid(downCoordinates))
 			{
 				if (downCoordinates == destinationPosition)
 				{
@@ -200,7 +198,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 					return isDestinationFound;
 				}
 
-				else if (checkedList.GetValueAtCoordinate(downCoordinates) == false && grid.GetValueAtCoordinate(downCoordinates) == 0)
+				else if (checkedList.GetValueAtCoordinate(downCoordinates) == false && grid->GetValueAtCoordinate(downCoordinates) == 0)
 				{		
 					tempMovementCost = originCell.movementCost + 1;
 					tempHeuristicCost = CalculateHeuristicValue(downCoordinates, destinationPosition);
@@ -224,7 +222,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 		// GET RIGHT =========================================================================================
 		{
 			IntVector2 rightCoordinates = IntVector2(currentCoordinate.x + 1, currentCoordinate.y);
-			if (grid.IsCellValid(rightCoordinates))
+			if (grid->IsCellValid(rightCoordinates))
 			{
 				if (rightCoordinates == destinationPosition)
 				{
@@ -239,7 +237,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 					return isDestinationFound;
 				}
 
-				else if (checkedList.GetValueAtCoordinate(rightCoordinates) == false && grid.GetValueAtCoordinate(rightCoordinates) == 0)
+				else if (checkedList.GetValueAtCoordinate(rightCoordinates) == false && grid->GetValueAtCoordinate(rightCoordinates) == 0)
 				{
 					tempMovementCost = originCell.movementCost + 1;
 					tempHeuristicCost = CalculateHeuristicValue(rightCoordinates, destinationPosition);
@@ -263,7 +261,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 		// GET LEFT =========================================================================================
 		{
 			IntVector2 leftCoordinates = IntVector2(currentCoordinate.x - 1, currentCoordinate.y);
-			if (grid.IsCellValid(leftCoordinates))
+			if (grid->IsCellValid(leftCoordinates))
 			{
 				if (leftCoordinates == destinationPosition)
 				{
@@ -278,7 +276,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 					return isDestinationFound;
 				}
 
-				else if (checkedList.GetValueAtCoordinate(leftCoordinates) == false && grid.GetValueAtCoordinate(leftCoordinates) == 0)
+				else if (checkedList.GetValueAtCoordinate(leftCoordinates) == false && grid->GetValueAtCoordinate(leftCoordinates) == 0)
 				{
 					tempMovementCost = originCell.movementCost + 1;
 					tempHeuristicCost = CalculateHeuristicValue(leftCoordinates, destinationPosition);
@@ -302,7 +300,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 		// GET UP_RIGHT =========================================================================================
 		{
 			IntVector2 upRightCoordinates = IntVector2(currentCoordinate.x + 1, currentCoordinate.y + 1);
-			if (grid.IsCellValid(upRightCoordinates))
+			if (grid->IsCellValid(upRightCoordinates))
 			{
 				if (upRightCoordinates == destinationPosition)
 				{
@@ -317,7 +315,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 					return isDestinationFound;
 				}
 
-				else if (checkedList.GetValueAtCoordinate(upRightCoordinates) == false && grid.GetValueAtCoordinate(upRightCoordinates) == 0)
+				else if (checkedList.GetValueAtCoordinate(upRightCoordinates) == false && grid->GetValueAtCoordinate(upRightCoordinates) == 0)
 				{
 					tempMovementCost = originCell.movementCost + 1;
 					tempHeuristicCost = CalculateHeuristicValue(upRightCoordinates, destinationPosition);
@@ -341,7 +339,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 		// GET UP_LEFT =========================================================================================
 		{
 			IntVector2 upLeftCoordinates = IntVector2(currentCoordinate.x - 1, currentCoordinate.y + 1);
-			if (grid.IsCellValid(upLeftCoordinates))
+			if (grid->IsCellValid(upLeftCoordinates))
 			{
 				if (upLeftCoordinates == destinationPosition)
 				{
@@ -356,7 +354,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 					return isDestinationFound;
 				}
 
-				else if (checkedList.GetValueAtCoordinate(upLeftCoordinates) == false && grid.GetValueAtCoordinate(upLeftCoordinates) == 0)
+				else if (checkedList.GetValueAtCoordinate(upLeftCoordinates) == false && grid->GetValueAtCoordinate(upLeftCoordinates) == 0)
 				{
 					tempMovementCost = originCell.movementCost + 1;
 					tempHeuristicCost = CalculateHeuristicValue(upLeftCoordinates, destinationPosition);
@@ -380,7 +378,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 		// GET DOWN_RIGHT =========================================================================================
 		{			
 			IntVector2 downRightCoordinates = IntVector2(currentCoordinate.x + 1, currentCoordinate.y - 1);
-			if (grid.IsCellValid(downRightCoordinates))
+			if (grid->IsCellValid(downRightCoordinates))
 			{
 				if (downRightCoordinates == destinationPosition)
 				{
@@ -395,7 +393,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 					return isDestinationFound;
 				}
 
-				else if (checkedList.GetValueAtCoordinate(downRightCoordinates) == false && grid.GetValueAtCoordinate(downRightCoordinates) == 0)
+				else if (checkedList.GetValueAtCoordinate(downRightCoordinates) == false && grid->GetValueAtCoordinate(downRightCoordinates) == 0)
 				{
 					tempMovementCost = originCell.movementCost + 1;
 					tempHeuristicCost = CalculateHeuristicValue(downRightCoordinates, destinationPosition);
@@ -419,7 +417,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 		// GET DOWN_LEFT =========================================================================================
 		{
 			IntVector2 downLeftCoordinates = IntVector2(currentCoordinate.x - 1, currentCoordinate.y - 1);
-			if (grid.IsCellValid(downLeftCoordinates))
+			if (grid->IsCellValid(downLeftCoordinates))
 			{
 				if (downLeftCoordinates == destinationPosition)
 				{
@@ -434,7 +432,7 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 					return isDestinationFound;
 				}
 
-				else if (checkedList.GetValueAtCoordinate(downLeftCoordinates) == false && grid.GetValueAtCoordinate(downLeftCoordinates) == 0)
+				else if (checkedList.GetValueAtCoordinate(downLeftCoordinates) == false && grid->GetValueAtCoordinate(downLeftCoordinates) == 0)
 				{
 					tempMovementCost = originCell.movementCost + 1;
 					tempHeuristicCost = CalculateHeuristicValue(downLeftCoordinates, destinationPosition);

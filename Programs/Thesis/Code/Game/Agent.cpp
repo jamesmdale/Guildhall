@@ -108,6 +108,15 @@ void Agent::Render()
 //  =========================================================================================
 bool Agent::GetPathToDestination(const Vector2& goalDestination)
 {
+	// profiling ----------------------------------------------
+	static int iterations = 0;
+	static uint64_t timeAverage = 0.f;
+	static uint64_t iterationStartHPC = GetPerformanceCounter();
+	uint64_t startHPC = GetPerformanceCounter();
+
+	++iterations;
+	//  ----------------------------------------------
+
 	PROFILER_PUSH();
 	m_currentPath = std::vector<Vector2>(); //clear vector
 
@@ -118,7 +127,28 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 	m_currentPath.push_back(goalDestination);
 
 	//add the location
-	isDestinationFound = AStarSearch(m_currentPath, startCoord, endCoord, m_planner->m_map);
+	isDestinationFound = AStarSearch(m_currentPath, startCoord, endCoord, m_planner->m_map->m_mapAsGrid, m_planner->m_map);
+
+	// profiling ----------------------------------------------
+	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 100)
+	{
+		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
+		float iterationsPerSecond = totalSeconds/100.f;
+		
+
+		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
+		DevConsolePrintf(Rgba::LIGHT_BLUE, "Average Time After 100 iterations (Pathing) %f", secondsAverage);
+		DevConsolePrintf(Rgba::LIGHT_BLUE, "Iterations per second %f (Pathing) (total time %f)", iterationsPerSecond, totalSeconds);
+
+		//reset data
+		iterationStartHPC = GetPerformanceCounter();
+		iterations = 0;
+		timeAverage = 0.0;
+	}
+	//  ----------------------------------------------
 
 	return isDestinationFound;
 }

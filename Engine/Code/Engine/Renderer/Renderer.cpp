@@ -1063,7 +1063,7 @@ void Renderer::DrawText2DCentered(const Vector2& drawCenterPoint, const std::str
 	}
 }
 
-void Renderer::DrawOrientedText2DCentered(Matrix44 & transformMatrix, const std::string & asciiText, float cellHeight, const Rgba& tint, float aspectScale, const BitmapFont * font)
+void Renderer::DrawOrientedText2DCentered(Matrix44& transformMatrix, const std::string& asciiText, float cellHeight, const Rgba& tint, float aspectScale, const BitmapFont * font)
 {
 	float cellWidth = cellHeight * (font->m_baseAspect * aspectScale);
 	

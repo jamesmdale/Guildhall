@@ -86,6 +86,7 @@ public:
 	IntVector2 m_dimensions;
 	MapDefinition* m_mapDefinition = nullptr;
 	std::vector<Tile*> m_tiles;
+	Grid<int>* m_mapAsGrid = nullptr;
 	AABB2 m_mapWorldBounds;
 
 	//lists

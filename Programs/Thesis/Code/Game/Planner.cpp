@@ -10,11 +10,8 @@
 int iterationsOfUpdatePlan = 0;
 uint64_t averageTimeForUpdatePlan = 0.0;
 
-int iterationsOfQueueActionsStd = 0;
-uint64_t averageTimeForQueueActionsStd = 0.0;
-
-int iterationsOfQueueActionsOpt = 0;
-uint64_t averageTimeForQueueActionsOpt = 0.0;
+int iterationsOfQueueActions = 0;
+uint64_t averageTimeForQueueActions = 0.0;
 
 //int iterationsOfUp
 
@@ -36,6 +33,7 @@ Planner::~Planner()
 //  =========================================================================================
 void Planner::ProcessActionStack(float deltaSeconds)
 {
+	PROFILER_PUSH();
 	if (m_actionStack.size() == 0)
 	{
 		UpdatePlan();
@@ -174,18 +172,19 @@ void Planner::UpdatePlan()
 
 	QueueActionsFromCurrentPlan(m_currentPlan, highestUtilityInfo);
 
-	if (iterationsOfQueueActionsOpt == 100)
+	if (iterationsOfQueueActions == 100)
 	{
-		float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForQueueActionsOpt);
-		DevConsolePrintf("Average Time After 1000 iterations (QueueActionsOptimized) %f", secondsAverage);
-		iterationsOfQueueActionsOpt = 0;
-		averageTimeForQueueActionsOpt = 0.0;
+		std::string optimizedText = m_map->m_gameState->m_isOptimized ? "(optimized)" : "(unoptimized)";
+		float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForQueueActions);
+		//DevConsolePrintf("Average Time After 100 iterations %s %f", optimizedText.c_str(), secondsAverage);
+		iterationsOfQueueActions = 0;
+		averageTimeForQueueActions = 0.0;
 	}
 
 	if (iterationsOfUpdatePlan == 100)
 	{
 		float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForUpdatePlan);
-		DevConsolePrintf("Average Time After 1000 iterations (UpdatePlan) %f", secondsAverage);
+		//DevConsolePrintf("Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
 		iterationsOfUpdatePlan = 0;
 		averageTimeForUpdatePlan = 0.0;
 	}
@@ -195,7 +194,7 @@ void Planner::UpdatePlan()
 void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo& info)
 {
 	// function profling ----------------------------------------------
-		++iterationsOfQueueActionsOpt;
+		++iterationsOfQueueActions;
 		uint64_t startHPC = GetPerformanceCounter();
 	//  ----------------------------------------------
 
@@ -260,7 +259,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 	// profiling ----------------------------------------------
 		uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 		//calculate new average
-		averageTimeForQueueActionsOpt = ((averageTimeForQueueActionsOpt * (iterationsOfQueueActionsOpt - 1)) + totalHPC) / iterationsOfQueueActionsOpt;
+		averageTimeForQueueActions = ((averageTimeForQueueActions * (iterationsOfQueueActions - 1)) + totalHPC) / iterationsOfQueueActions;
 	//  ----------------------------------------------
 
 	// profiling ----------------------------------------------
@@ -719,6 +718,16 @@ bool Planner::FindAgentAndCopyPath()
 {
 	bool didSuccessfullyCopyMatchingAgent = false;
 
+	// profiling ----------------------------------------------
+	static int iterations = 0;
+	static uint64_t timeAverage = 0.f;
+	static uint64_t iterationStartHPC = GetPerformanceCounter();
+	uint64_t startHPC = GetPerformanceCounter();
+	
+
+	++iterations;
+	//  ----------------------------------------------
+
 	//search surrounding agents for similarities (most likely to be similar)
 	Agent* matchingAgents[12]; //get 3 on each side from each list
 
@@ -789,6 +798,28 @@ bool Planner::FindAgentAndCopyPath()
 	// cleanup ----------------------------------------------
 	//should all be marked as nullptr by the end
 	mostResembledAgent = nullptr;
+
+
+	// profiling ----------------------------------------------
+	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 100)
+	{
+		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
+		float iterationsPerSecond = totalSeconds / 100.f;
+		iterationStartHPC = GetPerformanceCounter();
+
+		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
+		DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (Copy path) %f", secondsAverage);
+		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Copy Path) (total time %f)", iterationsPerSecond, totalSeconds);
+		
+		//reset data
+		iterationStartHPC = GetPerformanceCounter();
+		iterations = 0;
+		timeAverage = 0.0;
+	}
+	//  ---------------------------------------------
 
 	return didSuccessfullyCopyMatchingAgent;
 }

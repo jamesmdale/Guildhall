@@ -247,6 +247,7 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	Window* theWindow = Window::GetInstance();
 	Renderer* theRenderer = Renderer::GetInstance();
 	MeshBuilder mb;
+	MeshBuilder highlightMb;
 
 	m_reportContent->DeleteRenderables();
 	m_reportGraph->DeleteRenderables();
@@ -267,10 +268,13 @@ void ProfilerConsole::RefreshDynamicWidgets()
 		textQuad.mins = Vector2(contentQuad.mins.x + PROFILER_TEXT_WIDTH_PADDING, contentQuad.maxs.y - ((entryIndex + 1) * PROFILER_TEXT_CELL_HEIGHT) - PROFILER_TEXT_HEIGHT_PADDING);
 		textQuad.maxs = Vector2(contentQuad.maxs.x - PROFILER_TEXT_WIDTH_PADDING, contentQuad.maxs.y - (entryIndex * PROFILER_TEXT_CELL_HEIGHT) + PROFILER_TEXT_HEIGHT_PADDING);
 
+		Rgba highightLineColor = entryIndex % 2 > 0 ? Rgba::LIGHT_BLUE_TRANSPARENT : Rgba::BLUE_TRANSPARENT;
+		highlightMb.CreateTexturedQuad2D(textQuad.GetCenter(), textQuad.GetDimensions(), Vector2::ZERO, Vector2::ONE, highightLineColor);
 		mb.CreateText2DFromPoint(textQuad.mins, PROFILER_TEXT_CELL_HEIGHT, 1.f, reportEntries->at(entryIndex), Rgba::WHITE);
 	}
 
-	reportContentRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
+	reportContentRenderable->AddRenderableData(1, highlightMb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
+	reportContentRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
 
 	// fps counter content =============================================================================
 
@@ -279,7 +283,6 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	mb.CreateQuad2D(fpsQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
 	reportContentRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
 
-	float value = 1.f/Profiler::GetInstance()->ProfileGetPreviousFrame(0)->GetElapsedTimeHPC();
 	std::string fpsAsString = Stringf("FPS: %-4.2f", GetUnclampedFPS());
 
 	mb.CreateText2DInAABB2(fpsQuad.GetCenter(), fpsQuad.GetDimensions() - Vector2(20.f, 20.f), 4.f/3.f, fpsAsString, Rgba::WHITE);
@@ -290,7 +293,6 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	mb.CreateQuad2D(frameQuad, Rgba::LIGHT_BLUE_TRANSPARENT);
 	reportContentRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
 
-	value = Profiler::GetInstance()->ProfileGetPreviousFrame(0)->GetElapsedTimeHPC();
 	std::string frameAsString = Stringf("FRAME: %-4.5f", GetUnclampedMasterDeltaSeconds());
 
 	mb.CreateText2DInAABB2(frameQuad.GetCenter(), frameQuad.GetDimensions() - Vector2(20.f, 20.f), 4.f/3.f, frameAsString, Rgba::WHITE);

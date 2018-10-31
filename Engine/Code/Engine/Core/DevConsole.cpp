@@ -14,6 +14,7 @@
 #include "Engine\Net\RemoteCommandService.hpp"
 #include "Engine\Net\NetSession.hpp"
 #include "Engine\Net\NetAddress.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 #include "Game\EngineBuildPreferences.hpp"
 #include <ctime>
 #include <stdarg.h>
@@ -244,6 +245,8 @@ void DevConsole::Update(float deltaSeconds)
 // renders all to display =========================================================================================
 void DevConsole::Render()
 {
+	PROFILER_PUSH();
+
 	Window* theWindow = Window::GetInstance();
 	Renderer* theRenderer = Renderer::GetInstance();
 	AABB2 consoleBounds = AABB2(0.f, 0.f, theWindow->m_clientWidth, theWindow->m_clientHeight);

@@ -7,6 +7,7 @@
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Math\IntVector2.hpp"
+#include "Engine\Core\StringUtils.hpp"
 #include <map>
 #include <string>
 
@@ -167,18 +168,31 @@ void PlayingState::RenderGame()
 //  =========================================================================================
 void PlayingState::RenderUI()
 {
-	TODO("Render UI");
+	//TODO("Render UI");
 
-	Window* theWindow = Window::GetInstance();
-	Renderer* theRenderer = Renderer::GetInstance();
-	theRenderer->SetCamera(m_uiCamera);
+	//Window* theWindow = Window::GetInstance();
+	//Renderer* theRenderer = Renderer::GetInstance();
+	//MeshBuilder mb;
+	//theRenderer->SetCamera(m_uiCamera);
 
+	//theRenderer->ClearDepth(1.0f);
+	//theRenderer->EnableDepth(ALWAYS_DEPTH_TYPE, true);
 
-	//theRenderer->DrawText2DCentered()
+	//AABB2 fpsQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.01f, 0.85f), Vector2(0.3f, 0.99f));
+	//std::string fpsAsString = Stringf("FPS: %-4.2f", GetUnclampedFPS());
+
+	//theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("Data\Fonts\SquirrelFixedFont.png"));
+	//theRenderer->SetShader(theRenderer->CreateOrGetShader("alpha"));
+	//theRenderer->DrawText2DCentered(fpsQuad.GetCenter(), fpsAsString, 20.f, Rgba::WHITE, 1.f, theRenderer->CreateOrGetBitmapFont("SquirrelFixedFont"));
 
 	////cleanup
+	//theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("default"));
+	//theRenderer->SetShader(theRenderer->CreateOrGetShader("default"));
 	//theRenderer->SetCamera(m_camera);
-	theRenderer = nullptr;
+
+
+	//theRenderer = nullptr;
+	//theWindow = nullptr;
 }
 
 

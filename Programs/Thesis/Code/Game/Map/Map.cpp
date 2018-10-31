@@ -69,6 +69,9 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 Map::~Map()
 {
 	m_mapDefinition = nullptr;
+	
+	delete(m_mapAsGrid);
+	m_mapAsGrid = nullptr;
 }
 
 //  =========================================================================================
@@ -127,6 +130,7 @@ void Map::Initialize()
 	SortAgentsByY();
 
 	CreateMapMesh();
+	m_mapAsGrid = GetAsGrid();
 }
 
 
