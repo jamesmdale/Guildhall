@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine\Core\BytePacker.hpp"
+#include "Engine\Core\BitHelper.hpp"
 
 //forward dec netmessage for callback
 class NetMessage;
@@ -19,6 +20,16 @@ struct NetMessageDefinition
 	std::string m_callbackName;
 	NetMessageCallback m_callback = nullptr;
 	eNetMessageFlag m_messageFlag;
+
+	bool DoesRequireConnection()
+	{
+		if (!AreBitsSet(m_messageFlag, CONNECTIONLESS_NET_MESSAGE_FLAG))
+		{
+			return true;
+		}
+
+		return false;
+	}
 };
 
 class NetMessage : public BytePacker

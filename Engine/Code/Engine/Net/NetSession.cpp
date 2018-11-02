@@ -271,6 +271,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 		return;
 	}
 
+	//handle on receive packet
 	if (connection != nullptr)
 	{
 		connection->OnReceivePacket(packet->m_packet);
@@ -293,6 +294,13 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 
 		if (definition != nullptr)
 		{
+			//if the definition requires a connection and the we don't have one for this sender, throw the message out
+			if (definition->DoesRequireConnection() && connection->m_index == UINT8_MAX)
+			{
+				DebuggerPrintf("MESSAGE RECEIVED WITHOUT CONNECTION");
+				continue;
+			}
+
 			NetMessage* message = new NetMessage(definition->m_callbackName);
 
 			//if there is more to the message we must read that in before calling the return function
@@ -314,7 +322,12 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 		definition = nullptr;
 	}
 
-	//cleanup
+	//cleanup connection if we don't actually have a valid one for this person
+	if (connection->m_index == UINT8_MAX)
+	{
+		delete(connection);
+	}
+
 	connection = nullptr;		
 }
 

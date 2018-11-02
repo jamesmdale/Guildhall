@@ -179,7 +179,7 @@ void NetConnection::OnReceivePacket(NetPacket* packet)
 			//update bitfield
 			m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield << distance;	//how many should I skip?
 			m_receivedAckHistoryBitfield |= (1 << (distance - 1)); //set the old highest's bit
-		}
+		} 
 		else
 		{
 			//we got one older than the highest. We need to confirm that bit is set
