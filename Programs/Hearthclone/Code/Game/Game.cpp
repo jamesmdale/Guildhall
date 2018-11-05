@@ -89,7 +89,8 @@ void Game::Initialize()
 
 	//command
 	CommandRegister("help", CommandRegistration(Help, ": Use to show all supported commands", "All commands displayed!"));
-	CommandRegister("net_unreliable_test", CommandRegistration(AddConnectionToIndex, ": Send X number of unreliable tests to connection. (int conIdx, idx count)", ""));
+	CommandRegister("net_unreliable_test", CommandRegistration(UnreliableTest, ": Send X number of unreliable tests to connection. (int conIdx, idx count)", ""));
+	CommandRegister("net_reliable_test", CommandRegistration(ReliableTest, ": Send X number of reliable tests to connection. (int conIdx, idx count)", ""));
 
 	//net message registration
 	RegisterGameNetMessages();
@@ -118,6 +119,10 @@ void Game::Initialize()
 	HeroDefinition::Initialize("Data/Definitions/Heroes/heroes.xml");
 	DeckDefinition::Initialize("Data/Definitions/Decks/decks.xml");
 
+	//test reliable send timer init
+	m_reliableSendTimer = new Stopwatch(GetMasterClock());
+	m_reliableSendTimer->SetTimerInMilliseconds(100.f);
+
 	// cleanup
 	theRenderer = nullptr;
 	theWindow = nullptr;
@@ -128,10 +133,13 @@ void Game::Update()
 {
 	float deltaSeconds = m_gameClock->GetDeltaSeconds();
 
-	// update global menu data (handles transitions and timers) =============================================================================
+	// update global menu data (handles transitions and timers)
 	GameState::UpdateGlobalGameState(deltaSeconds);
 
 	GameState::GetCurrentGameState()->Update(deltaSeconds);
+
+	//test case for reliable sends
+	//TestReliableSend();
 }
 
 //  =========================================================================================
@@ -157,7 +165,8 @@ void Game::RegisterGameNetMessages()
 {
 	NetSession* theNetSession = NetSession::GetInstance();
 
-	theNetSession->RegisterMessageDefinition(UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE, "unreliable_test", OnUnreliableTest);
+	theNetSession->RegisterMessageDefinition(UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE, "net_unreliable_test", OnUnreliableTest);
+	theNetSession->RegisterMessageDefinition(RELIABLE_TEST_GAME_NET_MESSAGE_TYPE, "net_reliable_test", OnReliableTest, RELIABLE_NET_MESSAGE_FLAG);
 	theNetSession->RegisterMessageDefinition("test", OnTest);
 
 	theNetSession = nullptr;
@@ -171,7 +180,29 @@ float Game::UpdateInput(float deltaSeconds)
 	return deltaSeconds;
 }
 
-//  =============================================================================
+// =========================================================================================
+void Game::TestReliableSend()
+{
+	//test reliable send
+	if (m_reliableSendTimer->CheckAndReset())
+	{
+		NetSession* theNetSession = NetSession::GetInstance();
+
+		for (int connectionIndex = 0; connectionIndex < (int)theNetSession->m_connections.size(); ++connectionIndex)
+		{
+			NetMessage* message = new NetMessage("net_reliable_test");
+			theNetSession->m_connections[connectionIndex]->QueueMessage(message);
+			message = nullptr;
+		}
+
+		//cleanup
+		theNetSession = nullptr;
+	}
+}
+
+//  =========================================================================================
+//  commands =========================================================================================
+//  =========================================================================================
 void UnreliableTest(Command& cmd)
 {
 	NetSession* theNetSession = NetSession::GetInstance();
@@ -201,9 +232,44 @@ void UnreliableTest(Command& cmd)
 }
 
 //  =============================================================================
+void ReliableTest(Command& cmd)
+{
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	int connectionIndex = cmd.GetNextInt();
+
+	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
+	if (connection == nullptr)
+		DevConsolePrintf(Rgba::RED, "Connection index (%i) is invalid!!", connectionIndex);
+
+	int numSends = cmd.GetNextInt();
+	if (numSends <= 0)
+	{
+		DevConsolePrintf(Rgba::RED, "Invalid number of desired messages. Must be greater than zero");
+	}
+
+	for (int sendIndex = 0; sendIndex < numSends; ++sendIndex)
+	{
+		NetMessage* message = new NetMessage("net_reliable_test");
+
+		// messages are sent to connections (not sessions)
+		connection->QueueMessage(message);
+
+		//cleanup
+		message = nullptr;
+	}
+}
+
+//  =============================================================================
 //	Net Callbacks
 //  =============================================================================
 bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection)
+{
+	return false;
+}
+
+//  =============================================================================
+bool OnReliableTest(NetMessage& message, NetConnection* fromConnection)
 {
 	return false;
 }
@@ -214,40 +280,3 @@ bool OnTest(NetMessage& message, NetConnection* fromConnection)
 	//out of order should still work
 	return false;
 }
-
-//  =========================================================================================
-//  DevConsole Commands
-//  =========================================================================================
-void SendUnreliableTest(Command& cmd)
-{
-	NetSession* theNetSession = NetSession::GetInstance();
-
-	int connectionIndex = cmd.GetNextInt();
-	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
-	if (connection == nullptr)
-	{
-		DevConsolePrintf(Rgba::RED, "INVALID CONNECTION AT INDEX %i", connectionIndex);
-	}
-
-	int sendCount = cmd.GetNextInt();
-	if (sendCount <= 0)
-	{
-		DevConsolePrintf(Rgba::RED, "INVALID SEND COUNT: MUST BE >= 0");
-	}
-
-	//parameters are valid. Send messages equal to the sendcount
-	for (int messageIndex = 0; messageIndex < sendCount; ++messageIndex)
-	{
-		NetMessage* message = new NetMessage("unreliable_test");
-
-		connection->QueueMessage(message);
-
-		message = nullptr;
-	}
-
-	//cleanup
-	theNetSession = nullptr;
-}
-
-
-

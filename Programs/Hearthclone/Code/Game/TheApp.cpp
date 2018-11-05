@@ -95,6 +95,7 @@ void TheApp::Update()
 	if(DevConsole::GetInstance()->IsOpen())
 	{
 		DevConsole::GetInstance()->Update(deltaSeconds);
+		//Game::GetInstance()->TestReliableSend();
 	}
 	else
 	{

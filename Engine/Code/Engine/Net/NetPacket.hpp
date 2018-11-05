@@ -4,11 +4,13 @@
 
 #define INVALID_SENDER_ID (UINT8_MAX)
 #define INVALID_PACKET_ACK (UINT16_MAX)
+#define MAX_RELIABLES_PER_PACKET (32)
 
 struct PacketTracker
 {
 	uint16_t m_ack = UINT16_MAX;
 	uint64_t m_sendTime = UINT64_MAX;
+	uint16_t m_sentReliables[MAX_RELIABLES_PER_PACKET];
 };
 
 struct NetPacketHeader
@@ -20,7 +22,7 @@ public:
 	uint16_t m_highestReceivedAck = UINT16_MAX;
 	uint16_t m_receivedAckHistoryBitfield = 0;
 
-	uint8_t m_unreliableMessageCount = 0;
+	uint8_t m_messageCount = 0;
 };
 
 class NetPacket : public BytePacker
@@ -36,10 +38,10 @@ public:
 	//Need to reset buffer when processin a whole packet
 	bool ReadHeader(NetPacketHeader& packetHeader);
 
-	bool WriteMessage(NetMessage& netMessage);
+	bool WriteMessage(NetMessage& netMessage, uint16_t nextReliableId = UINT16_MAX);
 	bool ReadMessage(NetMessage& netMessage);
 
-	void WriteUpdatedHeaderData();
+	void WriteUpdatedPacketHeaderData();
 	 
 	bool CheckIsValid();
 	uint16_t GetAck();

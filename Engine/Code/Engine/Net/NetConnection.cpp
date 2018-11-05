@@ -39,13 +39,23 @@ NetConnection::~NetConnection()
 //  =============================================================================
 void NetConnection::QueueMessage(NetMessage* message)
 {
-	m_outgoingUnreliableMessages.push_back(message);
+	if (message->m_definition->IsReliable())
+	{
+		m_unsentReliableMessages.push_back(message);
+	}
+	else
+	{
+		m_unsentUnreliableMessages.push_back(message);
+	}	
 }
 
 //  =============================================================================
-void NetConnection::FlushOutgoingMessages()
+void NetConnection::FlushOutgoingMessages(std::vector<NetMessage*>& outgoingList)
 {
-	if(m_outgoingUnreliableMessages.size() == 0)
+	if(!m_latencySendTimer->ResetAndDecrementIfElapsed())
+		return;
+
+	if(outgoingList.size() == 0)
 		return;
 
 	NetSession* theNetSession = NetSession::GetInstance();
@@ -61,21 +71,46 @@ void NetConnection::FlushOutgoingMessages()
 	header.m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield;
 
 	NetPacket* packet = new NetPacket(header);
-	packet->WriteUpdatedHeaderData();
+	PacketTracker* packetTracker = new PacketTracker();
+	int reliableCount = 0;
+
+	packet->WriteUpdatedPacketHeaderData();
 	
 	while (!areMessagesPacked)
 	{
 		//total buffer size + payload size + header size + total message size (header + payload sizes)
-		if (packet->GetBufferSize() + m_outgoingUnreliableMessages[currentMessageIndex]->GetWrittenByteCount() + sizeof(NetMessageHeader) + sizeof(uint16_t) <= PACKET_MTU)
+		size_t totalMessageSize = packet->GetBufferSize() + outgoingList[currentMessageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t);
+		
+		//if messages is reliable
+		if (outgoingList[currentMessageIndex]->m_definition->IsReliable())
+		{
+			//add sizeof reliableid
+			totalMessageSize += sizeof(uint16_t);
+		}
+
+		//if we have room write to the current packet
+		if (totalMessageSize <= PACKET_MTU)
 		{
 			//write message to packet
-			packet->WriteMessage(*m_outgoingUnreliableMessages[currentMessageIndex]);
+			if (outgoingList[currentMessageIndex]->m_definition->IsReliable())
+			{
+				packet->WriteMessage(*outgoingList[currentMessageIndex], m_nextSentReliableId);
+				packetTracker->m_sentReliables[reliableCount] = m_nextSentReliableId;
+				++reliableCount;
+				OnReliableSend();
+
+				outgoingList[currentMessageIndex]->m_sendTime = GetMasterClock()->GetLastHPC();
+				m_sentReliablesMessages.push_back(outgoingList[currentMessageIndex]);
+			}
+			else
+			{
+				packet->WriteMessage(*outgoingList[currentMessageIndex]);
+			}
 		}
 		else
 		{
-			//in order to pack the next message, we need to make a new packet
-			//first add old packet to list
-			m_readyPackets.push_back(packet);
+			//we are full so we need to send this packet
+			SendPacket(packetTracker, packet);
 
 			//make a new packet
 			//setup header
@@ -86,19 +121,35 @@ void NetConnection::FlushOutgoingMessages()
 			header.m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield;
 
 			NetPacket* packet = new NetPacket(header);
-			packet->WriteUpdatedHeaderData();
+			PacketTracker* packetTracker = new PacketTracker();
+			int reliableCount = 0;
+
+			packet->WriteUpdatedPacketHeaderData();
 
 			//write new message to new packet
-			packet->WriteMessage(*m_outgoingUnreliableMessages[currentMessageIndex]);
+			//write message to packet
+			if (outgoingList[currentMessageIndex]->m_definition->IsReliable())
+			{
+				packet->WriteMessage(*outgoingList[currentMessageIndex], m_nextSentReliableId);
+				packetTracker->m_sentReliables[reliableCount] = m_nextSentReliableId;
+				++reliableCount;
+				OnReliableSend();
+
+				outgoingList[currentMessageIndex]->m_sendTime = GetMasterClock()->GetLastHPC();
+				m_sentReliablesMessages.push_back(outgoingList[currentMessageIndex]);
+			}
+			else
+			{
+				packet->WriteMessage(*outgoingList[currentMessageIndex]);
+			}
 		}
 
 		//if we have read all the messages we are done
-		if (currentMessageIndex == (int)m_outgoingUnreliableMessages.size() - 1)
+		if (currentMessageIndex == (int)outgoingList.size() - 1)
 		{
+			//we are full so we need to send this packet
+			SendPacket(packetTracker, packet);
 			areMessagesPacked = true;
-			
-			//add the last packet to the list to send
-			m_readyPackets.push_back(packet);
 		}
 		else
 		{
@@ -106,30 +157,42 @@ void NetConnection::FlushOutgoingMessages()
 		}
 	}
 
-	m_outgoingUnreliableMessages.clear();
-
-	/*delete(packet);
-	packet = nullptr;*/
+	outgoingList.clear();
 
 	theNetSession = nullptr;
 }
 
 //  =========================================================================================
-void NetConnection::SendPackets()
+void NetConnection::SendPacket(PacketTracker* packetTracker, NetPacket* packet)
 {
+	if (packet == nullptr)
+		return;
+
 	NetSession* theNetSession = NetSession::GetInstance();
 
-	while (m_latencySendTimer->ResetAndDecrementIfElapsed() && m_readyPackets.size() > 0)
-	{		
-		theNetSession->m_socket->SendTo(*m_address, m_readyPackets[0]->GetBuffer(), m_readyPackets[0]->GetWrittenByteCount());
-		OnPacketSend(m_readyPackets[0]);
-		m_sentPackets.push_back(m_readyPackets[0]);
-		m_readyPackets.erase(m_readyPackets.begin());
+	theNetSession->m_socket->SendTo(*m_address, packet->GetBuffer(), packet->GetWrittenByteCount());
+	OnPacketSend(packetTracker, packet);
+	m_sentPackets.push_back(packet);	
+
+	theNetSession = nullptr;
+}
+
+//  =========================================================================================
+void NetConnection::GetMessagesToResend(std::vector<NetMessage*>& outMessages)
+{
+	for (int messageIndex = 0; messageIndex < (int)m_sentReliablesMessages.size(); ++messageIndex)
+	{
+		if (GetMasterClock()->GetLastHPC() - m_sentReliablesMessages[messageIndex]->m_sendTime > SecondsToPerformanceCounter(m_connectionResendRateInMilliseconds / 1000.0f))
+		{
+			outMessages.push_back(m_sentReliablesMessages[messageIndex]);
+			m_sentReliablesMessages.erase(m_sentReliablesMessages.begin() + messageIndex);
+			--messageIndex;
+		}
 	}
 }
 
 //  =========================================================================================
-void NetConnection::OnPacketSend(NetPacket* packet)
+void NetConnection::OnPacketSend(PacketTracker* packetTracker, NetPacket* packet)
 {
 	++m_nextSentAck;
 	if (m_nextSentAck == INVALID_PACKET_ACK)
@@ -138,7 +201,14 @@ void NetConnection::OnPacketSend(NetPacket* packet)
 	}
 
 	m_lastSendTimeInHPC = GetMasterClock()->GetLastHPC();
-	AddPacketTracker(packet->GetAck());
+
+	AddPacketTracker(packetTracker, packet->GetAck());
+}
+
+//  =========================================================================================
+void NetConnection::OnReliableSend()
+{
+	++m_nextSentReliableId;
 }
 
 //  =========================================================================================
@@ -217,6 +287,20 @@ void NetConnection::OnMyAckReceived(uint16_t ack)
 
 		m_myLastReceivedTimeInHPC = GetMasterClock()->GetLastHPC();
 		m_trackedPackets[index].m_ack = UINT16_MAX;
+
+		for (int messageIndex = 0; messageIndex < MAX_RELIABLES_PER_PACKET; ++messageIndex)
+		{
+			uint16_t reliableId = m_trackedPackets[index].m_sentReliables[messageIndex];
+			for (int sentReliableMessageIndex = 0; sentReliableMessageIndex < (int)m_sentReliablesMessages.size(); ++sentReliableMessageIndex)
+			{
+				//if we got a reliable back remove it from the sent reliables list so we can stop resending
+				if (m_sentReliablesMessages[sentReliableMessageIndex]->m_header->m_reliableId == reliableId)
+				{
+					m_sentReliablesMessages.erase(m_sentReliablesMessages.begin() + sentReliableMessageIndex);
+					--sentReliableMessageIndex;
+				}
+			}
+		}		
 	}	
 }
 
@@ -227,11 +311,10 @@ uint16_t NetConnection::GetNextAckToSend()
 }
 
 //  =============================================================================
-void NetConnection::AddPacketTracker(uint16_t ack)
+void NetConnection::AddPacketTracker(PacketTracker* tracker, uint16_t ack)
 {
-	PacketTracker tracker;
-	tracker.m_ack = ack;
-	tracker.m_sendTime = GetMasterClock()->GetLastHPC();
+	tracker->m_ack = ack;
+	tracker->m_sendTime = GetMasterClock()->GetLastHPC();
 
 	int index = ack % MAX_TRACKED_PACKETS;
 
@@ -247,7 +330,10 @@ void NetConnection::AddPacketTracker(uint16_t ack)
 		m_numLostPackets = 0;
 	}
 
-	m_trackedPackets[index] = tracker;
+	m_trackedPackets[index] = *tracker;
+	
+	delete(tracker);
+	tracker = nullptr;
 }
 
 //  =============================================================================

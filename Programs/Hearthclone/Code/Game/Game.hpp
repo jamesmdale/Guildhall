@@ -17,7 +17,8 @@ enum eGameNetMessageType
 	TEST_GAME_NET_MESSAGE_TYPE = NUM_CORE_NET_MESSAGE_TYPES,
 
 	//... more types
-	UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE = 128
+	UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE = 128,
+	RELIABLE_TEST_GAME_NET_MESSAGE_TYPE = 129
 };
 
 class Game
@@ -50,17 +51,22 @@ public:
 	void RegisterGameNetMessages();
 
 	float UpdateInput(float deltaSeconds);
+
+	void TestReliableSend();
+
+public:
+	//test for reliable send
+	Stopwatch* m_reliableSendTimer = nullptr;
 };
 
 //command
 void UnreliableTest(Command& cmd);
+void ReliableTest(Command& cmd);
 
 //Net message definition callbacks
 bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection);
+bool OnReliableTest(NetMessage& message, NetConnection* fromConnection);
 bool OnTest(NetMessage& message, NetConnection* fromConnection);
-
-//dev console commands
-void SendUnreliableTest(Command& cmd);
 
 
 

@@ -22,19 +22,21 @@ NetSession::NetSession()
 //  =============================================================================
 NetSession::~NetSession()
 {
+	//clear any remaining messages
+	ProcessOutgoingMessages();
+
+	//clear connections
+	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
+	{		
+		delete(m_connections[connectionIndex]);
+		m_connections[connectionIndex] = nullptr;
+	}
+
 	delete(m_heartbeatRate);
 	m_heartbeatRate = nullptr;
 
 	delete(m_socket);
 	m_socket = nullptr;
-
-	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
-	{
-		//disconnect m_connections[connectionIndex]
-		m_connections[connectionIndex]->FlushOutgoingMessages();
-		delete(m_connections[connectionIndex]);
-		m_connections[connectionIndex] = nullptr;
-	}
 }
 
 //  =============================================================================
@@ -93,7 +95,7 @@ void NetSession::Update()
 		LockMessageDefinitionRegistration();
 	}	
 
-	CheckHeartbeats();
+	//CheckHeartbeats();
 	ProcessOutgoingMessages();
 
 	ProcessIncomingMessages();
@@ -282,14 +284,15 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 		connection->m_address = &packet->m_senderAddress;
 	}
 
-	for(int messageIndex = 0; messageIndex < (int)packet->m_packet->m_packetHeader.m_unreliableMessageCount; ++messageIndex)
+	for(int messageIndex = 0; messageIndex < (int)packet->m_packet->m_packetHeader.m_messageCount; ++messageIndex)
 	{
 		uint16_t totalSize = UINT16_MAX;
 		uint8_t callbackId = UINT8_MAX;
+		uint16_t reliableId = 0;
 
 		packet->m_packet->ReadBytes(&totalSize, sizeof(uint16_t), false);
 		packet->m_packet->ReadBytes(&callbackId, sizeof(uint8_t), false);
-
+		
 		NetMessageDefinition* definition = GetRegisteredDefinitionById((int)callbackId);
 
 		if (definition != nullptr)
@@ -303,8 +306,20 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 
 			NetMessage* message = new NetMessage(definition->m_callbackName);
 
+			//header callback id
+			size_t headerSize = sizeof(uint8_t);
+
+			//get reliable id and adjust remaining size 
+			if (definition->IsReliable())
+			{
+				packet->m_packet->ReadBytes(&reliableId, sizeof(uint16_t), false);
+				message->m_header->m_reliableId = reliableId;
+
+				headerSize += sizeof(uint16_t);
+			}
+
 			//if there is more to the message we must read that in before calling the return function
-			size_t remainingAmountToRead = totalSize - sizeof(NetMessageHeader);
+			size_t remainingAmountToRead = totalSize - headerSize;			
 			if (remainingAmountToRead > 0)
 			{
 				message->ExtendBufferSize(remainingAmountToRead);
@@ -336,8 +351,20 @@ void NetSession::ProcessOutgoingMessages()
 {
 	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
 	{
-		m_connections[connectionIndex]->FlushOutgoingMessages();
-		m_connections[connectionIndex]->SendPackets();
+		//reliables ready for resend
+		std::vector<NetMessage*> m_messagesToResend;
+		m_connections[connectionIndex]->GetMessagesToResend(m_messagesToResend);
+
+		if(m_messagesToResend.size() > 0)
+			m_connections[connectionIndex]->FlushOutgoingMessages(m_messagesToResend);
+
+		//unsent reliable
+		if(m_connections[connectionIndex]->m_unsentReliableMessages.size() > 0)
+			m_connections[connectionIndex]->FlushOutgoingMessages(m_connections[connectionIndex]->m_unsentReliableMessages);
+
+		//unsent unreliable
+		if(m_connections[connectionIndex]->m_unsentUnreliableMessages.size() > 0)
+			m_connections[connectionIndex]->FlushOutgoingMessages(m_connections[connectionIndex]->m_unsentUnreliableMessages);
 	}
 }
 
@@ -352,7 +379,7 @@ bool NetSession::SendMessageWithoutConnection(NetMessage* message, NetConnection
 
 	std::vector<NetPacket*> packetsToSend;
 	NetPacket* packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
-	packet->WriteUpdatedHeaderData();
+	packet->WriteUpdatedPacketHeaderData();
 
 	if (packet->GetBufferSize() + message->GetWrittenByteCount() <= PACKET_MTU)
 	{
@@ -415,7 +442,7 @@ bool NetSession::RegisterMessageDefinition(const std::string& name, NetMessageCa
 }
 
 //  =============================================================================
-bool NetSession::RegisterMessageDefinition(int netMessageId, const std::string & name, NetMessageCallback callback, const eNetMessageFlag & flag)
+bool NetSession::RegisterMessageDefinition(int netMessageId, const std::string& name, NetMessageCallback callback, const eNetMessageFlag& flag)
 {
 	bool success = false;
 
@@ -425,6 +452,7 @@ bool NetSession::RegisterMessageDefinition(int netMessageId, const std::string &
 		definition->m_callbackName = name;
 		definition->m_callback = callback;
 		definition->m_callbackId = netMessageId;
+		definition->m_messageFlag = flag;
 
 		if (s_registeredMessageDefinitions[netMessageId] == nullptr)
 		{
@@ -557,10 +585,13 @@ NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name)
 
 	for (int definitionIndex = 0; definitionIndex < MAX_NET_DEFINITION_REGISTRATIONS; ++definitionIndex)
 	{
-		if (theNetSession->s_registeredMessageDefinitions[definitionIndex]->m_callbackName.compare(name) == 0)
+		if (theNetSession->s_registeredMessageDefinitions[definitionIndex] != nullptr)
 		{
-			return theNetSession->s_registeredMessageDefinitions[definitionIndex];
-		}
+			if (theNetSession->s_registeredMessageDefinitions[definitionIndex]->m_callbackName.compare(name) == 0)
+			{
+				return theNetSession->s_registeredMessageDefinitions[definitionIndex];
+			}
+		}		
 	}
 
 	return nullptr;

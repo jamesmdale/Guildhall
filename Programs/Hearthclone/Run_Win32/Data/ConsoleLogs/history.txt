@@ -1,5 +1,5 @@
 spawn_process 1
-rca add_connection 0 10.8.134.182:10084
-rca add_connection 1 10.8.134.182:10085
+rca add_connection 0 192.168.2.184:10084
+rca add_connection 1 192.168.2.184:10085
 send_ping 1
 send_add 1 4 9
