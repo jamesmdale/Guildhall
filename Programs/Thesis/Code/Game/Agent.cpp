@@ -162,6 +162,7 @@ bool Agent::GetIsAtPosition(const Vector2 & goalDestination)
 		return true;
 }
 
+//  =============================================================================
 AABB2 Agent::GetBounds()
 {
 	return AABB2();

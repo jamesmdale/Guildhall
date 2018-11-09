@@ -83,6 +83,8 @@ public:
 	void CopyPath(Agent* toAgent, Agent* fromAgent, uint8_t startingIndex);
 	Agent* GetAgentFromSortedList(uint16_t agentIndex, eAgentSortType sortType);
 
+	bool GetDoesHaveTopActionGoalPosition(Vector2& outPosition);
+
 public:
 	Map * m_map = nullptr;
 	Agent* m_agent = nullptr;

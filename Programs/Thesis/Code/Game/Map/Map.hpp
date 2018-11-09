@@ -107,6 +107,7 @@ public:
 
 	Stopwatch* m_bombardmentTimer = nullptr;
 	Stopwatch* m_threatTimer = nullptr;
+	Stopwatch* m_sortTimer = nullptr;
 
 	PlayingState* m_gameState = nullptr;
 

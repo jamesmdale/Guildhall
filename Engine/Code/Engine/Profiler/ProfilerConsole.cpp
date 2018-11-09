@@ -42,6 +42,12 @@ ProfilerConsole::~ProfilerConsole()
 
 	delete(m_activeReport);
 	m_activeReport = nullptr;
+
+	if (m_displayedReport != nullptr)
+	{
+		delete(m_displayedReport);
+		m_displayedReport = nullptr;
+	}
 }
 
 
@@ -52,7 +58,7 @@ void ProfilerConsole::Startup()
 #ifdef PROFILER_ENABLED
 
 	//register commands	
-	CommandRegister("profiler", CommandRegistration(OpenToggle, ": Open/close profiler console", "Profiler toggled!"));
+	RegisterCommand("profiler", CommandRegistration(OpenToggle, ": Open/close profiler console", "Profiler toggled!"));
 
 	Renderer* theRenderer = Renderer::GetInstance();
 	Window* theWindow = Window::GetInstance();
@@ -96,6 +102,15 @@ void ProfilerConsole::UpdateFromInput()
 
 	if (!DevConsole::GetInstance()->IsOpen())
 	{
+
+		if (Profiler::GetInstance()->IsPaused())
+		{
+			if (theInput->WasKeyJustPressed(theInput->MOUSE_LEFT_CLICK))
+			{
+				LoadReportAtCursor();
+			}
+		}
+
 		//change data view
 		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_V))
 		{
@@ -125,7 +140,7 @@ void ProfilerConsole::UpdateFromInput()
 			}
 		}
 
-		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_M))
+		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_M) && !Profiler::GetInstance()->IsPaused())
 		{
 			if (m_doesHaveInputPriority == true)
 			{
@@ -140,45 +155,72 @@ void ProfilerConsole::UpdateFromInput()
 				theInput->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);
 			}
 		}
+
+		if (theInput->WasKeyJustPressed(theInput->KEYBOARD_P))
+		{
+			if(Profiler::GetInstance()->IsPaused())
+			{
+				Profiler::GetInstance()->ResumeProfiler();
+
+				m_doesHaveInputPriority = false;
+				theInput->GetMouse()->MouseShowCursor(false);
+				theInput->GetMouse()->SetMouseMode(MOUSE_RELATIVE_MODE);
+			}
+			else
+			{
+				Profiler::GetInstance()->PauseProfiler();
+
+				m_doesHaveInputPriority = true;
+				theInput->GetMouse()->MouseShowCursor(true);
+				theInput->GetMouse()->SetMouseMode(MOUSE_ABSOLUTE_MODE);
+			}
+		}
 	}
 }
 
+//  =============================================================================
 void ProfilerConsole::Update()
 {
-	delete(m_activeReport);
-	m_activeReport = new ProfilerReport();	
+	//update active report every frame so data isn't lost when we hit resume
+	if (!Profiler::GetInstance()->IsPaused())
+	{	
+		delete(m_activeReport);
+		m_activeReport = new ProfilerReport();	
 
-	//populate graph
-	std::vector<ProfileMeasurement*> history;
-	Profiler::GetInstance()->ProfilerGetPreviousFrames(history);
+		//populate graph
+		std::vector<ProfileMeasurement*> history;
+		Profiler::GetInstance()->ProfilerGetPreviousFrames(history);
 
-	m_reportGraph->ClearContent();
+		m_reportGraph->ClearContent();
 		
-	for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
-	{
-		if(history[historyItem] != nullptr)
-			m_reportGraph->AddDataObject(history[historyItem], ParseTimesForGraph(history[historyItem]));
-	}		
+		for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
+		{
+			if(history[historyItem] != nullptr)
+				m_reportGraph->AddDataObject(history[historyItem], ParseTimesForGraph(history[historyItem]));
+		}		
 
-	switch (m_activeReportType)
-	{
-	case TREE_REPORT_TYPE:
-		m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
-		break;
-	case FLAT_REPORT_TYPE:
-		m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame(), m_activeFlatSortMode);
+		switch (m_activeReportType)
+		{
+		case TREE_REPORT_TYPE:
+			m_activeReport->GenerateReportTreeFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame());
+			break;
+		case FLAT_REPORT_TYPE:
+			m_activeReport->GenerateReportFlatFromFrame(Profiler::GetInstance()->ProfileGetPreviousFrame(), m_activeFlatSortMode);
+		}
+
+		//cleanup
+		for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
+		{
+			history[historyItem] = nullptr;
+		}	
+
+		m_displayedReport = m_activeReport;		
 	}
 
-	//cleanup
-	for (int historyItem = 0; historyItem < (int)history.size(); ++historyItem)
-	{
-		history[historyItem] = nullptr;
-	}	
-
-	if(!Profiler::GetInstance()->IsPaused())
-		RefreshDynamicWidgets();	
+	RefreshDynamicWidgets();
 }
 
+//  =============================================================================
 void ProfilerConsole::Render()
 {
 	PROFILER_PUSH();
@@ -195,6 +237,7 @@ void ProfilerConsole::Render()
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void ProfilerConsole::PreRender()
 {
 	m_base->PreRender();
@@ -202,7 +245,31 @@ void ProfilerConsole::PreRender()
 	m_reportGraph->PreRender();
 }
 
+//  =============================================================================
+void ProfilerConsole::LoadReportAtCursor()
+{
+	Window* theWindow = Window::GetInstance();
 
+	AABB2 graphQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.31f, 0.72f), Vector2(0.99f, 0.99f));
+	int xPosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition().x;
+	int clampedXPosition = ClampInt(xPosition, (int)graphQuad.mins.x, (int)graphQuad.maxs.x);
+
+	float indexOfMeasurement = RangeMapFloat((float)clampedXPosition, graphQuad.mins.x, graphQuad.maxs.x,  1.f, (float)m_reportGraph->m_dataObjects.size() - 1.f);
+
+	switch (m_activeReportType)
+	{
+	case TREE_REPORT_TYPE:
+		m_displayedReport->GenerateReportTreeFromFrame(m_reportGraph->m_dataObjects[indexOfMeasurement]);
+		break;
+	case FLAT_REPORT_TYPE:
+		m_displayedReport->GenerateReportFlatFromFrame(m_reportGraph->m_dataObjects[indexOfMeasurement], m_activeFlatSortMode);
+	}
+
+	//cleanup
+	theWindow = nullptr;
+}
+
+//  =============================================================================
 void ProfilerConsole::CreateWidgets()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
@@ -242,6 +309,7 @@ void ProfilerConsole::CreateWidgets()
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void ProfilerConsole::RefreshDynamicWidgets()
 {
 	Window* theWindow = Window::GetInstance();
@@ -261,7 +329,7 @@ void ProfilerConsole::RefreshDynamicWidgets()
 
 	reportContentRenderable->AddRenderableData(0, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("alpha")));
 
-	std::vector<std::string>* reportEntries = m_activeReport->GetEntriesAsFormattedStrings();
+	std::vector<std::string>* reportEntries = m_displayedReport->GetEntriesAsFormattedStrings();
 	for (int entryIndex = 0; entryIndex < (int)reportEntries->size(); ++entryIndex)
 	{
 		AABB2 textQuad;
@@ -313,8 +381,22 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	mb.CreateText2DInAABB2(textBounds.GetCenter(), textBounds.GetDimensions(), 1.f, Stringf("Range in Seconds: 0.0-1.0"), Rgba::WHITE);
 	mb.CreateText2DInAABB2(textBounds2.GetCenter(), textBounds2.GetDimensions(), 1.f, Stringf("Max: %f", maxValueInDataRange), Rgba::WHITE);
 	mb.CreateText2DInAABB2(textBounds3.GetCenter(), textBounds3.GetDimensions(), 1.f, Stringf("Average: %f", averageForLastFrames), Rgba::WHITE);	
-
 	graphRenderable->AddRenderableData(1, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
+
+
+	//if is paused draw line equal t our mouse position
+	if(Profiler::GetInstance()->IsPaused())
+	{
+		int xPosition = InputSystem::GetInstance()->GetMouse()->GetMouseClientPosition().x;
+		int clampedXPosition = ClampInt(xPosition, (int)graphQuad.mins.x, (int)graphQuad.maxs.x);
+		float indexOfMeasurement = RangeMapFloat((float)clampedXPosition, graphQuad.mins.x, graphQuad.maxs.x,  1.f, (float)m_reportGraph->m_dataObjects.size() - 1.f);
+		mb.CreateLine2D(Vector2(clampedXPosition, graphQuad.mins.y), Vector2(clampedXPosition, graphQuad.maxs.y), Rgba::RED);
+		graphRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("default")));
+
+		AABB2 textBounds4 = AABB2(graphQuad, Vector2(0.8f, 0.5f), Vector2(0.99f, 0.59f));
+		mb.CreateText2DInAABB2(textBounds4.GetCenter(), textBounds4.GetDimensions(), 1.f, Stringf("Frame: %i", (int)indexOfMeasurement), Rgba::WHITE);
+		graphRenderable->AddRenderableData(2, mb.CreateMesh<VertexPCU>(), Material::Clone(theRenderer->CreateOrGetMaterial("text")));
+	}
 
 	// add renderables to widgets and scene =============================================================================
 	m_reportContent->AddRenderable(reportContentRenderable);
@@ -333,13 +415,13 @@ void ProfilerConsole::RefreshDynamicWidgets()
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 double ProfilerConsole::ParseTimesForGraph(ProfileMeasurement* measurement)
 {
 	uint64_t elapsedHPC = measurement->m_endTime - measurement->m_startTime;
 
 	return PerformanceCounterToSeconds(elapsedHPC);
 }
-
 
 
 // console commands =============================================================================

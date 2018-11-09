@@ -29,6 +29,7 @@ extern float g_maxCoordinateDistanceSquared;
 extern int g_maxHealth;
 extern float g_skewForCurrentPlan;
 
+
 //poi globals
 extern float g_baseResourceRefillTimePerSecond;
 extern int g_maxResourceCarryAmount;
@@ -45,6 +46,10 @@ extern float g_bombardmentRatePerSecond;
 extern float g_bombardmentExplosionTime;
 extern float g_bombardmentExplosionSize;
 extern int g_bombardmentDamage;
+
+//optimization globalks
+extern float g_sortTimerInSeconds;
+extern float g_agentCopyDestinationPositionRadius;
 
 //  threat globals
 extern float g_threatIncreaseRatePerSecond;

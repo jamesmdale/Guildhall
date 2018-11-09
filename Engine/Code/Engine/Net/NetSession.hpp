@@ -10,7 +10,6 @@
 #include <vector>
 
 #define MAX_NET_DEFINITION_REGISTRATIONS (UINT8_MAX)
-#define RELIABLE_WINDOW (32)
 
 enum eCoreNetMessageType
 {

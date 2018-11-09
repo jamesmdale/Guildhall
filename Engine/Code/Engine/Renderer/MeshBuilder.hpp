@@ -117,9 +117,7 @@ public:
 			dataBounds.maxs = maxs;
 
 			CreateQuad2D(dataBounds.GetCenter(), dataBounds.GetDimensions(), graphColor);
-		}
-
-		
+		}		
 	}
 };
 

@@ -31,6 +31,8 @@ public:
 	void Render();
 	void PreRender();
 
+	void LoadReportAtCursor();
+
 	//visual updates
 	void CreateWidgets();
 	void RefreshDynamicWidgets();
@@ -56,6 +58,7 @@ public:
 	Graph<ProfileMeasurement>* m_reportGraph = nullptr;
 
 	ProfilerReport* m_activeReport = nullptr;
+	ProfilerReport* m_displayedReport = nullptr;
 	eReportTypeView m_activeReportType = TREE_REPORT_TYPE;
 	eProfilerFlatReportSortMode m_activeFlatSortMode = TOTAL_PROFILER_SORT_MODE;
 

@@ -114,20 +114,20 @@ DevConsole::DevConsole()
 void DevConsole::Startup()
 {
 	//register commands
-	CommandRegister("help", CommandRegistration(Help, ": Use to show all supported commands", "All commands displayed!"));
-	CommandRegister("clear", CommandRegistration(Clear, ": Use to delete all dev console input history", "History cleared!"));
-	CommandRegister("log_console_session", CommandRegistration(SaveLog, ": Use to save current console session to Data/Log", "Session logged!"));
-	CommandRegister("echo_with_color", CommandRegistration(EchoWithColor, ": Use to print supplied text with chosen color in console", "ECHOED! Echoed! echoed...trails off"));
+	RegisterCommand("help", CommandRegistration(Help, ": Use to show all supported commands", "All commands displayed!"));
+	RegisterCommand("clear", CommandRegistration(Clear, ": Use to delete all dev console input history", "History cleared!"));
+	RegisterCommand("log_console_session", CommandRegistration(SaveLog, ": Use to save current console session to Data/Log", "Session logged!"));
+	RegisterCommand("echo_with_color", CommandRegistration(EchoWithColor, ": Use to print supplied text with chosen color in console", "ECHOED! Echoed! echoed...trails off"));
 
 	//log registrations
-	CommandRegister("log_flush", CommandRegistration(FlushLog,": force flushes log messages", "Log flushed!"));
-	CommandRegister("log_enable", CommandRegistration(EnableLogOuputToDevConsole, ": prints contents to devconsole from log", "Showing log output!"));
-	CommandRegister("log_disable", CommandRegistration(DisableLogOuputToDevConsole, ": discontinues prints of content to devconsole from log", "Hiding log output!"));
-	CommandRegister("log_blacklist", CommandRegistration(LogBlacklistMode, ": only prints items that don't match tags in list"));
-	CommandRegister("log_whitelist", CommandRegistration(LogWhiteListMode, ": only prints items that match tags in list"));
-	CommandRegister("log_show_tag", CommandRegistration(LogShowTag, ": adds tags to be shown in print"));
-	CommandRegister("log_hide_tag", CommandRegistration(LogHideTag, ": adds tags to be hidden in print"));
-	CommandRegister("save_session", CommandRegistration(SaveCommandHistory, ": saves command history to 'Data\\ConsoleLogs\\history.txt", "History saved!"));
+	RegisterCommand("log_flush", CommandRegistration(FlushLog,": force flushes log messages", "Log flushed!"));
+	RegisterCommand("log_enable", CommandRegistration(EnableLogOuputToDevConsole, ": prints contents to devconsole from log", "Showing log output!"));
+	RegisterCommand("log_disable", CommandRegistration(DisableLogOuputToDevConsole, ": discontinues prints of content to devconsole from log", "Hiding log output!"));
+	RegisterCommand("log_blacklist", CommandRegistration(LogBlacklistMode, ": only prints items that don't match tags in list"));
+	RegisterCommand("log_whitelist", CommandRegistration(LogWhiteListMode, ": only prints items that match tags in list"));
+	RegisterCommand("log_show_tag", CommandRegistration(LogShowTag, ": adds tags to be shown in print"));
+	RegisterCommand("log_hide_tag", CommandRegistration(LogHideTag, ": adds tags to be hidden in print"));
+	RegisterCommand("save_session", CommandRegistration(SaveCommandHistory, ": saves command history to 'Data\\ConsoleLogs\\history.txt", "History saved!"));
 
 	//set camera info
 	m_consoleCamera = new Camera();

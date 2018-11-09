@@ -8,6 +8,7 @@
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Math\IntVector2.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Engine\Core\DevConsole.hpp"
 #include <map>
 #include <string>
 
@@ -56,6 +57,9 @@ void PlayingState::Initialize()
 	//re-adjust camera center
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
 	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));
+
+	//register commands
+	RegisterCommand("toggle_optimization", CommandRegistration(ToggleOptimized, ": Toggle blanket optimizations on and off", ""));
 
 	//cleanup
 	definition = nullptr;	
@@ -149,9 +153,12 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_O))
 	{
-		m_isOptimized = !m_isOptimized;
-	}
+		Game* theGame = Game::GetInstance();
+		theGame->m_isOptimized = !theGame->m_isOptimized;
 
+		theGame = nullptr;
+	}
+	
 	return deltaSeconds; //new deltaSeconds
 }
 
@@ -195,4 +202,21 @@ void PlayingState::RenderUI()
 	//theWindow = nullptr;
 }
 
+// Commands =============================================================================
+void ToggleOptimized(Command& cmd)
+{
+	Game* theGame = Game::GetInstance();
 
+	theGame->m_isOptimized = !theGame->m_isOptimized;
+
+	if (theGame->m_isOptimized)
+	{
+		DevConsolePrintf(Rgba::YELLOW, "Game is optimized!");
+	}
+	else
+	{
+		DevConsolePrintf(Rgba::YELLOW, "Game is NOT optimized!");
+	}
+
+	theGame = nullptr;
+}

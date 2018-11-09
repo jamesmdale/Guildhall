@@ -65,8 +65,8 @@ AudioSystem * AudioSystem::GetInstance()
 void AudioSystem::Startup()
 {
 	//register devconsole commands
-	CommandRegister("set_volume", CommandRegistration(SetOverallVolume, ": Type set_volume with 0.0f to 1.0f value to set overall volume"));
-	CommandRegister("toggle_mute", CommandRegistration(ToggleMute, ": Toggle sound mute"));
+	RegisterCommand("set_volume", CommandRegistration(SetOverallVolume, ": Type set_volume with 0.0f to 1.0f value to set overall volume"));
+	RegisterCommand("toggle_mute", CommandRegistration(ToggleMute, ": Toggle sound mute"));
 }
 
 void AudioSystem::Shutdown()

@@ -174,7 +174,7 @@ void Planner::UpdatePlan()
 
 	if (iterationsOfQueueActions == 100)
 	{
-		std::string optimizedText = m_map->m_gameState->m_isOptimized ? "(optimized)" : "(unoptimized)";
+		std::string optimizedText = Game::GetInstance()->m_isOptimized ? "(optimized)" : "(unoptimized)";
 		float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForQueueActions);
 		//DevConsolePrintf("Average Time After 100 iterations %s %f", optimizedText.c_str(), secondsAverage);
 		iterationsOfQueueActions = 0;
@@ -238,7 +238,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 		m_agent->m_planner->AddActionToStack(data);
 
 		//figure out if we can skip doing an A* by borrowing someone else's path
-		if (m_map->m_gameState->m_isOptimized)
+		if (Game::GetInstance()->m_isOptimized)
 		{
 			PROFILER_PUSH();
 			bool success = FindAgentAndCopyPath();
@@ -716,6 +716,8 @@ IntVector2 Planner::GetNearestTileCoordinateOfMapEdgeFromCoordinate(const IntVec
 //  =========================================================================================
 bool Planner::FindAgentAndCopyPath()
 {
+	static Disc2 compareDisc = Disc2(0.f, 0.f, g_agentCopyDestinationPositionRadius);
+
 	bool didSuccessfullyCopyMatchingAgent = false;
 
 	// profiling ----------------------------------------------
@@ -728,77 +730,90 @@ bool Planner::FindAgentAndCopyPath()
 	++iterations;
 	//  ----------------------------------------------
 
-	//search surrounding agents for similarities (most likely to be similar)
-	Agent* matchingAgents[12]; //get 3 on each side from each list
-
-	//get the 6 closest on the X plane
-	matchingAgents[0] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 1, X_AGENT_SORT_TYPE);
-	matchingAgents[1] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 2, X_AGENT_SORT_TYPE);
-	matchingAgents[2] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 3, X_AGENT_SORT_TYPE);
-
-	matchingAgents[3] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 1, X_AGENT_SORT_TYPE);
-	matchingAgents[4] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 2, X_AGENT_SORT_TYPE);
-	matchingAgents[5] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 3, X_AGENT_SORT_TYPE);
-
-	//get 3 closest on the Y Plane
-	matchingAgents[6] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 1, Y_AGENT_SORT_TYPE);
-	matchingAgents[7] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 2, Y_AGENT_SORT_TYPE);
-	matchingAgents[8] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 3, Y_AGENT_SORT_TYPE);
-
-	matchingAgents[9] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 1, Y_AGENT_SORT_TYPE);
-	matchingAgents[10] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 2, Y_AGENT_SORT_TYPE);
-	matchingAgents[11] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 3, Y_AGENT_SORT_TYPE);
-
-
-	//--------IN ORDER OF PRIORITY-----------
-	//we care about their goal location
-	//we care about their current task
-	//we care about the distance to their current path
-	
-	Agent* mostResembledAgent = nullptr;
-	float minDistanceSquared = m_map->GetMapDistanceSquared();
-	uint8_t indexIntoMostResembledAgentsPath = UINT8_MAX;
-
-	for (int agentIndex = 0; agentIndex < 12; ++agentIndex)
+	Vector2 goalPosition = Vector2::ZERO;
+	if (GetDoesHaveTopActionGoalPosition(goalPosition))
 	{
-		//early out if agent index is out of range OR if we've already looked over this agent
-		if(matchingAgents[agentIndex] == nullptr || mostResembledAgent == matchingAgents[agentIndex])
-			continue;
+		//search surrounding agents for similarities (most likely to be similar)
+		Agent* matchingAgents[12]; //get 3 on each side from each list
 
-		if (matchingAgents[agentIndex]->m_currentPath.size() > 0)
+		//get the 6 closest on the X plane
+		matchingAgents[0] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 1, X_AGENT_SORT_TYPE);
+		matchingAgents[1] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 2, X_AGENT_SORT_TYPE);
+		matchingAgents[2] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 3, X_AGENT_SORT_TYPE);
+
+		matchingAgents[3] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 1, X_AGENT_SORT_TYPE);
+		matchingAgents[4] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 2, X_AGENT_SORT_TYPE);
+		matchingAgents[5] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 3, X_AGENT_SORT_TYPE);
+
+		//get 3 closest on the Y Plane
+		matchingAgents[6] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 1, Y_AGENT_SORT_TYPE);
+		matchingAgents[7] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 2, Y_AGENT_SORT_TYPE);
+		matchingAgents[8] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 3, Y_AGENT_SORT_TYPE);
+
+		matchingAgents[9] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 1, Y_AGENT_SORT_TYPE);
+		matchingAgents[10] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 2, Y_AGENT_SORT_TYPE);
+		matchingAgents[11] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 3, Y_AGENT_SORT_TYPE);
+
+
+		//--------IN ORDER OF PRIORITY-----------
+		//we care about their goal location
+		//we care about their current task
+		//we care about the distance to their current path
+	
+		Agent* mostResembledAgent = nullptr;
+		float minDistanceSquared = m_map->GetMapDistanceSquared();
+		uint8_t indexIntoMostResembledAgentsPath = UINT8_MAX;
+
+		compareDisc.center = goalPosition;
+
+		for (int agentIndex = 0; agentIndex < 12; ++agentIndex)
 		{
-			if (m_agent->m_currentActionGoalPosition == matchingAgents[agentIndex]->m_planner->m_actionStack.top()->m_finalGoalPosition)
+			//early out if agent index is out of range OR if we've already looked over this agent
+			if (matchingAgents[agentIndex] == nullptr || mostResembledAgent == matchingAgents[agentIndex])
 			{
-				//this agent matches our current goal location
-				for (int agentPathIndex = 0; agentPathIndex < (int)matchingAgents[agentIndex]->m_currentPath.size(); ++agentPathIndex)
+				continue;
+			}				
+		
+			if (matchingAgents[agentIndex]->m_currentPath.size() > 0)
+			{	
+				Vector2 matchingAgentFinalDestinationPosition = Vector2::ZERO;
+				if (!matchingAgents[agentIndex]->m_planner->GetDoesHaveTopActionGoalPosition(matchingAgentFinalDestinationPosition))
 				{
-					float distanceSquared = GetDistanceSquared(matchingAgents[agentIndex]->m_currentPath[agentPathIndex], m_agent->m_position);
-					if (distanceSquared < minDistanceSquared)
+					continue;
+				}
+
+				if (compareDisc.IsPointInside(matchingAgentFinalDestinationPosition))
+				{
+					//this agent matches our current goal location
+					for (int agentPathIndex = 0; agentPathIndex < (int)matchingAgents[agentIndex]->m_currentPath.size(); ++agentPathIndex)
 					{
-						mostResembledAgent = matchingAgents[agentIndex];
-						minDistanceSquared = distanceSquared;
-						indexIntoMostResembledAgentsPath = (uint8_t)agentPathIndex;
+						float distanceSquared = GetDistanceSquared(matchingAgents[agentIndex]->m_currentPath[agentPathIndex], m_agent->m_position);
+						if (distanceSquared < minDistanceSquared)
+						{
+							mostResembledAgent = matchingAgents[agentIndex];
+							minDistanceSquared = distanceSquared;
+							indexIntoMostResembledAgentsPath = (uint8_t)agentPathIndex;
+						}
 					}
 				}
 			}
+
+			//cleanup this agent so we can simply call delete at the end
+			matchingAgents[agentIndex] = nullptr;
 		}
 
-		//cleanup this agent so we can simply call delete at the end
-		matchingAgents[agentIndex] = nullptr;
+		//we didn't find someone else's path to borrow
+		if (mostResembledAgent != nullptr)
+		{
+			//copy path into this agent's path
+			CopyPath(m_agent, mostResembledAgent, indexIntoMostResembledAgentsPath);
+			didSuccessfullyCopyMatchingAgent = true;		
+		}
+
+		// cleanup ----------------------------------------------
+		//should all be marked as nullptr by the end
+		mostResembledAgent = nullptr;
 	}
-
-	//we didn't find someone else's path to borrow
-	if (mostResembledAgent != nullptr)
-	{
-		//copy path into this agent's path
-		CopyPath(m_agent, mostResembledAgent, indexIntoMostResembledAgentsPath);
-		didSuccessfullyCopyMatchingAgent = true;		
-	}
-
-	// cleanup ----------------------------------------------
-	//should all be marked as nullptr by the end
-	mostResembledAgent = nullptr;
-
 
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
@@ -829,6 +844,7 @@ void Planner::CopyPath(Agent* toAgent, Agent* fromAgent, uint8_t startingIndex)
 {
 	toAgent->m_currentPath.clear();
 	toAgent->m_currentPathIndex = startingIndex;
+	toAgent->m_currentPath.resize(startingIndex + 1);
 
 	for (int pathIndex = startingIndex; pathIndex >= 0; --pathIndex)
 	{
@@ -857,4 +873,19 @@ Agent* Planner::GetAgentFromSortedList(uint16_t agentIndex, eAgentSortType sortT
 		return m_map->m_agentsOrderedByYPosition[agentIndex];
 		break;
 	}
+}
+
+//  =============================================================================
+bool Planner::GetDoesHaveTopActionGoalPosition(Vector2& positionOut)
+{
+	if (m_actionStack.size() > 0)
+	{
+		positionOut = m_actionStack.top()->m_finalGoalPosition;
+		return true;
+	}
+	else
+	{
+		//if we don't have an action, return negative one
+		return false;
+	}	
 }

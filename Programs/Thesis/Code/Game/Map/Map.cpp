@@ -68,6 +68,17 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 //  =========================================================================================
 Map::~Map()
 {
+	//cleanuip timers
+	delete(m_sortTimer);
+	m_sortTimer = nullptr;
+
+	delete(m_threatTimer);
+	m_threatTimer = nullptr;	
+
+	delete(m_bombardmentTimer);
+	m_bombardmentTimer = nullptr;
+
+	//...everything else
 	m_mapDefinition = nullptr;
 	
 	delete(m_mapAsGrid);
@@ -104,7 +115,7 @@ void Map::Initialize()
 	IntVector2 dimensions = GetDimensions();
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
 
-	for (int agentIndex = 0; agentIndex < 500; ++agentIndex)
+	for (int agentIndex = 0; agentIndex < 100; ++agentIndex)
 	{
 		IsoSpriteAnimSet* animSet = nullptr;
 		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
@@ -126,6 +137,8 @@ void Map::Initialize()
 	}
 
 	//sort agents for the first time
+	m_sortTimer = new Stopwatch(g_sortTimerInSeconds, GetMasterClock());
+
 	SortAgentsByX();
 	SortAgentsByY();
 
@@ -154,10 +167,14 @@ void Map::Update(float deltaSeconds)
 
 	//check optimization flags
 	//sort for Y drawing for render AND for next frame's agent update
-	if (m_gameState->m_isOptimized)
+	if (Game::GetInstance()->m_isOptimized)
 	{		
-		SortAgentsByX();
-		SortAgentsByY();
+		TODO("Check and reset sorting timer to prevent sorting every frame")
+		if (m_sortTimer->CheckAndReset())
+		{
+			SortAgentsByX();
+			SortAgentsByY();
+		}		
 	}
 
 	// Update bombardments

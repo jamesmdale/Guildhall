@@ -1,9 +1,11 @@
 #pragma once
 #include "Game\GameStates\GameState.hpp"
 #include "Game\Map\Map.hpp"
+#include "Engine\Core\Command.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Core\Widget.hpp"
 #include "Engine\Utility\Grid.hpp"
+
 
 class PlayingState : public GameState
 {
@@ -35,7 +37,6 @@ public:
 
 	Camera* m_uiCamera = nullptr;
 	Map* m_map = nullptr;
-
-	//optimization method flags
-	bool m_isOptimized = true;
 };
+
+void ToggleOptimized(Command& cmd);

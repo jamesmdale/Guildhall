@@ -70,13 +70,13 @@ void NetSession::Startup()
 	RegisterMessageDefinition("ack", OnAck);
 
 	//register app commands
-	CommandRegister("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", "Successfully added connection!"));
-	CommandRegister("send_ping", CommandRegistration(SendPing, ": Send ping to index: idx", ""));
-	CommandRegister("send_add", CommandRegistration(SendAdd, ": Send add request to index: idx var1 var2", ""));
-	CommandRegister("send_multi_ping", CommandRegistration(SendMultiPing, ": Send two pings to index (tests multi message in single packet): idx", ""));
-	CommandRegister("net_sim_loss", CommandRegistration(SetNetSimLoss, ": Set the simulated loss: amount (value 0.0 to 1.0)", ""));
-	CommandRegister("net_sim", CommandRegistration(SetNetSimLag, ": Set the simulated network latency (in MS): min max ", ""));
-	CommandRegister("net_set_heart_rate", CommandRegistration(SetGlobalHeartRate, ": Set the heartbeat rate for all connections: rate", ""));
+	RegisterCommand("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", "Successfully added connection!"));
+	RegisterCommand("send_ping", CommandRegistration(SendPing, ": Send ping to index: idx", ""));
+	RegisterCommand("send_add", CommandRegistration(SendAdd, ": Send add request to index: idx var1 var2", ""));
+	RegisterCommand("send_multi_ping", CommandRegistration(SendMultiPing, ": Send two pings to index (tests multi message in single packet): idx", ""));
+	RegisterCommand("net_sim_loss", CommandRegistration(SetNetSimLoss, ": Set the simulated loss: amount (value 0.0 to 1.0)", ""));
+	RegisterCommand("net_sim", CommandRegistration(SetNetSimLag, ": Set the simulated network latency (in MS): min max ", ""));
+	RegisterCommand("net_set_heart_rate", CommandRegistration(SetGlobalHeartRate, ": Set the heartbeat rate for all connections: rate", ""));
 }
 
 //  =========================================================================================
@@ -351,20 +351,22 @@ void NetSession::ProcessOutgoingMessages()
 {
 	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
 	{
-		//reliables ready for resend
-		std::vector<NetMessage*> m_messagesToResend;
-		m_connections[connectionIndex]->GetMessagesToResend(m_messagesToResend);
+		m_connections[connectionIndex]->FlushOutgoingMessages();
 
-		if(m_messagesToResend.size() > 0)
-			m_connections[connectionIndex]->FlushOutgoingMessages(m_messagesToResend);
+		////reliables ready for resend
+		//std::vector<NetMessage*> m_messagesToResend;
+		//m_connections[connectionIndex]->GetMessagesToResend(m_messagesToResend);
 
-		//unsent reliable
-		if(m_connections[connectionIndex]->m_unsentReliableMessages.size() > 0)
-			m_connections[connectionIndex]->FlushOutgoingMessages(m_connections[connectionIndex]->m_unsentReliableMessages);
+		//if(m_messagesToResend.size() > 0)
+		//	m_connections[connectionIndex]->FlushOutgoingMessages(m_messagesToResend);
 
-		//unsent unreliable
-		if(m_connections[connectionIndex]->m_unsentUnreliableMessages.size() > 0)
-			m_connections[connectionIndex]->FlushOutgoingMessages(m_connections[connectionIndex]->m_unsentUnreliableMessages);
+		////unsent reliable
+		//if(m_connections[connectionIndex]->m_unsentReliableMessages.size() > 0)
+		//	m_connections[connectionIndex]->FlushOutgoingMessages(m_connections[connectionIndex]->m_unsentReliableMessages);
+
+		////unsent unreliable
+		//if(m_connections[connectionIndex]->m_unsentUnreliableMessages.size() > 0)
+		//	m_connections[connectionIndex]->FlushOutgoingMessages(m_connections[connectionIndex]->m_unsentUnreliableMessages);
 	}
 }
 

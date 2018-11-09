@@ -233,7 +233,7 @@ std::string Command::PeekNextString()
 }
 
 //  =========================================================================================
-void CommandRegister(char const* name, CommandRegistration definition)
+void RegisterCommand(char const* name, CommandRegistration definition)
 {
 	std::string cmdName(name);
 	ToLower(cmdName);

@@ -6,6 +6,7 @@ class Stopwatch
 {
 public:
 	Stopwatch(Clock* referenceClock = nullptr);
+	Stopwatch(float seconds, Clock* referenceClock = nullptr);
 	~Stopwatch();
 
 	void SetClock(Clock* referenceClock);

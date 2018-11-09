@@ -42,10 +42,10 @@ Profiler* Profiler::GetInstance()
 void Profiler::Startup()
 {
 #ifdef PROFILER_ENABLED
-	CommandRegister("profiler_pause", CommandRegistration(Pause, ": Pauses profiler capturing", "Profiler Paused!"));
-	CommandRegister("profiler_resume", CommandRegistration(Resume, ": Resume profiler capturing", "Profiler resumed!"));
-	CommandRegister("profiler_history", CommandRegistration(LogHistory, ": Print all history items in the profile history capture", "Profiler printing history.."));
-	CommandRegister("profiler_report", CommandRegistration(Report, ": Capture profiler report for last frame", "Profile printing report..."));
+	RegisterCommand("profiler_pause", CommandRegistration(Pause, ": Pauses profiler capturing", "Profiler Paused!"));
+	RegisterCommand("profiler_resume", CommandRegistration(Resume, ": Resume profiler capturing", "Profiler resumed!"));
+	RegisterCommand("profiler_history", CommandRegistration(LogHistory, ": Print all history items in the profile history capture", "Profiler printing history.."));
+	RegisterCommand("profiler_report", CommandRegistration(Report, ": Capture profiler report for last frame", "Profile printing report..."));
 #endif
 }
 

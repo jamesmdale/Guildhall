@@ -69,7 +69,7 @@ void TheApp::RunFrame()
 void TheApp::Initialize()
 {
 	//register app commands
-	CommandRegister("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
+	RegisterCommand("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();

@@ -6,6 +6,8 @@
 
 #define MAX_TRACKED_PACKETS (64)
 
+constexpr uint16_t RELIABLE_WINDOW(64);
+
 class NetConnection
 {
 public:
@@ -13,7 +15,8 @@ public:
 	~NetConnection();
 
 	void QueueMessage(NetMessage* message);
-	void FlushOutgoingMessages(std::vector<NetMessage*>& outgoingList);
+	//void FlushOutgoingMessages(std::vector<NetMessage*>& outgoingList);
+	void FlushOutgoingMessages();
 	void SendPacket(PacketTracker* packetTracker, NetPacket* packet);
 
 	void GetMessagesToResend(std::vector<NetMessage*>& outMessages);
@@ -36,6 +39,12 @@ public:
 	float GetLastSentTimeInSeconds();
 	int GetLastSentAck();
 	int GetLastReceivedAck();
+
+	uint16_t GetLowestReliableId();
+	bool IsReliableConfirmed(uint16_t id) const;
+	void MarkReliableReceived(uint16_t id);
+	bool ConfirmReliableId(uint16_t id);
+	bool HasReceivedReliableId(uint16_t id);
 
 public:
 	uint8_t m_index = UINT8_MAX; //max of 255
@@ -63,11 +72,15 @@ public:
 	Stopwatch* m_latencySendTimer = nullptr;
 	Stopwatch* m_heartbeatTimer = nullptr;
 
+	// reliable ----------------------------------------------
+	std::vector<uint16_t> m_receivedReliableIds;
+	uint16_t m_highestReceivedReliableId;
+
 	// storage for messages ----------------------------------------------
 	std::vector<NetMessage*> m_unsentUnreliableMessages;
 
 	std::vector<NetMessage*> m_unsentReliableMessages;
-	std::vector<NetMessage*> m_sentReliablesMessages;
+	std::vector<NetMessage*> m_unconfirmedSentReliablesMessages;
 
 	std::vector<NetPacket*> m_sentPackets;	
 	PacketTracker m_trackedPackets[MAX_TRACKED_PACKETS];

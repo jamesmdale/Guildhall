@@ -69,6 +69,6 @@ public:
 	std::string ParseCommandStringForValidFormatting();								   
 };
 
-void CommandRegister( char const *name, CommandRegistration definition); 
+void RegisterCommand( char const *name, CommandRegistration definition); 
 std::vector<std::string> GetRegisteredCommandList();
 bool CommandRun( char const *command ); //if command was found registered return true

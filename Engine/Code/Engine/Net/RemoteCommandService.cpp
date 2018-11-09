@@ -67,14 +67,14 @@ void RemoteCommandService::Startup()
 {
 	//setup devconsole commands
 	//register app commands
-	CommandRegister("rc", CommandRegistration(RemoteCommand, ":'idx=X command' Use to issue remote commands using", ""));
-	CommandRegister("rcb", CommandRegistration(RemoteCommandBroadcast, ":Use to issue a remote command to all connected agents", ""));
-	CommandRegister("rca", CommandRegistration(RemoteCommandAll, ":Use to issue a remote command to all connected agents and run locally", ""));
-	CommandRegister("rc_echo_toggle", CommandRegistration(RemoteCommandToggleEcho, ":Use to disable echo feedback from console", ""));
-	CommandRegister("rc_join", CommandRegistration(RemoteCommandJoin, ":Use to disconnect from current host and attempt to join a new host", ""));
-	CommandRegister("rc_host", CommandRegistration(RemoteCommandHost, ":Use to disconnect from all connections and host on the provided port", ""));
-	CommandRegister("test_message", CommandRegistration(TestBytePackerSend, "Get a string to send", ""));
-	CommandRegister("spawn_process", CommandRegistration(SpawnProcess, "Clone this process X number of times (max of 10)", ""));
+	RegisterCommand("rc", CommandRegistration(RemoteCommand, ":'idx=X command' Use to issue remote commands using", ""));
+	RegisterCommand("rcb", CommandRegistration(RemoteCommandBroadcast, ":Use to issue a remote command to all connected agents", ""));
+	RegisterCommand("rca", CommandRegistration(RemoteCommandAll, ":Use to issue a remote command to all connected agents and run locally", ""));
+	RegisterCommand("rc_echo_toggle", CommandRegistration(RemoteCommandToggleEcho, ":Use to disable echo feedback from console", ""));
+	RegisterCommand("rc_join", CommandRegistration(RemoteCommandJoin, ":Use to disconnect from current host and attempt to join a new host", ""));
+	RegisterCommand("rc_host", CommandRegistration(RemoteCommandHost, ":Use to disconnect from all connections and host on the provided port", ""));
+	RegisterCommand("test_message", CommandRegistration(TestBytePackerSend, "Get a string to send", ""));
+	RegisterCommand("spawn_process", CommandRegistration(SpawnProcess, "Clone this process X number of times (max of 10)", ""));
 
 
 	auto func = [=](){g_theRemoteCommandService->Update();};

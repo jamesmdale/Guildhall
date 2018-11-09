@@ -1,4 +1,6 @@
 #pragma once
+#include <stdint.h>
+
 class Vector2;
 class IntVector2;
 class Vector3;
@@ -99,6 +101,19 @@ float SmoothStartArch3(float t);
 float GLSLSmoothStep(float edge0, float edge1, float x);
 float Crossfade(float a, float b, float t);
 
+//cyclic math
+bool CyclicLessThan(uint16_t a, uint16_t b);
+bool CyclicGreaterThan(uint16_t a, uint16_t b);
+
+//template <typename T>
+//bool CyclicLessThan(const T& a, const T& b)
+//{
+//	static T const HALF_MAX = (~(T)0) >> 1;
+//	const T diff = b - a;
+//	return (diff <= HALF_MAX);
+//}
+
+//interpolate
 const int Interpolate(const int& start, const int& end, float fractionTowardEnd);
 const unsigned char Interpolate(const unsigned char& start, const unsigned char& end, float fractionTowardEnd);
 const float Interpolate(const float& start, const float& end, float fractionTowardEnd);

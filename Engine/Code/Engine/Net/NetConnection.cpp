@@ -1,6 +1,7 @@
 #include "Engine\Net\NetConnection.hpp"
 #include "Engine\Net\NetSession.hpp"
 #include "Engine\Net\NetPacket.hpp"
+#include "Engine\Math\MathUtils.hpp"
 
 //  =============================================================================
 NetConnection::NetConnection()
@@ -50,18 +51,12 @@ void NetConnection::QueueMessage(NetMessage* message)
 }
 
 //  =============================================================================
-void NetConnection::FlushOutgoingMessages(std::vector<NetMessage*>& outgoingList)
+void NetConnection::FlushOutgoingMessages()
 {
 	if(!m_latencySendTimer->ResetAndDecrementIfElapsed())
 		return;
 
-	if(outgoingList.size() == 0)
-		return;
-
 	NetSession* theNetSession = NetSession::GetInstance();
-
-	bool areMessagesPacked = false;
-	int currentMessageIndex = 0;
 
 	//setup header
 	NetPacketHeader header;
@@ -75,91 +70,97 @@ void NetConnection::FlushOutgoingMessages(std::vector<NetMessage*>& outgoingList
 	int reliableCount = 0;
 
 	packet->WriteUpdatedPacketHeaderData();
-	
-	while (!areMessagesPacked)
+
+	bool doesPacketHaveRoom = true;
+
+	size_t totalMessageSize = 0;
+
+	// sent reliables ----------------------------------------------
+	for (int messageIndex = 0; messageIndex < (int)m_unconfirmedSentReliablesMessages.size(); ++messageIndex)
 	{
-		//total buffer size + payload size + header size + total message size (header + payload sizes)
-		size_t totalMessageSize = packet->GetBufferSize() + outgoingList[currentMessageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t);
-		
-		//if messages is reliable
-		if (outgoingList[currentMessageIndex]->m_definition->IsReliable())
+		if (doesPacketHaveRoom)
 		{
-			//add sizeof reliableid
-			totalMessageSize += sizeof(uint16_t);
-		}
+			//total buffer size + payload size + reliable header size + total message size (header + payload sizes)
+			size_t totalMessageSize = packet->GetBufferSize() + m_unconfirmedSentReliablesMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t);
 
-		//if we have room write to the current packet
-		if (totalMessageSize <= PACKET_MTU)
-		{
-			//write message to packet
-			if (outgoingList[currentMessageIndex]->m_definition->IsReliable())
+			//if we have room write to the current packet
+			if (totalMessageSize <= PACKET_MTU)
 			{
-				packet->WriteMessage(*outgoingList[currentMessageIndex], m_nextSentReliableId);
-				packetTracker->m_sentReliables[reliableCount] = m_nextSentReliableId;
+				//write message to packet
+				packet->WriteMessage(*m_unconfirmedSentReliablesMessages[messageIndex], m_unconfirmedSentReliablesMessages[messageIndex]->m_header->m_reliableId);
+				packetTracker->m_sentReliables[reliableCount] = m_unconfirmedSentReliablesMessages[messageIndex]->m_header->m_reliableId;
 				++reliableCount;
-				OnReliableSend();
 
-				outgoingList[currentMessageIndex]->m_sendTime = GetMasterClock()->GetLastHPC();
-				m_sentReliablesMessages.push_back(outgoingList[currentMessageIndex]);
+				m_unconfirmedSentReliablesMessages[messageIndex]->m_sendTime = GetMasterClock()->GetLastHPC();			
 			}
-			else
-			{
-				packet->WriteMessage(*outgoingList[currentMessageIndex]);
-			}
-		}
-		else
-		{
-			//we are full so we need to send this packet
-			SendPacket(packetTracker, packet);
-
-			//make a new packet
-			//setup header
-			NetPacketHeader header;
-			header.m_senderIndex = theNetSession->m_sessionConnectionIndex;
-			header.m_ack = GetNextAckToSend();
-			header.m_highestReceivedAck = m_highestReceivedAck;
-			header.m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield;
-
-			NetPacket* packet = new NetPacket(header);
-			PacketTracker* packetTracker = new PacketTracker();
-			int reliableCount = 0;
-
-			packet->WriteUpdatedPacketHeaderData();
-
-			//write new message to new packet
-			//write message to packet
-			if (outgoingList[currentMessageIndex]->m_definition->IsReliable())
-			{
-				packet->WriteMessage(*outgoingList[currentMessageIndex], m_nextSentReliableId);
-				packetTracker->m_sentReliables[reliableCount] = m_nextSentReliableId;
-				++reliableCount;
-				OnReliableSend();
-
-				outgoingList[currentMessageIndex]->m_sendTime = GetMasterClock()->GetLastHPC();
-				m_sentReliablesMessages.push_back(outgoingList[currentMessageIndex]);
-			}
-			else
-			{
-				packet->WriteMessage(*outgoingList[currentMessageIndex]);
-			}
-		}
-
-		//if we have read all the messages we are done
-		if (currentMessageIndex == (int)outgoingList.size() - 1)
-		{
-			//we are full so we need to send this packet
-			SendPacket(packetTracker, packet);
-			areMessagesPacked = true;
-		}
-		else
-		{
-			currentMessageIndex++;		
-		}
+		}		
 	}
 
-	outgoingList.clear();
+	// unsent reliables ----------------------------------------------
+	for (int messageIndex = 0; messageIndex < (int)m_unsentReliableMessages.size(); ++messageIndex)
+	{
+		//check if CAN send reliable
+		/*if (!CanSendNewReliableMessage())
+		{
+			break;
+		}*/
 
-	theNetSession = nullptr;
+		if (doesPacketHaveRoom)
+		{
+			//total buffer size + payload size + reliable header size + total message size (header + payload sizes)
+			size_t totalMessageSize = packet->GetBufferSize() + m_unsentReliableMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t);
+
+			//if we have room write to the current packet
+			if (totalMessageSize <= PACKET_MTU)
+			{
+				//write message to packet
+				packet->WriteMessage(*m_unsentReliableMessages[messageIndex], m_nextSentReliableId);
+				packetTracker->m_sentReliables[reliableCount] = m_nextSentReliableId;
+				++reliableCount;
+				OnReliableSend();
+
+				m_unsentReliableMessages[messageIndex]->m_sendTime = GetMasterClock()->GetLastHPC();
+				m_unconfirmedSentReliablesMessages.push_back(m_unsentReliableMessages[messageIndex]);
+
+				//cleanup
+				m_unsentUnreliableMessages[messageIndex] = nullptr;
+				m_unsentUnreliableMessages.erase(m_unsentUnreliableMessages.begin() + messageIndex);
+				--messageIndex;
+			}
+			else
+			{
+				doesPacketHaveRoom = false;
+			}
+		}		
+	}
+
+	// unsent unreliables ----------------------------------------------
+	for (int messageIndex = 0; messageIndex < (int)m_unsentUnreliableMessages.size(); ++messageIndex)
+	{
+		if (doesPacketHaveRoom)
+		{
+			//total buffer size + payload size + unreliable header size + total message size (header + payload sizes)
+			size_t totalMessageSize = packet->GetBufferSize() + m_unsentUnreliableMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t);
+
+			//if we have room write to the current packet
+			if (totalMessageSize <= PACKET_MTU)
+			{
+				//write message to packet
+				packet->WriteMessage(*m_unsentUnreliableMessages[messageIndex]);
+				m_unsentUnreliableMessages.erase(m_unsentUnreliableMessages.begin() + messageIndex);
+				--messageIndex;
+			}
+			else
+			{
+				doesPacketHaveRoom = false;
+			}
+		}		
+	}
+
+	//clear unsent unreliables OTHERWISE, we will get any we missed on the next pass
+
+	m_unsentUnreliableMessages.clear();
+	SendPacket(packetTracker, packet);
 }
 
 //  =========================================================================================
@@ -180,12 +181,12 @@ void NetConnection::SendPacket(PacketTracker* packetTracker, NetPacket* packet)
 //  =========================================================================================
 void NetConnection::GetMessagesToResend(std::vector<NetMessage*>& outMessages)
 {
-	for (int messageIndex = 0; messageIndex < (int)m_sentReliablesMessages.size(); ++messageIndex)
+	for (int messageIndex = 0; messageIndex < (int)m_unconfirmedSentReliablesMessages.size(); ++messageIndex)
 	{
-		if (GetMasterClock()->GetLastHPC() - m_sentReliablesMessages[messageIndex]->m_sendTime > SecondsToPerformanceCounter(m_connectionResendRateInMilliseconds / 1000.0f))
+		if (GetMasterClock()->GetLastHPC() - m_unconfirmedSentReliablesMessages[messageIndex]->m_sendTime > SecondsToPerformanceCounter(m_connectionResendRateInMilliseconds / 1000.0f))
 		{
-			outMessages.push_back(m_sentReliablesMessages[messageIndex]);
-			m_sentReliablesMessages.erase(m_sentReliablesMessages.begin() + messageIndex);
+			outMessages.push_back(m_unconfirmedSentReliablesMessages[messageIndex]);
+			m_unconfirmedSentReliablesMessages.erase(m_unconfirmedSentReliablesMessages.begin() + messageIndex);
 			--messageIndex;
 		}
 	}
@@ -291,12 +292,12 @@ void NetConnection::OnMyAckReceived(uint16_t ack)
 		for (int messageIndex = 0; messageIndex < MAX_RELIABLES_PER_PACKET; ++messageIndex)
 		{
 			uint16_t reliableId = m_trackedPackets[index].m_sentReliables[messageIndex];
-			for (int sentReliableMessageIndex = 0; sentReliableMessageIndex < (int)m_sentReliablesMessages.size(); ++sentReliableMessageIndex)
+			for (int sentReliableMessageIndex = 0; sentReliableMessageIndex < (int)m_unconfirmedSentReliablesMessages.size(); ++sentReliableMessageIndex)
 			{
 				//if we got a reliable back remove it from the sent reliables list so we can stop resending
-				if (m_sentReliablesMessages[sentReliableMessageIndex]->m_header->m_reliableId == reliableId)
+				if (m_unconfirmedSentReliablesMessages[sentReliableMessageIndex]->m_header->m_reliableId == reliableId)
 				{
-					m_sentReliablesMessages.erase(m_sentReliablesMessages.begin() + sentReliableMessageIndex);
+					m_unconfirmedSentReliablesMessages.erase(m_unconfirmedSentReliablesMessages.begin() + sentReliableMessageIndex);
 					--sentReliableMessageIndex;
 				}
 			}
@@ -379,3 +380,66 @@ int NetConnection::GetLastReceivedAck()
 {
 	return m_highestReceivedAck;
 }
+
+//  =============================================================================
+uint16_t NetConnection::GetLowestReliableId()
+{
+	return uint16_t();
+}
+
+//  =============================================================================
+bool NetConnection::IsReliableConfirmed(uint16_t id) const
+{
+	return false;
+}
+
+//  =============================================================================
+void NetConnection::MarkReliableReceived(uint16_t id)
+{	
+	if(CyclicGreaterThan(id, m_highestReceivedReliableId))
+	{
+	//if greater than the current highest, set as highest...
+	//and put it in the list
+	//and update the window (move the window and clear the list)
+		m_highestReceivedReliableId = id;
+
+		m_receivedReliableIds.push_back(id);
+
+		uint16_t minWindowValue = m_highestReceivedReliableId - RELIABLE_WINDOW;
+		for (int idIndex = 0; idIndex < (int)m_receivedReliableIds.size(); ++idIndex)
+		{
+
+		}
+	
+	}
+	else
+	{
+		//else, less or equal to the highest...so add
+		//m_receivedReliableIds.add(id);
+	}
+}
+
+//  =============================================================================
+bool NetConnection::ConfirmReliableId(uint16_t id)
+{
+	return false;
+}
+
+//  =============================================================================
+bool NetConnection::HasReceivedReliableId(uint16_t id)
+{
+	uint16_t maxWindowValue = m_highestReceivedReliableId;
+	uint16_t minWindowValue = maxWindowValue - RELIABLE_WINDOW;
+
+	// first, before the window?  (greater than window
+	if (CyclicLessThan(id, minWindowValue))
+	{
+		return true; //we received it
+	}
+
+	//second, check if in list
+	//return m_receivedReliableIds.contains(id);
+
+	return true;
+}
+

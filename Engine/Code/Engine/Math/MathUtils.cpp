@@ -500,11 +500,29 @@ const float Interpolate(const float& start, const float& end, float fractionTowa
 }
 
 
+//  =============================================================================
+bool CyclicLessThan(uint16_t a, uint16_t b)
+{
+	uint16_t diff = b - a;
+
+	//same as
+	//int16_t idiff = (int16_T)diff;
+	//return idiff > 0
+
+	return (diff > 0) && (diff > 0x7fff);
+}
+
+//  =============================================================================
+bool CyclicGreaterThan(uint16_t a, uint16_t b)
+{
+	return CyclicLessThan(b, a);
+}
+
+
 const int Interpolate(const int& start, const int& end, float fractionTowardEnd)
 {
 	return (RoundToNearestInt((end - start) * fractionTowardEnd) + start);
 }
-
 
 
 const unsigned char Interpolate(const unsigned char& start, const unsigned char& end, float fractionTowardEnd)

@@ -495,8 +495,8 @@ void DebugRender::Startup()
 	m_debugCamera->SetOrtho(0.f, theWindow->m_clientWidth, 0.f, theWindow->m_clientHeight, -1.f, 1.f);
 	m_debugCamera->SetView(Matrix44::IDENTITY);
 
-	CommandRegister("toggle_debug", CommandRegistration(ToggleDebug, ": Use to toggle debug rendering on or off.", "Toggled debug rendering"));
-	CommandRegister("clear_debug", CommandRegistration(ClearDebug, ": Use to clear all debug render objects", "Cleared debug renderer!"));
+	RegisterCommand("toggle_debug", CommandRegistration(ToggleDebug, ": Use to toggle debug rendering on or off.", "Toggled debug rendering"));
+	RegisterCommand("clear_debug", CommandRegistration(ClearDebug, ": Use to clear all debug render objects", "Cleared debug renderer!"));
 
 	m_debugShader = new Shader();
 	m_debugShader->SetProgram(theRenderer->CreateOrGetShaderProgramFromPath("Data/Shaders/debug"));

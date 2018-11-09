@@ -10,6 +10,15 @@ Stopwatch::Stopwatch(Clock* referenceClock)
 	m_startHPC = m_referenceClock->m_total.hpc;	
 }
 
+Stopwatch::Stopwatch(float seconds, Clock* referenceClock)
+{
+	SetClock(referenceClock);
+
+	m_startHPC = m_referenceClock->m_total.hpc;	
+
+	SetTimer(seconds);
+}
+
 //  =========================================================================================
 Stopwatch::~Stopwatch()
 {

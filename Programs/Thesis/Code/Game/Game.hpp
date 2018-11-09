@@ -36,6 +36,10 @@ public:
 	void InitializeTileDefinitions();
 	void InitializeMapDefinitions();
 	void InitializeAgentDefinitions();
+
+public:
+	//optimization method flags
+	bool m_isOptimized = true;
 };
 
 static Clock* g_gameClock = nullptr;
