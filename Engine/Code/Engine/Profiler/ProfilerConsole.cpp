@@ -50,8 +50,6 @@ ProfilerConsole::~ProfilerConsole()
 	}
 }
 
-
-
 void ProfilerConsole::Startup()
 {
 

@@ -14,6 +14,7 @@
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Core\DevConsole.hpp"
 #include "Game\Definitions\DeckDefinition.hpp"
 #include "Game\Actions\Action.hpp"
 #include "Game\Effects\Effect.hpp"
@@ -26,6 +27,7 @@
 #include "Engine\Net\NetSession.hpp"
 #include "Engine\Net\NetConnection.hpp"
 #include "Engine\Net\NetMessage.hpp"
+
 
 #include <vector>
 #include <string>
@@ -88,9 +90,9 @@ void Game::Initialize()
 	m_gameClock = new Clock(GetMasterClock());
 
 	//command
-	CommandRegister("help", CommandRegistration(Help, ": Use to show all supported commands", "All commands displayed!"));
-	CommandRegister("net_unreliable_test", CommandRegistration(UnreliableTest, ": Send X number of unreliable tests to connection. (int conIdx, idx count)", ""));
-	CommandRegister("net_reliable_test", CommandRegistration(ReliableTest, ": Send X number of reliable tests to connection. (int conIdx, idx count)", ""));
+	RegisterCommand("help", CommandRegistration(Help, ": Use to show all supported commands", "All commands displayed!"));
+	RegisterCommand("net_unreliable_test", CommandRegistration(UnreliableTest, ": Send X number of unreliable tests to connection. (int conIdx, idx count)", ""));
+	RegisterCommand("net_reliable_test", CommandRegistration(ReliableTest, ": Send X number of reliable tests to connection. (int conIdx, idx count)", ""));
 
 	//net message registration
 	RegisterGameNetMessages();

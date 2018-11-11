@@ -230,6 +230,7 @@ void DevConsole::FlushConsoleQueue()
 	}
 }
 
+//  =============================================================================
 void DevConsole::QueueMessage(const HistoryItem & item)
 {
 	m_messageQueue.enqueue(item);
@@ -445,10 +446,11 @@ void DevConsole::RenderNetSession()
 		netSessionTextCount++;
 
 		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-			Stringf("%-5s %-5s %-20s %-5s %-5s %-20s %-20s %-8s %-8s %-16s",
+			Stringf("%-5s %-5s %-20s %-8s %-5s %-5s %-20s %-20s %-8s %-8s %-16s",
 				"",
 				"index",
 				"address",
+				"high rel.id",
 				"rtt",
 				"loss",
 				"lastRcvTime(sec)",
@@ -469,10 +471,11 @@ void DevConsole::RenderNetSession()
 			std::string bitsetString = bitsForReceived.to_string();
 
 			//format string entry
-			std::string formattedConnectionInput = Stringf("%-5s %-5i %-20s %-5.2f %-5.2f %-20.2f %-20.2f %-8i %-8i %-16s",
+			std::string formattedConnectionInput = Stringf("%-5s %-8i %-20s %-8i %-5.2f %-5.2f %-20.2f %-20.2f %-8i %-8i %-16s",
 				"",
-				theNetSession->m_connections[connectionIndex]->m_index,
+				theNetSession->m_connections[connectionIndex]->m_index,				
 				theNetSession->m_connections[connectionIndex]->m_address->ToString().c_str(),
+				theNetSession->m_connections[connectionIndex]->m_highestReceivedReliableId,
 				theNetSession->m_connections[connectionIndex]->GetRoundTripTimeInSeconds(),
 				theNetSession->m_connections[connectionIndex]->GetLossPercentage(),
 				theNetSession->m_connections[connectionIndex]->GetLastReceivedTimeInSeconds(),

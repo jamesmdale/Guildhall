@@ -6,13 +6,6 @@
 #define INVALID_PACKET_ACK (UINT16_MAX)
 #define MAX_RELIABLES_PER_PACKET (32)
 
-struct PacketTracker
-{
-	uint16_t m_ack = UINT16_MAX;
-	uint64_t m_sendTime = UINT64_MAX;
-	uint16_t m_sentReliables[MAX_RELIABLES_PER_PACKET];
-};
-
 struct NetPacketHeader
 {
 public:

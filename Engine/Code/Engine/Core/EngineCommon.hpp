@@ -27,6 +27,9 @@ constexpr int REMOTE_SERVICE_MAX_BUFFER_SIZE = 256 - 1U;
 
 constexpr char* LOGGER_DATA_FILE = "Data/Log/log.txt";
 
+//  =============================================================================
+constexpr float NET_RELIABLE_RESEND_RATE_PER_MILLISECOND = 500.f;
+
 //stringf stack local  =============================================================================
 const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;
 const int MAX_MAX_CONSOLE_SIZE = 100;

@@ -20,11 +20,15 @@ NetConnection::NetConnection()
 	{
 		m_latencySendTimer->SetTimerInMilliseconds(m_connectionSendLatencyInMilliseconds);
 	}
-		
+	
+	for (int trackerIndex = 0; trackerIndex < MAX_TRACKED_PACKETS; ++trackerIndex)
+	{
+		m_trackedPackets[trackerIndex] = nullptr;
+	}
 
 	//setup heartbeat timer
 	m_heartbeatTimer = new Stopwatch(GetMasterClock());
-	m_heartbeatTimer->SetTimer(0.05f);
+	m_heartbeatTimer->SetTimer(5.f);
 }
 
 //  =============================================================================
@@ -53,8 +57,10 @@ void NetConnection::QueueMessage(NetMessage* message)
 //  =============================================================================
 void NetConnection::FlushOutgoingMessages()
 {
-	if(!m_latencySendTimer->ResetAndDecrementIfElapsed())
+	//early outs
+	if(!m_latencySendTimer->ResetAndDecrementIfElapsed() || !DoesHaveMessagesToSend())
 		return;
+
 
 	NetSession* theNetSession = NetSession::GetInstance();
 
@@ -67,6 +73,7 @@ void NetConnection::FlushOutgoingMessages()
 
 	NetPacket* packet = new NetPacket(header);
 	PacketTracker* packetTracker = new PacketTracker();
+
 	int reliableCount = 0;
 
 	packet->WriteUpdatedPacketHeaderData();
@@ -75,7 +82,7 @@ void NetConnection::FlushOutgoingMessages()
 
 	size_t totalMessageSize = 0;
 
-	// sent reliables ----------------------------------------------
+	// sent and unconfirmed reliables ----------------------------------------------
 	for (int messageIndex = 0; messageIndex < (int)m_unconfirmedSentReliablesMessages.size(); ++messageIndex)
 	{
 		if (doesPacketHaveRoom)
@@ -86,12 +93,20 @@ void NetConnection::FlushOutgoingMessages()
 			//if we have room write to the current packet
 			if (totalMessageSize <= PACKET_MTU)
 			{
-				//write message to packet
-				packet->WriteMessage(*m_unconfirmedSentReliablesMessages[messageIndex], m_unconfirmedSentReliablesMessages[messageIndex]->m_header->m_reliableId);
-				packetTracker->m_sentReliables[reliableCount] = m_unconfirmedSentReliablesMessages[messageIndex]->m_header->m_reliableId;
-				++reliableCount;
+				if (m_unconfirmedSentReliablesMessages[messageIndex]->IsReadyToResend(GetResendThresholdInHPC()))
+				{
+					//write message to packet
+					packet->WriteMessage(*m_unconfirmedSentReliablesMessages[messageIndex], m_unconfirmedSentReliablesMessages[messageIndex]->m_header->m_reliableId);
+					packetTracker->m_sentReliables[reliableCount] = m_unconfirmedSentReliablesMessages[messageIndex]->m_header->m_reliableId;
+					++reliableCount;
 
-				m_unconfirmedSentReliablesMessages[messageIndex]->m_sendTime = GetMasterClock()->GetLastHPC();			
+					//reset age
+					m_unconfirmedSentReliablesMessages[messageIndex]->m_sendTime = GetMasterClock()->GetLastHPC();	
+				}						
+			}
+			else
+			{
+				doesPacketHaveRoom = false;
 			}
 		}		
 	}
@@ -100,10 +115,10 @@ void NetConnection::FlushOutgoingMessages()
 	for (int messageIndex = 0; messageIndex < (int)m_unsentReliableMessages.size(); ++messageIndex)
 	{
 		//check if CAN send reliable
-		/*if (!CanSendNewReliableMessage())
+		if (!CanSendNewReliableMessage())
 		{
 			break;
-		}*/
+		}
 
 		if (doesPacketHaveRoom)
 		{
@@ -119,12 +134,13 @@ void NetConnection::FlushOutgoingMessages()
 				++reliableCount;
 				OnReliableSend();
 
+				//reset age
 				m_unsentReliableMessages[messageIndex]->m_sendTime = GetMasterClock()->GetLastHPC();
 				m_unconfirmedSentReliablesMessages.push_back(m_unsentReliableMessages[messageIndex]);
 
 				//cleanup
-				m_unsentUnreliableMessages[messageIndex] = nullptr;
-				m_unsentUnreliableMessages.erase(m_unsentUnreliableMessages.begin() + messageIndex);
+				m_unsentReliableMessages[messageIndex] = nullptr;
+				m_unsentReliableMessages.erase(m_unsentReliableMessages.begin() + messageIndex);
 				--messageIndex;
 			}
 			else
@@ -161,6 +177,8 @@ void NetConnection::FlushOutgoingMessages()
 
 	m_unsentUnreliableMessages.clear();
 	SendPacket(packetTracker, packet);
+
+	theNetSession = nullptr;
 }
 
 //  =========================================================================================
@@ -178,18 +196,13 @@ void NetConnection::SendPacket(PacketTracker* packetTracker, NetPacket* packet)
 	theNetSession = nullptr;
 }
 
-//  =========================================================================================
-void NetConnection::GetMessagesToResend(std::vector<NetMessage*>& outMessages)
+//  =============================================================================
+bool NetConnection::DoesHaveMessagesToSend()
 {
-	for (int messageIndex = 0; messageIndex < (int)m_unconfirmedSentReliablesMessages.size(); ++messageIndex)
-	{
-		if (GetMasterClock()->GetLastHPC() - m_unconfirmedSentReliablesMessages[messageIndex]->m_sendTime > SecondsToPerformanceCounter(m_connectionResendRateInMilliseconds / 1000.0f))
-		{
-			outMessages.push_back(m_unconfirmedSentReliablesMessages[messageIndex]);
-			m_unconfirmedSentReliablesMessages.erase(m_unconfirmedSentReliablesMessages.begin() + messageIndex);
-			--messageIndex;
-		}
-	}
+	//if we have any messages queued return true;
+	return m_unconfirmedSentReliablesMessages.size() > 0 ||
+		m_unsentReliableMessages.size() > 0 ||
+		m_unsentUnreliableMessages.size() > 0;
 }
 
 //  =========================================================================================
@@ -271,9 +284,12 @@ void NetConnection::OnMyAckReceived(uint16_t ack)
 
 	int index = ack % MAX_TRACKED_PACKETS;
 
-	if (m_trackedPackets[index].m_ack == ack)
+	if(m_trackedPackets[index] == nullptr)
+		return;
+
+	if (m_trackedPackets[index]->m_ack == ack)
 	{
-		uint64_t rttInHPC = GetMasterClock()->GetLastHPC() - m_trackedPackets[index].m_sendTime;
+		uint64_t rttInHPC = GetMasterClock()->GetLastHPC() - m_trackedPackets[index]->m_sendTime;
 
 		//take blend of the two
 		if (m_rttInMilliseconds > 0.f)
@@ -287,21 +303,19 @@ void NetConnection::OnMyAckReceived(uint16_t ack)
 		
 
 		m_myLastReceivedTimeInHPC = GetMasterClock()->GetLastHPC();
-		m_trackedPackets[index].m_ack = UINT16_MAX;
 
 		for (int messageIndex = 0; messageIndex < MAX_RELIABLES_PER_PACKET; ++messageIndex)
 		{
-			uint16_t reliableId = m_trackedPackets[index].m_sentReliables[messageIndex];
-			for (int sentReliableMessageIndex = 0; sentReliableMessageIndex < (int)m_unconfirmedSentReliablesMessages.size(); ++sentReliableMessageIndex)
+			uint16_t reliableId = m_trackedPackets[index]->m_sentReliables[messageIndex];
+
+			if (reliableId != UINT16_MAX)
 			{
-				//if we got a reliable back remove it from the sent reliables list so we can stop resending
-				if (m_unconfirmedSentReliablesMessages[sentReliableMessageIndex]->m_header->m_reliableId == reliableId)
-				{
-					m_unconfirmedSentReliablesMessages.erase(m_unconfirmedSentReliablesMessages.begin() + sentReliableMessageIndex);
-					--sentReliableMessageIndex;
-				}
-			}
-		}		
+				ConfirmSentReliable(reliableId);
+			}			
+		}
+
+		delete m_trackedPackets[index];
+		m_trackedPackets[index] = nullptr;
 	}	
 }
 
@@ -319,7 +333,7 @@ void NetConnection::AddPacketTracker(PacketTracker* tracker, uint16_t ack)
 
 	int index = ack % MAX_TRACKED_PACKETS;
 
-	if (m_trackedPackets[index].m_ack != INVALID_PACKET_ACK)
+	if (m_trackedPackets[index] != nullptr)
 	{
 		++m_numLostPackets;
 		m_numLostPackets = ClampInt(m_numLostPackets, 0, MAX_TRACKED_PACKETS);
@@ -331,10 +345,7 @@ void NetConnection::AddPacketTracker(PacketTracker* tracker, uint16_t ack)
 		m_numLostPackets = 0;
 	}
 
-	m_trackedPackets[index] = *tracker;
-	
-	delete(tracker);
-	tracker = nullptr;
+	m_trackedPackets[index] = tracker;
 }
 
 //  =============================================================================
@@ -382,47 +393,48 @@ int NetConnection::GetLastReceivedAck()
 }
 
 //  =============================================================================
-uint16_t NetConnection::GetLowestReliableId()
-{
-	return uint16_t();
-}
-
-//  =============================================================================
-bool NetConnection::IsReliableConfirmed(uint16_t id) const
-{
-	return false;
-}
-
-//  =============================================================================
 void NetConnection::MarkReliableReceived(uint16_t id)
 {	
 	if(CyclicGreaterThan(id, m_highestReceivedReliableId))
 	{
-	//if greater than the current highest, set as highest...
-	//and put it in the list
-	//and update the window (move the window and clear the list)
+		//if greater than the current highest, set as highest...	
 		m_highestReceivedReliableId = id;
 
+		//and put it in the list
 		m_receivedReliableIds.push_back(id);
 
+		//and update the window (move the window and clear the list)
 		uint16_t minWindowValue = m_highestReceivedReliableId - RELIABLE_WINDOW;
 		for (int idIndex = 0; idIndex < (int)m_receivedReliableIds.size(); ++idIndex)
 		{
-
+			if (CyclicLessThan(m_receivedReliableIds[idIndex], minWindowValue))
+			{
+				m_receivedReliableIds.erase(m_receivedReliableIds.begin() + idIndex);
+				--idIndex;
+			}
 		}
-	
 	}
 	else
 	{
 		//else, less or equal to the highest...so add
-		//m_receivedReliableIds.add(id);
+		m_receivedReliableIds.push_back(id);
 	}
 }
 
 //  =============================================================================
-bool NetConnection::ConfirmReliableId(uint16_t id)
+void NetConnection::ConfirmSentReliable(uint16_t id)
 {
-	return false;
+	for (int reliableIndex = 0; reliableIndex < (int)m_unconfirmedSentReliablesMessages.size(); ++reliableIndex)
+	{
+		NetMessage* message = m_unconfirmedSentReliablesMessages[reliableIndex];
+		if (message->m_header->m_reliableId == id)
+		{
+			//we found the id. Cleanup unconfirmed reliable messages list
+			m_unconfirmedSentReliablesMessages.erase(m_unconfirmedSentReliablesMessages.begin() + reliableIndex);	
+			return;
+		}
+		message = nullptr;
+	}
 }
 
 //  =============================================================================
@@ -438,8 +450,35 @@ bool NetConnection::HasReceivedReliableId(uint16_t id)
 	}
 
 	//second, check if in list
-	//return m_receivedReliableIds.contains(id);
+	for (int reliableIndex = 0; reliableIndex < (int)m_receivedReliableIds.size(); ++reliableIndex)
+	{
+		if (m_receivedReliableIds[reliableIndex] == id)
+		{
+			return true;
+		}
+	}
 
-	return true;
+	//if we didn't find it in the list or if it wasn't before the window..
+	return false;
+}
+
+//  =============================================================================
+bool NetConnection::CanSendNewReliableMessage()
+{
+	uint16_t nextReliableId = m_nextSentReliableId;
+
+	if(m_unconfirmedSentReliablesMessages.size() == 0)
+		return true;
+
+	uint16_t oldestUnconfirmedReliableId = m_unconfirmedSentReliablesMessages[0]->m_header->m_reliableId;
+
+	uint16_t diff = nextReliableId - oldestUnconfirmedReliableId;
+	return (diff < RELIABLE_WINDOW);
+}
+
+//  =============================================================================
+uint64_t NetConnection::GetResendThresholdInHPC()
+{
+	return SecondsToPerformanceCounter(m_connectionResendRateInMilliseconds / 1000.0f);
 }
 

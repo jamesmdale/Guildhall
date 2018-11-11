@@ -2,6 +2,7 @@
 #include "Engine\Net\NetMessage.hpp"
 #include "Engine\Net\NetAddress.hpp"
 #include "Engine\Net\NetPacket.hpp"
+#include "Engine\Net\PacketTracker.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 
 #define MAX_TRACKED_PACKETS (64)
@@ -15,11 +16,10 @@ public:
 	~NetConnection();
 
 	void QueueMessage(NetMessage* message);
-	//void FlushOutgoingMessages(std::vector<NetMessage*>& outgoingList);
 	void FlushOutgoingMessages();
 	void SendPacket(PacketTracker* packetTracker, NetPacket* packet);
 
-	void GetMessagesToResend(std::vector<NetMessage*>& outMessages);
+	bool DoesHaveMessagesToSend();
 	
 	//state management on send
 	void OnPacketSend(PacketTracker* packetTracker, NetPacket* packet);
@@ -40,17 +40,19 @@ public:
 	int GetLastSentAck();
 	int GetLastReceivedAck();
 
-	uint16_t GetLowestReliableId();
-	bool IsReliableConfirmed(uint16_t id) const;
-	void MarkReliableReceived(uint16_t id);
-	bool ConfirmReliableId(uint16_t id);
+	// reliable helpers
+	void MarkReliableReceived(uint16_t id);  //receive side
 	bool HasReceivedReliableId(uint16_t id);
+
+	void ConfirmSentReliable(uint16_t id);	 //send side	
+	bool CanSendNewReliableMessage();
+	uint64_t GetResendThresholdInHPC();
 
 public:
 	uint8_t m_index = UINT8_MAX; //max of 255
 	NetAddress* m_address = nullptr;
-	float m_connectionSendLatencyInMilliseconds = 0;
-	float m_connectionResendRateInMilliseconds = 0;
+	float m_connectionSendLatencyInMilliseconds = 0.f;
+	float m_connectionResendRateInMilliseconds = NET_RELIABLE_RESEND_RATE_PER_MILLISECOND;
 	
 	// sending = updated duringa  send/flush ----------------------------------------------
 	uint16_t m_nextSentAck = 0U;
@@ -74,14 +76,13 @@ public:
 
 	// reliable ----------------------------------------------
 	std::vector<uint16_t> m_receivedReliableIds;
-	uint16_t m_highestReceivedReliableId;
+	uint16_t m_highestReceivedReliableId = UINT16_MAX;
 
 	// storage for messages ----------------------------------------------
 	std::vector<NetMessage*> m_unsentUnreliableMessages;
-
 	std::vector<NetMessage*> m_unsentReliableMessages;
 	std::vector<NetMessage*> m_unconfirmedSentReliablesMessages;
 
 	std::vector<NetPacket*> m_sentPackets;	
-	PacketTracker m_trackedPackets[MAX_TRACKED_PACKETS];
+	PacketTracker* m_trackedPackets[MAX_TRACKED_PACKETS];
 };

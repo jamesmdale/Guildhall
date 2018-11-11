@@ -40,6 +40,19 @@ bool NetMessage::WriteFinalSizeToHeader()
 	return true;
 }
 
+//  =============================================================================
+bool NetMessage::IsReadyToResend(const uint64_t& resendThreshold)
+{
+	uint64_t timeSinceLastResend = GetMasterClock()->GetLastHPC() - m_sendTime;
+
+	return timeSinceLastResend > resendThreshold ? true : false;
+}
+
+//  =============================================================================
+uint16_t NetMessage::GetReliableId()
+{
+	return m_header->m_reliableId;
+}
 
 //  =============================================================================
 NetMessage::~NetMessage()

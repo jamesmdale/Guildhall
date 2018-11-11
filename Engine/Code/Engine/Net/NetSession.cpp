@@ -95,7 +95,7 @@ void NetSession::Update()
 		LockMessageDefinitionRegistration();
 	}	
 
-	//CheckHeartbeats();
+	CheckHeartbeats();
 	ProcessOutgoingMessages();
 
 	ProcessIncomingMessages();
@@ -316,6 +316,12 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 				message->m_header->m_reliableId = reliableId;
 
 				headerSize += sizeof(uint16_t);
+
+				uint16_t reliableId = message->GetReliableId();
+				if (!connection->HasReceivedReliableId(reliableId))
+				{
+					connection->MarkReliableReceived(reliableId);
+				}
 			}
 
 			//if there is more to the message we must read that in before calling the return function

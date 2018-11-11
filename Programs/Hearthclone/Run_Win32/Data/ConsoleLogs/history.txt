@@ -3,3 +3,4 @@ rca add_connection 0 192.168.2.106:10084
 rca add_connection 1 192.168.2.106:10085
 send_ping 1
 send_add 1 4 9
+net_reliable_test 0 1

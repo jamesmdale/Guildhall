@@ -64,6 +64,8 @@ public:
 	~NetMessage();
 
 	bool WriteFinalSizeToHeader();
+	bool IsReadyToResend(const uint64_t& resendThreshold);
+	uint16_t GetReliableId();
 
 	//helper for accessing definition
 public:

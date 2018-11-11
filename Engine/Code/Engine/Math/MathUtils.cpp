@@ -509,7 +509,7 @@ bool CyclicLessThan(uint16_t a, uint16_t b)
 	//int16_t idiff = (int16_T)diff;
 	//return idiff > 0
 
-	return (diff > 0) && (diff > 0x7fff);
+	return (diff > 0) && (diff <= 0x7fff);
 }
 
 //  =============================================================================
