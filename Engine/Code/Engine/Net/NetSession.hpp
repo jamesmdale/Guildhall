@@ -5,11 +5,10 @@
 #include "Engine\Net\UDPSocket.hpp"
 #include "Engine\Net\NetAddress.hpp"
 #include "Engine\Core\Command.hpp"
+#include "Engine\Core\EngineCommon.hpp"
 #include <map>
 #include <string>
 #include <vector>
-
-#define MAX_NET_DEFINITION_REGISTRATIONS (UINT8_MAX)
 
 enum eCoreNetMessageType
 {
@@ -66,10 +65,11 @@ public:
 	void ProcessIncomingMessages();
 	void CheckDelayedPackets();
 	void ProcessDelayedPacket(DelayedReceivedPacket* packet);	
+	void ExecuteNetMessage(NetMessage* message, NetConnection* connection);
 
 	// message registration ----------------------------------------------
 	bool RegisterMessageDefinition(const std::string& name, NetMessageCallback callback);
-	bool RegisterMessageDefinition(int netMessageId, const std::string& name, NetMessageCallback callback, const eNetMessageFlag& flag = (eNetMessageFlag)0);
+	bool RegisterMessageDefinition(int netMessageId, const std::string& name, NetMessageCallback callback, const eNetMessageFlag& flag = (eNetMessageFlag)0, const uint8_t& messageChannelIndex = UINT8_MAX);
 	void LockMessageDefinitionRegistration();
 	void SortMessageDefinitionsByName();
 

@@ -18,7 +18,8 @@ enum eGameNetMessageType
 
 	//... more types
 	UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE = 128,
-	RELIABLE_TEST_GAME_NET_MESSAGE_TYPE = 129
+	RELIABLE_TEST_GAME_NET_MESSAGE_TYPE = 129,
+	SEQUENCE_TEST_GAME_NET_MESSAGE_TYPE = 130
 };
 
 class Game
@@ -62,10 +63,12 @@ public:
 //command
 void UnreliableTest(Command& cmd);
 void ReliableTest(Command& cmd);
+void ReliableSequenceTest(Command& cmd);
 
 //Net message definition callbacks
 bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection);
 bool OnReliableTest(NetMessage& message, NetConnection* fromConnection);
+bool OnSequenceTest(NetMessage& message, NetConnection* fromConnection);
 bool OnTest(NetMessage& message, NetConnection* fromConnection);
 
 

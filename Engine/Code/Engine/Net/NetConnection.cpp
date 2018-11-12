@@ -29,6 +29,12 @@ NetConnection::NetConnection()
 	//setup heartbeat timer
 	m_heartbeatTimer = new Stopwatch(GetMasterClock());
 	m_heartbeatTimer->SetTimer(5.f);
+
+	m_unsentUnreliableMessages.clear();
+	m_unsentReliableMessages.clear();
+	m_unconfirmedSentReliablesMessages.clear();
+
+	m_sentPackets.clear();
 }
 
 //  =============================================================================
@@ -60,7 +66,6 @@ void NetConnection::FlushOutgoingMessages()
 	//early outs
 	if(!m_latencySendTimer->ResetAndDecrementIfElapsed() || !DoesHaveMessagesToSend())
 		return;
-
 
 	NetSession* theNetSession = NetSession::GetInstance();
 
@@ -480,5 +485,44 @@ bool NetConnection::CanSendNewReliableMessage()
 uint64_t NetConnection::GetResendThresholdInHPC()
 {
 	return SecondsToPerformanceCounter(m_connectionResendRateInMilliseconds / 1000.0f);
+}
+
+//  =============================================================================
+uint8_t NetConnection::OpenNewMessageChannel()
+{
+	for (int channelIndex = 0; channelIndex < MAX_MESSAGE_CHANNELS; ++channelIndex)
+	{
+		if (m_netMessageChannels[channelIndex] == nullptr)
+		{
+			NetMessageChannel* channel = new NetMessageChannel();
+			m_netMessageChannels[channelIndex] = channel;
+			return channelIndex;
+		}
+	}
+
+	//no channel available
+	return UINT8_MAX;
+}
+
+//  =============================================================================
+void NetConnection::CloseMessageChannel(uint8_t channelIndex)
+{
+	if (channelIndex < MAX_MESSAGE_CHANNELS)
+	{
+		delete(m_netMessageChannels[channelIndex]);
+		m_netMessageChannels[channelIndex] = nullptr;
+	}	
+}
+
+//  =============================================================================
+uint16_t NetConnection::GetAndIncrementNextSequenceIdForChannel(uint8_t channelIndex)
+{
+	if (channelIndex < MAX_MESSAGE_CHANNELS)
+	{
+		uint16_t id = m_netMessageChannels[channelIndex]->GetAndIncrementSequenceId();	
+		return id;
+	}
+
+	return UINT8_MAX;
 }
 

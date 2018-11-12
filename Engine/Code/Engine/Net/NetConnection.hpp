@@ -3,6 +3,7 @@
 #include "Engine\Net\NetAddress.hpp"
 #include "Engine\Net\NetPacket.hpp"
 #include "Engine\Net\PacketTracker.hpp"
+#include "Engine\Net\NetMessageChannel.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 
 #define MAX_TRACKED_PACKETS (64)
@@ -48,6 +49,11 @@ public:
 	bool CanSendNewReliableMessage();
 	uint64_t GetResendThresholdInHPC();
 
+	//sequence helpers
+	uint8_t OpenNewMessageChannel();
+	void CloseMessageChannel(uint8_t channelIndex);
+	uint16_t GetAndIncrementNextSequenceIdForChannel(uint8_t channelIndex);
+
 public:
 	uint8_t m_index = UINT8_MAX; //max of 255
 	NetAddress* m_address = nullptr;
@@ -82,6 +88,8 @@ public:
 	std::vector<NetMessage*> m_unsentUnreliableMessages;
 	std::vector<NetMessage*> m_unsentReliableMessages;
 	std::vector<NetMessage*> m_unconfirmedSentReliablesMessages;
+
+	NetMessageChannel* m_netMessageChannels[MAX_MESSAGE_CHANNELS];
 
 	std::vector<NetPacket*> m_sentPackets;	
 	PacketTracker* m_trackedPackets[MAX_TRACKED_PACKETS];

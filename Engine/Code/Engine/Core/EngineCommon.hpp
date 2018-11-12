@@ -27,8 +27,17 @@ constexpr int REMOTE_SERVICE_MAX_BUFFER_SIZE = 256 - 1U;
 
 constexpr char* LOGGER_DATA_FILE = "Data/Log/log.txt";
 
-//  =============================================================================
+//Net Globals =============================================================================
 constexpr float NET_RELIABLE_RESEND_RATE_PER_MILLISECOND = 500.f;
+
+constexpr char* DEFAULT_SERVICE_PORT = "12345";
+
+#define MAX_NET_DEFINITION_REGISTRATIONS (UINT8_MAX)
+#define INVALID_SENDER_ID (UINT8_MAX)
+#define INVALID_PACKET_ACK (UINT16_MAX)
+#define MAX_RELIABLES_PER_PACKET (32)
+#define MAX_MESSAGE_CHANNELS (8)
+
 
 //stringf stack local  =============================================================================
 const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;

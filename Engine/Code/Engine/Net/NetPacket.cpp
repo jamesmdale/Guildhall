@@ -1,4 +1,5 @@
-#include "NetPacket.hpp"
+#include "Engine\Net\NetPacket.hpp"
+#include "Engine\Net\NetConnection.hpp"
 #include <type_traits>
 
 //  =============================================================================
@@ -61,16 +62,22 @@ bool NetPacket::ReadHeader(NetPacketHeader& packetHeader)
 }
 
 //  =============================================================================
-bool NetPacket::WriteMessage(NetMessage& netMessage, uint16_t nextReliableId)
+bool NetPacket::WriteMessage(NetMessage& netMessage, NetConnection* connection, uint16_t nextReliableId)
 {
 	//write size
 	bool success = false;
 
 	uint16_t totalMessageSize = sizeof(uint8_t) + netMessage.GetWrittenByteCount();
 
+	//calculate size of message header
 	if (netMessage.m_definition->IsReliable())
 	{
 		//add reliable id
+		totalMessageSize += sizeof(uint16_t);
+	}
+	if (netMessage.m_definition->IsInOrder())
+	{
+		//add sequence id
 		totalMessageSize += sizeof(uint16_t);
 	}
 
@@ -85,6 +92,11 @@ bool NetPacket::WriteMessage(NetMessage& netMessage, uint16_t nextReliableId)
 	{
 		netMessage.m_header->m_reliableId = nextReliableId;
 		success = WriteBytes(sizeof(netMessage.m_header->m_reliableId), &netMessage.m_header->m_reliableId, false);
+	}
+	if (netMessage.m_definition->IsInOrder())
+	{
+		uint8_t channelId = netMessage.m_definition->m_messageChannelIndex;
+		netMessage.m_header->m_sequenceId = connection->GetAndIncrementNextSequenceIdForChannel(channelId);
 	}
 
 	//write payload

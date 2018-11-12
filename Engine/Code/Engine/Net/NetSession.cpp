@@ -310,7 +310,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 			size_t headerSize = sizeof(uint8_t);
 
 			//get reliable id and adjust remaining size 
-			if (definition->IsReliable())
+			if (message->m_definition->IsReliable())
 			{
 				packet->m_packet->ReadBytes(&reliableId, sizeof(uint16_t), false);
 				message->m_header->m_reliableId = reliableId;
@@ -331,13 +331,30 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 				message->ExtendBufferSize(remainingAmountToRead);
 				packet->m_packet->ReadBytes(message->GetBuffer(), remainingAmountToRead, false);
 				message->SetWrittenByteCountToBufferSize();
+			}		
+
+			//if the message requires the correct order, decide how to process the message
+			if (message->m_definition->IsInOrder())
+			{
+				uint8_t channelIndex = message->m_definition->m_messageChannelIndex;
+				bool shouldProcessMessage = connection->m_netMessageChannels[channelIndex]->ShouldProcessMessage(message);
+				
+				while (shouldProcessMessage)
+				{
+					ExecuteNetMessage(message, connection);
+
+					//see if we have any other messages in our unordered queue and process it
+					message = connection->m_netMessageChannels[channelIndex]->GetNextMessageToProcess();
+					if (message == nullptr)
+					{
+						shouldProcessMessage = false;
+					}
+				}
+			}
+			else
+			{
+				ExecuteNetMessage(message, connection);
 			}			
-
-			definition->m_callback(*message, connection);
-
-			//cleanup
-			delete(message);
-			message = nullptr;
 		}				
 
 		definition = nullptr;
@@ -350,6 +367,16 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 	}
 
 	connection = nullptr;		
+}
+
+//  =============================================================================
+void NetSession::ExecuteNetMessage(NetMessage* message, NetConnection* connection)
+{
+	message->m_definition->m_callback(*message, connection);
+
+	//cleanup
+	delete(message);
+	message = nullptr;
 }
 
 //  =============================================================================
@@ -450,7 +477,7 @@ bool NetSession::RegisterMessageDefinition(const std::string& name, NetMessageCa
 }
 
 //  =============================================================================
-bool NetSession::RegisterMessageDefinition(int netMessageId, const std::string& name, NetMessageCallback callback, const eNetMessageFlag& flag)
+bool NetSession::RegisterMessageDefinition(int netMessageId, const std::string& name, NetMessageCallback callback, const eNetMessageFlag& flag, const uint8_t& messageChannelIndex)
 {
 	bool success = false;
 
@@ -461,6 +488,7 @@ bool NetSession::RegisterMessageDefinition(int netMessageId, const std::string& 
 		definition->m_callback = callback;
 		definition->m_callbackId = netMessageId;
 		definition->m_messageFlag = flag;
+		definition->m_messageChannelIndex = messageChannelIndex;
 
 		if (s_registeredMessageDefinitions[netMessageId] == nullptr)
 		{

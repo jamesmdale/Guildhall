@@ -4,11 +4,7 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Core\LogSystem.hpp"
 
-
 struct sockaddr; //getes around including winsock globally if you're into that sort of thing;
-
-
-constexpr char* DEFAULT_SERVICE_PORT = "12345";
 
 class NetAddress
 {
