@@ -1,6 +1,3 @@
-#include "Game\GameStates\PlayingState.hpp"
-#include "Game\PointOfInterest.hpp"
-#include "Game\Agent.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Debug\DebugRender.hpp"
 #include "Engine\Core\LightObject.hpp"
@@ -11,6 +8,10 @@
 #include "Engine\Core\DevConsole.hpp"
 #include <map>
 #include <string>
+#include "Game\GameStates\PlayingState.hpp"
+#include "Game\PointOfInterest.hpp"
+#include "Game\Agent.hpp"
+#include "Game\Definitions\SimulationDefinition.hpp"
 
 float ORTHO_MAX = 0.f;
 float ORTHO_MIN = 0.f;
@@ -49,7 +50,7 @@ void PlayingState::Initialize()
 	ORTHO_MIN = 0.f;
 
 	// map creation
-	MapDefinition* definition = MapDefinition::s_definitions["Grass"];
+	SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions["default"];
 	m_map = new Map(definition, "TestMap", m_renderScene2D);	
 	m_map->Initialize();
 	m_map->m_gameState = this;

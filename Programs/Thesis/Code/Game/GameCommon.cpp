@@ -29,7 +29,6 @@ float g_maxActionPerformanceRatePerSecond = 1.f;
 float g_minSkillEfficiency = 0.1f;
 
 //bombardment globals
-float g_bombardmentRatePerSecond = 0.5f;
 float g_bombardmentExplosionTime = 1.f;
 float g_bombardmentExplosionSize = 1.f;
 int g_bombardmentDamage = 10.f;
@@ -39,7 +38,6 @@ float g_sortTimerInSeconds = 0.5f;
 float g_agentCopyDestinationPositionRadius = 0.5f;
 
 //threat globals
-float g_threatIncreaseRatePerSecond = 1.f;
 float g_maxThreat = 500.f;
 
 //XY

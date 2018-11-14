@@ -12,6 +12,7 @@ class MapDefinition
 public:
 	explicit MapDefinition( const tinyxml2::XMLElement& element );
 	static void Initialize(const std::string& filePath);
+	static MapDefinition* GetMapDefinitionByName(const std::string& mapName);
 
 public:
 	std::string m_name = "default";

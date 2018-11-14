@@ -1,12 +1,12 @@
 #pragma once
 #include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Map\Tile.hpp"
+#include "Game\SimulationData.hpp"
 #include "Engine\Math\IntVector2.hpp"
 #include "Engine\Renderer\RenderScene2D.hpp"
 #include "Engine\Utility\Grid.hpp"
 #include <string>
 #include <vector>
-
 
 //forward declarations
 enum ePointOfInterestType;
@@ -16,6 +16,7 @@ class Bombardment;
 class Stopwatch;
 class Mesh;
 class PlayingState;
+class SimulationDefinition;
 
 enum eAgentSortType
 {
@@ -27,7 +28,7 @@ enum eAgentSortType
 class Map
 {
 public:
-	explicit Map(MapDefinition* definition, const std::string& mapName, RenderScene2D* renderScene);
+	explicit Map(SimulationDefinition* definition, const std::string& mapName, RenderScene2D* renderScene);
 
 	Map::~Map();
 
@@ -80,11 +81,11 @@ public:
 	void DetectBombardmentToAgentCollision(Bombardment* bombardment);
 	void DetectBombardmentToPOICollision(Bombardment* bombardment);
 
-
 public:
 	std::string m_name;
 	IntVector2 m_dimensions;
 	MapDefinition* m_mapDefinition = nullptr;
+	SimulationDefinition* m_activeSimulationDefinition = nullptr;
 	std::vector<Tile*> m_tiles;
 	Grid<int>* m_mapAsGrid = nullptr;
 	AABB2 m_mapWorldBounds;
@@ -112,6 +113,8 @@ public:
 	PlayingState* m_gameState = nullptr;
 
 	float m_threat = 500.f;
+
+	SimulationData* simData = nullptr;
 
 private:
 	bool m_isFullMapView = false;

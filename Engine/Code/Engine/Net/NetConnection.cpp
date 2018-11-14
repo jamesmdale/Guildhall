@@ -101,7 +101,7 @@ void NetConnection::FlushOutgoingMessages()
 				if (m_unconfirmedSentReliablesMessages[messageIndex]->IsReadyToResend(GetResendThresholdInHPC()))
 				{
 					//write message to packet
-					packet->WriteMessage(*m_unconfirmedSentReliablesMessages[messageIndex], m_unconfirmedSentReliablesMessages[messageIndex]->m_header->m_reliableId);
+					packet->WriteMessage(*m_unconfirmedSentReliablesMessages[messageIndex], this, m_unconfirmedSentReliablesMessages[messageIndex]->m_header->m_reliableId);
 					packetTracker->m_sentReliables[reliableCount] = m_unconfirmedSentReliablesMessages[messageIndex]->m_header->m_reliableId;
 					++reliableCount;
 
@@ -134,7 +134,7 @@ void NetConnection::FlushOutgoingMessages()
 			if (totalMessageSize <= PACKET_MTU)
 			{
 				//write message to packet
-				packet->WriteMessage(*m_unsentReliableMessages[messageIndex], m_nextSentReliableId);
+				packet->WriteMessage(*m_unsentReliableMessages[messageIndex], this, m_nextSentReliableId);
 				packetTracker->m_sentReliables[reliableCount] = m_nextSentReliableId;
 				++reliableCount;
 				OnReliableSend();
@@ -167,7 +167,7 @@ void NetConnection::FlushOutgoingMessages()
 			if (totalMessageSize <= PACKET_MTU)
 			{
 				//write message to packet
-				packet->WriteMessage(*m_unsentUnreliableMessages[messageIndex]);
+				packet->WriteMessage(*m_unsentUnreliableMessages[messageIndex], this);
 				m_unsentUnreliableMessages.erase(m_unsentUnreliableMessages.begin() + messageIndex);
 				--messageIndex;
 			}

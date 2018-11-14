@@ -419,7 +419,7 @@ bool NetSession::SendMessageWithoutConnection(NetMessage* message, NetConnection
 	if (packet->GetBufferSize() + message->GetWrittenByteCount() <= PACKET_MTU)
 	{
 		//write message to packet
-		packet->WriteMessage(*message);
+		packet->WriteMessage(*message, nullptr);
 		packetsToSend.push_back(packet);
 	}
 

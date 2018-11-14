@@ -321,6 +321,8 @@
     <ClCompile Include="Map\MapGenStep_Mutate.cpp" />
     <ClCompile Include="Planner.cpp" />
     <ClCompile Include="PointOfInterest.cpp" />
+    <ClCompile Include="SimulationData.cpp" />
+    <ClCompile Include="Definitions\SimulationDefinition.cpp" />
     <ClCompile Include="Sprites\IsoSprite.cpp" />
     <ClCompile Include="Sprites\IsoSpriteAnim.cpp" />
     <ClCompile Include="Sprites\IsoSpriteAnimSet.cpp" />
@@ -361,6 +363,8 @@
     <ClInclude Include="Map\MapGenStep_Mutate.hpp" />
     <ClInclude Include="Planner.hpp" />
     <ClInclude Include="PointOfInterest.hpp" />
+    <ClInclude Include="SimulationData.hpp" />
+    <ClInclude Include="Definitions\SimulationDefinition.hpp" />
     <ClInclude Include="Sprites\IsoSprite.hpp" />
     <ClInclude Include="Sprites\IsoSpriteAnim.hpp" />
     <ClInclude Include="Sprites\IsoSpriteAnimSet.hpp" />

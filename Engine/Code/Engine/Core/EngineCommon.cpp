@@ -10,7 +10,10 @@
 #include "Engine\Net\Net.hpp"
 #include "Engine\Net\RemoteCommandService.hpp"
 #include "Engine\Net\NetSession.hpp"
-
+#include "Engine\Core\StringUtils.hpp"
+#include <string>
+#include <ctime>
+#include <stdarg.h>
 
 
 Blackboard g_gameConfigBlackboard;
@@ -85,4 +88,22 @@ void EngineShutdown()
 
 	LogSystem::GetInstance()->Shutdown();
 }
-	
+
+// Get current date/time, format is MM-DD-YYYY_HOUR.MIN.SEC
+const std::string GetCurrentDateTime() 
+{
+	struct tm newTime;
+	std::time_t now = std::time(0);
+	localtime_s(&newTime, &now);
+
+	std::string formattedDateTimeString = Stringf("%i-%i-%i_%i.%i.%i",
+		newTime.tm_mon,
+		newTime.tm_mday,
+		newTime.tm_year,
+		newTime.tm_hour,
+		newTime.tm_min,
+		newTime.tm_sec
+		);
+
+	return formattedDateTimeString;
+}

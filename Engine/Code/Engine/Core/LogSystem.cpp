@@ -1,8 +1,9 @@
 #include "Engine\Core\LogSystem.hpp"
 #include "Engine\Core\DevConsole.hpp"
 #include <ctime>
-#include <fstream>
 #include <stdarg.h>
+#include <fstream>
+
 
 static LogSystem* g_theLogSystem = nullptr;
 static std::ofstream* g_logFile = nullptr;

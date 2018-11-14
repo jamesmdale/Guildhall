@@ -1,5 +1,6 @@
 #include "Engine\Net\NetPacket.hpp"
 #include "Engine\Net\NetConnection.hpp"
+#include "Engine\Core\ErrorWarningAssert.hpp"
 #include <type_traits>
 
 //  =============================================================================
@@ -96,6 +97,9 @@ bool NetPacket::WriteMessage(NetMessage& netMessage, NetConnection* connection, 
 	if (netMessage.m_definition->IsInOrder())
 	{
 		uint8_t channelId = netMessage.m_definition->m_messageChannelIndex;
+
+		ASSERT_RECOVERABLE(connection != nullptr, "CONNECTION INVALID: DEFINITION REQUIRES CONNECTION");
+
 		netMessage.m_header->m_sequenceId = connection->GetAndIncrementNextSequenceIdForChannel(channelId);
 	}
 

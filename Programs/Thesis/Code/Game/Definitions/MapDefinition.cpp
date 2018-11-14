@@ -1,9 +1,11 @@
-#include "Game\Definitions\MapDefinition.hpp"
 #include "Engine\Core\ErrorWarningAssert.hpp"
+#include "Engine\Core\StringUtils.hpp"
+#include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Map\MapGenStep.hpp"
 
 std::map< std::string, MapDefinition* > MapDefinition:: s_definitions;
 
+//  =============================================================================
 MapDefinition::MapDefinition( const tinyxml2::XMLElement& element )
 {	
 	m_name = ParseXmlAttribute(element, "name", m_name);
@@ -26,6 +28,7 @@ MapDefinition::MapDefinition( const tinyxml2::XMLElement& element )
 	}
 }
 
+//  =============================================================================
 void MapDefinition::Initialize(const std::string& filePath)
 {
 	tinyxml2::XMLDocument tileDefDoc;
@@ -41,4 +44,24 @@ void MapDefinition::Initialize(const std::string& filePath)
 
 	//debugger notification
 	DebuggerPrintf("Loaded map definitions!!!");
+}
+
+//  =============================================================================
+MapDefinition* MapDefinition::GetMapDefinitionByName(const std::string& mapName)
+{
+	//if none are loaded, error out
+	ASSERT_OR_DIE(s_definitions.size() > 0, "ERROR: NO MAP DEFINITIONS LOADED");
+
+	//if they pass in an empty string, get the first entry
+	if (IsStringNullOrEmpty(mapName))
+	{
+		return s_definitions.begin()->second;
+	}
+
+	auto definition = s_definitions.find(mapName);
+
+	//if the definition is not found, error out 
+	ASSERT_OR_DIE(definition != s_definitions.end(), "ERROR: INVALID SIMULATION NAME");
+
+	return definition->second;	
 }

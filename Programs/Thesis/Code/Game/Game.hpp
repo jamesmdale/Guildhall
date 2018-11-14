@@ -36,6 +36,7 @@ public:
 	void InitializeTileDefinitions();
 	void InitializeMapDefinitions();
 	void InitializeAgentDefinitions();
+	void InitializeSimulationDefinitions();
 
 public:
 	//optimization method flags

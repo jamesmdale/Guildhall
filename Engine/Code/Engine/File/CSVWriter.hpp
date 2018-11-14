@@ -13,6 +13,7 @@ public:
 
 	bool WriteToFile(const std::string& filePath);
 
+private:
 	std::vector<std::string> m_content;
 };
 

@@ -1,5 +1,7 @@
 #include "Game\Map\Map.hpp"
 #include "Game\Definitions\MapDefinition.hpp"
+#include "Game\Definitions\SimulationDefinition.hpp"
+#include "Game\SimulationData.hpp"
 #include "Game\Map\MapGenStep.hpp"
 #include "Game\GameCommon.hpp"
 #include "Game\PointOfInterest.hpp"
@@ -8,6 +10,7 @@
 #include "Game\Map\Tile.hpp"
 #include "Game\Bombardment.hpp"
 #include "Game\GameStates\PlayingState.hpp"
+#include "Game\SimulationData.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Math\MathUtils.hpp"
@@ -16,10 +19,11 @@
 #include "Engine\Renderer\Mesh.hpp"
 
 //  =========================================================================================
-Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* renderScene)
+Map::Map(SimulationDefinition* simulationDefinition, const std::string & mapName, RenderScene2D* renderScene)
 {
 	m_name = mapName;
-	m_mapDefinition = definition;
+	m_mapDefinition = simulationDefinition->m_mapDefinition;
+	m_activeSimulationDefinition = simulationDefinition;
 
 	int numTilesX = GetRandomIntInRange(m_mapDefinition->m_width.min, m_mapDefinition->m_width.max);
 	int numTilesY = GetRandomIntInRange(m_mapDefinition->m_height.min, m_mapDefinition->m_height.max);
@@ -56,13 +60,6 @@ Map::Map(MapDefinition* definition, const std::string & mapName, RenderScene2D* 
 	}
 
 	m_mapWorldBounds = AABB2(0.f, 0.f, m_dimensions.x * g_tileSize, m_dimensions.y * g_tileSize);
-
-	//setup timeres
-	m_bombardmentTimer = new Stopwatch(GetMasterClock());
-	m_bombardmentTimer->SetTimer(1.f / g_bombardmentRatePerSecond);
-
-	m_threatTimer = new Stopwatch(GetMasterClock());
-	m_threatTimer->SetTimer(1.f / g_threatIncreaseRatePerSecond);
 }
 
 //  =========================================================================================
@@ -90,7 +87,14 @@ void Map::Initialize()
 {
 	g_maxCoordinateDistanceSquared = GetDistanceSquared(IntVector2::ZERO, GetDimensions());
 
-	for (int armoryIndex = 0; armoryIndex < 2; ++armoryIndex)
+	//if we don't alreadfy have an active definition, get the top one
+	if (m_activeSimulationDefinition == nullptr)
+	{
+		m_activeSimulationDefinition = SimulationDefinition::GetSimulationByName("");
+	}		
+
+	//create armories
+	for (int armoryIndex = 0; armoryIndex < m_activeSimulationDefinition->m_numArmories; ++armoryIndex)
 	{
 		//add random point of interest
 		PointOfInterest* poiLocation = GeneratePointOfInterest(ARMORY_POI_TYPE);
@@ -101,7 +105,8 @@ void Map::Initialize()
 		poiLocation = nullptr;
 	}
 
-	for (int lumberyardIndex = 0; lumberyardIndex < 2; ++lumberyardIndex)
+	//create lumberyards
+	for (int lumberyardIndex = 0; lumberyardIndex < m_activeSimulationDefinition->m_numArmories; ++lumberyardIndex)
 	{
 		//add random point of interest
 		PointOfInterest* poiLocation = GeneratePointOfInterest(LUMBERYARD_POI_TYPE);
@@ -115,7 +120,8 @@ void Map::Initialize()
 	IntVector2 dimensions = GetDimensions();
 	AABB2 mapBounds = AABB2(Vector2::ZERO, Vector2(dimensions));
 
-	for (int agentIndex = 0; agentIndex < 100; ++agentIndex)
+	//create agents
+	for (int agentIndex = 0; agentIndex < m_activeSimulationDefinition->m_numAgents; ++agentIndex)
 	{
 		IsoSpriteAnimSet* animSet = nullptr;
 		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
@@ -136,6 +142,16 @@ void Map::Initialize()
 		agent = nullptr;
 	}
 
+	//init other starting values
+	m_threat = m_activeSimulationDefinition->m_startingThreat;
+
+	//setup timeres
+	m_bombardmentTimer = new Stopwatch(GetMasterClock());
+	m_bombardmentTimer->SetTimer(1.f / m_activeSimulationDefinition->m_bombardmentRatePerSecond);
+
+	m_threatTimer = new Stopwatch(GetMasterClock());
+	m_threatTimer->SetTimer(1.f / m_activeSimulationDefinition->m_threatRatePerSecond);
+
 	//sort agents for the first time
 	m_sortTimer = new Stopwatch(g_sortTimerInSeconds, GetMasterClock());
 
@@ -144,8 +160,11 @@ void Map::Initialize()
 
 	CreateMapMesh();
 	m_mapAsGrid = GetAsGrid();
-}
 
+	simData = new SimulationData();
+	simData->Initialize(m_activeSimulationDefinition);
+	simData->ExportCSV();
+}
 
 //  =========================================================================================
 void Map::Update(float deltaSeconds)

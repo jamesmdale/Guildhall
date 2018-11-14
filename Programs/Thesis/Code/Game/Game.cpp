@@ -9,6 +9,7 @@
 #include "Engine\Core\EngineCommon.hpp"
 #include "Engine\Window\Window.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include "Game\Definitions\SimulationDefinition.hpp"
 #include <vector>
 #include <string>
 
@@ -96,6 +97,7 @@ void Game::Initialize()
 	InitializeTileDefinitions();
 	InitializeMapDefinitions();
 	InitializeAgentDefinitions();
+	InitializeSimulationDefinitions();
 
 
 	// cleanup
@@ -155,7 +157,13 @@ void Game::InitializeMapDefinitions()
 //  =========================================================================================
 void Game::InitializeAgentDefinitions()
 {
+	//unused atm 11/13/2018
+}
 
+//  =============================================================================
+void Game::InitializeSimulationDefinitions()
+{
+	SimulationDefinition::Initialize("Data/Simulations/Simulations.xml");
 }
 
 

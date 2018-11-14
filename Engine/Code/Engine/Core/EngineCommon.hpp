@@ -78,3 +78,4 @@ constexpr uint16_t UNSIGNED_WORD_MAX = 32'767;
 // Methods =============================================================================
 void EngineStartup();
 void EngineShutdown();
+const std::string GetCurrentDateTime();
