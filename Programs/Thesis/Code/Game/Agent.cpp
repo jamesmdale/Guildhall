@@ -127,7 +127,14 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 	m_currentPath.push_back(goalDestination);
 
 	//add the location
-	isDestinationFound = AStarSearch(m_currentPath, startCoord, endCoord, m_planner->m_map->m_mapAsGrid, m_planner->m_map);
+	if (g_currentSimulationData->m_simulationDefinitionReference->GetIsOptimized())
+	{
+		isDestinationFound = AStarSearchOnGrid(m_currentPath, startCoord, endCoord, m_planner->m_map->m_mapAsGrid, m_planner->m_map);
+	}		
+	else
+	{
+		isDestinationFound = AStarSearchOnGrid(m_currentPath, startCoord, endCoord, m_planner->m_map->GetAsGrid(), m_planner->m_map);
+	}
 
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
@@ -141,7 +148,11 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 
 		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
 		DevConsolePrintf(Rgba::LIGHT_BLUE, "Average Time After 100 iterations (Pathing) %f", secondsAverage);
-		DevConsolePrintf(Rgba::LIGHT_BLUE, "Iterations per second %f (Pathing) (total time %f)", iterationsPerSecond, totalSeconds);
+		DevConsolePrintf(Rgba::LIGHT_BLUE, "Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds);
+
+		g_currentSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (Pathing) %f", secondsAverage));
+		g_currentSimulationData->WriteEntry(Stringf("Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
+
 
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();
@@ -228,6 +239,8 @@ void Agent::TakeDamage(int damageAmount)
 
 bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
+	PROFILER_PUSH();
+
 	//used to handle any extra logic that must occur on first loop
 	if (isFirstLoopThroughAction)
 	{
@@ -305,6 +318,8 @@ bool MoveAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 //  =========================================================================================
 bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
+	PROFILER_PUSH();
+
 	//used to handle any extra logic that must occur on first loop
 	if (isFirstLoopThroughAction)
 	{
@@ -319,7 +334,7 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 	if (actionTimer->DecrementAll() > 0)
 	{
 		//launch arrow in agent forward
-		ClampInt(agent->m_planner->m_map->m_threat - g_baseShootDamageAmountPerPerformance, 0, g_maxThreat);
+		agent->m_planner->m_map->m_threat = ClampInt(agent->m_planner->m_map->m_threat - g_baseShootDamageAmountPerPerformance, 0, g_maxThreat);
 		agent->m_arrowCount--;
 		agent->m_animationSet->GetCurrentAnim()->PlayFromStart();
 	}	
@@ -337,6 +352,8 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 //  =========================================================================================
 bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
+	PROFILER_PUSH();
+
 	//used to handle any extra logic that must occur on first loop
 	if (isFirstLoopThroughAction)
 	{
@@ -371,6 +388,8 @@ bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 //  =========================================================================================
 bool HealAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
+	PROFILER_PUSH();
+
 	//used to handle any extra logic that must occur on first loop
 	if (isFirstLoopThroughAction)
 	{
@@ -390,23 +409,25 @@ bool HealAction(Agent* agent, const Vector2& goalDestination, int interactEntity
 //  =========================================================================================
 bool GatherAction(Agent* agent, const Vector2& goalDestination, int interactEntityId)
 {
+	PROFILER_PUSH();
+
 	agent->m_animationSet->SetCurrentAnim("cast");
 
 	//if we are at our destination, we are ready to gather
 	PointOfInterest* targetPoi = agent->m_planner->m_map->GetPointOfInterestById(interactEntityId);
 
 	//confirm agent is at targetPOI accessLocation
-	if (agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_position) != targetPoi->m_accessCoordinate)
-	{	
-		ActionData* data = new ActionData();
-		data->m_action = MoveAction;
-		data->m_finalGoalPosition = targetPoi->m_map->GetWorldPositionOfMapCoordinate(targetPoi->m_accessCoordinate);
-		data->m_interactEntityId = -1; //move actions don't have a target entity to interact with
+	//if (agent->m_planner->m_map->GetTileCoordinateOfPosition(agent->m_position) != targetPoi->m_accessCoordinate)
+	//{	
+	//	ActionData* data = new ActionData();
+	//	data->m_action = MoveAction;
+	//	data->m_finalGoalPosition = targetPoi->m_map->GetWorldPositionOfMapCoordinate(targetPoi->m_accessCoordinate);
+	//	data->m_interactEntityId = -1; //move actions don't have a target entity to interact with
 
-		agent->m_planner->AddActionToStack(data);
-		data = nullptr;
-		return false;
-	}
+	//	agent->m_planner->AddActionToStack(data);
+	//	data = nullptr;
+	//	return false;
+	//}
 
 	//if we are serving another agent or no one is assigned we either need to wait or set this agent to currently serving
 	if (targetPoi->m_agentCurrentlyServing != agent)

@@ -34,6 +34,15 @@ Planner::~Planner()
 void Planner::ProcessActionStack(float deltaSeconds)
 {
 	PROFILER_PUSH();
+
+	// profiling ----------------------------------------------
+	static int iterations = 0;
+	static uint64_t timeAverage = 0.f;
+	static uint64_t iterationStartHPC = GetPerformanceCounter();
+	uint64_t startHPC = GetPerformanceCounter();
+	++iterations;
+	//  ----------------------------------------------
+
 	if (m_actionStack.size() == 0)
 	{
 		UpdatePlan();
@@ -52,6 +61,30 @@ void Planner::ProcessActionStack(float deltaSeconds)
 			m_actionStack.pop();
 		}
 	}
+
+	// profiling ----------------------------------------------
+	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 10000)
+	{
+		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
+		float iterationsPerSecond = totalSeconds / 100.f;
+		iterationStartHPC = GetPerformanceCounter();
+
+		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
+		DevConsolePrintf(Rgba::GREEN, "Average Time After 10000 iterations (Process Action Stack) %f", secondsAverage);
+		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Process Action Stack) (total time %f)", iterationsPerSecond, totalSeconds);
+
+		g_currentSimulationData->WriteEntry(Stringf("Average Time After 10000 iterations (Process Action Stack) %f", secondsAverage));
+		g_currentSimulationData->WriteEntry(Stringf("Iterations per second %f (Process Action Stack) (total time between: %f)", iterationsPerSecond, totalSeconds));
+
+		//reset data
+		iterationStartHPC = GetPerformanceCounter();
+		iterations = 0;
+		timeAverage = 0.0;
+	}
+	//  ---------------------------------------------
 }
 
 //  =========================================================================================
@@ -74,9 +107,12 @@ void Planner::ClearStack()
 //  =========================================================================================
 void Planner::UpdatePlan()
 {
-	// function profling ----------------------------------------------
-	++iterationsOfUpdatePlan;
+	// profiling ----------------------------------------------
+	static int iterations = 0;
+	static uint64_t timeAverage = 0.f;
+	static uint64_t iterationStartHPC = GetPerformanceCounter();
 	uint64_t startHPC = GetPerformanceCounter();
+	++iterations;
 	//  ----------------------------------------------
 
 	PROFILER_PUSH();
@@ -89,7 +125,7 @@ void Planner::UpdatePlan()
 
 	//utility for gathering arrows
 	compareUtilityInfo = GetHighestGatherArrowsUtility();
-	if (m_currentPlan == GATHER_ARROWS_PLAN_TYPE)
+	if (m_currentPlan == GATHER_ARROWS_PLAN_TYPE  && compareUtilityInfo.utility != 0.f)
 	{
 		SkewCurrentPlanUtilityValue(compareUtilityInfo);
 	}
@@ -101,7 +137,7 @@ void Planner::UpdatePlan()
 		
 	//utility for gathering lumber
 	compareUtilityInfo = GetHighestGatherLumberUtility();
-	if (m_currentPlan == GATHER_LUMBER_PLAN_TYPE)
+	if (m_currentPlan == GATHER_LUMBER_PLAN_TYPE && compareUtilityInfo.utility != 0.f)
 	{
 		SkewCurrentPlanUtilityValue(compareUtilityInfo);
 	}
@@ -112,8 +148,8 @@ void Planner::UpdatePlan()
 	}
 
 	//utility for gathering bandages
-	compareUtilityInfo = GetHighestGatherBandagesUtility();
-	if (m_currentPlan == GATHER_BANDAGES_PLAN_TYPE)
+	/*compareUtilityInfo = GetHighestGatherBandagesUtility();
+	if (m_currentPlan == GATHER_BANDAGES_PLAN_TYPE && compareUtilityInfo.utility != 0.f)
 	{
 		SkewCurrentPlanUtilityValue(compareUtilityInfo);
 	}
@@ -121,12 +157,15 @@ void Planner::UpdatePlan()
 	{
 		highestUtilityInfo = compareUtilityInfo;
 		chosenOutcome = GATHER_BANDAGES_PLAN_TYPE;
-	}
+	}*/
 
 	//utility for shooting	
 	compareUtilityInfo = GetHighestShootUtility();
-	SkewUtilityForBias(compareUtilityInfo, m_agent->m_combatBias);
-	if (m_currentPlan == SHOOT_PLAN_TYPE)
+
+	if(compareUtilityInfo.utility != 0.f)
+		SkewUtilityForBias(compareUtilityInfo, m_agent->m_combatBias);
+
+	if (m_currentPlan == SHOOT_PLAN_TYPE  && compareUtilityInfo.utility != 0.f)
 	{
 		SkewCurrentPlanUtilityValue(compareUtilityInfo);
 	}
@@ -138,8 +177,11 @@ void Planner::UpdatePlan()
 
 	//utility for repairing buildings
 	compareUtilityInfo = GetHighestRepairUtility();
-	SkewUtilityForBias(compareUtilityInfo, m_agent->m_repairBias);
-	if (m_currentPlan == REPAIR_PLAN_TYPE)
+
+	if(compareUtilityInfo.utility != 0.f)
+		SkewUtilityForBias(compareUtilityInfo, m_agent->m_repairBias);
+
+	if (m_currentPlan == REPAIR_PLAN_TYPE  && compareUtilityInfo.utility != 0.f)
 	{
 		SkewCurrentPlanUtilityValue(compareUtilityInfo);
 	}
@@ -150,9 +192,9 @@ void Planner::UpdatePlan()
 	}
 
 	//utility for healing agents
-	compareUtilityInfo = GetHighestHealUtility();
+	/*compareUtilityInfo = GetHighestHealUtility();
 	SkewUtilityForBias(compareUtilityInfo, m_agent->m_healBias);
-	if (m_currentPlan == HEAL_PLAN_TYPE)
+	if (m_currentPlan == HEAL_PLAN_TYPE && compareUtilityInfo.utility != 0.f)
 	{
 		SkewCurrentPlanUtilityValue(compareUtilityInfo);
 	}
@@ -160,34 +202,50 @@ void Planner::UpdatePlan()
 	{
 		highestUtilityInfo = compareUtilityInfo;
 		chosenOutcome = HEAL_PLAN_TYPE;
-	}
+	}*/
 
 	m_currentPlan = chosenOutcome;
 
 	// profiling ----------------------------------------------
-	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+	//uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 	//calculate new average
-	averageTimeForUpdatePlan = ((averageTimeForUpdatePlan * (iterationsOfUpdatePlan - 1)) + totalHPC) / iterationsOfUpdatePlan;
+	//averageTimeForUpdatePlan = ((averageTimeForUpdatePlan * (iterationsOfUpdatePlan - 1)) + totalHPC) / iterationsOfUpdatePlan;
 	//  ----------------------------------------------
 
 	QueueActionsFromCurrentPlan(m_currentPlan, highestUtilityInfo);
 
-	if (iterationsOfQueueActions == 100)
-	{
-		std::string optimizedText = Game::GetInstance()->m_isOptimized ? "(optimized)" : "(unoptimized)";
-		float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForQueueActions);
-		//DevConsolePrintf("Average Time After 100 iterations %s %f", optimizedText.c_str(), secondsAverage);
-		iterationsOfQueueActions = 0;
-		averageTimeForQueueActions = 0.0;
-	}
+	//if (iterationsOfQueueActions == 100)
+	//{
+	//	std::string optimizedText = Game::GetInstance()->m_isOptimized ? "(optimized)" : "(unoptimized)";
+	//	float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForQueueActions);
+	//	//DevConsolePrintf("Average Time After 100 iterations %s %f", optimizedText.c_str(), secondsAverage);
+	//	iterationsOfQueueActions = 0;
+	//	averageTimeForQueueActions = 0.0;
+	//}
 
-	if (iterationsOfUpdatePlan == 100)
+	// profiling ----------------------------------------------
+	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 100)
 	{
-		float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForUpdatePlan);
-		//DevConsolePrintf("Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
-		iterationsOfUpdatePlan = 0;
-		averageTimeForUpdatePlan = 0.0;
+		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
+		float iterationsPerSecond = totalSeconds / 100.f;
+		iterationStartHPC = GetPerformanceCounter();
+
+		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
+		DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
+		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (UpdatePlan) (total time %f)", iterationsPerSecond, totalSeconds);
+
+		g_currentSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (UpdatePlan) %f", secondsAverage));
+		g_currentSimulationData->WriteEntry(Stringf("Iterations per second %f (UpdatePlan) (total time between: %f)", iterationsPerSecond, totalSeconds));
+
+		//reset data
+		iterationStartHPC = GetPerformanceCounter();
+		iterations = 0;
+		timeAverage = 0.0;
 	}
+	//  ---------------------------------------------
 }
 
 //  =========================================================================================
@@ -238,7 +296,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 		m_agent->m_planner->AddActionToStack(data);
 
 		//figure out if we can skip doing an A* by borrowing someone else's path
-		if (Game::GetInstance()->m_isOptimized)
+		if (g_currentSimulationData->m_simulationDefinitionReference->GetIsOptimized())
 		{
 			PROFILER_PUSH();
 			bool success = FindAgentAndCopyPath();
@@ -583,7 +641,7 @@ void Planner::SkewCurrentPlanUtilityValue(UtilityInfo & outInfo)
 //  =========================================================================================
 void Planner::SkewUtilityForBias(UtilityInfo& outInfo, float biasValue)
 {
-	float value = RangeMapFloat(biasValue, 0.f, 1.f, 0.f, 0.1f);
+	float value = RangeMapFloat(biasValue, 0.f, 1.f, 0.f, 0.05f);
 	outInfo.utility += value;
 }
 
@@ -651,7 +709,7 @@ float Planner::CalculateShootUtility(float normalizedThreatUtility)
 float Planner::CalculateIdleUtility()
 {
 	//flat rate for idle.  (very small but will always trump anything of value 0)
-	return 0.01f;
+	return 0.001f;
 }
 
 //  =========================================================================================
@@ -725,8 +783,6 @@ bool Planner::FindAgentAndCopyPath()
 	static uint64_t timeAverage = 0.f;
 	static uint64_t iterationStartHPC = GetPerformanceCounter();
 	uint64_t startHPC = GetPerformanceCounter();
-	
-
 	++iterations;
 	//  ----------------------------------------------
 
@@ -828,6 +884,9 @@ bool Planner::FindAgentAndCopyPath()
 		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
 		DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (Copy path) %f", secondsAverage);
 		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Copy Path) (total time %f)", iterationsPerSecond, totalSeconds);
+
+		g_currentSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (Copy path) %f", secondsAverage));
+		g_currentSimulationData->WriteEntry(Stringf("Iterations per second %f (Copy Path) (total time between: %f)", iterationsPerSecond, totalSeconds));
 		
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();

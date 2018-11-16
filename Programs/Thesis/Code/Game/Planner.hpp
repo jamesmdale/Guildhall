@@ -86,7 +86,7 @@ public:
 	bool GetDoesHaveTopActionGoalPosition(Vector2& outPosition);
 
 public:
-	Map * m_map = nullptr;
+	Map* m_map = nullptr;
 	Agent* m_agent = nullptr;
 	ePlanTypes m_currentPlan;
 

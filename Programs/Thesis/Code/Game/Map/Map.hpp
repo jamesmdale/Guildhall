@@ -114,8 +114,6 @@ public:
 
 	float m_threat = 500.f;
 
-	SimulationData* simData = nullptr;
-
 private:
 	bool m_isFullMapView = false;
 };

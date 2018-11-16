@@ -2,6 +2,7 @@
 #include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Definitions\SimulationDefinition.hpp"
 #include "Game\SimulationData.hpp"
+#include "Game\SimulationData.hpp"
 #include "Game\Map\MapGenStep.hpp"
 #include "Game\GameCommon.hpp"
 #include "Game\PointOfInterest.hpp"
@@ -160,10 +161,6 @@ void Map::Initialize()
 
 	CreateMapMesh();
 	m_mapAsGrid = GetAsGrid();
-
-	simData = new SimulationData();
-	simData->Initialize(m_activeSimulationDefinition);
-	simData->ExportCSV();
 }
 
 //  =========================================================================================
@@ -186,7 +183,7 @@ void Map::Update(float deltaSeconds)
 
 	//check optimization flags
 	//sort for Y drawing for render AND for next frame's agent update
-	if (Game::GetInstance()->m_isOptimized)
+	if (g_currentSimulationData->m_simulationDefinitionReference->m_isOptimized)
 	{		
 		TODO("Check and reset sorting timer to prevent sorting every frame")
 		if (m_sortTimer->CheckAndReset())

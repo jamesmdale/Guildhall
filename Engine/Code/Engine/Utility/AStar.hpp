@@ -69,7 +69,7 @@ static void GetPath(std::vector<Vector2>& outIndicies, Grid<SearchCell>& cellLis
 	//complete
 }
 
-static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& startPosition, const IntVector2& destinationPosition, Grid<int>* grid, Map* currentMap)
+static bool AStarSearchOnGrid(std::vector<Vector2>& outPositions, const IntVector2& startPosition, const IntVector2& destinationPosition, Grid<int>* grid, Map* currentMap)
 {
 	ASSERT_OR_DIE(grid->IsCellValid(startPosition) && grid->IsCellValid(destinationPosition), "Search cells out of range");
 	int value = grid->GetValueAtCoordinate(destinationPosition);
@@ -459,5 +459,4 @@ static bool AStarSearch(std::vector<Vector2>& outPositions, const IntVector2& st
 
 	return isDestinationFound;
 };
-
 

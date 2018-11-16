@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "Game\TheApp.hpp"
 #include "Game\Game.hpp"
 #include "Game\GameCommon.hpp"
 #include "Game\GameStates\GameState.hpp"
@@ -110,6 +111,11 @@ void Game::Update()
 {
 	float deltaSeconds = g_gameClock->GetDeltaSeconds();
 
+	if (g_theApp->GetPauseState())
+	{
+		deltaSeconds = 0.f;
+	}
+
 	// update global menu data (handles transitions and timers) =============================================================================
 	GameState::UpdateGlobalGameState(deltaSeconds);
 
@@ -166,4 +172,8 @@ void Game::InitializeSimulationDefinitions()
 	SimulationDefinition::Initialize("Data/Simulations/Simulations.xml");
 }
 
-
+// pause command =============================================================================
+void ToggleGamePaused(Command& cmd)
+{
+	m_isPaused =  !m_isPaused;
+}

@@ -18,6 +18,7 @@
 #include "Engine\File\File.hpp"
 #include "Engine\Core\LogSystem.hpp"
 #include "Engine\File\CSVWriter.hpp"
+#include "Game\SimulationData.hpp"
 #include <thread>
 #include <fstream>
 #include "Game\Definitions\SpriteDefinitions\SpriteDefinition.hpp"
@@ -26,6 +27,7 @@
 #include "Game\Definitions\SpriteDefinitions\IsoSpriteAnimSetDefinition.hpp"
 
 TheApp* g_theApp = nullptr;
+bool g_isAppPaused = false;
 
 //  =============================================================================
 TheApp::TheApp()
@@ -37,6 +39,7 @@ TheApp::TheApp()
 TheApp::~TheApp()
 {
 	TODO("DELETE SYSTEMS AND NULL OUT");
+	//g_currentSimulationData->ExportCSV();
 }
 
 //  =============================================================================
@@ -70,6 +73,7 @@ void TheApp::Initialize()
 {
 	//register app commands
 	RegisterCommand("quit", CommandRegistration(Quit, ": Use to quit the program", "Quitting..."));
+	RegisterCommand("game_pause", CommandRegistration(TogglePaused, ": Pause the app", "Pausing..."));
 
 	//start the masterclock
 	Clock* masterClock = GetMasterClock();
@@ -96,12 +100,19 @@ void TheApp::Update()
 
 	float deltaSeconds = GetMasterDeltaSeconds();
 
+	float modifiedDeltaSeconds = deltaSeconds;
+	
+	if (g_isAppPaused)
+	{
+		modifiedDeltaSeconds = 0.0f;
+	}
+
 	//test for getting master delta seconds
 	double unclampedFrameTime = GetUnclampedMasterDeltaSeconds();
 	double unclampedFPS = GetUnclampedFPS();
 
 	//update global menu data (handles transitions and timers)
-	GameState::UpdateGlobalGameState(deltaSeconds);
+	GameState::UpdateGlobalGameState(modifiedDeltaSeconds);
 
 	deltaSeconds = UpdateInput(deltaSeconds);
 
@@ -109,7 +120,7 @@ void TheApp::Update()
 
 	if(DebugRender::GetInstance()->IsEnabled())
 	{
-		DebugRender::GetInstance()->Update(deltaSeconds);
+		DebugRender::GetInstance()->Update(modifiedDeltaSeconds);
 	}
 
 	if (ProfilerConsole::GetInstance()->IsOpen())
@@ -225,12 +236,24 @@ void TheApp::InitializeGameResources()
 }
 
 //  =============================================================================
+bool TheApp::GetPauseState()
+{
+	return g_isAppPaused;
+}
+
+//  =============================================================================
 // command callbacks =========================================================================================
 //  =============================================================================
 void Quit(Command &cmd)
 {
 	DevConsolePrintf(cmd.m_commandInfo->m_successMessage.c_str());
 	g_isQuitting = true;
+}
+
+//  =============================================================================
+void TogglePaused(Command & cmd)
+{
+	g_isAppPaused = !g_isAppPaused;
 }
 
 //  =========================================================================================

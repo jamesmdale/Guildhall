@@ -4,7 +4,7 @@
 #include "Game\Definitions\MapDefinition.hpp"
 #include "Game\Map\MapGenStep.hpp"
 
-std::map< std::string, SimulationDefinition*> SimulationDefinition:: s_simulationDefinitions;
+std::vector<SimulationDefinition*> SimulationDefinition:: s_simulationDefinitions;
 
 //  =============================================================================
 SimulationDefinition::SimulationDefinition( const tinyxml2::XMLElement& element )
@@ -19,6 +19,7 @@ SimulationDefinition::SimulationDefinition( const tinyxml2::XMLElement& element 
 	m_threatRatePerSecond = ParseXmlAttribute(element, "threatRatePerSecond", m_threatRatePerSecond);
 	m_startingThreat = ParseXmlAttribute(element, "startingThreat", m_startingThreat);	
 	m_totalProcessingTimeInSeconds = ParseXmlAttribute(element, "processTimerInSeconds", m_totalProcessingTimeInSeconds);
+	m_isOptimized = ParseXmlAttribute(element, "isOptimized", m_isOptimized);
 
 	m_mapDefinition = MapDefinition::GetMapDefinitionByName(m_mapName);
 }
@@ -34,7 +35,7 @@ void SimulationDefinition::Initialize(const std::string& filePath)
 	for(const tinyxml2::XMLElement* definitionNode = pRoot->FirstChildElement(); definitionNode; definitionNode = definitionNode->NextSiblingElement())
 	{
 		SimulationDefinition* newDef = new SimulationDefinition(*definitionNode);		
-		s_simulationDefinitions.insert(std::pair<std::string, SimulationDefinition*>(std::string(newDef->m_name), newDef));
+		s_simulationDefinitions.push_back(newDef);
 	}	
 
 	//debugger notification
@@ -50,13 +51,17 @@ SimulationDefinition* SimulationDefinition::GetSimulationByName(const std::strin
 	//if they pass in an empty string, get the first entry
 	if (IsStringNullOrEmpty(definitionName))
 	{
-		return s_simulationDefinitions.begin()->second;
+		return nullptr;
 	}
 
-	auto definition = s_simulationDefinitions.find(definitionName);
+	for (int definitionIndex = 0; definitionIndex < (int)s_simulationDefinitions.size(); ++definitionIndex)
+	{
+		if (s_simulationDefinitions[definitionIndex]->m_name == definitionName)
+		{
+			return s_simulationDefinitions[definitionIndex];
+		}
+	}
 
-	//if the definition is not found, error out 
-	ASSERT_OR_DIE(definition != s_simulationDefinitions.end(), "ERROR: INVALID SIMULATION NAME");
+	return nullptr;
 
-	return definition->second;	
 }

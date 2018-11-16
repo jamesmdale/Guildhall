@@ -25,5 +25,6 @@ public:
 
 public:
 	std::vector<SimulationDataEntry> m_entries;
+	SimulationDefinition* m_simulationDefinitionReference = nullptr;
 };
 

@@ -5,8 +5,14 @@
 #include "Engine\Math\Vector3.hpp"
 #include "Engine\Core\Rgba.hpp"
 
+class SimulationData;
+
 //following line will go here when any engine side globals are declared and need to be used
 //#include "Engine/Core/EngineCommon.hpp"
+
+//sim data
+extern SimulationData* g_currentSimulationData;
+extern int g_currentSimuDefinitionIndex;
 
 const Vector2 g_bottomLeftOrtho = Vector2( -1.f, -1.f);
 const Vector2 g_topRightOrtho = Vector2(1.f, 1.f);

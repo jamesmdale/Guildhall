@@ -6,6 +6,7 @@
 #include "Engine\Core\Widget.hpp"
 #include "Engine\Utility\Grid.hpp"
 
+class SimulationData;
 
 class PlayingState : public GameState
 {
@@ -37,6 +38,8 @@ public:
 
 	Camera* m_uiCamera = nullptr;
 	Map* m_map = nullptr;
+
+	Stopwatch* m_simulationTimer = nullptr;
 };
 
 void ToggleOptimized(Command& cmd);

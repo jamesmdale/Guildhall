@@ -17,6 +17,8 @@ SimulationData::~SimulationData()
 //  =============================================================================
 void SimulationData::Initialize(SimulationDefinition* simulationDefinition)
 {
+	m_simulationDefinitionReference = simulationDefinition;
+
 	//title cell
 	AddCell("Simulation");
 	AddNewLine();
@@ -74,6 +76,14 @@ void SimulationData::Initialize(SimulationDefinition* simulationDefinition)
 	AddCell("StartingTime");
 	AddCell(Stringf("%s", GetCurrentDateTime().c_str()));
 	AddNewLine();
+
+	//optimization?
+	std::string optimizedText = "";
+	simulationDefinition->m_isOptimized ? optimizedText = "Yes" : optimizedText = "No";
+
+	AddCell("IsOptimized");
+	AddCell(optimizedText.c_str());
+	AddNewLine();
 }
 
 //  =============================================================================
@@ -93,6 +103,7 @@ void SimulationData::ExportCSV()
 	{
 		AddCell(Stringf("%s", m_entries[entryIndex].m_value.c_str()));
 		AddCell(Stringf("%s", m_entries[entryIndex].m_timeStamp.c_str()));
+		AddNewLine();
 	}
 
 	std::string newFileName = Stringf("Simulation_%s", GetCurrentDateTime().c_str());

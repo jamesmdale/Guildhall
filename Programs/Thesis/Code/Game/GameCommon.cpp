@@ -1,6 +1,10 @@
 #include "Game\GameCommon.hpp"
+#include "Game\SimulationData.hpp"
 #include "Engine\Window\Window.hpp"
+
 //#include AudioSystem
+SimulationData* g_currentSimulationData = nullptr;
+int g_currentSimuDefinitionIndex = 0;
 
 bool g_isDebug = false;
 bool g_isQuitting = false;
@@ -15,7 +19,7 @@ float g_maxCoordinateDistanceSquared = 0.f;
 
 //general globals
 int g_maxHealth = 100;
-float g_skewForCurrentPlan = 0.1f;
+float g_skewForCurrentPlan = 0.05f;
 
 //poi globals
 float g_baseResourceRefillTimePerSecond = 0.5f;

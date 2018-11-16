@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <map>
+#include <vector>
 #include "Engine\ThirdParty\tinyxml2\tinyxml2.h"
 #include "Engine\Math\IntVector2.hpp"
 
@@ -13,6 +13,8 @@ public:
 	static void Initialize(const std::string& filePath);
 	static SimulationDefinition* GetSimulationByName(const std::string& definitionName);
 
+	bool GetIsOptimized() { return m_isOptimized; }
+
 public:
 	std::string m_name = "default";
 	std::string m_mapName = "";
@@ -24,9 +26,10 @@ public:
 	float m_threatRatePerSecond = 0.f;
 	int m_startingThreat = 0;
 	float m_totalProcessingTimeInSeconds = 0.f;
+	bool m_isOptimized = true;
 
 	MapDefinition* m_mapDefinition = nullptr;
 
-	static std::map< std::string, SimulationDefinition* > s_simulationDefinitions;
+	static std::vector<SimulationDefinition*> s_simulationDefinitions;
 };
 

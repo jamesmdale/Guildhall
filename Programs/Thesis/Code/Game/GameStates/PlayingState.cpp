@@ -12,6 +12,7 @@
 #include "Game\PointOfInterest.hpp"
 #include "Game\Agent.hpp"
 #include "Game\Definitions\SimulationDefinition.hpp"
+#include "Game\SimulationData.hpp"
 
 float ORTHO_MAX = 0.f;
 float ORTHO_MIN = 0.f;
@@ -22,6 +23,9 @@ float ZOOM_RATE = 5.f;
 //  =============================================================================
 PlayingState::~PlayingState()
 {
+	delete(m_simulationTimer);
+	m_simulationTimer = nullptr;
+
 	//delete scene last
 	delete(m_renderScene2D);
 	m_renderScene2D = nullptr;		
@@ -50,7 +54,11 @@ void PlayingState::Initialize()
 	ORTHO_MIN = 0.f;
 
 	// map creation
-	SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions["default"];
+	SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimuDefinitionIndex];
+
+	g_currentSimulationData = new SimulationData();
+	g_currentSimulationData->Initialize(definition);
+
 	m_map = new Map(definition, "TestMap", m_renderScene2D);	
 	m_map->Initialize();
 	m_map->m_gameState = this;
@@ -62,6 +70,10 @@ void PlayingState::Initialize()
 	//register commands
 	RegisterCommand("toggle_optimization", CommandRegistration(ToggleOptimized, ": Toggle blanket optimizations on and off", ""));
 
+
+	m_simulationTimer = new Stopwatch(GetMasterClock());
+	m_simulationTimer->SetTimer(g_currentSimulationData->m_simulationDefinitionReference->m_totalProcessingTimeInSeconds);
+
 	//cleanup
 	definition = nullptr;	
 	theRenderer = nullptr;
@@ -72,6 +84,29 @@ void PlayingState::Initialize()
 void PlayingState::Update(float deltaSeconds)
 { 
 	m_map->Update(deltaSeconds);
+
+	if (m_simulationTimer->ResetAndDecrementIfElapsed())
+	{
+		g_currentSimulationData->ExportCSV();
+
+		g_currentSimuDefinitionIndex++;
+
+		if (g_currentSimuDefinitionIndex < SimulationDefinition::s_simulationDefinitions.size())
+		{
+			SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimuDefinitionIndex];
+
+			delete(g_currentSimulationData);
+			g_currentSimulationData = nullptr;
+
+			g_currentSimulationData = new SimulationData();
+			g_currentSimulationData->Initialize(definition);
+			m_simulationTimer->SetTimer(SimulationDefinition::s_simulationDefinitions[g_currentSimuDefinitionIndex]->m_totalProcessingTimeInSeconds);
+		}
+		else
+		{
+			g_isQuitting = true;
+		}	
+	}
 }
 
 //  =============================================================================
@@ -154,10 +189,10 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_O))
 	{
-		Game* theGame = Game::GetInstance();
+		/*Game* theGame = Game::GetInstance();
 		theGame->m_isOptimized = !theGame->m_isOptimized;
 
-		theGame = nullptr;
+		theGame = nullptr;*/
 	}
 	
 	return deltaSeconds; //new deltaSeconds
@@ -208,16 +243,16 @@ void ToggleOptimized(Command& cmd)
 {
 	Game* theGame = Game::GetInstance();
 
-	theGame->m_isOptimized = !theGame->m_isOptimized;
+	//theGame->m_isOptimized = !theGame->m_isOptimized;
 
-	if (theGame->m_isOptimized)
-	{
-		DevConsolePrintf(Rgba::YELLOW, "Game is optimized!");
-	}
-	else
-	{
-		DevConsolePrintf(Rgba::YELLOW, "Game is NOT optimized!");
-	}
+	//if (theGame->m_isOptimized)
+	//{
+	//	DevConsolePrintf(Rgba::YELLOW, "Game is optimized!");
+	//}
+	//else
+	//{
+	//	DevConsolePrintf(Rgba::YELLOW, "Game is NOT optimized!");
+	//}
 
 	theGame = nullptr;
 }
