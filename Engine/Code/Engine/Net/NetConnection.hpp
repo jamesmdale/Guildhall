@@ -7,8 +7,16 @@
 #include "Engine\Time\Stopwatch.hpp"
 
 #define MAX_TRACKED_PACKETS (64)
+#define MAX_ID_LENGTH (16)
 
 constexpr uint16_t RELIABLE_WINDOW(64);
+
+struct ConnectionStruct
+{
+	NetAddress m_address;
+	char id[MAX_ID_LENGTH];
+	uint8_t m_seesionIndex;
+};
 
 class NetConnection
 {

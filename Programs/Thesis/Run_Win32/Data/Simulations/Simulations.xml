@@ -7,7 +7,7 @@
   numArmories="2"
   numLumberyards="2"
   numMedStations="0"
-  bombardmentRatePerSecond="0.0"
+  bombardmentRatePerSecond="5.0"
   threatRatePerSecond = "30.0"
   startingThreat="100"
   processTimerInSeconds="100"

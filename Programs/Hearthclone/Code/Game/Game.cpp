@@ -94,6 +94,7 @@ void Game::Initialize()
 	RegisterCommand("net_unreliable_test", CommandRegistration(UnreliableTest, ": Send X number of unreliable tests to connection. (int conIdx, idx count)", ""));
 	RegisterCommand("net_reliable_test", CommandRegistration(ReliableTest, ": Send X number of reliable tests to connection. (int conIdx, idx count)", ""));
 	RegisterCommand("net_sequence_test", CommandRegistration(ReliableSequenceTest, ": Send X number of reliable tests to connection. (int conIdx, idx count)", ""));
+	RegisterCommand("net_backwards_sequence_test", CommandRegistration(OutOfOrderTest, ": Send X number of backwards reliable tests to connection. (int conIdx, idx count)", ""));
 
 	//net message registration
 	RegisterGameNetMessages();
@@ -272,6 +273,41 @@ void ReliableTest(Command& cmd)
 }
 
 //  =============================================================================
+void OutOfOrderTest(Command& cmd)
+{
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	int connectionIndex = cmd.GetNextInt();
+
+	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
+	if (connection == nullptr)
+		DevConsolePrintf(Rgba::RED, "Connection index (%i) is invalid!!", connectionIndex);
+
+	int numSends = cmd.GetNextInt();
+	if (numSends <= 0)
+	{
+		DevConsolePrintf(Rgba::RED, "Invalid number of desired messages. Must be greater than zero");
+		return;
+	}
+
+	//queue them backwards
+	uint sendCount = 5;
+	for (uint sendIndex = sendCount; sendIndex >= 0; --sendIndex)
+	{
+		NetMessage* message = new NetMessage("net_sequence_test");
+
+		bool success = message->WriteBytes(sizeof(uint), &sendIndex, false);
+		success = message->WriteBytes(sizeof(uint), &sendCount, false);
+
+		// messages are sent to connections (not sessions)
+		connection->QueueMessage(message);
+
+		//cleanup
+		message = nullptr;
+	}
+}
+
+//  =============================================================================
 void ReliableSequenceTest(Command& cmd)
 {
 	NetSession* theNetSession = NetSession::GetInstance();
@@ -316,6 +352,12 @@ bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection)
 
 //  =============================================================================
 bool OnReliableTest(NetMessage& message, NetConnection* fromConnection)
+{
+	return false;
+}
+
+//  =============================================================================
+bool OnOutOfOrderTest(NetMessage & message, NetConnection * fromConnection)
 {
 	return false;
 }

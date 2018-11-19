@@ -63,6 +63,7 @@ public:
 //command
 void UnreliableTest(Command& cmd);
 void ReliableTest(Command& cmd);
+void OutOfOrderTest(Command& cmd);
 void ReliableSequenceTest(Command& cmd);
 
 //Net message definition callbacks

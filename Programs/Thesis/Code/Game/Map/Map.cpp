@@ -176,8 +176,11 @@ void Map::Update(float deltaSeconds)
 	}		
 
 	//update agents
+
+	TODO("Time this loop per frame");
 	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByXPosition.size(); ++agentIndex)
 	{
+		TODO("Time per agent per frame");
 		m_agentsOrderedByXPosition[agentIndex]->Update(deltaSeconds);
 	}
 
@@ -185,7 +188,6 @@ void Map::Update(float deltaSeconds)
 	//sort for Y drawing for render AND for next frame's agent update
 	if (g_currentSimulationData->m_simulationDefinitionReference->m_isOptimized)
 	{		
-		TODO("Check and reset sorting timer to prevent sorting every frame")
 		if (m_sortTimer->CheckAndReset())
 		{
 			SortAgentsByX();
