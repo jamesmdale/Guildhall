@@ -9,13 +9,13 @@
 #define MAX_TRACKED_PACKETS (64)
 #define MAX_UNIQUE_ID_LENGTH (16)
 #define DEFAULT_PORT_RANGE (5)
-#define INVALID_CONNECTION_INDEX (UINT8_MAX)
+#define INVALID_CONNECTION_INDEX (0xffui8)
 
 constexpr uint16_t RELIABLE_WINDOW(64);
 
 enum eNetConnectionState
 {
-	CONNECTION_DISCONNECTED,
+	CONNECTION_DISCONNECTED = 0,
 	CONNECTION_CONNECTED,
 	CONNECTION_CONNECTING,
 	CONNECTION_READY
@@ -23,7 +23,11 @@ enum eNetConnectionState
 
 struct NetConnectionInfo
 {
-	NetAddress* m_address = nullptr;
+	inline void SetNetAddress(const NetAddress& address) { m_address = address; }
+	inline void SetUniqueId(const char* uniqueId) { strcpy_s(m_uniqueId, MAX_UNIQUE_ID_LENGTH, uniqueId ); }
+	inline void SetConnectionIndex(uint8_t index) { m_connectionIndex = index; }
+
+	NetAddress m_address;
 	char m_uniqueId[MAX_UNIQUE_ID_LENGTH];
 	uint8_t m_connectionIndex = INVALID_CONNECTION_INDEX;
 };
@@ -32,17 +36,23 @@ class NetConnection
 {
 public:
 	NetConnection();
+	NetConnection(const NetAddress& address, const char* uniqueId, uint8_t connectionIndex);
+	NetConnection(const NetConnectionInfo& info);
+
 	~NetConnection();
 
+	void Initialize();
+
 	//info getters
-	inline NetAddress* GetNetAddress() const { return m_info.m_address; }
+	inline NetAddress GetNetAddress() const { return m_info.m_address; }
 	inline std::string GetUniqueIdAsString() const { std::string outputString(m_info.m_uniqueId); return outputString;}
+	inline void GetUniqueId(char* outId) const { strcpy_s(outId, MAX_UNIQUE_ID_LENGTH, m_info.m_uniqueId); }
 	inline uint8_t GetConnectionIndex() const { return m_info.m_connectionIndex; }
 
 	//info setters
-	inline void SetNetAddress(NetAddress* address) { m_info.m_address = address; }
-	inline void SetUniqueId(const char* uniqueId) { strcpy_s(m_info.m_uniqueId, MAX_UNIQUE_ID_LENGTH, uniqueId ); }
-	inline void SetConnectionIndex(uint8_t index) { m_info.m_connectionIndex = index; }
+	inline void SetNetAddress(NetAddress address) { m_info.SetNetAddress(address); }
+	inline void SetUniqueId(const char* uniqueId) { m_info.SetUniqueId(uniqueId); }
+	inline void SetConnectionIndex(uint8_t index) { m_info.SetConnectionIndex(index); }
 
 	//send
 	void QueueMessage(NetMessage* message);

@@ -13,7 +13,7 @@ public:
 	UDPSocket();
 	~UDPSocket();
 
-	bool BindToPort(int port);
+	bool BindToPort(int port, uint16_t portRange = 0U);
 	bool Bind(NetAddress& address, uint16_t portRange = 0U);
 
 	size_t SendTo(const NetAddress& address, const void* data, const size_t byteCount);

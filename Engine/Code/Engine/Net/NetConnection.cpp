@@ -6,6 +6,39 @@
 //  =============================================================================
 NetConnection::NetConnection()
 {
+	Initialize();
+}
+
+//  =============================================================================
+NetConnection::NetConnection(const NetAddress& address, const char* uniqueId, uint8_t connectionIndex)
+{
+	SetNetAddress(address);
+	SetUniqueId(uniqueId);
+	SetConnectionIndex(connectionIndex);
+
+	Initialize();
+}
+
+//  =============================================================================
+NetConnection::NetConnection(const NetConnectionInfo& info)
+{
+	m_info = info;
+	Initialize();
+}
+
+//  =============================================================================
+NetConnection::~NetConnection()
+{
+	delete(m_latencySendTimer);
+	m_latencySendTimer = nullptr;
+
+	delete(m_heartbeatTimer);
+	m_heartbeatTimer = nullptr;
+}
+
+//  =============================================================================
+void NetConnection::Initialize()
+{
 	//setup simulated latency timer
 	m_connectionSendLatencyInMilliseconds = 0.f;
 	m_latencySendTimer = new Stopwatch(GetMasterClock());
@@ -20,7 +53,7 @@ NetConnection::NetConnection()
 	{
 		m_latencySendTimer->SetTimerInMilliseconds(m_connectionSendLatencyInMilliseconds);
 	}
-	
+
 	for (int trackerIndex = 0; trackerIndex < MAX_TRACKED_PACKETS; ++trackerIndex)
 	{
 		m_trackedPackets[trackerIndex] = nullptr;
@@ -35,16 +68,6 @@ NetConnection::NetConnection()
 	m_unconfirmedSentReliablesMessages.clear();
 
 	m_sentPackets.clear();
-}
-
-//  =============================================================================
-NetConnection::~NetConnection()
-{
-	delete(m_latencySendTimer);
-	m_latencySendTimer = nullptr;
-
-	delete(m_heartbeatTimer);
-	m_heartbeatTimer = nullptr;
 }
 
 //  =============================================================================
@@ -194,7 +217,7 @@ void NetConnection::SendPacket(PacketTracker* packetTracker, NetPacket* packet)
 
 	NetSession* theNetSession = NetSession::GetInstance();
 
-	theNetSession->m_socket->SendTo(*GetNetAddress(), packet->GetBuffer(), packet->GetWrittenByteCount());
+	theNetSession->m_socket->SendTo(GetNetAddress(), packet->GetBuffer(), packet->GetWrittenByteCount());
 	OnPacketSend(packetTracker, packet);
 	m_sentPackets.push_back(packet);	
 
@@ -400,19 +423,19 @@ int NetConnection::GetLastReceivedAck()
 //  =============================================================================
 bool NetConnection::IsMe() const
 {
-	return false;
+	return NetSession::GetInstance()->m_myConnection == (this) ? true : false;
 }
 
 //  =============================================================================
 bool NetConnection::IsHost() const
 {
-	return false;
+	return NetSession::GetInstance()->m_hostConnection == (this) ? true : false;
 }
 
 //  =============================================================================
 bool NetConnection::IsClient() const
 {
-	return false;
+	return NetSession::GetInstance()->m_myConnection != (this) ? true : false;
 }
 
 //  =============================================================================

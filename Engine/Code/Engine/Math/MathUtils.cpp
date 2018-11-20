@@ -22,7 +22,19 @@ float ConvertDegreesToRadians(float degrees)
 
 int GetRandomIntLessThan(int maxNotInclusive)
 {
+	if(maxNotInclusive == 0)
+		return 0;
+
 	int random = rand() % maxNotInclusive;
+	return random;
+}
+
+unsigned int GetRandomUintLessThan(unsigned int maxNotInclusive)
+{
+	if(maxNotInclusive == 0)
+		return 0;
+
+	unsigned int random = rand() % maxNotInclusive;
 	return random;
 }
 
@@ -49,6 +61,12 @@ int GetRandomIntInRange(int min, int max)
 {
 	int range = (max - min) + 1;
 	return min + GetRandomIntLessThan(range);
+}
+
+unsigned int GetRandomUintInRange(unsigned int min, unsigned int max)
+{
+	unsigned int range = (max - min) + 1;
+	return min + GetRandomUintLessThan(range);
 }
 
 Vector3 GetRandomVector3InSphere(float positionMin, float positionMax)

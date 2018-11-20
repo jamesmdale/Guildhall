@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 
+
+#define MAX_NET_CONNECTION_COUNT (17)
+
 enum eCoreNetMessageType
 {
 	PING_CORE_NET_MESSAGE_TYPE = 0,
@@ -20,22 +23,22 @@ enum eCoreNetMessageType
 
 enum eNetSessionState
 {
-	SESSION_DISCONNECTED = 0,		//Session can be modified
-	SESSION_BOUND,					//Bound to a socket. (can send a receive connecitonless messages. No connections exist)
-	SESSION_CONNECTING,				// Attempting to connect. (waiting for response from host)
-	SESSION_JOINING,				// has established a connection. waiting for final setup information/join completion
-	SESSION_READY					// we are fully in the session
+	SESSION_STATE_DISCONNECTED = 0,		//Session can be modified
+	SESSION_STATE_BOUND,					//Bound to a socket. (can send a receive connecitonless messages. No connections exist)
+	SESSION_STATE_CONNECTING,				// Attempting to connect. (waiting for response from host)
+	SESSION_STATE_JOINING,				// has established a connection. waiting for final setup information/join completion
+	SESSION_STATE_READY					// we are fully in the session
 };
 
 enum eNetSessionError
 {
-	SESSION_OK,
+	SESSION_OK = 0,
 	SESSION_ERROR_USER,					//user disconnected
 	SESSION_ERROR_INTERNAL,				//socket error
 	SESSION_ERROR_JOIN_DENIED,			//generic error
 	SESSION_ERROR_JOIN_DENIED_NOT_HOST,	//session tried to jion someone who isn't hosting
 	SESSION_ERROR_JOIN_DENIED_CLOSED,	//session not in a listen state
-	SESSION_ERROR_JIOIN_DENIED_FULL		//session was full
+	SESSION_ERROR_JOIN_DENIED_FULL		//session was full
 };
 
 struct DelayedReceivedPacket
@@ -70,7 +73,7 @@ public:
 	void RegisterCoreMessageTypes();
 
 	// connection and session state ----------------------------------------------
-	void Host(const char* myId, uint16_t port, uint16_t portRange = DEFAULT_PORT_RANGE);
+	void Host(const char* myId, uint16_t port, uint16_t portRange = 0);
 	void Join(const char* myId, const NetConnectionInfo& hostInfo);
 	void Disconnect();
 
@@ -81,18 +84,20 @@ public:
 	void ClearError();
 	eNetSessionError GetLastError(std::string* outErrorString = nullptr);
 
-	//probably out to be private
-private:
-	bool BindPort(uint port, uint range);
-	bool AddConnection(uint8_t connectionIndex, NetAddress* address);
-	void DestroyConnection(NetConnection* connection);
+	std::string GenerateUniqueId();
 
-	// message processing ----------------------------------------------
-	
-	// outgoing
-public:
+	//connection methods
+	NetConnection* CreateConnection(const NetConnectionInfo& info);
+	void DestroyConnection(NetConnection* connection); 
+	void BindConnection(uint8_t connectionIndex, NetConnection* connection);
+
+	// send and process incoming  ----------------------------------------------
+
+	//heartbeat
 	void CheckHeartbeats();
 	void SendHeartBeat(int connectionIndex);
+
+	//outgoing
 	void ProcessOutgoingMessages();
 	bool SendMessageWithoutConnection(NetMessage* message, NetConnection* connection);
 
@@ -114,8 +119,6 @@ public:
 
 	// helpers ----------------------------------------------
 	void SetHeartbeatRate(float hertz);
-
-	// simulation latency helpers ----------------------------------------------
 	void SetSimulatedLossAmount(float lossAmount);
 	void SetSimulatedLatency(uint minLatencyInMilliseconds, uint maxLatencyInMilliseconds);
 
@@ -130,7 +133,7 @@ public:
 	uint8_t m_sessionConnectionIndex = UINT8_MAX;
 
 	//state management
-	eNetSessionState m_state = SESSION_DISCONNECTED;
+	eNetSessionState m_state = SESSION_STATE_DISCONNECTED;
 	eNetSessionError m_errorCode;
 	std::string m_errorString;
 
@@ -163,6 +166,7 @@ NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 
 // console commands ----------------------------------------------
 void AddConnectionToIndex(Command& cmd);
+void SetToHost(Command & cmd);
 void SendPing(Command& cmd);
 void SendMultiPing(Command& cmd);
 void SendAdd(Command& cmd);

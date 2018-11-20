@@ -149,19 +149,19 @@ void Game::Update()
 //  =============================================================================
 void Game::UpdateJoinState()
 {
-	if (NetSession::GetInstance()->IsJoined())
-	{
-		//SetGameState(GAME_STATE_CHARACTER_SELECT)
-	}
-	else if (NetSession::GetInstance()->IsDisconnected())
-	{
-		std::string errorString;
-		eNetSessionError error = NetSession::GetInstance()->GetLastError( &errorString );
+	//if (NetSession::GetInstance()->IsJoined())
+	//{
+	//	//SetGameState(GAME_STATE_CHARACTER_SELECT)
+	//}
+	//else if (NetSession::GetInstance()->IsDisconnected())
+	//{
+	//	std::string errorString;
+	//	eNetSessionError error = NetSession::GetInstance()->GetLastError( &errorString );
 
-		//do something
-		//Popup( "Failed to jion", errorString.c_str());
-		//SetGameState(GAME_STATE_MAIN_MENU)
-	}
+	//	//do something
+	//	//Popup( "Failed to jion", errorString.c_str());
+	//	//SetGameState(GAME_STATE_MAIN_MENU)
+	//}
 }
 
 //  =========================================================================================

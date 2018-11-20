@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+//#include "Engine\Core\EngineCommon.hpp"
 
 class Vector2;
 class IntVector2;
@@ -47,7 +48,9 @@ float GetRandomFloatZeroOrOne();
 int GetRandomIntZeroOrOne();
 float GetRandomFloatInRange(float min, float max);
 int GetRandomIntLessThan(int maxNotInclusive);
+unsigned int GetRandomUintLessThan(unsigned int maxNotInclusive);
 int GetRandomIntInRange(int min, int max);
+unsigned int GetRandomUintInRange(unsigned int min, unsigned int max);
 Vector3 GetRandomVector3InSphere(float positionMin, float positionMax);
 
 //clamp functions

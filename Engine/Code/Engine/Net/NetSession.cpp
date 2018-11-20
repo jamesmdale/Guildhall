@@ -58,9 +58,6 @@ NetSession* NetSession::CreateInstance()
 //  =========================================================================================
 void NetSession::Startup()
 {
-	m_socket = new UDPSocket();
-	m_socket->BindToPort(GAME_PORT);
-
 	//register core messages
 	RegisterCoreMessageTypes();
 
@@ -70,7 +67,9 @@ void NetSession::Startup()
 	RegisterMessageDefinition("ack", OnAck);
 
 	//register app commands
-	RegisterCommand("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", "Successfully added connection!"));
+
+	//RegisterCommand("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", "Successfully added connection!"));
+	RegisterCommand("host", CommandRegistration(SetToHost, ": Set this machine to host for game", ""));
 	RegisterCommand("send_ping", CommandRegistration(SendPing, ": Send ping to index: idx", ""));
 	RegisterCommand("send_add", CommandRegistration(SendAdd, ": Send add request to index: idx var1 var2", ""));
 	RegisterCommand("send_multi_ping", CommandRegistration(SendMultiPing, ": Send two pings to index (tests multi message in single packet): idx", ""));
@@ -98,10 +97,12 @@ void NetSession::Update()
 	CheckHeartbeats();
 	ProcessOutgoingMessages();
 
-	ProcessIncomingMessages();
-	CheckDelayedPackets();	
+	if (m_socket != nullptr)
+	{
+		ProcessIncomingMessages();
+		CheckDelayedPackets();	
+	}
 }
-
 
 //  =============================================================================
 void NetSession::RegisterCoreMessageTypes()
@@ -111,10 +112,37 @@ void NetSession::RegisterCoreMessageTypes()
 	RegisterMessageDefinition(HEARTBEAT_CORE_NET_MESSAGE_TYPE, "heartbeat", OnHeartbeat, HEARTBEAT_NET_MESSAGE_FLAG);
 }
 
-
 //  =============================================================================
-void NetSession::Host(const char * myId, uint16_t port, uint16_t portRange)
+void NetSession::Host(const char* myId, uint16_t port, uint16_t portRange)
 {
+	//early out. Must be in disconnected state
+	if (m_state != SESSION_STATE_DISCONNECTED)
+	{
+		SetError(SESSION_ERROR_INTERNAL, "SESSION ALREADY CONNECTED");
+		return;
+	}		
+
+	m_socket = new UDPSocket();
+	if (!m_socket->BindToPort(port, portRange))
+	{
+		//if binding fails, update internal error
+		SetError(SESSION_ERROR_INTERNAL, "PORT BINDING FAILURE");
+		return;
+	}
+
+	NetConnectionInfo info;
+	info.SetNetAddress(m_socket->GetAddress());
+	info.SetUniqueId(myId);
+	info.SetConnectionIndex(0);
+
+	NetConnection* newHostConnection = CreateConnection(info);
+
+	m_myConnection = newHostConnection;
+	m_hostConnection = newHostConnection;
+
+	//set connection as ready
+	newHostConnection->m_state = CONNECTION_READY;
+	m_state = SESSION_STATE_READY;
 }
 
 //  =============================================================================
@@ -130,13 +158,13 @@ void NetSession::Disconnect()
 //  =============================================================================
 bool NetSession::IsDisconnected()
 {
-	return m_state == SESSION_DISCONNECTED ? true : false;
+	return m_state == SESSION_STATE_DISCONNECTED ? true : false;
 }
 
 //  =============================================================================
 bool NetSession::IsJoined()
 {
-	return m_state == SESSION_DISCONNECTED ? true : false;
+	return m_state == SESSION_STATE_DISCONNECTED ? true : false;
 }
 
 //  =============================================================================
@@ -161,57 +189,78 @@ eNetSessionError NetSession::GetLastError(std::string* outErrorString)
 }
 
 //  =============================================================================
-bool NetSession::BindPort(uint port, uint range)
+std::string NetSession::GenerateUniqueId()
 {
-	m_socket = new UDPSocket();
+	char value[MAX_UNIQUE_ID_LENGTH];
 
-	NetAddress address;
+	uint64_t uniqueValue = GetMasterClock()->GetLastHPC();
+	std::string uniqueString = std::to_string(uniqueValue);
 
-	sockaddr addr;
-	int addrLength = 0;
-	std::string portString = std::to_string(port);
+	uint randomUint = GetRandomUintInRange(0, UINT_MAX - 1);
 
-	address.GetMyHostAddress(&addr, &addrLength, portString.c_str());
-	address.FromSockAddr(&addr);
+	uniqueValue = uniqueValue << randomUint;
 
-	return m_socket->Bind(address, range);
+	strcpy_s(value, MAX_UNIQUE_ID_LENGTH, uniqueString.c_str());
+
+	return std::string(value);
 }
 
 //  =============================================================================
-bool NetSession::AddConnection(uint8_t connectionIndex, NetAddress* address)
+NetConnection* NetSession::CreateConnection(const NetConnectionInfo& info)
 {
-	if (m_boundConnections.size() > connectionIndex)
-	{
-		if(m_boundConnections[connectionIndex] != nullptr)
-			return false;
-	}
-	else if(m_boundConnections.size() < connectionIndex)
-	{
-		return false;
-	}
+	NetConnection* connection = new NetConnection(info);
 
-	NetConnection* connection = new NetConnection();
-	connection->m_info.m_address = address;
-	connection->m_info.m_connectionIndex = connectionIndex;
-	strcpy_s(connection->m_info.m_uniqueId, MAX_UNIQUE_ID_LENGTH, "uniqueID");
+	m_allConnections.push_back(connection);
 
-	m_boundConnections.push_back(connection);
-
-	//if the connection we are mapping is our own netsession, we need to store off our own index for ease of access
-	if (m_sessionConnectionIndex == UINT8_MAX)
+	if (m_boundConnections.size() <= MAX_NET_CONNECTION_COUNT && connection->GetConnectionIndex() != INVALID_CONNECTION_INDEX)
 	{
-		if (*address == m_socket->m_address)
+		if (m_boundConnections.size() > info.m_connectionIndex)
 		{
-			m_sessionConnectionIndex = connectionIndex;
+			if (m_boundConnections[info.m_connectionIndex] != nullptr)
+			{
+				//connection index already taken.
+				return connection;
+			}
 		}
+			
+		BindConnection(info.m_connectionIndex, connection);		
 	}
 
-	return true;
+	return connection;
 }
 
 //  =============================================================================
 void NetSession::DestroyConnection(NetConnection * connection)
 {
+	//clear conevenience pointers
+	if (connection == m_myConnection)
+	{
+		m_myConnection = nullptr;
+	}
+
+	if (connection == m_hostConnection)
+	{
+		m_hostConnection = nullptr;
+	}
+
+	//remove from bound connections
+	for (int connectionIndex = 0; connectionIndex < (int)m_boundConnections.size(); ++connectionIndex)
+	{
+		m_boundConnections[connectionIndex] = nullptr;
+	}
+
+	//delete
+	for (int connectionIndex = 0; connectionIndex < (int)m_allConnections.size(); ++connectionIndex)
+	{
+		m_allConnections.erase(m_allConnections.begin() + connectionIndex);
+		m_allConnections[connectionIndex] = nullptr;
+	}
+}
+
+//  =============================================================================
+void NetSession::BindConnection(uint8_t connectionIndex, NetConnection* connection)
+{
+	m_boundConnections.push_back(connection);
 }
 
 //  =========================================================================================
@@ -336,7 +385,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 	else
 	{
 		connection = new NetConnection();
-		connection->SetNetAddress(&packet->m_senderAddress);
+		connection->SetNetAddress(packet->m_senderAddress);
 	}
 
 	for(int messageIndex = 0; messageIndex < (int)packet->m_packet->m_packetHeader.m_messageCount; ++messageIndex)
@@ -481,7 +530,7 @@ bool NetSession::SendMessageWithoutConnection(NetMessage* message, NetConnection
 	//send each packet
 	for(int packetIndex = 0; packetIndex < (int)packetsToSend.size(); ++packetIndex)
 	{
-		size_t amountSent = theNetSession->m_socket->SendTo(*connection->GetNetAddress(), packetsToSend[packetIndex]->GetBuffer(), packetsToSend[packetIndex]->GetWrittenByteCount());
+		size_t amountSent = theNetSession->m_socket->SendTo(connection->GetNetAddress(), packetsToSend[packetIndex]->GetBuffer(), packetsToSend[packetIndex]->GetWrittenByteCount());
 	
 		if(amountSent > 0)
 			success = true;
@@ -746,6 +795,36 @@ void AddConnectionToIndex(Command& cmd)
 	//theNetSession = nullptr;
 }
 
+//  =============================================================================
+void SetToHost(Command& cmd)
+{
+	NetSession* theNetSesssion = NetSession::GetInstance();
+
+	std::string id = theNetSesssion->GenerateUniqueId();
+
+	int port = cmd.GetNextInt();
+	int portRange = cmd.GetNextInt();
+
+	//cmd error checking
+	if (port >= UINT16_MAX || port < 0)
+	{
+		DevConsolePrintf(Rgba::RED, "INVALID PORT (%i)!", port);
+	}
+	if (portRange >= UINT16_MAX || portRange < 0)
+	{
+		DevConsolePrintf(Rgba::RED, "INVALID PORT RANGE (%i)!", portRange);
+	}
+
+	//attempt to host with given parameters
+	theNetSesssion->Host(id.c_str(), port, portRange);
+
+	//check error code generated from Host function
+	if (theNetSesssion->m_errorCode == SESSION_ERROR_INTERNAL)
+	{
+		DevConsolePrintf("SESSION ERROR: CODE(%i): %s", (int)theNetSesssion->m_errorCode, theNetSesssion->m_errorString.c_str());
+	}
+}
+
 //  =========================================================================================
 void SendPing(Command& cmd)
 {
@@ -996,7 +1075,7 @@ void SetGlobalHeartRate(Command& cmd)
 //  =============================================================================
 bool OnPing(NetMessage& message, NetConnection* fromConnection)
 {
-	DevConsolePrintf("Received PING from %s (Connection:%i)", fromConnection->GetNetAddress()->ToString().c_str(), (int)fromConnection->GetConnectionIndex());
+	DevConsolePrintf("Received PING from %s (Connection:%i)", fromConnection->GetNetAddress().ToString().c_str(), (int)fromConnection->GetConnectionIndex());
 
 	NetMessage* pongMessage = new NetMessage("pong");
 
@@ -1016,7 +1095,7 @@ bool OnPing(NetMessage& message, NetConnection* fromConnection)
 //  =============================================================================
 bool OnPong(NetMessage& message, NetConnection* fromConnection)
 {
-	DevConsolePrintf("Received PONG from %s (Connection:%i)", fromConnection->GetNetAddress()->ToString().c_str(), (int)fromConnection->GetConnectionIndex());
+	DevConsolePrintf("Received PONG from %s (Connection:%i)", fromConnection->GetNetAddress().ToString().c_str(), (int)fromConnection->GetConnectionIndex());
 	return true;
 }
 

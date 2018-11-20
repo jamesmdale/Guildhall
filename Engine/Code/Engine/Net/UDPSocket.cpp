@@ -16,7 +16,7 @@ UDPSocket::~UDPSocket()
 }
 
 //  =============================================================================
-bool UDPSocket::BindToPort(int port)
+bool UDPSocket::BindToPort(int port, uint16_t portRange)
 {
 	NetAddress address;	
 	bool success = GetLocalIP(&address, (int)port);
@@ -27,7 +27,7 @@ bool UDPSocket::BindToPort(int port)
 		return false;
 	}
 
-	if (!Bind(address, 5))
+	if (!Bind(address, portRange))
 	{
 		DebuggerPrintf("Failed to bind.");
 		return false;

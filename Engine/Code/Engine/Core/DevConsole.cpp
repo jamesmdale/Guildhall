@@ -428,7 +428,7 @@ void DevConsole::RenderNetSession()
 		netSessionTextCount++;
 
 		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x + REMOTE_TEXT_CELL_PADDING, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-			theNetSession->m_socket->m_address.ToString().c_str(),
+			theNetSession->m_socket != nullptr ? theNetSession->m_socket->m_address.ToString().c_str() : "",
 			REMOTE_TEXT_CELL_HEIGHT,
 			Rgba::WHITE,
 			1.f, Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
@@ -446,8 +446,9 @@ void DevConsole::RenderNetSession()
 		netSessionTextCount++;
 
 		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-			Stringf("%-5s %-5s %-20s %-8s %-5s %-5s %-20s %-20s %-8s %-8s %-16s",
+			Stringf("%-5s %-7s %-5s %-20s %-8s %-5s %-5s %-20s %-20s %-8s %-8s %-16s",
 				"",
+				"(type)",
 				"index",
 				"address",
 				"high rel.id",
@@ -466,15 +467,21 @@ void DevConsole::RenderNetSession()
 
 		for (int connectionIndex = 0; connectionIndex < connectionCount; ++connectionIndex)
 		{
-			std::string connectionIP = theNetSession->m_boundConnections[connectionIndex]->GetNetAddress()->ToString();
+			std::string connectionIP = theNetSession->m_boundConnections[connectionIndex]->GetNetAddress().ToString();
 			std::bitset<16> bitsForReceived(theNetSession->m_boundConnections[connectionIndex]->m_receivedAckHistoryBitfield);
 			std::string bitsetString = bitsForReceived.to_string();
 
+			std::string type = "";
+			theNetSession->m_boundConnections[connectionIndex]->IsHost() ? type = " (HOST)" : type = "(CLIENT)";
+
+			std::string netAddressAsString = theNetSession->m_boundConnections[connectionIndex]->GetNetAddress().ToString().c_str();
+
 			//format string entry
-			std::string formattedConnectionInput = Stringf("%-5s %-8i %-20s %-8i %-5.2f %-5.2f %-20.2f %-20.2f %-8i %-8i %-16s",
+			std::string formattedConnectionInput = Stringf("%-5s %-7s %-8i %-20s %-8i %-5.2f %-5.2f %-20.2f %-20.2f %-8i %-8i %-16s",
 				"",
+				type.c_str(),
 				theNetSession->m_boundConnections[connectionIndex]->GetConnectionIndex(),				
-				theNetSession->m_boundConnections[connectionIndex]->GetNetAddress()->ToString().c_str(),
+				netAddressAsString.c_str(),
 				theNetSession->m_boundConnections[connectionIndex]->m_highestReceivedReliableId,
 				theNetSession->m_boundConnections[connectionIndex]->GetRoundTripTimeInSeconds(),
 				theNetSession->m_boundConnections[connectionIndex]->GetLossPercentage(),

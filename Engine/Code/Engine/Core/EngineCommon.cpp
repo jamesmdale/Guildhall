@@ -11,6 +11,7 @@
 #include "Engine\Net\RemoteCommandService.hpp"
 #include "Engine\Net\NetSession.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Engine\Core\Vertex.hpp"
 #include <string>
 #include <ctime>
 #include <stdarg.h>

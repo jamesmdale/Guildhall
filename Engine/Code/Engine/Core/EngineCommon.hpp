@@ -1,7 +1,6 @@
 #pragma once
 #include "Engine\Core\Blackboard.hpp"
 #include "Engine\Core\ErrorWarningAssert.hpp"
-#include "Engine\core\Vertex.hpp"
 #include <string.h>
 #include <limits>
 
@@ -73,7 +72,6 @@ typedef unsigned char uint8;
 typedef unsigned short uint16;
 
 constexpr uint16_t UNSIGNED_WORD_MAX = 32'767;
-
 
 // Methods =============================================================================
 void EngineStartup();
