@@ -18,6 +18,26 @@ enum eCoreNetMessageType
 	NUM_CORE_NET_MESSAGE_TYPES
 };
 
+enum eNetSessionState
+{
+	SESSION_DISCONNECTED = 0,		//Session can be modified
+	SESSION_BOUND,					//Bound to a socket. (can send a receive connecitonless messages. No connections exist)
+	SESSION_CONNECTING,				// Attempting to connect. (waiting for response from host)
+	SESSION_JOINING,				// has established a connection. waiting for final setup information/join completion
+	SESSION_READY					// we are fully in the session
+};
+
+enum eNetSessionError
+{
+	SESSION_OK,
+	SESSION_ERROR_USER,					//user disconnected
+	SESSION_ERROR_INTERNAL,				//socket error
+	SESSION_ERROR_JOIN_DENIED,			//generic error
+	SESSION_ERROR_JOIN_DENIED_NOT_HOST,	//session tried to jion someone who isn't hosting
+	SESSION_ERROR_JOIN_DENIED_CLOSED,	//session not in a listen state
+	SESSION_ERROR_JIOIN_DENIED_FULL		//session was full
+};
+
 struct DelayedReceivedPacket
 {
 	DelayedReceivedPacket(){}
@@ -47,15 +67,30 @@ public:
 	void Shutdown();
 
 	void Update();
-
 	void RegisterCoreMessageTypes();
 
+	// connection and session state ----------------------------------------------
+	void Host(const char* myId, uint16_t port, uint16_t portRange = DEFAULT_PORT_RANGE);
+	void Join(const char* myId, const NetConnectionInfo& hostInfo);
+	void Disconnect();
+
+	bool IsDisconnected();
+	bool IsJoined();
+
+	void SetError(eNetSessionError error, const char* errorString = nullptr);
+	void ClearError();
+	eNetSessionError GetLastError(std::string* outErrorString = nullptr);
+
+	//probably out to be private
+private:
 	bool BindPort(uint port, uint range);
-	bool AddConnection(uint8_t connectionIndex, NetAddress* address);	
+	bool AddConnection(uint8_t connectionIndex, NetAddress* address);
+	void DestroyConnection(NetConnection* connection);
 
 	// message processing ----------------------------------------------
 	
 	// outgoing
+public:
 	void CheckHeartbeats();
 	void SendHeartBeat(int connectionIndex);
 	void ProcessOutgoingMessages();
@@ -86,8 +121,18 @@ public:
 
 public:
 	UDPSocket* m_socket = nullptr;
-	std::vector<NetConnection*> m_connections;
+	std::vector<NetConnection*> m_boundConnections;
+	std::vector<NetConnection*> m_allConnections;
+
+	NetConnection* m_myConnection = nullptr;
+	NetConnection* m_hostConnection = nullptr;
+
 	uint8_t m_sessionConnectionIndex = UINT8_MAX;
+
+	//state management
+	eNetSessionState m_state = SESSION_DISCONNECTED;
+	eNetSessionError m_errorCode;
+	std::string m_errorString;
 
 	//simulation variables
 	float m_simulationLossAmount = 0.f;

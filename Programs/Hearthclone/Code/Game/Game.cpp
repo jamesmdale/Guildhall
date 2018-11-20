@@ -146,6 +146,24 @@ void Game::Update()
 	//TestReliableSend();
 }
 
+//  =============================================================================
+void Game::UpdateJoinState()
+{
+	if (NetSession::GetInstance()->IsJoined())
+	{
+		//SetGameState(GAME_STATE_CHARACTER_SELECT)
+	}
+	else if (NetSession::GetInstance()->IsDisconnected())
+	{
+		std::string errorString;
+		eNetSessionError error = NetSession::GetInstance()->GetLastError( &errorString );
+
+		//do something
+		//Popup( "Failed to jion", errorString.c_str());
+		//SetGameState(GAME_STATE_MAIN_MENU)
+	}
+}
+
 //  =========================================================================================
 void Game::PreRender()
 {
@@ -193,11 +211,11 @@ void Game::TestReliableSend()
 	{
 		NetSession* theNetSession = NetSession::GetInstance();
 
-		for (int connectionIndex = 0; connectionIndex < (int)theNetSession->m_connections.size(); ++connectionIndex)
+		for (int connectionIndex = 0; connectionIndex < (int)theNetSession->m_boundConnections.size(); ++connectionIndex)
 		{
 			NetMessage* message = new NetMessage("net_reliable_test");
 
-			theNetSession->m_connections[connectionIndex]->QueueMessage(message);
+			theNetSession->m_boundConnections[connectionIndex]->QueueMessage(message);
 			message = nullptr;
 		}
 

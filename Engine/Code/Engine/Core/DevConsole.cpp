@@ -435,7 +435,7 @@ void DevConsole::RenderNetSession()
 		netSessionTextCount++;
 
 		//connectionsw
-		int connectionCount = (int)theNetSession->m_connections.size();
+		int connectionCount = (int)theNetSession->m_boundConnections.size();
 
 		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
 			Stringf("(%i) NUM CONNECTIONS...", connectionCount),
@@ -466,22 +466,22 @@ void DevConsole::RenderNetSession()
 
 		for (int connectionIndex = 0; connectionIndex < connectionCount; ++connectionIndex)
 		{
-			std::string connectionIP = theNetSession->m_connections[connectionIndex]->m_address->ToString();
-			std::bitset<16> bitsForReceived(theNetSession->m_connections[connectionIndex]->m_receivedAckHistoryBitfield);
+			std::string connectionIP = theNetSession->m_boundConnections[connectionIndex]->GetNetAddress()->ToString();
+			std::bitset<16> bitsForReceived(theNetSession->m_boundConnections[connectionIndex]->m_receivedAckHistoryBitfield);
 			std::string bitsetString = bitsForReceived.to_string();
 
 			//format string entry
 			std::string formattedConnectionInput = Stringf("%-5s %-8i %-20s %-8i %-5.2f %-5.2f %-20.2f %-20.2f %-8i %-8i %-16s",
 				"",
-				theNetSession->m_connections[connectionIndex]->m_index,				
-				theNetSession->m_connections[connectionIndex]->m_address->ToString().c_str(),
-				theNetSession->m_connections[connectionIndex]->m_highestReceivedReliableId,
-				theNetSession->m_connections[connectionIndex]->GetRoundTripTimeInSeconds(),
-				theNetSession->m_connections[connectionIndex]->GetLossPercentage(),
-				theNetSession->m_connections[connectionIndex]->GetLastReceivedTimeInSeconds(),
-				theNetSession->m_connections[connectionIndex]->GetLastSentTimeInSeconds(),
-				theNetSession->m_connections[connectionIndex]->GetLastSentAck(),
-				theNetSession->m_connections[connectionIndex]->GetLastReceivedAck(),
+				theNetSession->m_boundConnections[connectionIndex]->GetConnectionIndex(),				
+				theNetSession->m_boundConnections[connectionIndex]->GetNetAddress()->ToString().c_str(),
+				theNetSession->m_boundConnections[connectionIndex]->m_highestReceivedReliableId,
+				theNetSession->m_boundConnections[connectionIndex]->GetRoundTripTimeInSeconds(),
+				theNetSession->m_boundConnections[connectionIndex]->GetLossPercentage(),
+				theNetSession->m_boundConnections[connectionIndex]->GetLastReceivedTimeInSeconds(),
+				theNetSession->m_boundConnections[connectionIndex]->GetLastSentTimeInSeconds(),
+				theNetSession->m_boundConnections[connectionIndex]->GetLastSentAck(),
+				theNetSession->m_boundConnections[connectionIndex]->GetLastReceivedAck(),
 				bitsForReceived.to_string().c_str());
 
 			theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),

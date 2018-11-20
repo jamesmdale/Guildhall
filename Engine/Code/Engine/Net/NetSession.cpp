@@ -26,10 +26,10 @@ NetSession::~NetSession()
 	ProcessOutgoingMessages();
 
 	//clear connections
-	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
+	for (int connectionIndex = 0; connectionIndex < (int)m_boundConnections.size(); ++connectionIndex)
 	{		
-		delete(m_connections[connectionIndex]);
-		m_connections[connectionIndex] = nullptr;
+		delete(m_boundConnections[connectionIndex]);
+		m_boundConnections[connectionIndex] = nullptr;
 	}
 
 	delete(m_heartbeatRate);
@@ -111,6 +111,55 @@ void NetSession::RegisterCoreMessageTypes()
 	RegisterMessageDefinition(HEARTBEAT_CORE_NET_MESSAGE_TYPE, "heartbeat", OnHeartbeat, HEARTBEAT_NET_MESSAGE_FLAG);
 }
 
+
+//  =============================================================================
+void NetSession::Host(const char * myId, uint16_t port, uint16_t portRange)
+{
+}
+
+//  =============================================================================
+void NetSession::Join(const char * myId, const NetConnectionInfo & hostInfo)
+{
+}
+
+//  =============================================================================
+void NetSession::Disconnect()
+{
+}
+
+//  =============================================================================
+bool NetSession::IsDisconnected()
+{
+	return m_state == SESSION_DISCONNECTED ? true : false;
+}
+
+//  =============================================================================
+bool NetSession::IsJoined()
+{
+	return m_state == SESSION_DISCONNECTED ? true : false;
+}
+
+//  =============================================================================
+void NetSession::SetError(eNetSessionError error, const char* errorString)
+{
+	m_errorString = errorString;
+	m_errorCode = error;
+}
+
+//  =============================================================================
+void NetSession::ClearError()
+{
+	m_errorString = "";
+	m_errorCode = SESSION_OK;
+}
+
+//  =============================================================================
+eNetSessionError NetSession::GetLastError(std::string* outErrorString)
+{
+	outErrorString = &m_errorString;
+	return m_errorCode;
+}
+
 //  =============================================================================
 bool NetSession::BindPort(uint port, uint range)
 {
@@ -131,21 +180,22 @@ bool NetSession::BindPort(uint port, uint range)
 //  =============================================================================
 bool NetSession::AddConnection(uint8_t connectionIndex, NetAddress* address)
 {
-	if (m_connections.size() > connectionIndex)
+	if (m_boundConnections.size() > connectionIndex)
 	{
-		if(m_connections[connectionIndex] != nullptr)
+		if(m_boundConnections[connectionIndex] != nullptr)
 			return false;
 	}
-	else if(m_connections.size() < connectionIndex)
+	else if(m_boundConnections.size() < connectionIndex)
 	{
 		return false;
 	}
 
 	NetConnection* connection = new NetConnection();
-	connection->m_index = connectionIndex;
-	connection->m_address = address;	
+	connection->m_info.m_address = address;
+	connection->m_info.m_connectionIndex = connectionIndex;
+	strcpy_s(connection->m_info.m_uniqueId, MAX_UNIQUE_ID_LENGTH, "uniqueID");
 
-	m_connections.push_back(connection);
+	m_boundConnections.push_back(connection);
 
 	//if the connection we are mapping is our own netsession, we need to store off our own index for ease of access
 	if (m_sessionConnectionIndex == UINT8_MAX)
@@ -159,14 +209,19 @@ bool NetSession::AddConnection(uint8_t connectionIndex, NetAddress* address)
 	return true;
 }
 
+//  =============================================================================
+void NetSession::DestroyConnection(NetConnection * connection)
+{
+}
+
 //  =========================================================================================
 void NetSession::CheckHeartbeats()
 {
-	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
+	for (int connectionIndex = 0; connectionIndex < (int)m_boundConnections.size(); ++connectionIndex)
 	{
-		if (m_connections[connectionIndex]->m_heartbeatTimer->ResetAndDecrementIfElapsed())
+		if (m_boundConnections[connectionIndex]->m_heartbeatTimer->ResetAndDecrementIfElapsed())
 		{
-			SendHeartBeat(m_connections[connectionIndex]->m_index);
+			SendHeartBeat(m_boundConnections[connectionIndex]->GetConnectionIndex());
 		}
 	}
 }
@@ -281,7 +336,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 	else
 	{
 		connection = new NetConnection();
-		connection->m_address = &packet->m_senderAddress;
+		connection->SetNetAddress(&packet->m_senderAddress);
 	}
 
 	for(int messageIndex = 0; messageIndex < (int)packet->m_packet->m_packetHeader.m_messageCount; ++messageIndex)
@@ -298,7 +353,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 		if (definition != nullptr)
 		{
 			//if the definition requires a connection and the we don't have one for this sender, throw the message out
-			if (definition->DoesRequireConnection() && connection->m_index == UINT8_MAX)
+			if (definition->DoesRequireConnection() && connection->GetConnectionIndex() == UINT8_MAX)
 			{
 				DebuggerPrintf("MESSAGE RECEIVED WITHOUT CONNECTION");
 				continue;
@@ -361,7 +416,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 	}
 
 	//cleanup connection if we don't actually have a valid one for this person
-	if (connection->m_index == UINT8_MAX)
+	if (connection->GetConnectionIndex() == INVALID_CONNECTION_INDEX)
 	{
 		delete(connection);
 	}
@@ -382,9 +437,9 @@ void NetSession::ExecuteNetMessage(NetMessage* message, NetConnection* connectio
 //  =============================================================================
 void NetSession::ProcessOutgoingMessages()
 {
-	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
+	for (int connectionIndex = 0; connectionIndex < (int)m_boundConnections.size(); ++connectionIndex)
 	{
-		m_connections[connectionIndex]->FlushOutgoingMessages();
+		m_boundConnections[connectionIndex]->FlushOutgoingMessages();
 
 		////reliables ready for resend
 		//std::vector<NetMessage*> m_messagesToResend;
@@ -426,7 +481,7 @@ bool NetSession::SendMessageWithoutConnection(NetMessage* message, NetConnection
 	//send each packet
 	for(int packetIndex = 0; packetIndex < (int)packetsToSend.size(); ++packetIndex)
 	{
-		size_t amountSent = theNetSession->m_socket->SendTo(*connection->m_address, packetsToSend[packetIndex]->GetBuffer(), packetsToSend[packetIndex]->GetWrittenByteCount());
+		size_t amountSent = theNetSession->m_socket->SendTo(*connection->GetNetAddress(), packetsToSend[packetIndex]->GetBuffer(), packetsToSend[packetIndex]->GetWrittenByteCount());
 	
 		if(amountSent > 0)
 			success = true;
@@ -557,9 +612,9 @@ void NetSession::AssignFinalDefinitionIds()
 //  =========================================================================================
 NetConnection* NetSession::GetConnectionById(uint8_t id)
 {
-	if (id < m_connections.size() )
+	if (id < m_boundConnections.size() )
 	{
-		return m_connections[(int)id];
+		return m_boundConnections[(int)id];
 	}
 
 	return nullptr;	
@@ -568,15 +623,15 @@ NetConnection* NetSession::GetConnectionById(uint8_t id)
 //  =========================================================================================
 void NetSession::SetHeartbeatRate(float hertz)
 {
-	for (int connectionIndex = 0; connectionIndex < (int)m_connections.size(); ++connectionIndex)
+	for (int connectionIndex = 0; connectionIndex < (int)m_boundConnections.size(); ++connectionIndex)
 	{
 		if (hertz == 0)
 		{
-			m_connections[connectionIndex]->m_heartbeatTimer->SetTimer(0);
+			m_boundConnections[connectionIndex]->m_heartbeatTimer->SetTimer(0);
 		}
 		else
 		{
-			m_connections[connectionIndex]->m_heartbeatTimer->SetTimer(1.f / hertz);
+			m_boundConnections[connectionIndex]->m_heartbeatTimer->SetTimer(1.f / hertz);
 		}
 		
 	}
@@ -658,37 +713,37 @@ NetMessageCallback GetRegisteredNetCallbackById(int id)
 //  =========================================================================================
 void AddConnectionToIndex(Command& cmd)
 {
-	int index = cmd.GetNextInt();
-	std::string address = cmd.GetNextString();
+	//int index = cmd.GetNextInt();
+	//std::string address = cmd.GetNextString();
 
-	NetSession* theNetSession = NetSession::GetInstance();
+	//NetSession* theNetSession = NetSession::GetInstance();
 
-	if (theNetSession->m_connections.size() != index)
-	{
-		DevConsolePrintf(Rgba::RED, "Requested index %i is invalid", index);
-	}
+	//if (theNetSession->m_boundConnections.size() != index)
+	//{
+	//	DevConsolePrintf(Rgba::RED, "Requested index %i is invalid", index);
+	//}
 
-	else if (IsStringNullOrEmpty(address))
-	{
-		DevConsolePrintf(Rgba::RED, "Address is invalid");
-	}		
-	else
-	{
-		NetAddress* netAddress = new NetAddress(address.c_str());
-		if (netAddress == nullptr)
-		{
-			DevConsolePrintf(Rgba::RED, "Address is invalid");
-		}
-		else
-		{
-			NetSession::GetInstance()->AddConnection(index, netAddress);
-			DevConsolePrintf("Successfully added address (%s) at index %i", address.c_str(), index);
-		}	
-		netAddress = nullptr;
-	}
+	//else if (IsStringNullOrEmpty(address))
+	//{
+	//	DevConsolePrintf(Rgba::RED, "Address is invalid");
+	//}		
+	//else
+	//{
+	//	NetAddress* netAddress = new NetAddress(address.c_str());
+	//	if (netAddress == nullptr)
+	//	{
+	//		DevConsolePrintf(Rgba::RED, "Address is invalid");
+	//	}
+	//	else
+	//	{
+	//		NetSession::GetInstance()->AddConnection(index, netAddress);
+	//		DevConsolePrintf("Successfully added address (%s) at index %i", address.c_str(), index);
+	//	}	
+	//	netAddress = nullptr;
+	//}
 
-	//cleanup
-	theNetSession = nullptr;
+	////cleanup
+	//theNetSession = nullptr;
 }
 
 //  =========================================================================================
@@ -870,11 +925,11 @@ void SetSessionSendRate(Command& cmd)
 	}
 	
 	//set connection send rates to the netsession send rate for every rate that is faster than the new rate
-	for (int connectionIndex = 0; connectionIndex < (int)theNetSession->m_connections.size(); ++connectionIndex)
+	for (int connectionIndex = 0; connectionIndex < (int)theNetSession->m_boundConnections.size(); ++connectionIndex)
 	{
-		if (theNetSession->m_sessionSendLatencyInMilliseconds > theNetSession->m_connections[connectionIndex]->m_connectionSendLatencyInMilliseconds)
+		if (theNetSession->m_sessionSendLatencyInMilliseconds > theNetSession->m_boundConnections[connectionIndex]->m_connectionSendLatencyInMilliseconds)
 		{
-			theNetSession->m_connections[connectionIndex]->m_latencySendTimer->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
+			theNetSession->m_boundConnections[connectionIndex]->m_latencySendTimer->SetTimerInMilliseconds(theNetSession->m_sessionSendLatencyInMilliseconds);
 		}
 	}
 }
@@ -941,12 +996,12 @@ void SetGlobalHeartRate(Command& cmd)
 //  =============================================================================
 bool OnPing(NetMessage& message, NetConnection* fromConnection)
 {
-	DevConsolePrintf("Received PING from %s (Connection:%i)", fromConnection->m_address->ToString().c_str(), (int)fromConnection->m_index);
+	DevConsolePrintf("Received PING from %s (Connection:%i)", fromConnection->GetNetAddress()->ToString().c_str(), (int)fromConnection->GetConnectionIndex());
 
 	NetMessage* pongMessage = new NetMessage("pong");
 
 	// messages are sent to connections (not sessions)
-	if (fromConnection->m_index != UINT8_MAX)
+	if (fromConnection->GetConnectionIndex() != UINT8_MAX)
 	{
 		fromConnection->QueueMessage(pongMessage);
 	}
@@ -961,7 +1016,7 @@ bool OnPing(NetMessage& message, NetConnection* fromConnection)
 //  =============================================================================
 bool OnPong(NetMessage& message, NetConnection* fromConnection)
 {
-	DevConsolePrintf("Received PONG from %s (Connection:%i)", fromConnection->m_address->ToString().c_str(), (int)fromConnection->m_index);
+	DevConsolePrintf("Received PONG from %s (Connection:%i)", fromConnection->GetNetAddress()->ToString().c_str(), (int)fromConnection->GetConnectionIndex());
 	return true;
 }
 
@@ -975,7 +1030,7 @@ bool OnAdd(NetMessage& message, NetConnection* fromConnection)
 
 	if (!success)
 	{
-		DevConsolePrintf("Received ADD function from connection %i. Could not read param1", fromConnection->m_index);
+		DevConsolePrintf("Received ADD function from connection %i. Could not read param1", fromConnection->GetConnectionIndex() );
 		return success;
 	}
 
@@ -983,15 +1038,15 @@ bool OnAdd(NetMessage& message, NetConnection* fromConnection)
 
 	if (!success)
 	{
-		DevConsolePrintf("Received ADD function from connection %i. Could not read param2", fromConnection->m_index);
+		DevConsolePrintf("Received ADD function from connection %i. Could not read param2", fromConnection->GetConnectionIndex() );
 		return success;
 	}
 
 	float sum = parameter1 + parameter2;
-	DevConsolePrintf("Received ADD function from connection %i: %f + %f = %f", fromConnection->m_index
-	,parameter1
-	,parameter2
-	,sum);
+	DevConsolePrintf("Received ADD function from connection %i: %f + %f = %f", fromConnection->GetConnectionIndex(),
+	parameter1,
+	parameter2,
+	sum);
 
 	//send 
 	NetMessage* responseMessage = new NetMessage("add");
@@ -1009,7 +1064,7 @@ bool OnAdd(NetMessage& message, NetConnection* fromConnection)
 	else
 	{
 		// messages are sent to connections (not sessions)
-		if (fromConnection->m_index != UINT8_MAX)
+		if (fromConnection->GetConnectionIndex() != UINT8_MAX)
 		{
 			fromConnection->QueueMessage(responseMessage);
 		}
@@ -1033,7 +1088,7 @@ bool OnAddResponse(NetMessage& message, NetConnection* fromConnection)
 
 	if (!success)
 	{
-		DevConsolePrintf("Received ADD function from connection %i. Could not read param1", fromConnection->m_index);
+		DevConsolePrintf("Received ADD function from connection %i. Could not read param1", fromConnection->GetConnectionIndex());
 		return success;
 	}
 
@@ -1041,16 +1096,16 @@ bool OnAddResponse(NetMessage& message, NetConnection* fromConnection)
 
 	if (!success)
 	{
-		DevConsolePrintf("Received ADD function from connection %i. Could not read param2", fromConnection->m_index);
+		DevConsolePrintf("Received ADD function from connection %i. Could not read param2", fromConnection->GetConnectionIndex());
 		return success;
 	}
 
 	success = message.ReadBytes(&sum, sizeof(float), false);
 
-	DevConsolePrintf("Received ADD response from connection %i: %f + %f = %f", fromConnection->m_index
-		,parameter1
-		,parameter2
-		,sum);
+	DevConsolePrintf("Received ADD response from connection %i: %f + %f = %f", fromConnection->GetConnectionIndex(),
+		parameter1,
+		parameter2,
+		sum);
 
 	return true;
 }

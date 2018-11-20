@@ -194,7 +194,7 @@ void NetConnection::SendPacket(PacketTracker* packetTracker, NetPacket* packet)
 
 	NetSession* theNetSession = NetSession::GetInstance();
 
-	theNetSession->m_socket->SendTo(*m_address, packet->GetBuffer(), packet->GetWrittenByteCount());
+	theNetSession->m_socket->SendTo(*GetNetAddress(), packet->GetBuffer(), packet->GetWrittenByteCount());
 	OnPacketSend(packetTracker, packet);
 	m_sentPackets.push_back(packet);	
 
@@ -395,6 +395,24 @@ int NetConnection::GetLastSentAck()
 int NetConnection::GetLastReceivedAck()
 {
 	return m_highestReceivedAck;
+}
+
+//  =============================================================================
+bool NetConnection::IsMe() const
+{
+	return false;
+}
+
+//  =============================================================================
+bool NetConnection::IsHost() const
+{
+	return false;
+}
+
+//  =============================================================================
+bool NetConnection::IsClient() const
+{
+	return false;
 }
 
 //  =============================================================================

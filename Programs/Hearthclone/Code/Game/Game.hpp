@@ -45,6 +45,9 @@ public:
 	void Initialize();
 
 	void Update(); //use internal clock for delta seconds;
+
+	void UpdateJoinState();
+
 	void PreRender();
 	void Render();
 	void PostRender();
