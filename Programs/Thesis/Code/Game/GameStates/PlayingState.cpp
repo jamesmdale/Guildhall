@@ -6,6 +6,7 @@
 #include "Engine\Math\IntVector2.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\DevConsole.hpp"
+#include "Engine\File\FIleHelpers.hpp"
 #include <map>
 #include <string>
 #include "Game\GameStates\PlayingState.hpp"
@@ -19,6 +20,8 @@ float ORTHO_MIN = 0.f;
 float g_orthoZoom = 0.f;
 
 float ZOOM_RATE = 5.f;
+
+std::string simDataOutputDirectory = "";
 
 //  =============================================================================
 PlayingState::~PlayingState()
@@ -56,8 +59,15 @@ void PlayingState::Initialize()
 	//register commands
 	RegisterCommand("toggle_optimization", CommandRegistration(ToggleOptimized, ": Toggle blanket optimizations on and off", ""));
 
-	// map creation
-	SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimuDefinitionIndex];
+	std::string newFolderName = Stringf("SIMULATION_TEST_%s", GetCurrentDateTime().c_str());
+	std::string newPath =  Stringf("%s%s", "Data\\ExportedSimulationData\\", newFolderName.c_str());
+	
+	bool success = CreateFolder(newPath.c_str());
+	ASSERT_OR_DIE(success, Stringf("UNABLE TO CREATE FOLDER (%s)", newPath.c_str()).c_str());
+
+	simDataOutputDirectory = Stringf("%s%s", newPath.c_str(), "\\");
+
+	SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];
 	InitializeSimulation(definition);
 
 	//cleanup
@@ -73,18 +83,19 @@ void PlayingState::Update(float deltaSeconds)
 
 	if (m_simulationTimer->ResetAndDecrementIfElapsed())
 	{
-		g_currentSimulationData->ExportCSV();
+		ExportSimulationData();
 
-		g_currentSimuDefinitionIndex++;
+		g_currentSimDefinitionIndex++;
 
-		if (g_currentSimuDefinitionIndex < SimulationDefinition::s_simulationDefinitions.size())
+		if (g_currentSimDefinitionIndex < SimulationDefinition::s_simulationDefinitions.size())
 		{
+			ExportSimulationData();
 			DestroyCurrentSimulation();
 
-			SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimuDefinitionIndex];
+			SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];
 
-			delete(g_currentSimulationData);
-			g_currentSimulationData = nullptr;
+			delete(g_generalSimulationData);
+			g_generalSimulationData = nullptr;
 
 			InitializeSimulation(definition);
 		}
@@ -224,9 +235,11 @@ void PlayingState::RenderUI()
 //  =============================================================================
 void PlayingState::InitializeSimulation(SimulationDefinition* definition)
 {
-	g_currentSimulationData = new SimulationData();
-	g_currentSimulationData->Initialize(definition);
+	//current sim definition
+	g_currentSimulationDefinition = definition;
+	InitializeSimulationData();
 
+	//map creation
 	m_map = new Map(definition, "TestMap", m_renderScene2D);	
 	m_map->Initialize();
 	m_map->m_gameState = this;
@@ -236,17 +249,93 @@ void PlayingState::InitializeSimulation(SimulationDefinition* definition)
 	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));	
 
 	m_simulationTimer = new Stopwatch(GetMasterClock());
-	m_simulationTimer->SetTimer(g_currentSimulationData->m_simulationDefinitionReference->m_totalProcessingTimeInSeconds);
+	m_simulationTimer->SetTimer(g_generalSimulationData->m_simulationDefinitionReference->m_totalProcessingTimeInSeconds);
+}
+
+//  =============================================================================
+void PlayingState::InitializeSimulationData()
+{	
+	g_generalSimulationData = new SimulationData();
+	g_generalSimulationData->Initialize(g_currentSimulationDefinition);
+
+	//action stack data
+	g_processActionStackData = new SimulationData();
+	g_processActionStackData->Initialize(g_currentSimulationDefinition);
+
+	//action stack data
+	g_updatePlanData = new SimulationData();
+	g_updatePlanData->Initialize(g_currentSimulationDefinition);
+
+	//action stack data
+	g_agentUpdateData = new SimulationData();
+	g_agentUpdateData->Initialize(g_currentSimulationDefinition);
+
+	//action stack data
+	g_pathingData = new SimulationData();
+	g_pathingData->Initialize(g_currentSimulationDefinition);
+
+	//action stack data
+	g_copyPathData = new SimulationData();
+	g_copyPathData->Initialize(g_currentSimulationDefinition);
 }
 
 //  =============================================================================
 void PlayingState::DestroyCurrentSimulation()
 {
-	delete(g_currentSimulationData);
-	g_currentSimulationData = nullptr;
+	delete(g_generalSimulationData);
+	g_generalSimulationData = nullptr;
+
+	delete(g_processActionStackData);
+	g_processActionStackData = nullptr;
+
+	delete(g_updatePlanData);
+	g_updatePlanData = nullptr;
+
+	delete(g_agentUpdateData);
+	g_agentUpdateData = nullptr;
+
+	delete(g_copyPathData);
+	g_copyPathData = nullptr;
+
+	g_numUpdatePlanCalls = 0;
+	g_numActionStackProcessCalls = 0;
+	g_numAgentUpdateCalls = 0;
+	g_numGetPathCalls = 0;
+	g_numCopyPathCalls = 0;
 
 	delete(m_map);
 	m_map = nullptr;
+}
+
+//  =============================================================================
+void PlayingState::ExportSimulationData()
+{
+	//std::string newFolderName = Stringf("SIMULATION_TEST_%s", GetCurrentDateTime().c_str());
+	//std::string newPath =  Stringf("%s%s", "Data\\ExportedSimulationData\\", newFolderName);
+	//CreateFolder(newPath.c_str());	
+
+	std::string newFolder = Stringf("%s%s%i", simDataOutputDirectory.c_str(), "Simulation_Definition_", g_currentSimDefinitionIndex);
+	CreateFolder(newFolder.c_str());
+
+	std::string finalFilePath = Stringf("%s%s", newFolder.c_str(), "//");
+
+	//general data
+	g_generalSimulationData->ExportCSV(finalFilePath, "GeneralInfo.csv");
+
+	//export action stack data
+	g_processActionStackData->ExportCSV(finalFilePath, "ActionStackAverageTimes.csv");
+
+	//export update plan data
+	g_updatePlanData->ExportCSV(finalFilePath, "UpdatePlanAverageTimes.csv");
+
+	//export stack data
+	g_agentUpdateData->ExportCSV(finalFilePath, "AgentUpdateAverageTimes.csv");
+
+	//export stack data
+	g_pathingData->ExportCSV(finalFilePath, "PathingDataAverageTimes.csv");
+
+	//action stack data
+	g_copyPathData ->ExportCSV(finalFilePath, "CopyPathAverageTimes.csv");
 }
 
 // Commands =============================================================================

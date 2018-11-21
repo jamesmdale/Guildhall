@@ -89,6 +89,9 @@ Map::~Map()
 	delete(m_mapMesh);
 	m_mapMesh = nullptr;
 
+	delete(m_debugMapMesh);
+	m_debugMapMesh = nullptr;
+
 	//cleanup bombardments
 	for (int bombardmentIndex = 0; bombardmentIndex < (int)m_activeBombardments.size(); ++bombardmentIndex)
 	{
@@ -242,7 +245,7 @@ void Map::Update(float deltaSeconds)
 
 	//check optimization flags
 	//sort for Y drawing for render AND for next frame's agent update
-	if (g_currentSimulationData->m_simulationDefinitionReference->m_isOptimized)
+	if (g_generalSimulationData->m_simulationDefinitionReference->m_isOptimized)
 	{		
 		if (m_sortTimer->CheckAndReset())
 		{
@@ -276,12 +279,20 @@ void Map::Render()
 	theRenderer->SetShader(theRenderer->m_defaultShader);
 	theRenderer->DrawMesh(m_mapMesh);
 
+	//render tile block data
+	if (g_showBlockedTileData)
+	{
+		theRenderer->BindMaterial(theRenderer->CreateOrGetMaterial("text"));
+		theRenderer->DrawMesh(m_debugMapMesh);
+	}
+
 	//create and render agent mesh
 	Mesh* agentMesh = CreateDynamicAgentMesh();
 	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture(m_agentsOrderedByXPosition[0]->m_animationSet->GetCurrentSprite(m_agentsOrderedByXPosition[0]->m_spriteDirection)->m_definition->m_diffuseSource));
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
 	theRenderer->DrawMesh(agentMesh);
 
+	//render agent id's above heads if debug active
 	if (g_isIdShown)
 	{
 		Mesh* agentIdMesh = CreateDynamicAgentIdMesh();
@@ -320,6 +331,18 @@ void Map::CreateMapMesh()
 	}
 
 	m_mapMesh = builder->CreateMesh<VertexPCU>();
+
+
+	//create debug mesh to show blocking states
+	for (int tileIndex = 0; tileIndex < (int)m_tiles.size(); ++tileIndex)
+	{
+		int value = m_tiles[tileIndex]->m_tileDefinition->m_allowsWalking == true ? 0 : 1;
+		std::string doesBlock = Stringf("%i", value);
+
+		builder->CreateText2DInAABB2(m_tiles[tileIndex]->GetBounds().GetCenter(), Vector2::ONE, 1.f, doesBlock, m_tiles[tileIndex]->m_tint );
+	}
+
+	m_debugMapMesh = builder->CreateMesh<VertexPCU>();
 
 	//cleanup
 	delete(builder);

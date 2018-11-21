@@ -3,9 +3,9 @@
    <SimulationDefinition
   name="default"
   mapName="20x20"
-  numAgents="10"
-  numArmories="2"
-  numLumberyards="2"
+  numAgents="3"
+  numArmories="3"
+  numLumberyards="3"
   numMedStations="0"
   bombardmentRatePerSecond="2.0"
   threatRatePerSecond = "10.0"

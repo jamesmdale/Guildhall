@@ -43,6 +43,7 @@ public:
 
 	//optimized mesh generation
 	void CreateMapMesh();
+
 	Mesh* CreateDynamicAgentMesh();
 	Mesh* CreateDynamicAgentIdMesh();
 	Mesh* CreateDynamicBombardmentMesh();	
@@ -106,6 +107,7 @@ public:
 
 	//meshes for rendering
 	Mesh* m_mapMesh = nullptr;
+	Mesh* m_debugMapMesh = nullptr;
 
 	Stopwatch* m_bombardmentTimer = nullptr;
 	Stopwatch* m_threatTimer = nullptr;

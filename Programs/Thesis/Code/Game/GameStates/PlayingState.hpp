@@ -31,7 +31,9 @@ public:
 
 	//simulations
 	void InitializeSimulation(SimulationDefinition* definition);
+	void InitializeSimulationData();
 	void DestroyCurrentSimulation();
+	void ExportSimulationData();
 
 	//bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);
 	//Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);

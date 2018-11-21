@@ -19,58 +19,61 @@ SimulationData::~SimulationData()
 void SimulationData::Initialize(SimulationDefinition* simulationDefinition)
 {
 	m_simulationDefinitionReference = simulationDefinition;
+}
 
+void SimulationData::CreateComprehensiveDataSet()
+{
 	//title cell
 	AddCell("Simulation");
 	AddNewLine();
 
 	AddCell("SimulationName");
-	AddCell(Stringf("%s", simulationDefinition->m_name.c_str()));
+	AddCell(Stringf("%s", m_simulationDefinitionReference->m_name.c_str()));
 	AddNewLine();
 
 	//num agents
 	AddCell("NumAgents");
-	AddCell(Stringf("%i", simulationDefinition->m_numAgents));
+	AddCell(Stringf("%i", m_simulationDefinitionReference->m_numAgents));
 	AddNewLine();
 
 	//num armories
 	AddCell("NumArmories");
-	AddCell(Stringf("%i", simulationDefinition->m_numArmories));
+	AddCell(Stringf("%i", m_simulationDefinitionReference->m_numArmories));
 	AddNewLine();
 
 	//num lumberyards
 	AddCell("NumLumberyards");
-	AddCell(Stringf("%i", simulationDefinition->m_numLumberyards));
+	AddCell(Stringf("%i", m_simulationDefinitionReference->m_numLumberyards));
 	AddNewLine();
 
 	//num med stations
 	AddCell("NumMedStations");
-	AddCell(Stringf("%i", simulationDefinition->m_numMedStations));
+	AddCell(Stringf("%i", m_simulationDefinitionReference->m_numMedStations));
 	AddNewLine();
 
 	//bombardment rate
 	AddCell("BombardmentRate");
-	AddCell(Stringf("%f", simulationDefinition->m_bombardmentRatePerSecond));
+	AddCell(Stringf("%f", m_simulationDefinitionReference->m_bombardmentRatePerSecond));
 	AddNewLine();
 
 	//threat rate
 	AddCell("ThreatRate");
-	AddCell(Stringf("%f", simulationDefinition->m_threatRatePerSecond));
+	AddCell(Stringf("%f", m_simulationDefinitionReference->m_threatRatePerSecond));
 	AddNewLine();
 
 	//bombardment starting threat
 	AddCell("StartingThreat");
-	AddCell(Stringf("%i", simulationDefinition->m_startingThreat));
+	AddCell(Stringf("%i", m_simulationDefinitionReference->m_startingThreat));
 	AddNewLine();
 
 	//map definition name
 	AddCell("MapDimensions");
-	AddCell(Stringf("%f,%f", simulationDefinition->m_mapDefinition->m_width, simulationDefinition->m_mapDefinition->m_height));
+	AddCell(Stringf("%f,%f", m_simulationDefinitionReference->m_mapDefinition->m_width, m_simulationDefinitionReference->m_mapDefinition->m_height));
 	AddNewLine();
 
 	//map definitions
 	AddCell("MapName");
-	AddCell(Stringf("%s", simulationDefinition->m_mapDefinition->m_name.c_str()));
+	AddCell(Stringf("%s", m_simulationDefinitionReference->m_mapDefinition->m_name.c_str()));
 	AddNewLine();
 	AddNewLine();
 
@@ -80,7 +83,7 @@ void SimulationData::Initialize(SimulationDefinition* simulationDefinition)
 
 	//optimization?
 	std::string optimizedText = "";
-	simulationDefinition->m_isOptimized ? optimizedText = "Yes" : optimizedText = "No";
+	m_simulationDefinitionReference->m_isOptimized ? optimizedText = "Yes" : optimizedText = "No";
 
 	AddCell("IsOptimized");
 	AddCell(optimizedText.c_str());
@@ -98,7 +101,7 @@ void SimulationData::WriteEntry(const std::string& entry)
 }
 
 //  =============================================================================
-void SimulationData::ExportCSV()
+void SimulationData::ExportCSV(const std::string& filePath, const std::string& fileName)
 {
 	for (int entryIndex = 0; entryIndex < (int)m_entries.size(); ++entryIndex)
 	{
@@ -106,10 +109,7 @@ void SimulationData::ExportCSV()
 		AddCell(Stringf("%s", m_entries[entryIndex].m_timeStamp.c_str()));
 		AddNewLine();
 	}
-
-	std::string newFileName = Stringf("Simulation_%s", GetCurrentDateTime().c_str());
-
-	bool success = WriteToFile(Stringf("%s%s", "Data\\ExportedSimulationData\\", newFileName.c_str()));
+	bool success = WriteToFile(Stringf("%s%s", filePath, fileName.c_str()));
 
 	ResetData();
 }

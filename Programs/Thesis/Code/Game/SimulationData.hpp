@@ -19,8 +19,10 @@ public:
 
 	void Initialize(SimulationDefinition* simulationDefinition);
 
+	void CreateComprehensiveDataSet();
+
 	void WriteEntry(const std::string& entry);
-	void ExportCSV();
+	void ExportCSV(const std::string& filePath, const std::string& fileName);
 	void ResetData();
 
 public:

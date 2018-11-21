@@ -1,11 +1,27 @@
 #include "Game\GameCommon.hpp"
 #include "Game\SimulationData.hpp"
+#include "Game\Definitions\SimulationDefinition.hpp"
 #include "Engine\Window\Window.hpp"
 
 //#include AudioSystem
-SimulationData* g_currentSimulationData = nullptr;
-int g_currentSimuDefinitionIndex = 0;
+SimulationDefinition* g_currentSimulationDefinition = nullptr;
 
+SimulationData* g_generalSimulationData = nullptr;
+SimulationData* g_processActionStackData = nullptr;
+SimulationData* g_updatePlanData = nullptr;
+SimulationData* g_agentUpdateData = nullptr;
+SimulationData* g_pathingData = nullptr;
+SimulationData* g_copyPathData = nullptr;
+
+uint g_numUpdatePlanCalls = 0;
+uint g_numActionStackProcessCalls = 0;
+uint g_numAgentUpdateCalls = 0;
+uint g_numGetPathCalls = 0;
+uint g_numCopyPathCalls = 0;
+
+int g_currentSimDefinitionIndex = 0;
+
+//debug keys
 bool g_isDebug = false;
 bool g_isQuitting = false;
 bool g_isIdShown = false;

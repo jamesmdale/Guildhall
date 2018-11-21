@@ -6,14 +6,29 @@
 #include "Engine\Core\Rgba.hpp"
 
 class SimulationData;
+class SimulationDefinition;
 
 //following line will go here when any engine side globals are declared and need to be used
 //#include "Engine/Core/EngineCommon.hpp"
 
 //sim data
-extern SimulationData* g_currentSimulationData;
-extern int g_currentSimuDefinitionIndex;
+extern SimulationDefinition* g_currentSimulationDefinition;
+extern SimulationData* g_generalSimulationData;
+extern SimulationData* g_processActionStackData;
+extern SimulationData* g_updatePlanData;
+extern SimulationData* g_agentUpdateData;
+extern SimulationData* g_pathingData;
+extern SimulationData* g_copyPathData;
 
+extern uint g_numUpdatePlanCalls;
+extern uint g_numActionStackProcessCalls;
+extern uint g_numAgentUpdateCalls;
+extern uint g_numGetPathCalls;
+extern uint g_numCopyPathCalls;
+
+extern int g_currentSimDefinitionIndex;
+
+//camera data
 const Vector2 g_bottomLeftOrtho = Vector2( -1.f, -1.f);
 const Vector2 g_topRightOrtho = Vector2(1.f, 1.f);
 const Vector2 g_center = Vector2((g_bottomLeftOrtho.x + g_topRightOrtho.x) * .5f, (g_bottomLeftOrtho.y + g_topRightOrtho.y) * .5f);

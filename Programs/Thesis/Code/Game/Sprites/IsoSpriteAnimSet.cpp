@@ -1,5 +1,6 @@
 #include "Game\Sprites\IsoSpriteAnimSet.hpp"
 #include "Engine\Core\StringUtils.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 
 //  =========================================================================================
 IsoSpriteAnimSet::IsoSpriteAnimSet( IsoSpriteAnimSetDefinition* animSetDef )
@@ -22,6 +23,8 @@ IsoSpriteAnimSet::IsoSpriteAnimSet( IsoSpriteAnimSetDefinition* animSetDef )
 //  =========================================================================================
 void IsoSpriteAnimSet::Update( float deltaSeconds )
 {
+	PROFILER_PUSH();
+
 	//TODO: add logic determining which anim to run from here.  This is the animation related pointer held in the entity itself.
 	m_currentAnim->Update(deltaSeconds);
 

@@ -65,6 +65,8 @@ void Agent::GenerateRandomStats()
 void Agent::Update(float deltaSeconds)
 {
 	PROFILER_PUSH();
+	++g_numAgentUpdateCalls;
+
 	m_planner->ProcessActionStack(deltaSeconds);	
 
 	UpdateSpriteRenderDirection();
@@ -116,6 +118,8 @@ void Agent::Render()
 //  =========================================================================================
 bool Agent::GetPathToDestination(const Vector2& goalDestination)
 {
+	++g_numGetPathCalls;
+
 	// profiling ----------------------------------------------
 	static int iterations = 0;
 	static uint64_t timeAverage = 0.f;
@@ -135,7 +139,7 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 	m_currentPath.push_back(goalDestination);
 
 	//add the location
-	if (g_currentSimulationData->m_simulationDefinitionReference->GetIsOptimized())
+	if (g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized())
 	{
 		isDestinationFound = AStarSearchOnGrid(m_currentPath, startCoord, endCoord, m_planner->m_map->m_mapAsGrid, m_planner->m_map);
 	}		
@@ -147,7 +151,7 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	timeAverage = timeAverage + ((totalHPC - timeAverage) / iterations);
 	if (iterations == 100)
 	{
 		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
@@ -158,8 +162,8 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 		DevConsolePrintf(Rgba::LIGHT_BLUE, "Average Time After 100 iterations (Pathing) %f", secondsAverage);
 		DevConsolePrintf(Rgba::LIGHT_BLUE, "Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds);
 
-		g_currentSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (Pathing) %f", secondsAverage));
-		g_currentSimulationData->WriteEntry(Stringf("Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		g_generalSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (Pathing) %f", secondsAverage));
+		g_generalSimulationData->WriteEntry(Stringf("Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
 
 		//reset data
@@ -217,6 +221,8 @@ void Agent::UpdateHealPerformanceTime()
 //  =========================================================================================
 void Agent::UpdateSpriteRenderDirection()
 {
+	PROFILER_PUSH();
+
 	//calculate the largest dot between facing or turned away
 	float dotValue = 0;
 	float northDot = DotProduct(Vector2(MAP_NORTH), Vector2(m_forward));

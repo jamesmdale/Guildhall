@@ -1,7 +1,8 @@
 #include "Game\Sprites\IsoSpriteAnim.hpp"
 #include "Engine\Core\EngineCommon.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 
-
+//  =============================================================================
 IsoSpriteAnim::IsoSpriteAnim( IsoSpriteAnimDefinition* animDef, float totalAnimationTime)
 {
 	m_animDef = animDef;
@@ -22,8 +23,11 @@ IsoSpriteAnim::IsoSpriteAnim( IsoSpriteAnimDefinition* animDef, float totalAnima
 	}
 }
 
+//  =============================================================================
 void IsoSpriteAnim::Update( float deltaSeconds )
 {
+	PROFILER_PUSH();
+
 	m_elapsedSeconds += deltaSeconds;
 	float fractionelapsed = GetFractionElapsed();
 	if(fractionelapsed >= 1.f)
@@ -45,11 +49,13 @@ void IsoSpriteAnim::Update( float deltaSeconds )
 	}
 }
 
+//  =============================================================================
 int IsoSpriteAnim::GetCurrentIsoSpriteIndex()	
 {
 	return GetIsoSpriteIndexForTime(m_elapsedSeconds);
 }
 
+//  =============================================================================
 void IsoSpriteAnim::PlayFromStart()
 {
 	m_elapsedSeconds = 0.0f;
@@ -57,21 +63,25 @@ void IsoSpriteAnim::PlayFromStart()
 	m_isPlaying = true;	
 }
 
+//  =============================================================================
 float IsoSpriteAnim::GetSecondsRemaining() const
 {
 	return m_totalAnimationTime - m_elapsedSeconds;
 }
 
+//  =============================================================================
 float IsoSpriteAnim::GetFractionElapsed() const
 {
 	return m_elapsedSeconds/m_animDef->GetDuration();
 }
 
+//  =============================================================================
 float IsoSpriteAnim::GetFractionRemaining() const
 {
 	return 1.0f - (m_elapsedSeconds/m_totalAnimationTime);
 }
 
+//  =============================================================================
 float IsoSpriteAnim::GetFractionElapsedForTime(float time) const
 {
 	if(m_totalAnimationTime == 0)
@@ -82,21 +92,25 @@ float IsoSpriteAnim::GetFractionElapsedForTime(float time) const
 	return time/m_totalAnimationTime;
 }
 
+//  =============================================================================
 void IsoSpriteAnim::SetSecondsElapsed( float secondsElapsed )   
 {
 	m_elapsedSeconds = secondsElapsed;
 }
 
+//  =============================================================================
 void IsoSpriteAnim::SetFractionElapsed( float fractionElapsed )
 {
 	m_elapsedSeconds = fractionElapsed * m_totalAnimationTime;
 }
 
+//  =============================================================================
 std::string IsoSpriteAnim::GetName() const
 {
 	return m_animDef->m_id;
 }
 
+//  =============================================================================
 int IsoSpriteAnim::GetIsoSpriteIndexForTime(float time)
 {
 	//float percentageElapsed = GetFractionElapsedForTime(time);
@@ -115,6 +129,7 @@ int IsoSpriteAnim::GetIsoSpriteIndexForTime(float time)
 	return (int)m_animDef->m_frameStructs.size() - 1;
 }
 
+//  =============================================================================
 void IsoSpriteAnim::SetTotalTime(float totalTimeToPlay)
 {
 	m_totalAnimationTime = totalTimeToPlay;

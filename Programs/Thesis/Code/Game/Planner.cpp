@@ -34,8 +34,10 @@ Planner::~Planner()
 void Planner::ProcessActionStack(float deltaSeconds)
 {
 	PROFILER_PUSH();
-
+	
 	// profiling ----------------------------------------------
+	++g_numActionStackProcessCalls;
+
 	static int iterations = 0;
 	static uint64_t timeAverage = 0.f;
 	static uint64_t iterationStartHPC = GetPerformanceCounter();
@@ -65,7 +67,7 @@ void Planner::ProcessActionStack(float deltaSeconds)
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	timeAverage = timeAverage + ((totalHPC - timeAverage) / iterations);
 	if (iterations == 10000)
 	{
 		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
@@ -76,8 +78,8 @@ void Planner::ProcessActionStack(float deltaSeconds)
 		DevConsolePrintf(Rgba::GREEN, "Average Time After 10000 iterations (Process Action Stack) %f", secondsAverage);
 		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Process Action Stack) (total time %f)", iterationsPerSecond, totalSeconds);
 
-		g_currentSimulationData->WriteEntry(Stringf("Average Time After 10000 iterations (Process Action Stack) %f", secondsAverage));
-		g_currentSimulationData->WriteEntry(Stringf("Iterations per second %f (Process Action Stack) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		g_generalSimulationData->WriteEntry(Stringf("Average Time After 10000 iterations (Process Action Stack) %f", secondsAverage));
+		g_generalSimulationData->WriteEntry(Stringf("Iterations per second %f (Process Action Stack) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();
@@ -108,6 +110,8 @@ void Planner::ClearStack()
 void Planner::UpdatePlan()
 {
 	// profiling ----------------------------------------------
+	++g_numUpdatePlanCalls;
+
 	static int iterations = 0;
 	static uint64_t timeAverage = 0.f;
 	static uint64_t iterationStartHPC = GetPerformanceCounter();
@@ -226,7 +230,7 @@ void Planner::UpdatePlan()
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	timeAverage = timeAverage + ((totalHPC - timeAverage) / iterations);
 	if (iterations == 100)
 	{
 		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
@@ -237,8 +241,8 @@ void Planner::UpdatePlan()
 		DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
 		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (UpdatePlan) (total time %f)", iterationsPerSecond, totalSeconds);
 
-		g_currentSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (UpdatePlan) %f", secondsAverage));
-		g_currentSimulationData->WriteEntry(Stringf("Iterations per second %f (UpdatePlan) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		g_generalSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (UpdatePlan) %f", secondsAverage));
+		g_generalSimulationData->WriteEntry(Stringf("Iterations per second %f (UpdatePlan) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();
@@ -296,7 +300,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 		m_agent->m_planner->AddActionToStack(data);
 
 		//figure out if we can skip doing an A* by borrowing someone else's path
-		if (g_currentSimulationData->m_simulationDefinitionReference->GetIsOptimized())
+		if (g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized())
 		{
 			PROFILER_PUSH();
 			bool success = FindAgentAndCopyPath();
@@ -774,6 +778,8 @@ IntVector2 Planner::GetNearestTileCoordinateOfMapEdgeFromCoordinate(const IntVec
 //  =========================================================================================
 bool Planner::FindAgentAndCopyPath()
 {
+	++g_numCopyPathCalls;
+
 	static Disc2 compareDisc = Disc2(0.f, 0.f, g_agentCopyDestinationPositionRadius);
 
 	bool didSuccessfullyCopyMatchingAgent = false;
@@ -874,7 +880,7 @@ bool Planner::FindAgentAndCopyPath()
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	timeAverage = timeAverage + ((totalHPC - timeAverage) / iterations);
 	if (iterations == 100)
 	{
 		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
@@ -885,8 +891,8 @@ bool Planner::FindAgentAndCopyPath()
 		DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (Copy path) %f", secondsAverage);
 		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Copy Path) (total time %f)", iterationsPerSecond, totalSeconds);
 
-		g_currentSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (Copy path) %f", secondsAverage));
-		g_currentSimulationData->WriteEntry(Stringf("Iterations per second %f (Copy Path) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		g_generalSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (Copy path) %f", secondsAverage));
+		g_generalSimulationData->WriteEntry(Stringf("Iterations per second %f (Copy Path) (total time between: %f)", iterationsPerSecond, totalSeconds));
 		
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();
