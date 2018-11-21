@@ -288,10 +288,10 @@ Mesh* Map::CreateDynamicAgentMesh()
 		switch (m_agentsOrderedByXPosition[agentIndex]->m_planner->m_currentPlan)
 		{
 		case GATHER_ARROWS_PLAN_TYPE:
-			agentColor = Rgba::RED;
+			agentColor = Rgba::ORANGE;
 			break;
 		case GATHER_LUMBER_PLAN_TYPE:
-			agentColor = Rgba::BLUE;
+			agentColor = Rgba::LIGHT_BLUE;
 			break;
 		case GATHER_BANDAGES_PLAN_TYPE:
 			agentColor = Rgba::GREEN;

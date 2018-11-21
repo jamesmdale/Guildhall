@@ -1,16 +1,18 @@
 #include "Engine\Profiler\ProfilerReportEntry.hpp"
 
-
+//  =============================================================================
 ProfilerReportEntry::ProfilerReportEntry()
 {
 
 }
 
+//  =============================================================================
 ProfilerReportEntry::ProfilerReportEntry(const std::string& id)
 {
 	m_id = id;
 }
 
+//  =============================================================================
 ProfilerReportEntry::~ProfilerReportEntry()
 {
 	for (int childIndex = 0; childIndex < (int)m_children.size(); ++childIndex)
@@ -23,6 +25,7 @@ ProfilerReportEntry::~ProfilerReportEntry()
 	m_parent = nullptr;
 }
 
+//  =============================================================================
 void ProfilerReportEntry::PopulateTree(ProfileMeasurement* node)
 {
 	AccumulateData(node);
@@ -37,6 +40,7 @@ void ProfilerReportEntry::PopulateTree(ProfileMeasurement* node)
 	CompleteData(node);
 }
 
+//  =============================================================================
 void ProfilerReportEntry::PopulateFlat(ProfileMeasurement* node, ProfilerReportEntry* root)
 {
 	AccumulateData(node);
@@ -56,12 +60,14 @@ void ProfilerReportEntry::PopulateFlat(ProfileMeasurement* node, ProfilerReportE
 	CompleteData(node);
 }
 
+//  =============================================================================
 void ProfilerReportEntry::AccumulateData(ProfileMeasurement* node)
 {
 	m_callCount++;
 	m_totalTime += node->GetElapsedTimeHPC();
 }
 
+//  =============================================================================
 void ProfilerReportEntry::CompleteData(ProfileMeasurement* node)
 {
 	uint64_t rootTotalTime = GetRootTotalTimeElapsed(node);
@@ -74,7 +80,7 @@ void ProfilerReportEntry::CompleteData(ProfileMeasurement* node)
 	m_selfPercentageOfFrame = (double)((long double)m_selfTime / (long double)rootTotalTime);	
 }
 
-
+//  =============================================================================
 ProfilerReportEntry* ProfilerReportEntry::GetOrCreateChild(const std::string& id)
 {
 	ProfilerReportEntry* entry = FindEntry(id);
@@ -90,6 +96,7 @@ ProfilerReportEntry* ProfilerReportEntry::GetOrCreateChild(const std::string& id
 	return entry;
 }
 
+//  =============================================================================
 ProfilerReportEntry* ProfilerReportEntry::FindEntry(const std::string& id)
 {
 	for (int childIndex = 0; childIndex < (int)m_children.size(); ++childIndex)
@@ -101,6 +108,7 @@ ProfilerReportEntry* ProfilerReportEntry::FindEntry(const std::string& id)
 	return nullptr;
 }
 
+//  =============================================================================
 uint64_t ProfilerReportEntry::GetChildrenTotalTimeElapsed(ProfileMeasurement* node)
 {
 	uint64_t totalTime = 0;
@@ -113,6 +121,7 @@ uint64_t ProfilerReportEntry::GetChildrenTotalTimeElapsed(ProfileMeasurement* no
 	return totalTime;
 }
 
+//  =============================================================================
 uint64_t ProfilerReportEntry::GetRootTotalTimeElapsed(ProfileMeasurement* node)
 {
 	ProfileMeasurement* parent = node;
@@ -128,6 +137,7 @@ uint64_t ProfilerReportEntry::GetRootTotalTimeElapsed(ProfileMeasurement* node)
 	return totalTime;
 }
 
+//  =============================================================================
 void ProfilerReportEntry::GetFormattedDataString(std::vector<std::string>* entryStrings, int depth)
 {
 	std::string intentId = "";

@@ -31,7 +31,7 @@ public:
 	Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapReference);
 	~Agent();
 
-	void GenerateRandomBiasses();
+	void GenerateRandomStats();
 
 	//overriden classes
 	void Update(float deltaSeconds);
@@ -47,6 +47,11 @@ public:
 
 	AABB2 GetBounds();
 
+	//stats
+	void UpdateCombatPerformanceTime();
+	void UpdateRepairPerformanceTime();
+	void UpdateHealPerformanceTime();
+
 public:
 
 	int m_id = -1;
@@ -58,9 +63,14 @@ public:
 	float m_healBias = 0.5f;
 
 	// skill ----------------------------------------------
+
 	float m_combatEfficiency = 1.f;
 	float m_repairEfficiency = 1.f;
 	float m_healEfficiency = 1.f;
+
+	float m_calculatedCombatPerformancePerSecond = 1.f;
+	float m_calculatedRepairPerformancePerSecond = 1.f;
+	float m_calculatedHealPerformancePerSecond = 1.f;
 
 	// inventory ----------------------------------------------
 	int m_arrowCount = 0;

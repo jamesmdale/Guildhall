@@ -4,5 +4,12 @@
 			<FillAndEdge fillTile="Grass" edgeTile="Wall"></FillAndEdge>
     </GenerationSteps>
 	</MapDefinition>
+
+	<MapDefinition name="20x20" defaultTile="Grass" width="20" height="20">
+		<GenerationSteps iterations="1" chanceToRun="1.0">
+			<FillAndEdge fillTile="Grass" edgeTile="Wall"></FillAndEdge>
+    </GenerationSteps>
+	</MapDefinition>
+
 </MapDefinitions>
 

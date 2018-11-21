@@ -36,7 +36,7 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 
 	actionTimer = new Stopwatch(GetMasterClock());
 
-	GenerateRandomBiasses();
+	GenerateRandomStats();
 }
 
 //  =========================================================================================
@@ -46,12 +46,20 @@ Agent::~Agent()
 }
 
 //  =========================================================================================
-void Agent::GenerateRandomBiasses()
+void Agent::GenerateRandomStats()
 {
-	m_combatBias = GetRandomFloatZeroToOne();
-	m_repairBias = GetRandomFloatZeroToOne();
-	m_healBias = GetRandomFloatZeroToOne();
-}
+	m_combatBias = GetRandomFloatInRange(0.1f, 0.9f);
+	m_repairBias = GetRandomFloatInRange(0.1f, 0.9f);
+	m_healBias = GetRandomFloatInRange(0.1f, 0.9f);
+
+	m_combatEfficiency = GetRandomFloatInRange(0.25f, 0.9f);
+	m_repairEfficiency = GetRandomFloatInRange(0.25f, 0.9f);
+	m_healEfficiency = GetRandomFloatInRange(0.25f, 0.9f);
+
+	UpdateCombatPerformanceTime();
+	UpdateRepairPerformanceTime();
+	UpdateHealPerformanceTime();
+}	
 
 //  =========================================================================================
 void Agent::Update(float deltaSeconds)
@@ -177,6 +185,33 @@ bool Agent::GetIsAtPosition(const Vector2 & goalDestination)
 AABB2 Agent::GetBounds()
 {
 	return AABB2();
+}
+
+//  =============================================================================
+void Agent::UpdateCombatPerformanceTime()
+{
+	if(m_combatEfficiency == 1.f)
+		m_calculatedCombatPerformancePerSecond = 1.f;
+	else
+		m_calculatedCombatPerformancePerSecond = g_minActionPerformanceRatePerSecond / (1.f - m_combatEfficiency);
+}
+
+//  =============================================================================
+void Agent::UpdateRepairPerformanceTime()
+{
+	if(m_repairEfficiency == 1.f)
+		m_calculatedRepairPerformancePerSecond = 1.f;
+	else
+	m_calculatedRepairPerformancePerSecond = g_minActionPerformanceRatePerSecond / (1.f - m_repairEfficiency);
+}
+
+//  =============================================================================
+void Agent::UpdateHealPerformanceTime()
+{
+	if(m_healEfficiency == 1.f)
+		m_calculatedHealPerformancePerSecond = 1.f;
+	else
+	m_calculatedHealPerformancePerSecond = g_minActionPerformanceRatePerSecond / (1.f - m_healEfficiency);
 }
 
 //  =========================================================================================
@@ -325,7 +360,7 @@ bool ShootAction(Agent* agent, const Vector2& goalDestination, int interactEntit
 	{
 		//do first pass logic
 		isFirstLoopThroughAction = false;
-		actionTimer->SetTimer(g_maxActionPerformanceRatePerSecond * agent->m_combatEfficiency);		
+		actionTimer->SetTimer(agent->m_calculatedCombatPerformancePerSecond);		
 	}
 
 	agent->m_animationSet->SetCurrentAnim("shoot");
@@ -360,7 +395,7 @@ bool RepairAction(Agent* agent, const Vector2& goalDestination, int interactEnti
 		PointOfInterest* targetPoi = agent->m_planner->m_map->GetPointOfInterestById(interactEntityId);
 		agent->m_forward = targetPoi->GetWorldBounds().GetCenter() - agent->m_position;
 		//do first pass logic
-		actionTimer->SetTimer(g_maxActionPerformanceRatePerSecond * agent->m_repairEfficiency);
+		actionTimer->SetTimer(agent->m_calculatedRepairPerformancePerSecond);
 		isFirstLoopThroughAction = false;
 	}
 
