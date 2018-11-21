@@ -66,6 +66,11 @@ Map::Map(SimulationDefinition* simulationDefinition, const std::string & mapName
 //  =========================================================================================
 Map::~Map()
 {
+	//cleanup reference pointers
+	m_mapDefinition = nullptr;
+	m_activeSimulationDefinition = nullptr;
+	m_gameState = nullptr;
+
 	//cleanuip timers
 	delete(m_sortTimer);
 	m_sortTimer = nullptr;
@@ -74,13 +79,64 @@ Map::~Map()
 	m_threatTimer = nullptr;	
 
 	delete(m_bombardmentTimer);
-	m_bombardmentTimer = nullptr;
-
-	//...everything else
-	m_mapDefinition = nullptr;
+	m_bombardmentTimer = nullptr;	
 	
+	//delete grid
 	delete(m_mapAsGrid);
 	m_mapAsGrid = nullptr;
+
+	//delete mesh
+	delete(m_mapMesh);
+	m_mapMesh = nullptr;
+
+	//cleanup bombardments
+	for (int bombardmentIndex = 0; bombardmentIndex < (int)m_activeBombardments.size(); ++bombardmentIndex)
+	{
+		delete(m_activeBombardments[bombardmentIndex]);
+		m_activeBombardments[bombardmentIndex] = nullptr;
+	}
+
+	//cleanup points of interest
+	for (int poiIndex = 0; poiIndex < (int)m_armories.size(); ++poiIndex)
+	{
+		m_armories[poiIndex] = nullptr;
+	}
+
+	for (int poiIndex = 0; poiIndex < (int)m_lumberyards.size(); ++poiIndex)
+	{
+		m_lumberyards[poiIndex] = nullptr;
+	}
+
+	for (int poiIndex = 0; poiIndex < (int)m_medStations.size(); ++poiIndex)
+	{
+		m_medStations[poiIndex] = nullptr;
+	}
+
+	for (int poiIndex = 0; poiIndex < (int)m_pointsOfInterest.size(); ++poiIndex)
+	{
+		delete(m_pointsOfInterest[poiIndex]);
+		m_pointsOfInterest[poiIndex] = nullptr;
+	}
+
+
+	//cleanup agents
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByXPosition.size(); ++agentIndex)
+	{
+		m_agentsOrderedByXPosition[agentIndex] = nullptr;
+	}
+
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByYPosition.size(); ++agentIndex)
+	{
+		delete(m_agentsOrderedByYPosition[agentIndex]);
+		m_agentsOrderedByYPosition[agentIndex] = nullptr;
+	}
+
+	//tiles
+	for (int tileIndex = 0; tileIndex < (int)m_tiles.size(); ++tileIndex)
+	{
+		delete(m_tiles[tileIndex]);
+		m_tiles[tileIndex] = nullptr;
+	}
 }
 
 //  =========================================================================================
@@ -226,6 +282,13 @@ void Map::Render()
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
 	theRenderer->DrawMesh(agentMesh);
 
+	if (g_isIdShown)
+	{
+		Mesh* agentIdMesh = CreateDynamicAgentIdMesh();
+		theRenderer->BindMaterial(theRenderer->CreateOrGetMaterial("text"));
+		theRenderer->DrawMesh(agentIdMesh);
+	}
+
 	Mesh* bombardmentMesh = CreateDynamicBombardmentMesh();
 	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("Data/Images/AirStrike.png"));
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
@@ -317,6 +380,23 @@ Mesh* Map::CreateDynamicAgentMesh()
 	builder = nullptr;
 
 	return agentMesh;
+}
+
+//  ===================================================t==========================
+Mesh* Map::CreateDynamicAgentIdMesh()
+{
+	MeshBuilder* builder = new MeshBuilder();
+
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByYPosition.size(); ++agentIndex)
+	{
+		builder->CreateText2DInAABB2(Vector2(m_agentsOrderedByXPosition[agentIndex]->m_position.x, m_agentsOrderedByXPosition[agentIndex]->m_position.y + 0.7), Vector2(0.25f, 0.25f), 1.f, Stringf("%i", m_agentsOrderedByXPosition[agentIndex]->m_id), Rgba::WHITE);
+	}
+
+	Mesh* agentIdMesh = builder->CreateMesh<VertexPCU>();
+
+	delete(builder);
+	builder = nullptr;
+	return agentIdMesh;
 }
 
 //  =========================================================================================

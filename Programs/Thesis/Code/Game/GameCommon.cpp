@@ -8,6 +8,7 @@ int g_currentSimuDefinitionIndex = 0;
 
 bool g_isDebug = false;
 bool g_isQuitting = false;
+bool g_isIdShown = false;
 
 //data set in game startup after window has been initialized
 float g_tileSize = 1.f;

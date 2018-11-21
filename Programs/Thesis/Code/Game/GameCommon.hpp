@@ -24,6 +24,7 @@ const float g_tilePercentageOfWindow = 0.025f;
 //game related globals
 extern bool g_isDebug;
 extern bool g_isQuitting;
+extern bool g_isIdShown;
 
 extern float g_tileSize;
 extern float g_divideTileSize;

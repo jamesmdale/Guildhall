@@ -12,6 +12,7 @@ SimulationData::SimulationData()
 //  =============================================================================
 SimulationData::~SimulationData()
 {
+	m_simulationDefinitionReference = nullptr;
 }
 
 //  =============================================================================

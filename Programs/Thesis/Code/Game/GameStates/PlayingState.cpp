@@ -53,26 +53,12 @@ void PlayingState::Initialize()
 	ORTHO_MAX = 20.f;
 	ORTHO_MIN = 0.f;
 
-	// map creation
-	SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimuDefinitionIndex];
-
-	g_currentSimulationData = new SimulationData();
-	g_currentSimulationData->Initialize(definition);
-
-	m_map = new Map(definition, "TestMap", m_renderScene2D);	
-	m_map->Initialize();
-	m_map->m_gameState = this;
-	
-	//re-adjust camera center
-	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
-	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));
-
 	//register commands
 	RegisterCommand("toggle_optimization", CommandRegistration(ToggleOptimized, ": Toggle blanket optimizations on and off", ""));
 
-
-	m_simulationTimer = new Stopwatch(GetMasterClock());
-	m_simulationTimer->SetTimer(g_currentSimulationData->m_simulationDefinitionReference->m_totalProcessingTimeInSeconds);
+	// map creation
+	SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimuDefinitionIndex];
+	InitializeSimulation(definition);
 
 	//cleanup
 	definition = nullptr;	
@@ -93,14 +79,14 @@ void PlayingState::Update(float deltaSeconds)
 
 		if (g_currentSimuDefinitionIndex < SimulationDefinition::s_simulationDefinitions.size())
 		{
+			DestroyCurrentSimulation();
+
 			SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimuDefinitionIndex];
 
 			delete(g_currentSimulationData);
 			g_currentSimulationData = nullptr;
 
-			g_currentSimulationData = new SimulationData();
-			g_currentSimulationData->Initialize(definition);
-			m_simulationTimer->SetTimer(SimulationDefinition::s_simulationDefinitions[g_currentSimuDefinitionIndex]->m_totalProcessingTimeInSeconds);
+			InitializeSimulation(definition);
 		}
 		else
 		{
@@ -187,12 +173,9 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 		g_showBlockedTileData = !g_showBlockedTileData;	
 	}
 
-	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_O))
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_I))
 	{
-		/*Game* theGame = Game::GetInstance();
-		theGame->m_isOptimized = !theGame->m_isOptimized;
-
-		theGame = nullptr;*/
+		g_isIdShown = !g_isIdShown;
 	}
 	
 	return deltaSeconds; //new deltaSeconds
@@ -236,6 +219,34 @@ void PlayingState::RenderUI()
 
 	//theRenderer = nullptr;
 	//theWindow = nullptr;
+}
+
+//  =============================================================================
+void PlayingState::InitializeSimulation(SimulationDefinition* definition)
+{
+	g_currentSimulationData = new SimulationData();
+	g_currentSimulationData->Initialize(definition);
+
+	m_map = new Map(definition, "TestMap", m_renderScene2D);	
+	m_map->Initialize();
+	m_map->m_gameState = this;
+
+	//re-adjust camera center
+	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
+	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));	
+
+	m_simulationTimer = new Stopwatch(GetMasterClock());
+	m_simulationTimer->SetTimer(g_currentSimulationData->m_simulationDefinitionReference->m_totalProcessingTimeInSeconds);
+}
+
+//  =============================================================================
+void PlayingState::DestroyCurrentSimulation()
+{
+	delete(g_currentSimulationData);
+	g_currentSimulationData = nullptr;
+
+	delete(m_map);
+	m_map = nullptr;
 }
 
 // Commands =============================================================================

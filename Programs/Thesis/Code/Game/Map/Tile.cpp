@@ -15,9 +15,6 @@ Tile::Tile()
 //  =========================================================================================
 Tile::~Tile()
 {
-	delete(m_tags);
-	m_tags = nullptr;
-
 	m_tileDefinition = nullptr;
 }
 

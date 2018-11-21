@@ -44,6 +44,7 @@ public:
 	//optimized mesh generation
 	void CreateMapMesh();
 	Mesh* CreateDynamicAgentMesh();
+	Mesh* CreateDynamicAgentIdMesh();
 	Mesh* CreateDynamicBombardmentMesh();	
 
 	//Cleanup functions

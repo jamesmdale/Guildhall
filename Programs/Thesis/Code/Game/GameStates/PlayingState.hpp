@@ -7,6 +7,7 @@
 #include "Engine\Utility\Grid.hpp"
 
 class SimulationData;
+class SimulationDefinition;
 
 class PlayingState : public GameState
 {
@@ -27,6 +28,10 @@ public:
 
 	void RenderGame();
 	void RenderUI();
+
+	//simulations
+	void InitializeSimulation(SimulationDefinition* definition);
+	void DestroyCurrentSimulation();
 
 	//bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);
 	//Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);

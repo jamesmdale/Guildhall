@@ -30,6 +30,6 @@ public:
 public:
 	Vector2 m_tileCoords;
 	TileDefinition* m_tileDefinition = nullptr;
-	Tags* m_tags = nullptr;
+	Tags m_tags;
 	Rgba m_tint = Rgba::WHITE;
 };

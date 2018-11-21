@@ -22,16 +22,16 @@ void MapGenStep_Mutate::Run( Map& map )
 		{
 			if(m_ifTags != "")
 			{
-				if(map.m_tiles[tileIndex]->m_tags->HasTags(m_ifTags))
+				if(map.m_tiles[tileIndex]->m_tags.HasTags(m_ifTags))
 				{
 					map.m_tiles[tileIndex]->m_tileDefinition = m_mutateTileDef;
-					map.m_tiles[tileIndex]->m_tags->SetOrRemoveTags(m_setTags);
+					map.m_tiles[tileIndex]->m_tags.SetOrRemoveTags(m_setTags);
 				}						
 			}
 			else
 			{
 				map.m_tiles[tileIndex]->m_tileDefinition = m_mutateTileDef;
-				map.m_tiles[tileIndex]->m_tags->SetOrRemoveTags(m_setTags);
+				map.m_tiles[tileIndex]->m_tags.SetOrRemoveTags(m_setTags);
 			}
 			
 		}			
