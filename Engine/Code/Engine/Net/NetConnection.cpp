@@ -94,7 +94,7 @@ void NetConnection::FlushOutgoingMessages()
 
 	//setup header
 	NetPacketHeader header;
-	header.m_senderIndex = theNetSession->m_sessionConnectionIndex;
+	header.m_senderIndex = theNetSession->m_myConnection->GetConnectionIndex();
 	header.m_ack = GetNextAckToSend();
 	header.m_highestReceivedAck = m_highestReceivedAck;
 	header.m_receivedAckHistoryBitfield = m_receivedAckHistoryBitfield;

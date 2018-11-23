@@ -130,8 +130,6 @@ public:
 	NetConnection* m_myConnection = nullptr;
 	NetConnection* m_hostConnection = nullptr;
 
-	uint8_t m_sessionConnectionIndex = UINT8_MAX;
-
 	//state management
 	eNetSessionState m_state = SESSION_STATE_DISCONNECTED;
 	eNetSessionError m_errorCode;
@@ -166,7 +164,7 @@ NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 
 // console commands ----------------------------------------------
 void AddConnectionToIndex(Command& cmd);
-void SetToHost(Command & cmd);
+void SetToHost(Command& cmd);
 void SendPing(Command& cmd);
 void SendMultiPing(Command& cmd);
 void SendAdd(Command& cmd);

@@ -517,7 +517,7 @@ bool NetSession::SendMessageWithoutConnection(NetMessage* message, NetConnection
 	int currentMessageIndex = 0;
 
 	std::vector<NetPacket*> packetsToSend;
-	NetPacket* packet = new NetPacket(theNetSession->m_sessionConnectionIndex, 0);
+	NetPacket* packet = new NetPacket(theNetSession->m_myConnection->GetConnectionIndex(), 0);
 	packet->WriteUpdatedPacketHeaderData();
 
 	if (packet->GetBufferSize() + message->GetWrittenByteCount() <= PACKET_MTU)
@@ -805,14 +805,19 @@ void SetToHost(Command& cmd)
 	int port = cmd.GetNextInt();
 	int portRange = cmd.GetNextInt();
 
+	if(portRange == INT_MAX)
+		portRange = 0;
+
 	//cmd error checking
 	if (port >= UINT16_MAX || port < 0)
 	{
 		DevConsolePrintf(Rgba::RED, "INVALID PORT (%i)!", port);
+		return;
 	}
 	if (portRange >= UINT16_MAX || portRange < 0)
 	{
 		DevConsolePrintf(Rgba::RED, "INVALID PORT RANGE (%i)!", portRange);
+		return;
 	}
 
 	//attempt to host with given parameters
