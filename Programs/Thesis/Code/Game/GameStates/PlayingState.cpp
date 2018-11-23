@@ -22,6 +22,7 @@ float g_orthoZoom = 0.f;
 float ZOOM_RATE = 5.f;
 
 std::string simDataOutputDirectory = "";
+bool isResetingSimulation = false;
 
 //  =============================================================================
 PlayingState::~PlayingState()
@@ -83,26 +84,7 @@ void PlayingState::Update(float deltaSeconds)
 
 	if (m_simulationTimer->ResetAndDecrementIfElapsed())
 	{
-		ExportSimulationData();
-
-		g_currentSimDefinitionIndex++;
-
-		if (g_currentSimDefinitionIndex < SimulationDefinition::s_simulationDefinitions.size())
-		{
-			ExportSimulationData();
-			DestroyCurrentSimulation();
-
-			SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];
-
-			delete(g_generalSimulationData);
-			g_generalSimulationData = nullptr;
-
-			InitializeSimulation(definition);
-		}
-		else
-		{
-			g_isQuitting = true;
-		}	
+		isResetingSimulation = true;
 	}
 }
 
@@ -127,7 +109,30 @@ void PlayingState::Render()
 //  =============================================================================
 void PlayingState::PostRender()
 {
+	if(g_isQuitting)
+		return;
+
 	m_map->DeleteDeadEntities();
+
+	if (isResetingSimulation)
+	{
+		ExportSimulationData();
+		DestroyCurrentSimulation();
+
+		g_currentSimDefinitionIndex++;
+
+		if (g_currentSimDefinitionIndex < SimulationDefinition::s_simulationDefinitions.size())
+		{
+			SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];	
+			InitializeSimulation(definition);
+		}
+		else
+		{
+			g_isQuitting = true;
+		}	
+
+		isResetingSimulation = false;
+	}	
 }
 
 //  =============================================================================
@@ -314,28 +319,70 @@ void PlayingState::ExportSimulationData()
 	//std::string newPath =  Stringf("%s%s", "Data\\ExportedSimulationData\\", newFolderName);
 	//CreateFolder(newPath.c_str());	
 
-	std::string newFolder = Stringf("%s%s%i", simDataOutputDirectory.c_str(), "Simulation_Definition_", g_currentSimDefinitionIndex);
+	std::string newFolder = Stringf("%s%s%s", simDataOutputDirectory.c_str(), "Simulation_Definition_", g_currentSimulationDefinition->m_name.c_str());
 	CreateFolder(newFolder.c_str());
 
-	std::string finalFilePath = Stringf("%s%s", newFolder.c_str(), "//");
+	std::string finalFilePath = Stringf("%s%s", newFolder.c_str(), "\\");
 
 	//general data
-	g_generalSimulationData->ExportCSV(finalFilePath, "GeneralInfo.csv");
+	FinalizeGeneralSimulationData();
+	std::string fileName = Stringf("GeneralInfo_%i.csv", g_currentSimDefinitionIndex);
+	bool success = g_generalSimulationData->ExportCSV(finalFilePath, fileName.c_str());
+	ASSERT_OR_DIE(success, "Action data broken");
 
 	//export action stack data
-	g_processActionStackData->ExportCSV(finalFilePath, "ActionStackAverageTimes.csv");
+	fileName = Stringf("ActionStackAverageTimesPer100_%i.csv", g_currentSimDefinitionIndex);
+	success = g_processActionStackData->ExportCSV(finalFilePath, fileName.c_str());
+	ASSERT_OR_DIE(success, "Action data broken");
 
 	//export update plan data
-	g_updatePlanData->ExportCSV(finalFilePath, "UpdatePlanAverageTimes.csv");
+	fileName = Stringf("AgentUpdatePlanAverageTimesPer100_%i.csv", g_currentSimDefinitionIndex);
+	success = g_updatePlanData->ExportCSV(finalFilePath, fileName.c_str());
+	ASSERT_OR_DIE(success, "Update plan data broken");
+
+	//export agent update data
+	fileName = Stringf("AgentUpdateAverageTimes_%i.csv", g_currentSimDefinitionIndex);
+	success = g_agentUpdateData->ExportCSV(finalFilePath, fileName.c_str());
+	ASSERT_OR_DIE(success, "Update data broken");
 
 	//export stack data
-	g_agentUpdateData->ExportCSV(finalFilePath, "AgentUpdateAverageTimes.csv");
-
-	//export stack data
-	g_pathingData->ExportCSV(finalFilePath, "PathingDataAverageTimes.csv");
+	fileName = Stringf("PathingDataAveragesTimesPer100_%i.csv", g_currentSimDefinitionIndex);
+	success = g_pathingData->ExportCSV(finalFilePath, fileName.c_str());
+	ASSERT_OR_DIE(success, "Pathing data broken");
 
 	//action stack data
-	g_copyPathData ->ExportCSV(finalFilePath, "CopyPathAverageTimes.csv");
+	fileName = Stringf("CopyPathAverageTimersPer100_%i.csv", g_currentSimDefinitionIndex);
+	success = g_copyPathData ->ExportCSV(finalFilePath, fileName.c_str());
+	ASSERT_OR_DIE(success, "Copy path data broken");
+}
+
+//  =============================================================================
+void PlayingState::FinalizeGeneralSimulationData()
+{
+
+	std::string optimizationString = "";
+	g_generalSimulationData->CreateComprehensiveDataSet();
+
+	g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized() ? optimizationString = "true" : optimizationString = "false";
+	g_generalSimulationData->AddCell("Is Optimized?", false);
+	g_generalSimulationData->AddCell(Stringf("%s", optimizationString.c_str()), true);
+
+	g_generalSimulationData->AddCell("Num update plan calls:", false);
+	g_generalSimulationData->AddCell(Stringf("%i", g_numUpdatePlanCalls), true);
+
+	g_generalSimulationData->AddCell("Num Process Action Stack calls:", false);
+	g_generalSimulationData->AddCell(Stringf("%i", g_numActionStackProcessCalls), true);
+
+	g_generalSimulationData->AddCell("Num Agent Update calls:", false);
+	g_generalSimulationData->AddCell(Stringf("%i", g_numAgentUpdateCalls), true);
+
+	g_generalSimulationData->AddCell("Num Get Path calls:", false);
+	g_generalSimulationData->AddCell(Stringf("%i", g_numGetPathCalls), true);
+
+	g_generalSimulationData->AddCell("Num Copy Path calls:", false);
+	g_generalSimulationData->AddCell(Stringf("%i", g_numCopyPathCalls), true);
+
+	
 }
 
 // Commands =============================================================================

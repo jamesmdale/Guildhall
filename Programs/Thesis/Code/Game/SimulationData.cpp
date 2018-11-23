@@ -91,7 +91,7 @@ void SimulationData::CreateComprehensiveDataSet()
 }
 
 //  =============================================================================
-void SimulationData::WriteEntry(const std::string& entry)
+void SimulationData::WriteEntryWithTimeStamp(const std::string& entry)
 {
 	SimulationDataEntry dataEntry = SimulationDataEntry();
 	dataEntry.m_value = entry;
@@ -101,7 +101,7 @@ void SimulationData::WriteEntry(const std::string& entry)
 }
 
 //  =============================================================================
-void SimulationData::ExportCSV(const std::string& filePath, const std::string& fileName)
+bool SimulationData::ExportCSV(const std::string& filePath, const std::string& fileName)
 {
 	for (int entryIndex = 0; entryIndex < (int)m_entries.size(); ++entryIndex)
 	{
@@ -109,9 +109,11 @@ void SimulationData::ExportCSV(const std::string& filePath, const std::string& f
 		AddCell(Stringf("%s", m_entries[entryIndex].m_timeStamp.c_str()));
 		AddNewLine();
 	}
-	bool success = WriteToFile(Stringf("%s%s", filePath, fileName.c_str()));
+	bool success = WriteToFile(Stringf("%s%s", filePath.c_str(), fileName.c_str()));
 
 	ResetData();
+
+	return success;
 }
 
 //  =============================================================================

@@ -35,6 +35,8 @@ public:
 	void DestroyCurrentSimulation();
 	void ExportSimulationData();
 
+	void FinalizeGeneralSimulationData();
+
 	//bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);
 	//Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);
 	

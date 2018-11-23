@@ -98,7 +98,6 @@ public:
 	uint16_t m_indexInSortedXList = UINT16_MAX;
 	uint16_t m_indexInSortedYList = UINT16_MAX;
 
-
 	//optimization members
 	//std::vector<Agent*> m_subordinateAgents;
 	//Agent* m_commandingAgent = nullptr;

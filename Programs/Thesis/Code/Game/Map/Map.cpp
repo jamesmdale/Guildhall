@@ -245,7 +245,7 @@ void Map::Update(float deltaSeconds)
 
 	//check optimization flags
 	//sort for Y drawing for render AND for next frame's agent update
-	if (g_generalSimulationData->m_simulationDefinitionReference->m_isOptimized)
+	if (g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized())
 	{		
 		if (m_sortTimer->CheckAndReset())
 		{
@@ -270,6 +270,9 @@ void Map::Update(float deltaSeconds)
 //  =========================================================================================
 void Map::Render()
 {
+	if(g_isQuitting)
+		return;
+
 	PROFILER_PUSH();
 
 	Renderer* theRenderer = Renderer::GetInstance();

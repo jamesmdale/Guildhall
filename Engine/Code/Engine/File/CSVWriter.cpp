@@ -13,7 +13,7 @@ CSVWriter::~CSVWriter()
 }
 
 //  =============================================================================
-void CSVWriter::AddCell(const std::string& cellContent)
+void CSVWriter::AddCell(const std::string& cellContent, bool doesWriteNewline)
 {
 	if (IsStringNullOrEmpty(cellContent))
 	{
@@ -28,6 +28,11 @@ void CSVWriter::AddCell(const std::string& cellContent)
 	}
 
 	m_content.push_back(cellContent);
+
+	if (doesWriteNewline)
+	{
+		AddNewLine();
+	}
 }
 
 //  =============================================================================

@@ -67,19 +67,20 @@ void Planner::ProcessActionStack(float deltaSeconds)
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	timeAverage = timeAverage + ((totalHPC - timeAverage) / iterations);
-	if (iterations == 10000)
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 1)
 	{
 		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
-		float iterationsPerSecond = totalSeconds / 100.f;
+		float iterationsPerSecond = totalSeconds / iterations;
 		iterationStartHPC = GetPerformanceCounter();
 
 		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
-		DevConsolePrintf(Rgba::GREEN, "Average Time After 10000 iterations (Process Action Stack) %f", secondsAverage);
-		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Process Action Stack) (total time %f)", iterationsPerSecond, totalSeconds);
+		//DevConsolePrintf(Rgba::GREEN, "Average Time After 10000 iterations (Process Action Stack) %f", secondsAverage);
+		//DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Process Action Stack) (total time %f)", iterationsPerSecond, totalSeconds);
 
-		g_generalSimulationData->WriteEntry(Stringf("Average Time After 10000 iterations (Process Action Stack) %f", secondsAverage));
-		g_generalSimulationData->WriteEntry(Stringf("Iterations per second %f (Process Action Stack) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		g_processActionStackData->AddCell(Stringf("%f", secondsAverage), true);
+		
+		g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Process Action Stack) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();
@@ -230,19 +231,20 @@ void Planner::UpdatePlan()
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	timeAverage = timeAverage + ((totalHPC - timeAverage) / iterations);
-	if (iterations == 100)
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 1)
 	{
 		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
 		float iterationsPerSecond = totalSeconds / 100.f;
 		iterationStartHPC = GetPerformanceCounter();
 
 		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
-		DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
-		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (UpdatePlan) (total time %f)", iterationsPerSecond, totalSeconds);
+		//DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
+		//DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (UpdatePlan) (total time %f)", iterationsPerSecond, totalSeconds);
 
-		g_generalSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (UpdatePlan) %f", secondsAverage));
-		g_generalSimulationData->WriteEntry(Stringf("Iterations per second %f (UpdatePlan) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		g_updatePlanData->AddCell(Stringf("%f", secondsAverage), true);
+
+		g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (UpdatePlan) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();
@@ -880,19 +882,20 @@ bool Planner::FindAgentAndCopyPath()
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	timeAverage = timeAverage + ((totalHPC - timeAverage) / iterations);
-	if (iterations == 100)
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 1)
 	{
 		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
 		float iterationsPerSecond = totalSeconds / 100.f;
 		iterationStartHPC = GetPerformanceCounter();
 
 		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
-		DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (Copy path) %f", secondsAverage);
-		DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Copy Path) (total time %f)", iterationsPerSecond, totalSeconds);
+		//DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (Copy path) %f", secondsAverage);
+		//DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Copy Path) (total time %f)", iterationsPerSecond, totalSeconds);
 
-		g_generalSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (Copy path) %f", secondsAverage));
-		g_generalSimulationData->WriteEntry(Stringf("Iterations per second %f (Copy Path) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		g_copyPathData->AddCell(Stringf("%f", secondsAverage), true);
+
+		g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Copy Path) (total time between: %f)", iterationsPerSecond, totalSeconds));
 		
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();

@@ -12,6 +12,7 @@
 #include "Engine\Utility\AStar.hpp"
 #include "Engine\Time\Stopwatch.hpp"
 #include "Engine\Profiler\Profiler.hpp"
+#include "Engine\File\CSVWriter.hpp"
 
 bool isFirstLoopThroughAction = true;
 Stopwatch* actionTimer = nullptr;
@@ -43,6 +44,7 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 Agent::~Agent()
 {
 	m_planner = nullptr;
+	m_animationSet = nullptr;
 }
 
 //  =========================================================================================
@@ -65,12 +67,18 @@ void Agent::GenerateRandomStats()
 void Agent::Update(float deltaSeconds)
 {
 	PROFILER_PUSH();
+	uint64_t startHPC = GetPerformanceCounter();
+
 	++g_numAgentUpdateCalls;
 
 	m_planner->ProcessActionStack(deltaSeconds);	
 
 	UpdateSpriteRenderDirection();
 	m_animationSet->Update(deltaSeconds);
+
+	uint64_t endHPC = GetPerformanceCounter();
+
+	g_agentUpdateData->AddCell(Stringf("%f", (float)PerformanceCounterToSeconds(endHPC - startHPC)), true);
 }
 
 //  =========================================================================================
@@ -151,19 +159,20 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	timeAverage = timeAverage + ((totalHPC - timeAverage) / iterations);
-	if (iterations == 100)
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 1)
 	{
 		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
 		float iterationsPerSecond = totalSeconds/100.f;
 		
 
 		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
-		DevConsolePrintf(Rgba::LIGHT_BLUE, "Average Time After 100 iterations (Pathing) %f", secondsAverage);
-		DevConsolePrintf(Rgba::LIGHT_BLUE, "Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds);
+		//DevConsolePrintf(Rgba::LIGHT_BLUE, "Average Time After 100 iterations (Pathing) %f", secondsAverage);
+		//DevConsolePrintf(Rgba::LIGHT_BLUE, "Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds);
 
-		g_generalSimulationData->WriteEntry(Stringf("Average Time After 100 iterations (Pathing) %f", secondsAverage));
-		g_generalSimulationData->WriteEntry(Stringf("Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		g_pathingData->AddCell(Stringf("%f", secondsAverage), true);
+
+		g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
 
 		//reset data

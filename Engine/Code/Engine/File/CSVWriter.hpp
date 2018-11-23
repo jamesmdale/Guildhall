@@ -8,8 +8,8 @@ public:
 	CSVWriter();
 	~CSVWriter();
 
-	void AddCell(const std::string& cellContent);
-	void AddNewLine();
+	virtual void AddCell(const std::string& cellContent, bool doesWriteNewline = false);
+	virtual void AddNewLine();
 
 	bool WriteToFile(const std::string& filePath);
 

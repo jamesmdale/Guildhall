@@ -11,7 +11,7 @@ struct SimulationDataEntry
 	std::string m_timeStamp = "";	
 };
 
-class SimulationData : CSVWriter
+class SimulationData : public CSVWriter
 {
 public:
 	SimulationData();
@@ -21,8 +21,8 @@ public:
 
 	void CreateComprehensiveDataSet();
 
-	void WriteEntry(const std::string& entry);
-	void ExportCSV(const std::string& filePath, const std::string& fileName);
+	void WriteEntryWithTimeStamp(const std::string& entry);
+	bool ExportCSV(const std::string& filePath, const std::string& fileName);
 	void ResetData();
 
 public:
