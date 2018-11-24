@@ -83,6 +83,8 @@ public:
 	bool IsHost() const;
 	bool IsClient() const;
 
+	void SetState(eNetConnectionState state);
+	inline eNetConnectionState GetState() const { return m_state; }
 	inline bool IsConnected() const { return m_state == CONNECTION_CONNECTED; }
 	inline bool IsDisconnected() const { return m_state == CONNECTION_DISCONNECTED; }
 	inline bool IsConnecting() const { return m_state == CONNECTION_CONNECTING; }
@@ -104,8 +106,11 @@ public:
 public:
 	//connection information ----------------------------------------------
 	NetConnectionInfo m_info;
+
+private:
 	eNetConnectionState m_state; 
-	
+
+public:
 	// sending = updated duringa  send/flush ----------------------------------------------
 	uint16_t m_nextSentAck = 0U;
 	uint64_t m_lastSendTimeInHPC = 0U;

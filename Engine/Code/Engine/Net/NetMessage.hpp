@@ -26,6 +26,8 @@ struct NetMessageHeader
 
 	//won't be written unless message is reliale
 	uint16_t m_reliableId = 0;
+
+	//won't be written unless message is in-order
 	uint16_t m_sequenceId = 0;
 };
 

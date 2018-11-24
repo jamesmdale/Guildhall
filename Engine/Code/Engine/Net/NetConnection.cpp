@@ -34,6 +34,15 @@ NetConnection::~NetConnection()
 
 	delete(m_heartbeatTimer);
 	m_heartbeatTimer = nullptr;
+
+	//cleanup channels
+	for (int channelIndex = 0; channelIndex < MAX_MESSAGE_CHANNELS; ++channelIndex)
+	{
+		if (m_netMessageChannels[channelIndex] != nullptr)
+		{
+			CloseMessageChannel((int)channelIndex);
+		}
+	}
 }
 
 //  =============================================================================
@@ -57,6 +66,11 @@ void NetConnection::Initialize()
 	for (int trackerIndex = 0; trackerIndex < MAX_TRACKED_PACKETS; ++trackerIndex)
 	{
 		m_trackedPackets[trackerIndex] = nullptr;
+	}
+
+	for(int channelIndex = 0; channelIndex < MAX_MESSAGE_CHANNELS; ++channelIndex)
+	{
+		OpenNewMessageChannel();
 	}
 
 	//setup heartbeat timer
@@ -108,7 +122,7 @@ void NetConnection::FlushOutgoingMessages()
 
 	bool doesPacketHaveRoom = true;
 
-	size_t totalMessageSize = 0;
+	size_t totalPacketSize = 0;
 
 	// sent and unconfirmed reliables ----------------------------------------------
 	for (int messageIndex = 0; messageIndex < (int)m_unconfirmedSentReliablesMessages.size(); ++messageIndex)
@@ -116,10 +130,10 @@ void NetConnection::FlushOutgoingMessages()
 		if (doesPacketHaveRoom)
 		{
 			//total buffer size + payload size + reliable header size + total message size (header + payload sizes)
-			size_t totalMessageSize = packet->GetBufferSize() + m_unconfirmedSentReliablesMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t);
+			totalPacketSize = packet->GetBufferSize() + m_unconfirmedSentReliablesMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t);
 
 			//if we have room write to the current packet
-			if (totalMessageSize <= PACKET_MTU)
+			if (totalPacketSize <= PACKET_MTU)
 			{
 				if (m_unconfirmedSentReliablesMessages[messageIndex]->IsReadyToResend(GetResendThresholdInHPC()))
 				{
@@ -151,10 +165,10 @@ void NetConnection::FlushOutgoingMessages()
 		if (doesPacketHaveRoom)
 		{
 			//total buffer size + payload size + reliable header size + total message size (header + payload sizes)
-			size_t totalMessageSize = packet->GetBufferSize() + m_unsentReliableMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t);
+			totalPacketSize = packet->GetBufferSize() + m_unsentReliableMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t);
 
 			//if we have room write to the current packet
-			if (totalMessageSize <= PACKET_MTU)
+			if (totalPacketSize <= PACKET_MTU)
 			{
 				//write message to packet
 				packet->WriteMessage(*m_unsentReliableMessages[messageIndex], this, m_nextSentReliableId);
@@ -184,10 +198,10 @@ void NetConnection::FlushOutgoingMessages()
 		if (doesPacketHaveRoom)
 		{
 			//total buffer size + payload size + unreliable header size + total message size (header + payload sizes)
-			size_t totalMessageSize = packet->GetBufferSize() + m_unsentUnreliableMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t);
+			totalPacketSize = packet->GetBufferSize() + m_unsentUnreliableMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t);
 
 			//if we have room write to the current packet
-			if (totalMessageSize <= PACKET_MTU)
+			if (totalPacketSize <= PACKET_MTU)
 			{
 				//write message to packet
 				packet->WriteMessage(*m_unsentUnreliableMessages[messageIndex], this);
@@ -436,6 +450,22 @@ bool NetConnection::IsHost() const
 bool NetConnection::IsClient() const
 {
 	return NetSession::GetInstance()->m_myConnection != (this) ? true : false;
+}
+
+//  =============================================================================
+void NetConnection::SetState(eNetConnectionState state)
+{
+	m_state = state;
+
+	if (IsClient())
+	{
+		NetMessage* message = new NetMessage("update_state");
+		eNetConnectionState state = GetState();
+
+		message->WriteBytes(sizeof(eNetConnectionState), (void*)&state, false);
+
+		QueueMessage(message);
+	}	
 }
 
 //  =============================================================================

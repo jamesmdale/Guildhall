@@ -435,7 +435,7 @@ void DevConsole::RenderNetSession()
 		netSessionTextCount++;
 
 		//connectionsw
-		int connectionCount = (int)theNetSession->m_boundConnections.size();
+		int connectionCount = theNetSession->GetNumBoundConnections();
 
 		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
 			Stringf("(%i) NUM CONNECTIONS...", connectionCount),

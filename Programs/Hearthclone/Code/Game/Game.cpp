@@ -189,7 +189,7 @@ void Game::RegisterGameNetMessages()
 
 	theNetSession->RegisterMessageDefinition(UNRELAIBLE_TEST_GAME_NET_MESSAGE_TYPE, "net_unreliable_test", OnUnreliableTest);
 	theNetSession->RegisterMessageDefinition(RELIABLE_TEST_GAME_NET_MESSAGE_TYPE, "net_reliable_test", OnReliableTest, RELIABLE_NET_MESSAGE_FLAG);
-	theNetSession->RegisterMessageDefinition(SEQUENCE_TEST_GAME_NET_MESSAGE_TYPE, "net_sequencce_test", OnSequenceTest, RELIABLE_INORDER_NET_MESSAGE_FLAG, 0);
+	theNetSession->RegisterMessageDefinition(SEQUENCE_TEST_GAME_NET_MESSAGE_TYPE, "net_sequencce_test", OnSequenceTest, RELIABLE_INORDER_NET_MESSAGE_FLAG, 3);
 	theNetSession->RegisterMessageDefinition("test", OnTest);
 
 	theNetSession = nullptr;
@@ -211,12 +211,15 @@ void Game::TestReliableSend()
 	{
 		NetSession* theNetSession = NetSession::GetInstance();
 
-		for (int connectionIndex = 0; connectionIndex < (int)theNetSession->m_boundConnections.size(); ++connectionIndex)
+		for (int connectionIndex = 0; connectionIndex < MAX_NUM_NET_CONNECTIONS; ++connectionIndex)
 		{
-			NetMessage* message = new NetMessage("net_reliable_test");
+			if (theNetSession->m_boundConnections[connectionIndex] != nullptr)
+			{
+				NetMessage* message = new NetMessage("net_reliable_test");
 
-			theNetSession->m_boundConnections[connectionIndex]->QueueMessage(message);
-			message = nullptr;
+				theNetSession->m_boundConnections[connectionIndex]->QueueMessage(message);
+				message = nullptr;
+			}			
 		}
 
 		//cleanup
@@ -367,7 +370,6 @@ bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection)
 {
 	return false;
 }
-
 //  =============================================================================
 bool OnReliableTest(NetMessage& message, NetConnection* fromConnection)
 {

@@ -11,13 +11,19 @@
 #include <vector>
 
 
-#define MAX_NET_CONNECTION_COUNT (17)
+#define MAX_NUM_NET_CONNECTIONS (17)
 
 enum eCoreNetMessageType
 {
 	PING_CORE_NET_MESSAGE_TYPE = 0,
 	PONG_CORE_NET_MESSAGE_TYPE,
 	HEARTBEAT_CORE_NET_MESSAGE_TYPE,
+	JOIN_REQUEST_CORE_NET_MESSAGE_TYPE,
+	JOIN_DENY_CORE_NET_MESSAGE_TYPE,
+	JOIN_ACCEPT_CORE_NET_MESSAGE_TYPE,
+	NEW_CONNECTION_CORE_NET_MESSAGE_TYPE, 
+	JOIN_FINISHED_CORE_NET_MESSAGE_TYPE, 
+	UPDATE_CONNECTION_STATE_CORE_NET_MESSAGE_TYPE,
 	NUM_CORE_NET_MESSAGE_TYPES
 };
 
@@ -70,12 +76,23 @@ public:
 	void Shutdown();
 
 	void Update();
+	void UpdateConnecting();
+	void UpdateJoining();
+	void UpdateReady();
 	void RegisterCoreMessageTypes();
 
+	void ResetConnectionTimers();
+
 	// connection and session state ----------------------------------------------
+	int GetNumBoundConnections();
+	int GetFirstUnboundConnectionIndex();
+
 	void Host(const char* myId, uint16_t port, uint16_t portRange = 0);
 	void Join(const char* myId, const NetConnectionInfo& hostInfo);
 	void Disconnect();
+
+	inline eNetSessionState GetState() const { return m_state; }
+	inline void SetState(eNetSessionState state) { m_state = state; }
 
 	bool IsDisconnected();
 	bool IsJoined();
@@ -90,6 +107,7 @@ public:
 	NetConnection* CreateConnection(const NetConnectionInfo& info);
 	void DestroyConnection(NetConnection* connection); 
 	void BindConnection(uint8_t connectionIndex, NetConnection* connection);
+	NetConnection* GetConnectionByAddress(const NetAddress& address);
 
 	// send and process incoming  ----------------------------------------------
 
@@ -124,14 +142,17 @@ public:
 
 public:
 	UDPSocket* m_socket = nullptr;
-	std::vector<NetConnection*> m_boundConnections;
+	NetConnection* m_boundConnections[MAX_NUM_NET_CONNECTIONS];
 	std::vector<NetConnection*> m_allConnections;
 
 	NetConnection* m_myConnection = nullptr;
 	NetConnection* m_hostConnection = nullptr;
 
 	//state management
+private:
 	eNetSessionState m_state = SESSION_STATE_DISCONNECTED;
+
+public:
 	eNetSessionError m_errorCode;
 	std::string m_errorString;
 
@@ -142,8 +163,6 @@ public:
 	uint m_maxAddedLatencyInMilliseconds = 100;
 
 	float m_sessionSendLatencyInMilliseconds = 0.1;
-
-	Stopwatch* m_heartbeatRate = nullptr;
 
 public:
 	bool m_isDefinitionRegistrationLocked = false;
@@ -165,6 +184,7 @@ NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 // console commands ----------------------------------------------
 void AddConnectionToIndex(Command& cmd);
 void SetToHost(Command& cmd);
+void SetToJoin(Command& cmd);
 void SendPing(Command& cmd);
 void SendMultiPing(Command& cmd);
 void SendAdd(Command& cmd);
@@ -182,3 +202,15 @@ bool OnAddResponse(NetMessage& message, NetConnection* fromConnection);
 bool OnHeartbeat(NetMessage& message, NetConnection* fromConnection);
 bool OnAck(NetMessage& message, NetConnection* fromConnection);
 bool OnUnreliableTest(NetMessage& message, NetConnection* fromConnection);
+
+bool OnJoinRequest(NetMessage& message, NetConnection* fromConnection);
+bool OnJoinDenied(NetMessage& message, NetConnection* fromConnection);
+bool OnJoinAccepted(NetMessage& message, NetConnection* fromConnection);
+bool OnNewConnection(NetMessage& message, NetConnection* fromConnection);
+bool OnJoinFinished(NetMessage& message, NetConnection* fromConnection);
+bool OnUpdateConnectionState(NetMessage& message, NetConnection* fromConnection);
+
+
+
+
+
