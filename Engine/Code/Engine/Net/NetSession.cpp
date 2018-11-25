@@ -166,8 +166,8 @@ void NetSession::RegisterCoreMessageTypes()
 
 	RegisterMessageDefinition(JOIN_REQUEST_CORE_NET_MESSAGE_TYPE, "join_request", OnJoinRequest, CONNECTIONLESS_NET_MESSAGE_FLAG);
 	RegisterMessageDefinition(JOIN_DENY_CORE_NET_MESSAGE_TYPE, "join_deny", OnJoinDenied, CONNECTIONLESS_NET_MESSAGE_FLAG);
-	RegisterMessageDefinition(JOIN_ACCEPT_CORE_NET_MESSAGE_TYPE, "join_accept", OnJoinAccepted, CONNECTIONLESS_NET_MESSAGE_FLAG, 0);
-	RegisterMessageDefinition(JOIN_FINISHED_CORE_NET_MESSAGE_TYPE, "join_finished", OnJoinFinished, CONNECTIONLESS_NET_MESSAGE_FLAG, 0);
+	RegisterMessageDefinition(JOIN_ACCEPT_CORE_NET_MESSAGE_TYPE, "join_accept", OnJoinAccepted, RELIABLE_INORDER_NET_MESSAGE_FLAG, 0);
+	RegisterMessageDefinition(JOIN_FINISHED_CORE_NET_MESSAGE_TYPE, "join_finished", OnJoinFinished, RELIABLE_INORDER_NET_MESSAGE_FLAG, 0);
 	RegisterMessageDefinition(NEW_CONNECTION_CORE_NET_MESSAGE_TYPE, "new_connection", OnNewConnection, RELIABLE_INORDER_NET_MESSAGE_FLAG, 1);
 	RegisterMessageDefinition(UPDATE_CONNECTION_STATE_CORE_NET_MESSAGE_TYPE, "update_state", OnUpdateConnectionState, RELIABLE_INORDER_NET_MESSAGE_FLAG, 2);
 }
@@ -1435,15 +1435,14 @@ bool OnJoinRequest(NetMessage& message, NetConnection* fromConnection)
 		{
 			theNetSession->m_allConnections.push_back(newConnection);
 			theNetSession->BindConnection(info.m_connectionIndex, newConnection);
-			newConnection->SetState(CONNECTION_CONNECTED);
 
 			NetMessage* successMessage = new NetMessage("join_accept");
 
 			size_t val = sizeof(char[MAX_UNIQUE_ID_LENGTH]);
 
-			//successMessage->WriteBytes(sizeof(char[MAX_UNIQUE_ID_LENGTH]), &theNetSession->m_hostConnection->m_info.m_uniqueId, false);
-			//successMessage->WriteBytes(sizeof(char[MAX_UNIQUE_ID_LENGTH]), &info.m_uniqueId, false);
-			//successMessage->WriteBytes(sizeof(uint8_t), &info.m_connectionIndex, false);
+			successMessage->WriteBytes(sizeof(char[MAX_UNIQUE_ID_LENGTH]), &theNetSession->m_hostConnection->m_info.m_uniqueId, false);
+			successMessage->WriteBytes(sizeof(char[MAX_UNIQUE_ID_LENGTH]), &info.m_uniqueId, false);
+			successMessage->WriteBytes(sizeof(uint8_t), &info.m_connectionIndex, false);
 			theNetSession->m_boundConnections[info.m_connectionIndex]->QueueMessage(successMessage);
 
 			//used for P2P
@@ -1470,13 +1469,14 @@ bool OnJoinAccepted(NetMessage& message, NetConnection* fromConnection)
 	NetSession* theNetSession = NetSession::GetInstance();
 
 	//connection already accepted
-	if(theNetSession->GetConnectionByAddress(fromConnection->GetNetAddress()) != nullptr)
+	if(theNetSession->GetConnectionByAddress(fromConnection->GetNetAddress()) == nullptr)
 	{
 		return false;
 	}
 
 	char hostId[MAX_UNIQUE_ID_LENGTH];
 	message.ReadBytes(&hostId, sizeof(char[MAX_UNIQUE_ID_LENGTH]), false);
+	theNetSession->m_hostConnection->m_info.SetUniqueId(hostId);
 
 	NetConnectionInfo myInfo;
 	
@@ -1484,9 +1484,10 @@ bool OnJoinAccepted(NetMessage& message, NetConnection* fromConnection)
 	message.ReadBytes(&myInfo.m_connectionIndex, sizeof(uint8_t), false);
 
 	theNetSession->m_myConnection->m_info.m_connectionIndex = myInfo.m_connectionIndex;
-	theNetSession->m_myConnection->m_info.m_uniqueId - myInfo.m_uniqueId;
+	theNetSession->m_myConnection->m_info.SetUniqueId(myInfo.m_uniqueId);
 
 	theNetSession->BindConnection(theNetSession->m_myConnection->m_info.m_connectionIndex, theNetSession->m_myConnection);
+	theNetSession->m_myConnection->SetState(CONNECTION_CONNECTED);
 
 	return true;
 }

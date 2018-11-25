@@ -164,7 +164,7 @@ void NetConnection::FlushOutgoingMessages()
 
 		if (doesPacketHaveRoom)
 		{
-			//total buffer size + payload size + reliable header size + total message size (header + payload sizes)
+			//total buffer size + payload size + connection in header size + reliable id in header size + total message size (header + payload sizes)
 			totalPacketSize = packet->GetBufferSize() + m_unsentReliableMessages[messageIndex]->GetWrittenByteCount() + sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t);
 
 			//if we have room write to the current packet
@@ -457,14 +457,17 @@ void NetConnection::SetState(eNetConnectionState state)
 {
 	m_state = state;
 
-	if (IsClient())
+	if (IsMe() && !IsHost())
 	{
 		NetMessage* message = new NetMessage("update_state");
 		eNetConnectionState state = GetState();
 
 		message->WriteBytes(sizeof(eNetConnectionState), (void*)&state, false);
 
-		QueueMessage(message);
+		//send updated state to host connection
+		NetSession* theNetSession = NetSession::GetInstance();
+		if(theNetSession->m_boundConnections[0] != nullptr)
+			theNetSession->m_boundConnections[0]->QueueMessage(message);
 	}	
 }
 

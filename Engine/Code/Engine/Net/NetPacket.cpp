@@ -94,13 +94,16 @@ bool NetPacket::WriteMessage(NetMessage& netMessage, NetConnection* connection, 
 		netMessage.m_header->m_reliableId = nextReliableId;
 		success = WriteBytes(sizeof(netMessage.m_header->m_reliableId), &netMessage.m_header->m_reliableId, false);
 	}
+
+	//write message header sequence id IF the message is inorder
 	if (netMessage.m_definition->IsInOrder())
 	{
 		uint8_t channelId = netMessage.m_definition->m_messageChannelIndex;
 
 		ASSERT_RECOVERABLE(connection != nullptr, "CONNECTION INVALID: DEFINITION REQUIRES CONNECTION");
 
-		netMessage.m_header->m_sequenceId = connection->GetAndIncrementNextSequenceIdForChannel(channelId);
+		/*netMessage.m_header->m_sequenceId = connection->GetAndIncrementNextSequenceIdForChannel(channelId);
+		success = WriteBytes(sizeof(netMessage.m_header->m_sequenceId), &netMessage.m_header->m_sequenceId, false);*/
 	}
 
 	//write payload
@@ -121,37 +124,48 @@ bool NetPacket::ReadMessage(NetMessage& netMessage)
 {
 	bool success = false;
 
-	//get total message size
-	uint16_t totalMessageSize;
-	success = ReadBytes(&totalMessageSize, sizeof(uint16_t), false);
-	if(!success)
-		return false;
+	////get total message size
+	//uint16_t totalMessageSize;
+	//success = ReadBytes(&totalMessageSize, sizeof(uint16_t), false);
+	//if(!success)
+	//	return false;
 
-	//get message header contents
-	NetMessageHeader messageHeaderContents;
-	size_t totalHeaderSize = 0;
+	////get message header contents
+	//NetMessageHeader messageHeader;
+	//size_t totalHeaderSize = 0;
 
-	//read callbackid 
-	totalHeaderSize += sizeof(messageHeaderContents.m_messageCallbackDefinitionIndex);
-	success = ReadBytes(&messageHeaderContents.m_messageCallbackDefinitionIndex, sizeof(messageHeaderContents.m_messageCallbackDefinitionIndex), false);	
-	if (!success)
-	{
-		return false;
-	}
+	////read callbackid 
+	//totalHeaderSize += sizeof(messageHeader.m_messageCallbackDefinitionIndex);
+	//success = ReadBytes(&messageHeader.m_messageCallbackDefinitionIndex, sizeof(messageHeader.m_messageCallbackDefinitionIndex), false);	
+	//if (!success)
+	//{
+	//	return false;
+	//}
 
-	//read reliableID IF the message is reliable 
-	if (netMessage.m_definition->IsReliable())
-	{
-		totalHeaderSize += sizeof(messageHeaderContents.m_reliableId);
-		success = ReadBytes(&messageHeaderContents.m_reliableId, sizeof(messageHeaderContents.m_reliableId), false);
-		if (!success)
-		{
-			return false;
-		}
-	}		
+	////read reliableID IF the message is reliable 
+	//if (netMessage.m_definition->IsReliable())
+	//{
+	//	totalHeaderSize += sizeof(messageHeader.m_reliableId);
+	//	success = ReadBytes(&messageHeader.m_reliableId, sizeof(messageHeader.m_reliableId), false);
+	//	if (!success)
+	//	{
+	//		return false;
+	//	}
+	//}		
 
-	//get total payload size and write that many bytes into netmessage
-	uint16_t totalPayloadSize = totalMessageSize - totalHeaderSize;	
+	////read inorder IF the message is reliable 
+	//if (netMessage.m_definition->IsInOrder())
+	//{
+	//	totalHeaderSize += sizeof(messageHeader.m_sequenceId);
+	//	success = ReadBytes(&messageHeader.m_sequenceId, sizeof(messageHeader.m_sequenceId), false);
+	//	if (!success)
+	//	{
+	//		return false;
+	//	}
+	//}		
+
+	////get total payload size and write that many bytes into netmessage
+	//uint16_t totalPayloadSize = totalMessageSize - totalHeaderSize;	
 
 	return success;
 }
