@@ -322,6 +322,86 @@ void Map::Render()
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
+void Map::Reload(SimulationDefinition* definition)
+{
+	// Cleanup Step ----------------------------------------------
+	m_activeSimulationDefinition = definition;
+	m_gameState = nullptr;
+
+	//cleanuip timers
+	delete(m_sortTimer);
+	m_sortTimer = nullptr;
+
+	delete(m_threatTimer);
+	m_threatTimer = nullptr;	
+
+	delete(m_bombardmentTimer);
+	m_bombardmentTimer = nullptr;
+
+	//cleanup bombardments
+	for (int bombardmentIndex = 0; bombardmentIndex < (int)m_activeBombardments.size(); ++bombardmentIndex)
+	{
+		delete(m_activeBombardments[bombardmentIndex]);
+		m_activeBombardments[bombardmentIndex] = nullptr;
+	}
+	m_activeBombardments.clear();
+
+	//cleanup agents
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByXPosition.size(); ++agentIndex)
+	{
+		m_agentsOrderedByXPosition[agentIndex] = nullptr;		
+	}
+	m_agentsOrderedByXPosition.clear();
+
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByYPosition.size(); ++agentIndex)
+	{
+		delete(m_agentsOrderedByYPosition[agentIndex]);
+		m_agentsOrderedByYPosition[agentIndex] = nullptr;
+	}
+	m_agentsOrderedByYPosition.clear();
+
+	// Reload step ----------------------------------------------
+
+	//create agents
+	for (int agentIndex = 0; agentIndex < m_activeSimulationDefinition->m_numAgents; ++agentIndex)
+	{
+		IsoSpriteAnimSet* animSet = nullptr;
+		std::map<std::string, IsoSpriteAnimSetDefinition*>::iterator spriteDefIterator = IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.find("agent");
+		if (spriteDefIterator != IsoSpriteAnimSetDefinition::s_isoSpriteAnimSetDefinitions.end())
+		{
+			animSet = new IsoSpriteAnimSet(spriteDefIterator->second);
+		}
+
+		Vector2 randomStartingLocation = GetRandomNonBlockedPositionInMapBounds();
+		Agent* agent = new Agent(randomStartingLocation, animSet, this);
+		m_agentsOrderedByXPosition.push_back(agent);
+		m_agentsOrderedByYPosition.push_back(agent);
+
+		agent->m_indexInSortedXList = agentIndex;
+		agent->m_indexInSortedYList = agentIndex;
+
+		animSet = nullptr;
+		agent = nullptr;
+	}
+
+	//init other starting values
+	m_threat = m_activeSimulationDefinition->m_startingThreat;
+
+	//setup timeres
+	m_bombardmentTimer = new Stopwatch(GetMasterClock());
+	m_bombardmentTimer->SetTimer(1.f / m_activeSimulationDefinition->m_bombardmentRatePerSecond);
+
+	m_threatTimer = new Stopwatch(GetMasterClock());
+	m_threatTimer->SetTimer(1.f / m_activeSimulationDefinition->m_threatRatePerSecond);
+
+	//sort agents for the first time
+	m_sortTimer = new Stopwatch(g_sortTimerInSeconds, GetMasterClock());
+
+	SortAgentsByX();
+	SortAgentsByY();	
+}
+
 //  =========================================================================================
 void Map::CreateMapMesh()
 {

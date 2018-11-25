@@ -19,12 +19,14 @@ extern SimulationData* g_updatePlanData;
 extern SimulationData* g_agentUpdateData;
 extern SimulationData* g_pathingData;
 extern SimulationData* g_copyPathData;
+extern SimulationData* g_queueActionPathingData;
 
 extern uint g_numUpdatePlanCalls;
 extern uint g_numActionStackProcessCalls;
 extern uint g_numAgentUpdateCalls;
 extern uint g_numGetPathCalls;
 extern uint g_numCopyPathCalls;
+extern uint g_numQueueActionPathCalls;
 
 extern int g_currentSimDefinitionIndex;
 

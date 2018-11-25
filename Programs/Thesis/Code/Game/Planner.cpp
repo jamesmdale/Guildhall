@@ -257,15 +257,15 @@ void Planner::UpdatePlan()
 //  =========================================================================================
 void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo& info)
 {
-	// function profling ----------------------------------------------
-		++iterationsOfQueueActions;
-		uint64_t startHPC = GetPerformanceCounter();
-	//  ----------------------------------------------
+	++g_numCopyPathCalls;
 
-	//// function profling ----------------------------------------------
-	//	++iterationsOfQueueActionsStd;
-	//	uint64_t startHPC = GetPerformanceCounter();
-	////  ----------------------------------------------
+	// profiling ----------------------------------------------
+	static int iterations = 0;
+	static uint64_t timeAverage = 0.f;
+	static uint64_t iterationStartHPC = GetPerformanceCounter();
+	uint64_t startHPC = GetPerformanceCounter();
+	++iterations;
+	//  ----------------------------------------------
 
 	switch (planType)
 	{
@@ -301,6 +301,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 
 		m_agent->m_planner->AddActionToStack(data);
 
+
 		//figure out if we can skip doing an A* by borrowing someone else's path
 		if (g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized())
 		{
@@ -318,19 +319,32 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 			PROFILER_PUSH();
 			m_agent->GetPathToDestination(info.endPosition);
 		}		
-	}
 
-	// profiling ----------------------------------------------
+		// profiling ----------------------------------------------
 		uint64_t totalHPC = GetPerformanceCounter() - startHPC;
-		//calculate new average
-		averageTimeForQueueActions = ((averageTimeForQueueActions * (iterationsOfQueueActions - 1)) + totalHPC) / iterationsOfQueueActions;
-	//  ----------------------------------------------
 
-	// profiling ----------------------------------------------
-		//uint64_t totalHPC = GetPerformanceCounter() - startHPC;
-		////calculate new average
-		//averageTimeForQueueActionsStd = ((averageTimeForQueueActionsStd * (iterationsOfQueueActionsStd - 1)) + totalHPC) / iterationsOfQueueActionsStd;
-	//  ----------------------------------------------
+		timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+		if (iterations == 1)
+		{
+			float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
+			float iterationsPerSecond = totalSeconds / 100.f;
+			iterationStartHPC = GetPerformanceCounter();
+
+			float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
+			//DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (Copy path) %f", secondsAverage);
+			//DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Copy Path) (total time %f)", iterationsPerSecond, totalSeconds);
+
+			g_queueActionPathingData->AddCell(Stringf("%f", secondsAverage), true);
+
+			g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Queue Action Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
+
+			//reset data
+			iterationStartHPC = GetPerformanceCounter();
+			iterations = 0;
+			timeAverage = 0.0;
+		}
+		//  ---------------------------------------------
+	}
 }
 
 //  =============================================================================

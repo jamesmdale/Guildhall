@@ -37,6 +37,7 @@ public:
 	void Update(float deltaSeconds);
 	void Render();
 
+	void Reload(SimulationDefinition* definition);
 	void SetMapType(MapDefinition* newMapDefintion) { m_mapDefinition = newMapDefintion; }
 	IntVector2 GetDimensions() { return m_dimensions; }
 	float GetMapDistanceSquared(){ return (m_dimensions.x * m_dimensions.y) * (m_dimensions.x * m_dimensions.y);}

@@ -12,12 +12,14 @@ SimulationData* g_updatePlanData = nullptr;
 SimulationData* g_agentUpdateData = nullptr;
 SimulationData* g_pathingData = nullptr;
 SimulationData* g_copyPathData = nullptr;
+SimulationData* g_queueActionPathingData = nullptr;
 
 uint g_numUpdatePlanCalls = 0;
 uint g_numActionStackProcessCalls = 0;
 uint g_numAgentUpdateCalls = 0;
 uint g_numGetPathCalls = 0;
 uint g_numCopyPathCalls = 0;
+uint g_numQueueActionPathCalls = 0;
 
 int g_currentSimDefinitionIndex = 0;
 

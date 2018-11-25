@@ -31,8 +31,11 @@ public:
 
 	//simulations
 	void InitializeSimulation(SimulationDefinition* definition);
+	void CreateMapForSimulation(SimulationDefinition * definition);
+	void ResetMapForSimulation(SimulationDefinition* definition);
 	void InitializeSimulationData();
-	void DestroyCurrentSimulation();
+	void ResetCurrentSimulationData();
+	void DeleteMap();
 	void ExportSimulationData();
 
 	void FinalizeGeneralSimulationData();

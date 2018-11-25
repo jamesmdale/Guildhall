@@ -69,6 +69,7 @@ void PlayingState::Initialize()
 	simDataOutputDirectory = Stringf("%s%s", newPath.c_str(), "\\");
 
 	SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];
+	CreateMapForSimulation(definition);
 	InitializeSimulation(definition);
 
 	//cleanup
@@ -117,21 +118,32 @@ void PlayingState::PostRender()
 	if (isResetingSimulation)
 	{
 		ExportSimulationData();
-		DestroyCurrentSimulation();
+		ResetCurrentSimulationData();
 
 		g_currentSimDefinitionIndex++;
+		isResetingSimulation = false;
 
 		if (g_currentSimDefinitionIndex < SimulationDefinition::s_simulationDefinitions.size())
 		{
 			SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];	
-			InitializeSimulation(definition);
+
+			//if we are on the same map, leave the spawn points the same.
+			if (definition->m_mapDefinition == g_currentSimulationDefinition->m_mapDefinition)
+			{
+				ResetMapForSimulation(definition);
+				InitializeSimulation(definition);
+			}
+			else
+			{
+				DeleteMap();
+				CreateMapForSimulation(definition);
+				InitializeSimulation(definition);
+			}				
 		}
 		else
 		{
 			g_isQuitting = true;
 		}	
-
-		isResetingSimulation = false;
 	}	
 }
 
@@ -244,17 +256,28 @@ void PlayingState::InitializeSimulation(SimulationDefinition* definition)
 	g_currentSimulationDefinition = definition;
 	InitializeSimulationData();
 
-	//map creation
-	m_map = new Map(definition, "TestMap", m_renderScene2D);	
-	m_map->Initialize();
-	m_map->m_gameState = this;
-
 	//re-adjust camera center
 	Vector2 mapCenter = -1.f * m_map->m_mapWorldBounds.GetCenter();
 	m_camera->SetPosition(Vector3(mapCenter.x, mapCenter.y, 0.f));	
 
 	m_simulationTimer = new Stopwatch(GetMasterClock());
 	m_simulationTimer->SetTimer(g_generalSimulationData->m_simulationDefinitionReference->m_totalProcessingTimeInSeconds);
+}
+
+//  =============================================================================
+void PlayingState::CreateMapForSimulation(SimulationDefinition* definition)
+{
+	//map creation
+	m_map = new Map(definition, "TestMap", m_renderScene2D);	
+	m_map->Initialize();
+	m_map->m_gameState = this;
+}
+
+//  =============================================================================
+void PlayingState::ResetMapForSimulation(SimulationDefinition* definition)
+{
+	m_map->Reload(definition);
+	m_map->m_gameState = this;
 }
 
 //  =============================================================================
@@ -282,10 +305,13 @@ void PlayingState::InitializeSimulationData()
 	//action stack data
 	g_copyPathData = new SimulationData();
 	g_copyPathData->Initialize(g_currentSimulationDefinition);
+
+	g_queueActionPathingData = new SimulationData();
+	g_queueActionPathingData->Initialize(g_currentSimulationDefinition);
 }
 
 //  =============================================================================
-void PlayingState::DestroyCurrentSimulation()
+void PlayingState::ResetCurrentSimulationData()
 {
 	delete(g_generalSimulationData);
 	g_generalSimulationData = nullptr;
@@ -302,12 +328,20 @@ void PlayingState::DestroyCurrentSimulation()
 	delete(g_copyPathData);
 	g_copyPathData = nullptr;
 
+	delete(g_queueActionPathingData);
+	g_queueActionPathingData = nullptr;
+
 	g_numUpdatePlanCalls = 0;
 	g_numActionStackProcessCalls = 0;
 	g_numAgentUpdateCalls = 0;
 	g_numGetPathCalls = 0;
 	g_numCopyPathCalls = 0;
+	g_numQueueActionPathCalls = 0;
+}
 
+//  =============================================================================
+void PlayingState::DeleteMap()
+{
 	delete(m_map);
 	m_map = nullptr;
 }
@@ -354,6 +388,10 @@ void PlayingState::ExportSimulationData()
 	fileName = Stringf("CopyPathAverageTimersPer100_%i.csv", g_currentSimDefinitionIndex);
 	success = g_copyPathData ->ExportCSV(finalFilePath, fileName.c_str());
 	ASSERT_OR_DIE(success, "Copy path data broken");
+
+	fileName = Stringf("QueueActionPathingTimes_%i.csv", g_currentSimDefinitionIndex);
+	success = g_queueActionPathingData ->ExportCSV(finalFilePath, fileName.c_str());
+	ASSERT_OR_DIE(success, "Copy path data broken");
 }
 
 //  =============================================================================
@@ -381,6 +419,9 @@ void PlayingState::FinalizeGeneralSimulationData()
 
 	g_generalSimulationData->AddCell("Num Copy Path calls:", false);
 	g_generalSimulationData->AddCell(Stringf("%i", g_numCopyPathCalls), true);
+
+	g_generalSimulationData->AddCell("Num Queue Action Path calls:", false);
+	g_generalSimulationData->AddCell(Stringf("%i", g_numQueueActionPathCalls), true);
 
 	
 }
