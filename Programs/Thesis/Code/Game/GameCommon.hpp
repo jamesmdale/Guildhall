@@ -5,6 +5,13 @@
 #include "Engine\Math\Vector3.hpp"
 #include "Engine\Core\Rgba.hpp"
 
+//#define ActionStackAnalysis
+//#define UpdatePlanAnalysis
+#define AgentUpdateAnalysis
+//#define PathingDataAnalysis
+//#define CopyPathAnalysis
+//#define QueueActionPathingDataAnalysis
+
 class SimulationData;
 class SimulationDefinition;
 
@@ -13,6 +20,7 @@ class SimulationDefinition;
 
 //sim data
 extern SimulationDefinition* g_currentSimulationDefinition;
+
 extern SimulationData* g_generalSimulationData;
 extern SimulationData* g_processActionStackData;
 extern SimulationData* g_updatePlanData;

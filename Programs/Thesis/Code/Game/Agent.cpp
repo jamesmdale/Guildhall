@@ -67,18 +67,26 @@ void Agent::GenerateRandomStats()
 void Agent::Update(float deltaSeconds)
 {
 	PROFILER_PUSH();
-	uint64_t startHPC = GetPerformanceCounter();
 
+#ifdef AgentUpdateAnalysis
+	// profiling ----------------------------------------------
+	uint64_t startHPC = GetPerformanceCounter();
 	++g_numAgentUpdateCalls;
+	//  ----------------------------------------------
+#endif
 
 	m_planner->ProcessActionStack(deltaSeconds);	
 
 	UpdateSpriteRenderDirection();
 	m_animationSet->Update(deltaSeconds);
 
-	uint64_t endHPC = GetPerformanceCounter();
 
+#ifdef AgentUpdateAnalysis
+	// profiling ----------------------------------------------
+	uint64_t endHPC = GetPerformanceCounter();
 	g_agentUpdateData->AddCell(Stringf("%f", (float)PerformanceCounterToSeconds(endHPC - startHPC)), true);
+	//  ----------------------------------------------
+#endif
 }
 
 //  =========================================================================================
@@ -128,6 +136,7 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 {
 	++g_numGetPathCalls;
 
+#ifdef PathingDataAnalysis
 	// profiling ----------------------------------------------
 	static int iterations = 0;
 	static uint64_t timeAverage = 0.f;
@@ -136,6 +145,7 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 
 	++iterations;
 	//  ----------------------------------------------
+#endif
 
 	PROFILER_PUSH();
 	m_currentPath = std::vector<Vector2>(); //clear vector
@@ -156,6 +166,7 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 		isDestinationFound = AStarSearchOnGrid(m_currentPath, startCoord, endCoord, m_planner->m_map->GetAsGrid(), m_planner->m_map);
 	}
 
+#ifdef PathingDataAnalysis
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
@@ -181,6 +192,7 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 		timeAverage = 0.0;
 	}
 	//  ----------------------------------------------
+#endif
 
 	return isDestinationFound;
 }

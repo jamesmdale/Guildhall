@@ -35,6 +35,7 @@ void Planner::ProcessActionStack(float deltaSeconds)
 {
 	PROFILER_PUSH();
 	
+#ifdef ActionStackAnalysis
 	// profiling ----------------------------------------------
 	++g_numActionStackProcessCalls;
 
@@ -44,6 +45,7 @@ void Planner::ProcessActionStack(float deltaSeconds)
 	uint64_t startHPC = GetPerformanceCounter();
 	++iterations;
 	//  ----------------------------------------------
+#endif
 
 	if (m_actionStack.size() == 0)
 	{
@@ -64,6 +66,7 @@ void Planner::ProcessActionStack(float deltaSeconds)
 		}
 	}
 
+#ifdef ActionStackAnalysis
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
@@ -88,6 +91,7 @@ void Planner::ProcessActionStack(float deltaSeconds)
 		timeAverage = 0.0;
 	}
 	//  ---------------------------------------------
+#endif
 }
 
 //  =========================================================================================
@@ -110,6 +114,7 @@ void Planner::ClearStack()
 //  =========================================================================================
 void Planner::UpdatePlan()
 {
+#ifdef UpdatePlanAnalysis
 	// profiling ----------------------------------------------
 	++g_numUpdatePlanCalls;
 
@@ -119,6 +124,7 @@ void Planner::UpdatePlan()
 	uint64_t startHPC = GetPerformanceCounter();
 	++iterations;
 	//  ----------------------------------------------
+#endif
 
 	PROFILER_PUSH();
 	ClearStack();
@@ -211,47 +217,34 @@ void Planner::UpdatePlan()
 
 	m_currentPlan = chosenOutcome;
 
-	// profiling ----------------------------------------------
-	//uint64_t totalHPC = GetPerformanceCounter() - startHPC;
-	//calculate new average
-	//averageTimeForUpdatePlan = ((averageTimeForUpdatePlan * (iterationsOfUpdatePlan - 1)) + totalHPC) / iterationsOfUpdatePlan;
-	//  ----------------------------------------------
-
 	QueueActionsFromCurrentPlan(m_currentPlan, highestUtilityInfo);
 
-	//if (iterationsOfQueueActions == 100)
-	//{
-	//	std::string optimizedText = Game::GetInstance()->m_isOptimized ? "(optimized)" : "(unoptimized)";
-	//	float secondsAverage = (float)PerformanceCounterToSeconds(averageTimeForQueueActions);
-	//	//DevConsolePrintf("Average Time After 100 iterations %s %f", optimizedText.c_str(), secondsAverage);
-	//	iterationsOfQueueActions = 0;
-	//	averageTimeForQueueActions = 0.0;
-	//}
-
+#ifdef UpdatePlanAnalysis
 	// profiling ----------------------------------------------
-	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+	//uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
-	if (iterations == 1)
-	{
-		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
-		float iterationsPerSecond = totalSeconds / 100.f;
-		iterationStartHPC = GetPerformanceCounter();
+	//timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	//if (iterations == 1)
+	//{
+	//	float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
+	//	float iterationsPerSecond = totalSeconds / 100.f;
+	//	iterationStartHPC = GetPerformanceCounter();
 
-		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
-		//DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
-		//DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (UpdatePlan) (total time %f)", iterationsPerSecond, totalSeconds);
+	//	float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
+	//	//DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
+	//	//DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (UpdatePlan) (total time %f)", iterationsPerSecond, totalSeconds);
 
-		g_updatePlanData->AddCell(Stringf("%f", secondsAverage), true);
+	//	g_updatePlanData->AddCell(Stringf("%f", secondsAverage), true);
 
-		g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (UpdatePlan) (total time between: %f)", iterationsPerSecond, totalSeconds));
+	//	g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (UpdatePlan) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
-		//reset data
-		iterationStartHPC = GetPerformanceCounter();
-		iterations = 0;
-		timeAverage = 0.0;
-	}
+	//	//reset data
+	//	iterationStartHPC = GetPerformanceCounter();
+	//	iterations = 0;
+	//	timeAverage = 0.0;
+	//}
 	//  ---------------------------------------------
+#endif
 }
 
 //  =========================================================================================
@@ -259,6 +252,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 {
 	++g_numCopyPathCalls;
 
+#ifdef QueueActionPathingDataAnalysis
 	// profiling ----------------------------------------------
 	static int iterations = 0;
 	static uint64_t timeAverage = 0.f;
@@ -266,6 +260,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 	uint64_t startHPC = GetPerformanceCounter();
 	++iterations;
 	//  ----------------------------------------------
+#endif
 
 	switch (planType)
 	{
@@ -320,6 +315,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 			m_agent->GetPathToDestination(info.endPosition);
 		}		
 
+#ifdef QueueActionPathingDataAnalysis
 		// profiling ----------------------------------------------
 		uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
@@ -344,6 +340,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 			timeAverage = 0.0;
 		}
 		//  ---------------------------------------------
+#endif
 	}
 }
 
@@ -800,6 +797,7 @@ bool Planner::FindAgentAndCopyPath()
 
 	bool didSuccessfullyCopyMatchingAgent = false;
 
+#ifdef CopyPathAnalysis
 	// profiling ----------------------------------------------
 	static int iterations = 0;
 	static uint64_t timeAverage = 0.f;
@@ -807,6 +805,7 @@ bool Planner::FindAgentAndCopyPath()
 	uint64_t startHPC = GetPerformanceCounter();
 	++iterations;
 	//  ----------------------------------------------
+#endif
 
 	Vector2 goalPosition = Vector2::ZERO;
 	if (GetDoesHaveTopActionGoalPosition(goalPosition))
@@ -893,6 +892,7 @@ bool Planner::FindAgentAndCopyPath()
 		mostResembledAgent = nullptr;
 	}
 
+#ifdef CopyPathAnalysis
 	// profiling ----------------------------------------------
 	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
@@ -917,6 +917,7 @@ bool Planner::FindAgentAndCopyPath()
 		timeAverage = 0.0;
 	}
 	//  ---------------------------------------------
+#endif
 
 	return didSuccessfullyCopyMatchingAgent;
 }

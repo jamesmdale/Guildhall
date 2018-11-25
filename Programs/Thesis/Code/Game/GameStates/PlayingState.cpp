@@ -127,18 +127,22 @@ void PlayingState::PostRender()
 		{
 			SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];	
 
-			//if we are on the same map, leave the spawn points the same.
-			if (definition->m_mapDefinition == g_currentSimulationDefinition->m_mapDefinition)
-			{
-				ResetMapForSimulation(definition);
-				InitializeSimulation(definition);
-			}
-			else
-			{
-				DeleteMap();
-				CreateMapForSimulation(definition);
-				InitializeSimulation(definition);
-			}				
+			////if we are on the same map, leave the spawn points the same.
+			//if (definition->m_mapDefinition == g_currentSimulationDefinition->m_mapDefinition)
+			//{
+			//	ResetMapForSimulation(definition);
+			//	InitializeSimulation(definition);
+			//}
+			//else
+			//{
+			//	DeleteMap();
+			//	CreateMapForSimulation(definition);
+			//	InitializeSimulation(definition);
+			//}		
+
+			DeleteMap();
+			CreateMapForSimulation(definition);
+			InitializeSimulation(definition);
 		}
 		else
 		{
@@ -286,28 +290,41 @@ void PlayingState::InitializeSimulationData()
 	g_generalSimulationData = new SimulationData();
 	g_generalSimulationData->Initialize(g_currentSimulationDefinition);
 
+#ifdef ActionStackAnalysis
 	//action stack data
 	g_processActionStackData = new SimulationData();
 	g_processActionStackData->Initialize(g_currentSimulationDefinition);
+#endif // ActionStackAnalysis
 
-	//action stack data
+#ifdef UpdatePlanAnalysis
+	//update plan data
 	g_updatePlanData = new SimulationData();
 	g_updatePlanData->Initialize(g_currentSimulationDefinition);
+#endif // UpdatePlanAnalysis
 
-	//action stack data
+#ifdef AgentUpdateAnalysis
+	//agent update data
 	g_agentUpdateData = new SimulationData();
 	g_agentUpdateData->Initialize(g_currentSimulationDefinition);
+#endif // AgentUpdateAnalysis
 
-	//action stack data
+#ifdef PathingDataAnalysis
+	//pathing data
 	g_pathingData = new SimulationData();
 	g_pathingData->Initialize(g_currentSimulationDefinition);
+#endif // PathingDataAnalysis
 
-	//action stack data
+#ifdef CopyPathAnalysis
+	//copy path data
 	g_copyPathData = new SimulationData();
 	g_copyPathData->Initialize(g_currentSimulationDefinition);
+#endif // CopyPathAnalysis
 
+#ifdef QueueActionPathingDataAnalysis
+	//queue path data
 	g_queueActionPathingData = new SimulationData();
 	g_queueActionPathingData->Initialize(g_currentSimulationDefinition);
+#endif // QueueActionPathingDataAnalysis
 }
 
 //  =============================================================================
@@ -316,20 +333,35 @@ void PlayingState::ResetCurrentSimulationData()
 	delete(g_generalSimulationData);
 	g_generalSimulationData = nullptr;
 
+#ifdef ActionStackAnalysis
 	delete(g_processActionStackData);
 	g_processActionStackData = nullptr;
+#endif
 
+#ifdef UpdatePlanAnalysis
 	delete(g_updatePlanData);
 	g_updatePlanData = nullptr;
+#endif
 
+#ifdef AgentUpdateAnalysis
 	delete(g_agentUpdateData);
 	g_agentUpdateData = nullptr;
+#endif
 
+#ifdef PathingDataAnalysis
+	delete(g_pathingData);
+	g_pathingData = nullptr;
+#endif
+
+#ifdef CopyPathAnalysis
 	delete(g_copyPathData);
 	g_copyPathData = nullptr;
+#endif
 
+#ifdef QueueActionPathingDataAnalysis
 	delete(g_queueActionPathingData);
 	g_queueActionPathingData = nullptr;
+#endif
 
 	g_numUpdatePlanCalls = 0;
 	g_numActionStackProcessCalls = 0;
@@ -358,40 +390,53 @@ void PlayingState::ExportSimulationData()
 
 	std::string finalFilePath = Stringf("%s%s", newFolder.c_str(), "\\");
 
+
 	//general data
 	FinalizeGeneralSimulationData();
-	std::string fileName = Stringf("GeneralInfo_%i.csv", g_currentSimDefinitionIndex);
+	std::string fileName = Stringf("GeneralInfo_%s.csv", g_currentSimulationDefinition->m_name.c_str());
 	bool success = g_generalSimulationData->ExportCSV(finalFilePath, fileName.c_str());
 	ASSERT_OR_DIE(success, "Action data broken");
 
+#ifdef ActionStackAnalysis
 	//export action stack data
-	fileName = Stringf("ActionStackAverageTimesPer100_%i.csv", g_currentSimDefinitionIndex);
+	fileName = Stringf("ActionStackAverageTimesPer_%s.csv", g_currentSimulationDefinition->m_name.c_str());
 	success = g_processActionStackData->ExportCSV(finalFilePath, fileName.c_str());
 	ASSERT_OR_DIE(success, "Action data broken");
+#endif
 
+#ifdef UpdatePlanAnalysis
 	//export update plan data
-	fileName = Stringf("AgentUpdatePlanAverageTimesPer100_%i.csv", g_currentSimDefinitionIndex);
+	fileName = Stringf("AgentUpdatePlanAverageTimesPer_%s.csv", g_currentSimulationDefinition->m_name.c_str());
 	success = g_updatePlanData->ExportCSV(finalFilePath, fileName.c_str());
 	ASSERT_OR_DIE(success, "Update plan data broken");
+#endif
 
+#ifdef AgentUpdateAnalysis
 	//export agent update data
-	fileName = Stringf("AgentUpdateAverageTimes_%i.csv", g_currentSimDefinitionIndex);
+	fileName = Stringf("AgentUpdateAverageTimes_%s.csv", g_currentSimulationDefinition->m_name.c_str());
 	success = g_agentUpdateData->ExportCSV(finalFilePath, fileName.c_str());
 	ASSERT_OR_DIE(success, "Update data broken");
+#endif
 
+#ifdef PathingDataAnalysis
 	//export stack data
-	fileName = Stringf("PathingDataAveragesTimesPer100_%i.csv", g_currentSimDefinitionIndex);
+	fileName = Stringf("PathingDataAveragesTimesPer_%s.csv", g_currentSimulationDefinition->m_name.c_str());
 	success = g_pathingData->ExportCSV(finalFilePath, fileName.c_str());
 	ASSERT_OR_DIE(success, "Pathing data broken");
+#endif
 
+#ifdef CopyPathAnalysis
 	//action stack data
-	fileName = Stringf("CopyPathAverageTimersPer100_%i.csv", g_currentSimDefinitionIndex);
+	fileName = Stringf("CopyPathAverageTimersPer_%s.csv", g_currentSimulationDefinition->m_name.c_str());
 	success = g_copyPathData ->ExportCSV(finalFilePath, fileName.c_str());
 	ASSERT_OR_DIE(success, "Copy path data broken");
+#endif
 
-	fileName = Stringf("QueueActionPathingTimes_%i.csv", g_currentSimDefinitionIndex);
+#ifdef QueueActionPathingDataAnalysis
+	fileName = Stringf("QueueActionPathingTimes_%s.csv", g_currentSimulationDefinition->m_name.c_str());
 	success = g_queueActionPathingData ->ExportCSV(finalFilePath, fileName.c_str());
 	ASSERT_OR_DIE(success, "Copy path data broken");
+#endif
 }
 
 //  =============================================================================
@@ -405,24 +450,35 @@ void PlayingState::FinalizeGeneralSimulationData()
 	g_generalSimulationData->AddCell("Is Optimized?", false);
 	g_generalSimulationData->AddCell(Stringf("%s", optimizationString.c_str()), true);
 
+#ifdef UpdatePlanAnalysis
 	g_generalSimulationData->AddCell("Num update plan calls:", false);
 	g_generalSimulationData->AddCell(Stringf("%i", g_numUpdatePlanCalls), true);
+#endif
 
+#ifdef ActionStackAnalysis
 	g_generalSimulationData->AddCell("Num Process Action Stack calls:", false);
 	g_generalSimulationData->AddCell(Stringf("%i", g_numActionStackProcessCalls), true);
+#endif
 
+#ifdef AgentUpdateAnalysis
 	g_generalSimulationData->AddCell("Num Agent Update calls:", false);
 	g_generalSimulationData->AddCell(Stringf("%i", g_numAgentUpdateCalls), true);
+#endif
 
+#ifdef PathingDataAnalysis
 	g_generalSimulationData->AddCell("Num Get Path calls:", false);
 	g_generalSimulationData->AddCell(Stringf("%i", g_numGetPathCalls), true);
+#endif
 
+#ifdef CopyPathAnalysis
 	g_generalSimulationData->AddCell("Num Copy Path calls:", false);
 	g_generalSimulationData->AddCell(Stringf("%i", g_numCopyPathCalls), true);
+#endif
 
+#ifdef QueueActionPathingDataAnalysis
 	g_generalSimulationData->AddCell("Num Queue Action Path calls:", false);
 	g_generalSimulationData->AddCell(Stringf("%i", g_numQueueActionPathCalls), true);
-
+#endif
 	
 }
 
