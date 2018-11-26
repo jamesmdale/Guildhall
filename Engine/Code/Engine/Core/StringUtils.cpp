@@ -111,6 +111,22 @@ bool CompareStringAlphabeticalLessThan(const std::string& stringOne, const std::
 	return false;
 }
 
+bool StringCompareExact(const std::string& stringOne, const std::string& stringTwo)
+{
+	//first compare length (easiest out)
+	if(stringOne.length() != stringTwo.length())
+		return false;
+
+	//compare each character
+	for (int characterIndex = 0; characterIndex < (int)stringOne.length(); ++characterIndex)
+	{
+		if(stringOne[characterIndex] != stringTwo[characterIndex])
+			return false;
+	}
+
+	return true;
+}
+
 //  =============================================================================
 void RemoveEmptyStrings(std::vector<std::string>& outStrings)
 {

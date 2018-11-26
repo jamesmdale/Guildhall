@@ -5,12 +5,12 @@
 #include "Engine\Math\Vector3.hpp"
 #include "Engine\Core\Rgba.hpp"
 
-//#define ActionStackAnalysis
-//#define UpdatePlanAnalysis
+#define ActionStackAnalysis
+#define UpdatePlanAnalysis
 #define AgentUpdateAnalysis
-//#define PathingDataAnalysis
-//#define CopyPathAnalysis
-//#define QueueActionPathingDataAnalysis
+#define PathingDataAnalysis
+#define CopyPathAnalysis
+#define QueueActionPathingDataAnalysis
 
 class SimulationData;
 class SimulationDefinition;

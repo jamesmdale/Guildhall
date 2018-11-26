@@ -31,7 +31,7 @@ void CSVWriter::AddCell(const std::string& cellContent, bool doesWriteNewline)
 
 	if (doesWriteNewline)
 	{
-		AddNewLine();
+		AppendNewLine();
 	}
 }
 
@@ -39,6 +39,12 @@ void CSVWriter::AddCell(const std::string& cellContent, bool doesWriteNewline)
 void CSVWriter::AddNewLine()
 {
 	m_content.push_back("\n");
+}
+
+//  =============================================================================
+void CSVWriter::AppendNewLine()
+{
+	m_content[m_content.size() - 1].append("\n");
 }
 
 //  =============================================================================
@@ -59,7 +65,7 @@ bool CSVWriter::WriteToFile(const std::string& filePath)
 		//check the next cell to see if we need a comma separator or not
 		if (contentIndex + 1 < (int)m_content.size() && contentIndex - 1 >= 0)
 		{
-			if(m_content[contentIndex + 1].compare("\n") != 0 || m_content[contentIndex - 1].compare("\n") != 0)
+			if(StringCompareExact(m_content[contentIndex + 1], "\n") || StringCompareExact(m_content[contentIndex - 1], "\n"))
 				writer << ",";
 		}
 	}
@@ -67,4 +73,10 @@ bool CSVWriter::WriteToFile(const std::string& filePath)
 	writer.close();
 
 	return true;
+}
+
+//  =============================================================================
+void CSVWriter::ClearContent()
+{
+	m_content.clear();
 }

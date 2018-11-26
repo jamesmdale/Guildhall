@@ -97,7 +97,10 @@ void SimulationData::WriteEntryWithTimeStamp(const std::string& entry)
 	dataEntry.m_value = entry;
 	dataEntry.m_timeStamp = GetCurrentDateTime();
 
-	m_entries.push_back(dataEntry);
+	m_entries.push_back(dataEntry);	
+
+	dataEntry.m_value = "/n";
+	m_entries.push_back(dataEntry);	
 }
 
 //  =============================================================================
@@ -106,8 +109,8 @@ bool SimulationData::ExportCSV(const std::string& filePath, const std::string& f
 	for (int entryIndex = 0; entryIndex < (int)m_entries.size(); ++entryIndex)
 	{
 		AddCell(Stringf("%s", m_entries[entryIndex].m_value.c_str()));
-		AddCell(Stringf("%s", m_entries[entryIndex].m_timeStamp.c_str()));
-		AddNewLine();
+		//AddCell(Stringf("%s", m_entries[entryIndex].m_timeStamp.c_str()));
+		//AddNewLine();
 	}
 	bool success = WriteToFile(Stringf("%s%s", filePath.c_str(), fileName.c_str()));
 
@@ -120,5 +123,6 @@ bool SimulationData::ExportCSV(const std::string& filePath, const std::string& f
 void SimulationData::ResetData()
 {
 	m_entries.clear();
+	ClearContent();
 }
 

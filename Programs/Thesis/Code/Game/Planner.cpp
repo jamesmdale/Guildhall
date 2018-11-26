@@ -7,19 +7,33 @@
 #include "Game\GameCommon.hpp"
 #include "Game\GameStates\PlayingState.hpp"
 
+UtilityStorage* Planner::m_distanceUtilityStorage = nullptr;
+UtilityStorage* Planner::m_buildingHealthUtilityStorage = nullptr;
+UtilityStorage* Planner::m_agentHealthUitilityStorage = nullptr;
+UtilityStorage* Planner::m_agentGatherUtilityStorage = nullptr;
+UtilityStorage* Planner::m_shootUtilityStorageUtility = nullptr;
+
 int iterationsOfUpdatePlan = 0;
 uint64_t averageTimeForUpdatePlan = 0.0;
 
 int iterationsOfQueueActions = 0;
 uint64_t averageTimeForQueueActions = 0.0;
 
-//int iterationsOfUp
-
 //  =========================================================================================
 Planner::Planner(Map* mapReference, Agent* agentReference)
 {
 	m_map = mapReference;
 	m_agent = agentReference;
+
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		m_distanceUtilityStorage = new UtilityStorage(0.f, 1.f, 20.f);
+		m_buildingHealthUtilityStorage = new UtilityStorage(0.f, 1.f, 20.f);
+		m_agentHealthUitilityStorage = new UtilityStorage(0.f, 1.f, 20.f);
+		m_agentGatherUtilityStorage = new UtilityStorage(0.f, 1.f, 20.f);
+		m_shootUtilityStorageUtility = new UtilityStorage(0.f, 1.f, 20.f);
+	}
+	
 }
 
 //  =========================================================================================
@@ -28,6 +42,25 @@ Planner::Planner(Map* mapReference, Agent* agentReference)
 Planner::~Planner()
 {
 	m_map = nullptr;
+	m_agent = nullptr;
+
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		delete(m_distanceUtilityStorage);
+		m_distanceUtilityStorage = nullptr;
+
+		delete(m_buildingHealthUtilityStorage);
+		m_buildingHealthUtilityStorage = nullptr;
+
+		delete(m_agentHealthUitilityStorage);
+		m_agentHealthUitilityStorage = nullptr;
+
+		delete(m_agentGatherUtilityStorage);
+		m_agentGatherUtilityStorage = nullptr;
+
+		delete(m_shootUtilityStorageUtility);
+		m_shootUtilityStorageUtility = nullptr;
+	}
 }
 
 //  =========================================================================================
@@ -83,7 +116,7 @@ void Planner::ProcessActionStack(float deltaSeconds)
 
 		g_processActionStackData->AddCell(Stringf("%f", secondsAverage), true);
 		
-		g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Process Action Stack) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		//g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Process Action Stack) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();
@@ -221,28 +254,28 @@ void Planner::UpdatePlan()
 
 #ifdef UpdatePlanAnalysis
 	// profiling ----------------------------------------------
-	//uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
 
-	//timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
-	//if (iterations == 1)
-	//{
-	//	float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
-	//	float iterationsPerSecond = totalSeconds / 100.f;
-	//	iterationStartHPC = GetPerformanceCounter();
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 1)
+	{
+		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
+		float iterationsPerSecond = totalSeconds / 100.f;
+		iterationStartHPC = GetPerformanceCounter();
 
-	//	float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
-	//	//DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
-	//	//DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (UpdatePlan) (total time %f)", iterationsPerSecond, totalSeconds);
+		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
+		//DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (UpdatePlan) %f", secondsAverage);
+		//DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (UpdatePlan) (total time %f)", iterationsPerSecond, totalSeconds);
 
-	//	g_updatePlanData->AddCell(Stringf("%f", secondsAverage), true);
+		g_updatePlanData->AddCell(Stringf("%f", secondsAverage), true);
 
-	//	g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (UpdatePlan) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		//g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (UpdatePlan) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
-	//	//reset data
-	//	iterationStartHPC = GetPerformanceCounter();
-	//	iterations = 0;
-	//	timeAverage = 0.0;
-	//}
+		//reset data
+		iterationStartHPC = GetPerformanceCounter();
+		iterations = 0;
+		timeAverage = 0.0;
+	}
 	//  ---------------------------------------------
 #endif
 }
@@ -332,7 +365,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 
 			g_queueActionPathingData->AddCell(Stringf("%f", secondsAverage), true);
 
-			g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Queue Action Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
+			//g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Queue Action Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
 			//reset data
 			iterationStartHPC = GetPerformanceCounter();
@@ -419,6 +452,14 @@ UtilityInfo Planner::GetHighestGatherArrowsUtility()
 {
 	UtilityInfo highestGatherArrowsUtility;
 
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		if (m_agent->m_arrowCount == g_maxResourceCarryAmount)
+		{
+			return highestGatherArrowsUtility;
+		}
+	}
+
 	if (m_map->m_armories.size() > 0)
 	{
 		for (int armoryIndex = 0; armoryIndex < (int)m_map->m_armories.size(); ++armoryIndex)
@@ -438,6 +479,14 @@ UtilityInfo Planner::GetHighestGatherArrowsUtility()
 UtilityInfo Planner::GetHighestGatherLumberUtility()
 {
 	UtilityInfo highestGatherLumberUtility;
+
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		if (m_agent->m_lumberCount == g_maxResourceCarryAmount)
+		{
+			return highestGatherLumberUtility;
+		}
+	}
 
 	if (m_map->m_lumberyards.size() > 0)
 	{
@@ -459,6 +508,14 @@ UtilityInfo Planner::GetHighestGatherBandagesUtility()
 {
 	UtilityInfo highestGatherBandagesUtility;
 
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		if (m_agent->m_bandageCount == g_maxResourceCarryAmount)
+		{
+			return highestGatherBandagesUtility;
+		}
+	}
+
 	if (m_map->m_medStations.size() > 0)
 	{
 		for (int medStationIndex = 0; medStationIndex < (int)m_map->m_medStations.size(); ++medStationIndex)
@@ -479,9 +536,12 @@ UtilityInfo Planner::GetHighestShootUtility()
 {
 	UtilityInfo info;
 
-	if (m_map->m_threat == 0 || m_agent->m_arrowCount == 0)
+	if (g_currentSimulationDefinition->m_isOptimized)
 	{
-		return info;
+		if (m_map->m_threat == 0 || m_agent->m_arrowCount == 0)
+		{
+			return info;
+		}
 	}
 
 	Vector2 nearestWallPosition = (Vector2)GetNearestTileCoordinateOfMapEdgeFromCoordinate((IntVector2)m_agent->m_position);
@@ -517,9 +577,17 @@ UtilityInfo Planner::GetHighestShootUtility()
 //  =========================================================================================
 UtilityInfo Planner::GetHighestRepairUtility()
 {
-	UtilityInfo highestRepairUtility = GetRepairUtilityPerBuilding(m_map->m_pointsOfInterest[0]);
+	UtilityInfo highestRepairUtility;
 
-	for (int buildingIndex = 1; buildingIndex < (int)m_map->m_pointsOfInterest.size(); ++buildingIndex)
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		if (m_agent->m_lumberCount == 0)
+		{
+			return highestRepairUtility;
+		}
+	}
+
+	for (int buildingIndex = 0; buildingIndex < (int)m_map->m_pointsOfInterest.size(); ++buildingIndex)
 	{
 		UtilityInfo utilityInfoForBuilding = GetRepairUtilityPerBuilding(m_map->m_pointsOfInterest[buildingIndex]);
 		if (utilityInfoForBuilding.utility > highestRepairUtility.utility)
@@ -650,7 +718,7 @@ UtilityInfo Planner::GetIdleUtilityInfo()
 }
 
 //  =========================================================================================
-void Planner::SkewCurrentPlanUtilityValue(UtilityInfo & outInfo)
+void Planner::SkewCurrentPlanUtilityValue(UtilityInfo& outInfo)
 {
 	outInfo.utility += g_skewForCurrentPlan;
 }
@@ -667,9 +735,29 @@ void Planner::SkewUtilityForBias(UtilityInfo& outInfo, float biasValue)
 //  =========================================================================================
 float Planner::CalculateDistanceUtility(float normalizedDistance)
 {
-	//  ((1-x)^3 * 0.4f) + 0.1f = y
+	// dynamic programming solution ----------------------------------------------
+	int outIndex = 0;
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		float outValue;
+		if (m_distanceUtilityStorage->DoesValueExistForInput(normalizedDistance, outValue, outIndex))
+		{
+			return outValue;
+		}			
+	}
+	//  ----------------------------------------------
+	
+	//  UTILITY FORMULA: ((1-x)^3 * 0.4f) + 0.1f = y 
 	float oneMinusNormalizedDistance = 1 - normalizedDistance;
 	float utility = ((oneMinusNormalizedDistance * oneMinusNormalizedDistance * oneMinusNormalizedDistance) * 0.4f) + 0.1f;
+
+
+	// dynamic programming solution ----------------------------------------------
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		m_distanceUtilityStorage->StoreValueForInputAtIndex(utility, outIndex);
+	}
+	//  ----------------------------------------------
 
 	return utility;
 }
@@ -677,11 +765,29 @@ float Planner::CalculateDistanceUtility(float normalizedDistance)
 //  =========================================================================================
 float Planner::CalculateBuildingHealthUtility(float normalizedBuildingHealth)
 {
-	//  ((1 - x)^2x * 0.8) = y
-	float oneMinusNormalizedBuildingHealth = 1.f - normalizedBuildingHealth;
+	// dynamic programming solution ----------------------------------------------
+	int outIndex = 0;
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		float outValue;
+		if (m_buildingHealthUtilityStorage->DoesValueExistForInput(normalizedBuildingHealth, outValue, outIndex))
+		{
+			return outValue;
+		}			
+	}
+	//  ----------------------------------------------
 
+	//  UTILITY FORMULA: ((1 - x)^2x * 0.8) = y
+	float oneMinusNormalizedBuildingHealth = 1.f - normalizedBuildingHealth;
 	float poweredHealth = std::pow(oneMinusNormalizedBuildingHealth, 2.f * normalizedBuildingHealth);
 	float utility = poweredHealth * 0.8f;
+
+	// dynamic programming solution ----------------------------------------------
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		m_buildingHealthUtilityStorage->StoreValueForInputAtIndex(utility, outIndex);
+	}
+	//  ----------------------------------------------
 
 	return utility;
 }
@@ -689,11 +795,30 @@ float Planner::CalculateBuildingHealthUtility(float normalizedBuildingHealth)
 //  =============================================================================
 float Planner::CalculateAgentHealthUtility(float normalizedAgentHealth)
 {
-	//  ((1 - x)^2x * 0.8) = y
+	// dynamic programming solution ----------------------------------------------
+	int outIndex = 0;
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		float outValue;
+		if (m_agentHealthUitilityStorage->DoesValueExistForInput(normalizedAgentHealth, outValue, outIndex))
+		{
+			return outValue;
+		}			
+	}
+	//  ----------------------------------------------
+
+	//  UTILITY FORMULA: ((1 - x)^2x * 0.8) = y
 	float oneMinusNormalizedAgentHealth= 1.f - normalizedAgentHealth;
 
 	float poweredHealth = std::pow(oneMinusNormalizedAgentHealth, 2.f * normalizedAgentHealth);
 	float utility = poweredHealth * 0.8f;
+
+	// dynamic programming solution ----------------------------------------------
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		m_agentHealthUitilityStorage->StoreValueForInputAtIndex(utility, outIndex);
+	}
+	//  ----------------------------------------------
 
 	return utility;
 }
@@ -701,11 +826,30 @@ float Planner::CalculateAgentHealthUtility(float normalizedAgentHealth)
 //  =============================================================================
 float Planner::CalculateAgentGatherUtility(float normalizedResourceCarryAmount)
 {
-	// ((1-x)^8x * 0.8) = y
+	// dynamic programming solution ----------------------------------------------
+	int outIndex = 0;
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		float outValue;
+		if (m_agentGatherUtilityStorage->DoesValueExistForInput(normalizedResourceCarryAmount, outValue, outIndex))
+		{
+			return outValue;
+		}			
+	}
+	//  ----------------------------------------------
+
+	//  UTILITY FORMULA: ((1-x)^8x * 0.8) = y
 	float oneMinusNormalizedGatherUtility = 1.f - normalizedResourceCarryAmount;
 	
 	float poweredGather = std::pow(oneMinusNormalizedGatherUtility, 8.f * normalizedResourceCarryAmount);
 	float utility = poweredGather * 0.8f;
+
+	// dynamic programming solution ----------------------------------------------
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		m_agentGatherUtilityStorage->StoreValueForInputAtIndex(utility, outIndex);
+	}
+	//  ----------------------------------------------
 
 	return utility;
 }
@@ -713,11 +857,30 @@ float Planner::CalculateAgentGatherUtility(float normalizedResourceCarryAmount)
 //  =============================================================================
 float Planner::CalculateShootUtility(float normalizedThreatUtility)
 {
-	// ((1-(1-x)^2x) * 0.8 = y
+	// dynamic programming solution ----------------------------------------------
+	int outIndex = 0;
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		float outValue;
+		if (m_shootUtilityStorageUtility->DoesValueExistForInput(normalizedThreatUtility, outValue, outIndex))
+		{
+			return outValue;
+		}			
+	}
+	//  ----------------------------------------------
+
+	//  UTILITY FORMULA: ((1-(1-x)^2x) * 0.8 = y
 	float oneMinusNormalizedThreatUtility = 1.f - normalizedThreatUtility;
 
 	float poweredThreat = 1.f - std::pow(oneMinusNormalizedThreatUtility, 2.f * normalizedThreatUtility);
 	float utility = poweredThreat * 0.8f;
+
+	// dynamic programming solution ----------------------------------------------
+	if (g_currentSimulationDefinition->m_isOptimized)
+	{
+		m_shootUtilityStorageUtility->StoreValueForInputAtIndex(utility, outIndex);
+	}
+	//  ----------------------------------------------
 
 	return utility;
 }
@@ -909,7 +1072,7 @@ bool Planner::FindAgentAndCopyPath()
 
 		g_copyPathData->AddCell(Stringf("%f", secondsAverage), true);
 
-		g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Copy Path) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		//g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Copy Path) (total time between: %f)", iterationsPerSecond, totalSeconds));
 		
 		//reset data
 		iterationStartHPC = GetPerformanceCounter();

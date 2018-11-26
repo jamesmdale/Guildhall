@@ -68,12 +68,12 @@ void PlayingState::Initialize()
 
 	simDataOutputDirectory = Stringf("%s%s", newPath.c_str(), "\\");
 
-	SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];
-	CreateMapForSimulation(definition);
-	InitializeSimulation(definition);
+	g_currentSimulationDefinition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];
+
+	CreateMapForSimulation(g_currentSimulationDefinition);
+	InitializeSimulation(g_currentSimulationDefinition);
 
 	//cleanup
-	definition = nullptr;	
 	theRenderer = nullptr;
 	theWindow = nullptr;
 }
@@ -127,27 +127,28 @@ void PlayingState::PostRender()
 		{
 			SimulationDefinition* definition = SimulationDefinition::s_simulationDefinitions[g_currentSimDefinitionIndex];	
 
-			////if we are on the same map, leave the spawn points the same.
-			//if (definition->m_mapDefinition == g_currentSimulationDefinition->m_mapDefinition)
-			//{
-			//	ResetMapForSimulation(definition);
-			//	InitializeSimulation(definition);
-			//}
-			//else
-			//{
-			//	DeleteMap();
-			//	CreateMapForSimulation(definition);
-			//	InitializeSimulation(definition);
-			//}		
-
-			DeleteMap();
-			CreateMapForSimulation(definition);
-			InitializeSimulation(definition);
+			//if we are on the same map, leave the spawn points the same.
+			if (definition->m_mapDefinition == g_currentSimulationDefinition->m_mapDefinition)
+			{
+				g_currentSimulationDefinition = definition;
+				ResetMapForSimulation(definition);
+				InitializeSimulation(definition);
+			}
+			else
+			{
+				g_currentSimulationDefinition = definition;
+				DeleteMap();
+				CreateMapForSimulation(definition);
+				InitializeSimulation(definition);
+			}		
 		}
 		else
 		{
 			g_isQuitting = true;
 		}	
+
+		//reset timer regardless
+		m_simulationTimer->Reset();
 	}	
 }
 
@@ -442,42 +443,48 @@ void PlayingState::ExportSimulationData()
 //  =============================================================================
 void PlayingState::FinalizeGeneralSimulationData()
 {
-
 	std::string optimizationString = "";
 	g_generalSimulationData->CreateComprehensiveDataSet();
 
 	g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized() ? optimizationString = "true" : optimizationString = "false";
 	g_generalSimulationData->AddCell("Is Optimized?", false);
-	g_generalSimulationData->AddCell(Stringf("%s", optimizationString.c_str()), true);
+	g_generalSimulationData->AddCell(Stringf("%s", optimizationString.c_str()));
+	g_generalSimulationData->AddNewLine();
 
 #ifdef UpdatePlanAnalysis
 	g_generalSimulationData->AddCell("Num update plan calls:", false);
-	g_generalSimulationData->AddCell(Stringf("%i", g_numUpdatePlanCalls), true);
+	g_generalSimulationData->AddCell(Stringf(" %i", g_numUpdatePlanCalls));
+	g_generalSimulationData->AddNewLine();
 #endif
 
 #ifdef ActionStackAnalysis
-	g_generalSimulationData->AddCell("Num Process Action Stack calls:", false);
-	g_generalSimulationData->AddCell(Stringf("%i", g_numActionStackProcessCalls), true);
+	g_generalSimulationData->AddCell("Num Process Action Stack calls:");
+	g_generalSimulationData->AddCell(Stringf(" %i", g_numActionStackProcessCalls));
+	g_generalSimulationData->AddNewLine();
 #endif
 
 #ifdef AgentUpdateAnalysis
-	g_generalSimulationData->AddCell("Num Agent Update calls:", false);
-	g_generalSimulationData->AddCell(Stringf("%i", g_numAgentUpdateCalls), true);
+	g_generalSimulationData->AddCell("Num Agent Update calls:");
+	g_generalSimulationData->AddCell(Stringf(" %i", g_numAgentUpdateCalls));
+	g_generalSimulationData->AddNewLine();
 #endif
 
 #ifdef PathingDataAnalysis
-	g_generalSimulationData->AddCell("Num Get Path calls:", false);
-	g_generalSimulationData->AddCell(Stringf("%i", g_numGetPathCalls), true);
+	g_generalSimulationData->AddCell("Num Get Path calls:");
+	g_generalSimulationData->AddCell(Stringf(" %i", g_numGetPathCalls));
+	g_generalSimulationData->AddNewLine();
 #endif
 
 #ifdef CopyPathAnalysis
-	g_generalSimulationData->AddCell("Num Copy Path calls:", false);
-	g_generalSimulationData->AddCell(Stringf("%i", g_numCopyPathCalls), true);
+	g_generalSimulationData->AddCell("Num Copy Path calls:");
+	g_generalSimulationData->AddCell(Stringf(" %i", g_numCopyPathCalls));
+	g_generalSimulationData->AddNewLine();
 #endif
 
 #ifdef QueueActionPathingDataAnalysis
-	g_generalSimulationData->AddCell("Num Queue Action Path calls:", false);
-	g_generalSimulationData->AddCell(Stringf("%i", g_numQueueActionPathCalls), true);
+	g_generalSimulationData->AddCell("Num Queue Action Path calls:");
+	g_generalSimulationData->AddCell(Stringf(" %i", g_numQueueActionPathCalls));
+	g_generalSimulationData->AddNewLine();
 #endif
 	
 }

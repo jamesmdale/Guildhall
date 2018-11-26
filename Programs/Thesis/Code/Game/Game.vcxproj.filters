@@ -112,6 +112,9 @@
     <ClCompile Include="Definitions\SimulationDefinition.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="UtilityHelpers\UtilityStorage.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -157,5 +160,6 @@
     <ClInclude Include="Bombardment.hpp" />
     <ClInclude Include="SimulationData.hpp" />
     <ClInclude Include="Definitions\SimulationDefinition.hpp" />
+    <ClInclude Include="UtilityHelpers\UtilityStorage.hpp" />
   </ItemGroup>
 </Project>

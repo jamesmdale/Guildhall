@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine\Math\IntVector2.hpp"
+#include "Game\UtilityHelpers\UtilityStorage.hpp"
 #include <stack>
 
 struct ActionData;
@@ -89,6 +90,13 @@ public:
 	Map* m_map = nullptr;
 	Agent* m_agent = nullptr;
 	ePlanTypes m_currentPlan;
+
+	//utility data
+	static UtilityStorage* m_distanceUtilityStorage;
+	static UtilityStorage* m_buildingHealthUtilityStorage;
+	static UtilityStorage* m_agentHealthUitilityStorage;
+	static UtilityStorage* m_agentGatherUtilityStorage;
+	static UtilityStorage* m_shootUtilityStorageUtility;
 
 private:
 	std::stack<ActionData*> m_actionStack;

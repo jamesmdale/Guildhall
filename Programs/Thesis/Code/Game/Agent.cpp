@@ -43,7 +43,9 @@ Agent::Agent(Vector2 startingPosition, IsoSpriteAnimSet* animationSet, Map* mapR
 //  =========================================================================================
 Agent::~Agent()
 {
+	delete(m_planner);
 	m_planner = nullptr;
+
 	m_animationSet = nullptr;
 }
 
@@ -183,7 +185,7 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 
 		g_pathingData->AddCell(Stringf("%f", secondsAverage), true);
 
-		g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
+		//g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
 
 
 		//reset data

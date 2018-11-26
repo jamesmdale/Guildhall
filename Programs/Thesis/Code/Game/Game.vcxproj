@@ -330,6 +330,7 @@
     <ClCompile Include="TheApp.cpp" />
     <ClCompile Include="Map\Tile.cpp" />
     <ClCompile Include="Definitions\TileDefinition.cpp" />
+    <ClCompile Include="UtilityHelpers\UtilityStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Engine\Code\Engine\Engine.vcxproj">
@@ -372,6 +373,7 @@
     <ClInclude Include="TheApp.hpp" />
     <ClInclude Include="Map\Tile.hpp" />
     <ClInclude Include="Definitions\TileDefinition.hpp" />
+    <ClInclude Include="UtilityHelpers\UtilityStorage.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
