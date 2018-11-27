@@ -239,6 +239,8 @@ void DevConsole::QueueMessage(const HistoryItem & item)
 // Handles all input =========================================================================================
 void DevConsole::Update(float deltaSeconds)
 {
+	PROFILER_PUSH();
+
 	UpdateCursorTimer(deltaSeconds);
 	FlushConsoleQueue();
 }

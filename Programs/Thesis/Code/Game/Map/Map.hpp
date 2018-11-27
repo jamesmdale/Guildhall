@@ -46,15 +46,11 @@ public:
 	void CreateMapMesh();
 
 	Mesh* CreateDynamicAgentMesh();
-	Mesh* CreateDynamicAgentIdMesh();
 	Mesh* CreateDynamicBombardmentMesh();	
+	Mesh* CreateTextMesh();
 
 	//Cleanup functions
 	void DeleteDeadEntities();
-
-	//General functions
-	void UpdatePlayerInput();
-	int GetActorIndex();
 
 	//agent sorting
 	void SortAgentsByX();

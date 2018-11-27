@@ -10,7 +10,7 @@
   bombardmentRatePerSecond="5.0"
   threatRatePerSecond = "10.0"
   startingThreat="100"
-  processTimerInSeconds="60"
+  processTimerInSeconds="2000"
   isOptimized="true" 
   />
 

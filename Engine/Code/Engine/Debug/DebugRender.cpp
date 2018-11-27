@@ -8,11 +8,13 @@
 
 static DebugRender* g_theDebugRenderer = nullptr;
 
+//  =============================================================================
 DebugRender::DebugRender()
 {
 
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugPoint(const Vector3& position, float scale, const Rgba& startColor, const Rgba& endColor, float timeToLive, int depthType, Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -46,6 +48,7 @@ void DebugRender::CreateDebugPoint(const Vector3& position, float scale, const R
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugLine(const Vector3& positionStart, const Vector3& positionEnd, const Rgba& startColor, const Rgba& endColor, float timeToLive, int depthType,  Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -80,6 +83,7 @@ void DebugRender::CreateDebugLine(const Vector3& positionStart, const Vector3& p
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugBasis(const Vector3& positionStart, float scale, float timeToLive, int depthType, Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -114,6 +118,7 @@ void DebugRender::CreateDebugBasis(const Vector3& positionStart, float scale, fl
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugBasis(const Matrix44& basis, const Vector3& position, float scale, float timeToLive, int depthType, Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -147,6 +152,7 @@ void DebugRender::CreateDebugBasis(const Matrix44& basis, const Vector3& positio
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugSphere(const Vector3& center, float radius, const Rgba& startColor, const Rgba& endColor, float timeToLive, int depthType,  Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -182,6 +188,7 @@ void DebugRender::CreateDebugSphere(const Vector3& center, float radius, const R
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugWireSphere(const Vector3& center, float radius, const Rgba& startColor, const Rgba& endColor, float timeToLive, int depthType,  Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -216,6 +223,7 @@ void DebugRender::CreateDebugWireSphere(const Vector3& center, float radius, con
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugWireCube(const Vector3 & center, const Vector3 & dimensions, const Rgba & startColor, const Rgba & endColor, float timeToLive, int depthType,  Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -250,6 +258,7 @@ void DebugRender::CreateDebugWireCube(const Vector3 & center, const Vector3 & di
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugQuad(const Vector3& center, const Vector2& dimensions, const Rgba& startColor, const Rgba& endColor, float timeToLive, int depthType,  Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -284,6 +293,7 @@ void DebugRender::CreateDebugQuad(const Vector3& center, const Vector2& dimensio
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugBillboardQuad(const Vector3& center, const Vector3& up, const Vector3& right, const Vector2& dimensions, const Rgba& startColor, const Rgba& endColor, float timeToLive, int depthType,  Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -318,6 +328,7 @@ void DebugRender::CreateDebugBillboardQuad(const Vector3& center, const Vector3&
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugCube(const Vector3 & center, const Vector3 & dimensions, const Rgba & startColor, const Rgba & endColor, float timeToLive, int depthType,  Camera* camera)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -352,6 +363,7 @@ void DebugRender::CreateDebugCube(const Vector3 & center, const Vector3 & dimens
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugQuad2D(const Vector2 & center, const Vector2 & dimensions, const Rgba & startColor, const Rgba & endColor, float timeToLive, int depthType)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -379,6 +391,7 @@ void DebugRender::CreateDebugQuad2D(const Vector2 & center, const Vector2 & dime
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugLine2D(const Vector2 & positionStart, const Vector2 & positionEnd, const Rgba & startColor, const Rgba & endColor, float timeToLive, int depthType)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -406,6 +419,7 @@ void DebugRender::CreateDebugLine2D(const Vector2 & positionStart, const Vector2
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugCrosshair2D(const Vector2 & center, const Rgba & startColor, const Rgba & endColor, float timeToLive, int depthType)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -434,6 +448,7 @@ void DebugRender::CreateDebugCrosshair2D(const Vector2 & center, const Rgba & st
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::CreateDebugText2D(const Vector2 & center, float cellHeight, float aspectScale, std::string text, const Rgba & startColor, const Rgba & endColor, float timeToLive, int depthType)
 {
 	DebugRenderObject* renderObject = new DebugRenderObject();
@@ -459,6 +474,7 @@ void DebugRender::CreateDebugText2D(const Vector2 & center, float cellHeight, fl
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 DebugRender* DebugRender::CreateInstance() 
 {
 	if (g_theDebugRenderer == nullptr) 
@@ -468,6 +484,7 @@ DebugRender* DebugRender::CreateInstance()
 	return g_theDebugRenderer; 
 }
 
+//  =============================================================================
 void DebugRender::EndFrame()
 {
 	for(int renderObjectIndex = 0; renderObjectIndex < (int)m_debugObjects.size(); renderObjectIndex++)
@@ -483,6 +500,7 @@ void DebugRender::EndFrame()
 	}
 }
 
+//  =============================================================================
 void DebugRender::Startup()
 {
 	Renderer* theRenderer = Renderer::GetInstance();
@@ -505,12 +523,14 @@ void DebugRender::Startup()
 	theRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::Shutdown()
 {
 	delete(g_theDebugRenderer);
 	g_theDebugRenderer = nullptr;
 }
 
+//  =============================================================================
 void DebugRender::Update(float deltaSeconds)
 {
 	if((int)m_debugObjects.size() > 0)
@@ -522,6 +542,7 @@ void DebugRender::Update(float deltaSeconds)
 	}
 }
 
+//  =============================================================================
 void DebugRender::Render()
 {
 	if((int)m_debugObjects.size() > 0)
@@ -533,16 +554,19 @@ void DebugRender::Render()
 	}
 }
 
+//  =============================================================================
 void DebugRender::ToggleDebugRenderer()
 {
 	m_isEnabled = !m_isEnabled;
 }
 
+//  =============================================================================
 DebugRender* DebugRender::GetInstance()
 {
 	return g_theDebugRenderer; 
 }
 
+//  =============================================================================
 void ToggleDebug(Command & cmd)
 {	
 	UNUSED(cmd);
@@ -559,6 +583,7 @@ void ToggleDebug(Command & cmd)
 	}
 }
 
+//  =============================================================================
 void ClearDebug(Command & cmd)
 {
 	DebugRender::GetInstance()->ClearDebugRenderer();

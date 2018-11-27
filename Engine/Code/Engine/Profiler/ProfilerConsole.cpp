@@ -179,6 +179,8 @@ void ProfilerConsole::UpdateFromInput()
 //  =============================================================================
 void ProfilerConsole::Update()
 {
+	PROFILER_PUSH();
+
 	//update active report every frame so data isn't lost when we hit resume
 	if (!Profiler::GetInstance()->IsPaused())
 	{	

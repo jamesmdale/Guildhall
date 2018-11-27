@@ -8,6 +8,7 @@
 
 class SimulationData;
 class SimulationDefinition;
+class Mesh;
 
 class PlayingState : public GameState
 {
@@ -39,6 +40,8 @@ public:
 	void ExportSimulationData();
 
 	void FinalizeGeneralSimulationData();
+
+	Mesh* CreateTextMesh();
 
 	//bool GetInteractableWidgets(std::vector<Widget*>& outWidgets);
 	//Widget* GetSelectedWidget(const std::vector<Widget*>& widgets);

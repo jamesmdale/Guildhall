@@ -6,7 +6,9 @@
 #include "Engine\Math\IntVector2.hpp"
 #include "Engine\Core\StringUtils.hpp"
 #include "Engine\Core\DevConsole.hpp"
-#include "Engine\File\FIleHelpers.hpp"
+#include "Engine\File\FileHelpers.hpp"
+#include "Engine\Renderer\Mesh.hpp"
+#include "Engine\Math\AABB2.hpp"
 #include <map>
 #include <string>
 #include "Game\GameStates\PlayingState.hpp"
@@ -203,12 +205,17 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_T))
 	{
-		g_showBlockedTileData = !g_showBlockedTileData;	
+		g_isBlockedTileDataShown = !g_isBlockedTileDataShown;	
 	}
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_I))
 	{
 		g_isIdShown = !g_isIdShown;
+	}
+
+	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_F))
+	{
+		g_isFPSCounterShown = !g_isFPSCounterShown;
 	}
 	
 	return deltaSeconds; //new deltaSeconds
@@ -228,30 +235,21 @@ void PlayingState::RenderGame()
 void PlayingState::RenderUI()
 {
 	//TODO("Render UI");
+	Renderer* theRenderer = Renderer::GetInstance()->GetInstance();
+	theRenderer->SetCamera(m_uiCamera);
 
-	//Window* theWindow = Window::GetInstance();
-	//Renderer* theRenderer = Renderer::GetInstance();
-	//MeshBuilder mb;
-	//theRenderer->SetCamera(m_uiCamera);
+	Mesh* textMesh = CreateTextMesh();
 
-	//theRenderer->ClearDepth(1.0f);
-	//theRenderer->EnableDepth(ALWAYS_DEPTH_TYPE, true);
+	if (textMesh != nullptr)
+	{
+		theRenderer->BindMaterial(theRenderer->CreateOrGetMaterial("text"));
+		theRenderer->DrawMesh(textMesh);
+	}	
 
-	//AABB2 fpsQuad = AABB2(theWindow->GetClientWindow(), Vector2(0.01f, 0.85f), Vector2(0.3f, 0.99f));
-	//std::string fpsAsString = Stringf("FPS: %-4.2f", GetUnclampedFPS());
+	theRenderer->SetCamera(m_camera);
 
-	//theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("Data\Fonts\SquirrelFixedFont.png"));
-	//theRenderer->SetShader(theRenderer->CreateOrGetShader("alpha"));
-	//theRenderer->DrawText2DCentered(fpsQuad.GetCenter(), fpsAsString, 20.f, Rgba::WHITE, 1.f, theRenderer->CreateOrGetBitmapFont("SquirrelFixedFont"));
-
-	////cleanup
-	//theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("default"));
-	//theRenderer->SetShader(theRenderer->CreateOrGetShader("default"));
-	//theRenderer->SetCamera(m_camera);
-
-
-	//theRenderer = nullptr;
-	//theWindow = nullptr;
+	delete(textMesh);
+	textMesh = nullptr;
 }
 
 //  =============================================================================
@@ -487,6 +485,34 @@ void PlayingState::FinalizeGeneralSimulationData()
 	g_generalSimulationData->AddNewLine();
 #endif
 	
+}
+
+Mesh* PlayingState::CreateTextMesh()
+{
+	MeshBuilder* builder = new MeshBuilder();
+	Mesh* textMesh = nullptr;
+
+	//agent ids
+	if (g_isFPSCounterShown)
+	{
+		Window* theWindow = Window::GetInstance();
+
+		AABB2 fpsBox = AABB2(theWindow->GetClientWindow(), Vector2(0.7f, 0.85f), Vector2(0.9f, 0.9f));
+
+		builder->CreateText2DInAABB2( fpsBox.GetCenter(), fpsBox.GetDimensions(), 1.f, Stringf("%f", GetUnclampedFPS()), Rgba::WHITE);
+	}
+
+	//draw other things
+
+	if (builder->m_vertices.size() > 0)
+	{
+		textMesh = builder->CreateMesh<VertexPCU>();
+	}
+
+
+	delete(builder);
+	builder = nullptr;
+	return textMesh;
 }
 
 // Commands =============================================================================

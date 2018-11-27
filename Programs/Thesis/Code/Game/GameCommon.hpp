@@ -50,11 +50,12 @@ const float g_tilePercentageOfWindow = 0.025f;
 extern bool g_isDebug;
 extern bool g_isQuitting;
 extern bool g_isIdShown;
+extern bool g_isFPSCounterShown;
 
 extern float g_tileSize;
 extern float g_divideTileSize;
 extern float g_halfTileSize;
-extern bool g_showBlockedTileData;
+extern bool g_isBlockedTileDataShown;
 extern float g_maxCoordinateDistanceSquared;
 
 //general globals

@@ -1,5 +1,6 @@
 #include "Game\GameStates\GameState.hpp"
 #include "Engine\Renderer\Renderer.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 
 GameState* g_currentState = nullptr;
 GameState* g_transitionState = nullptr;
@@ -102,6 +103,8 @@ void GameState::Initialize()
 
 void GameState::UpdateGlobalGameState(float deltaSeconds)
 {	
+	PROFILER_PUSH();
+
 	s_secondsInState += deltaSeconds;
 
 	if (g_transitionState != nullptr)

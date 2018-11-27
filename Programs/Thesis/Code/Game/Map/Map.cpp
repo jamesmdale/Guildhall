@@ -225,6 +225,8 @@ void Map::Initialize()
 //  =========================================================================================
 void Map::Update(float deltaSeconds)
 {
+	PROFILER_PUSH();
+
 	//udpate timers
 	if (m_threatTimer->DecrementAll() > 0)
 	{
@@ -283,7 +285,7 @@ void Map::Render()
 	theRenderer->DrawMesh(m_mapMesh);
 
 	//render tile block data
-	if (g_showBlockedTileData)
+	if (g_isBlockedTileDataShown)
 	{
 		theRenderer->BindMaterial(theRenderer->CreateOrGetMaterial("text"));
 		theRenderer->DrawMesh(m_debugMapMesh);
@@ -295,13 +297,12 @@ void Map::Render()
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
 	theRenderer->DrawMesh(agentMesh);
 
-	//render agent id's above heads if debug active
-	if (g_isIdShown)
+	Mesh* textMesh = CreateTextMesh();	
+	if (textMesh != nullptr)
 	{
-		Mesh* agentIdMesh = CreateDynamicAgentIdMesh();
 		theRenderer->BindMaterial(theRenderer->CreateOrGetMaterial("text"));
-		theRenderer->DrawMesh(agentIdMesh);
-	}
+		theRenderer->DrawMesh(textMesh);
+	}	
 
 	Mesh* bombardmentMesh = CreateDynamicBombardmentMesh();
 	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("Data/Images/AirStrike.png"));
@@ -488,21 +489,32 @@ Mesh* Map::CreateDynamicAgentMesh()
 	return agentMesh;
 }
 
-//  ===================================================t==========================
-Mesh* Map::CreateDynamicAgentIdMesh()
+
+//  =============================================================================
+Mesh* Map::CreateTextMesh()
 {
 	MeshBuilder* builder = new MeshBuilder();
+	Mesh* textMesh = nullptr;
 
-	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByYPosition.size(); ++agentIndex)
+	//agent ids
+	if (g_isIdShown)
 	{
-		builder->CreateText2DInAABB2(Vector2(m_agentsOrderedByXPosition[agentIndex]->m_position.x, m_agentsOrderedByXPosition[agentIndex]->m_position.y + 0.7), Vector2(0.25f, 0.25f), 1.f, Stringf("%i", m_agentsOrderedByXPosition[agentIndex]->m_id), Rgba::WHITE);
+		for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByYPosition.size(); ++agentIndex)
+		{
+			builder->CreateText2DInAABB2(Vector2(m_agentsOrderedByXPosition[agentIndex]->m_position.x, m_agentsOrderedByXPosition[agentIndex]->m_position.y + 0.7), Vector2(0.25f, 0.25f), 1.f, Stringf("%i", m_agentsOrderedByXPosition[agentIndex]->m_id), Rgba::WHITE);
+		}
 	}
 
-	Mesh* agentIdMesh = builder->CreateMesh<VertexPCU>();
+	//draw other things
+
+	if (builder->m_vertices.size() > 0)
+	{
+		textMesh = builder->CreateMesh<VertexPCU>();
+	}	
 
 	delete(builder);
 	builder = nullptr;
-	return agentIdMesh;
+	return textMesh;
 }
 
 //  =========================================================================================
@@ -542,20 +554,11 @@ void Map::DeleteDeadEntities()
 	}
 }
 
-//  =========================================================================================
-void Map::UpdatePlayerInput()
-{
-}
-
-//  =========================================================================================
-int Map::GetActorIndex()
-{
-	return 0;
-}
-
 // Bubble sort. Once sorted, will rarely require more than one pass =========================================================================================
 void Map::SortAgentsByX()
 {
+	PROFILER_PUSH();
+
 	int i = 0;
 	int j = 0;
 	bool swapped = false;
@@ -581,6 +584,8 @@ void Map::SortAgentsByX()
 // Bubble sort. Once sorted, will rarely require more than one pass =========================================================================================
 void Map::SortAgentsByY()
 {
+	PROFILER_PUSH();
+
 	int i = 0;
 	int j = 0;
 	bool swapped = false;

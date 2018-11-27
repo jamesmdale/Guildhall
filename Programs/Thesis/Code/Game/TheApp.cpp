@@ -111,17 +111,14 @@ void TheApp::Update()
 	double unclampedFrameTime = GetUnclampedMasterDeltaSeconds();
 	double unclampedFPS = GetUnclampedFPS();
 
-	//update global menu data (handles transitions and timers)
-	GameState::UpdateGlobalGameState(modifiedDeltaSeconds);
-
 	deltaSeconds = UpdateInput(deltaSeconds);
 
 	Game::GetInstance()->Update();
 
-	if(DebugRender::GetInstance()->IsEnabled())
-	{
-		DebugRender::GetInstance()->Update(modifiedDeltaSeconds);
-	}
+	//if(DebugRender::GetInstance()->IsEnabled())
+	//{
+	//	DebugRender::GetInstance()->Update(modifiedDeltaSeconds);
+	//}
 
 	if (ProfilerConsole::GetInstance()->IsOpen())
 	{
@@ -155,10 +152,10 @@ void TheApp::Render()
 	//set up screen
 	Game::GetInstance()->Render();
 
-	if(DebugRender::GetInstance()->IsEnabled())
+	/*if(DebugRender::GetInstance()->IsEnabled())
 	{
 		DebugRender::GetInstance()->Render();
-	}
+	}*/
 
 	if (ProfilerConsole::GetInstance()->IsOpen())
 	{
@@ -180,6 +177,7 @@ void TheApp::PostRender()
 //  =============================================================================
 float TheApp::UpdateInput(float deltaSeconds)
 {
+	PROFILER_PUSH();
 	if(InputSystem::GetInstance()->WasKeyJustPressed((InputSystem::GetInstance()->KEYBOARD_TILDE)))
 	{
 		if(!DevConsole::GetInstance()->IsOpen())

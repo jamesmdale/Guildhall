@@ -27,12 +27,15 @@ int g_currentSimDefinitionIndex = 0;
 bool g_isDebug = false;
 bool g_isQuitting = false;
 bool g_isIdShown = false;
+bool g_isBlockedTileDataShown = false;
+bool g_isFPSCounterShown = true;
+
 
 //data set in game startup after window has been initialized
 float g_tileSize = 1.f;
 float g_divideTileSize = 1.f;
 float g_halfTileSize = 1.f;
-bool g_showBlockedTileData = false;
+
 
 float g_maxCoordinateDistanceSquared = 0.f;
 

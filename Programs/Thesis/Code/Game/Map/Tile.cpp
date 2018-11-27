@@ -70,12 +70,5 @@ void Tile::Render()
 	
 	theRenderer->SetTexture(*theRenderer->CreateOrGetTexture("default"));
 
-	if (g_showBlockedTileData)
-	{
-		int value = m_tileDefinition->m_allowsWalking == true ? 0 : 1;
-		std::string doesBlock = Stringf("%i", value);
-		theRenderer->DrawText2DCentered(GetBounds().GetCenter(), doesBlock.c_str(), g_tileSize, Rgba::WHITE, 1.f, theRenderer->CreateOrGetBitmapFont("SquirrelFixedFont"));
-	}
-
 	theRenderer = nullptr;
 }

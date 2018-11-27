@@ -1,6 +1,7 @@
 #include "Game\Bombardment.hpp"
 #include "Engine\Renderer\Renderer.hpp"
 #include "Game\GameCommon.hpp"
+#include "Engine\Profiler\Profiler.hpp"
 
 
 
@@ -21,6 +22,8 @@ Bombardment::~Bombardment()
 
 void Bombardment::Update(float deltaSeconds)
 {
+	PROFILER_PUSH();
+
 	float percentComplete = m_timer->GetNormalizedElapsedTimeInSeconds();
 
 	m_disc.radius = g_bombardmentExplosionSize * percentComplete;
@@ -28,6 +31,8 @@ void Bombardment::Update(float deltaSeconds)
 
 void Bombardment::Render()
 {
+	PROFILER_PUSH();
+
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	theRenderer->SetShader(theRenderer->CreateOrGetShader("agents"));
