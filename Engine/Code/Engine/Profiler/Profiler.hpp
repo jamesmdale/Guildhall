@@ -115,16 +115,20 @@ struct ProfileLogScoped
 public:
 	ProfileLogScoped(const char* tag)
 	{
+	#ifdef PROFILER_ENABLED
 		m_tag = tag;
 		m_hpcStart = GetPerformanceCounter();
+	#endif
 	}
 
 	~ProfileLogScoped()
 	{
+#ifdef PROFILER_ENABLED
 		uint64_t endHpc = GetPerformanceCounter() - m_hpcStart;
 		double hpcInSeconds = PerformanceCounterToSeconds(endHpc);
 		DevConsolePrintf(Stringf("Tag Name: %s - %f \n", m_tag, (float)hpcInSeconds).c_str());
 		DebuggerPrintf(Stringf("Tag Name: %s - %f \n", m_tag, (float)hpcInSeconds).c_str());
+#endif
 	}
 
 public:
@@ -139,11 +143,16 @@ struct ProfilerScoped
 public:
 	ProfilerScoped(const char* id)
 	{
-		Profiler::GetInstance()->Push(id);
+		#ifdef PROFILER_ENABLED
+			Profiler::GetInstance()->Push(id);
+		#endif
+		
 	}
 
 	~ProfilerScoped()
 	{
-		Profiler::GetInstance()->Pop();
+		#ifdef PROFILER_ENABLED
+			Profiler::GetInstance()->Pop();
+		#endif
 	}
 };

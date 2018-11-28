@@ -15,6 +15,9 @@
 class SimulationData;
 class SimulationDefinition;
 
+bool GetIsOptimized();
+bool GetIsAgentUpdateBudgeted();
+
 //following line will go here when any engine side globals are declared and need to be used
 //#include "Engine/Core/EngineCommon.hpp"
 
@@ -46,17 +49,25 @@ const Rgba g_backgroundColor = Rgba(1.f, 1.f, 1.f, 1.f);
 
 const float g_tilePercentageOfWindow = 0.025f;
 
-//game related globals
+//debug globals
 extern bool g_isDebug;
 extern bool g_isQuitting;
 extern bool g_isIdShown;
-extern bool g_isFPSCounterShown;
+extern bool g_isDebugDataShown;
 
+//game related globals
 extern float g_tileSize;
 extern float g_divideTileSize;
 extern float g_halfTileSize;
 extern bool g_isBlockedTileDataShown;
 extern float g_maxCoordinateDistanceSquared;
+
+//time globals
+extern uint64_t g_perFrameHPCBudget;
+extern uint64_t g_previousFrameRenderTime;
+extern uint64_t g_previousFrameNonAgentUpdateTime;
+extern uint64_t g_agentUpdateBudgetThisFrame;
+extern int g_agentsUpdatedThisFrame;
 
 //general globals
 extern int g_maxHealth;

@@ -91,6 +91,31 @@ void Agent::Update(float deltaSeconds)
 #endif
 }
 
+//  =============================================================================
+void Agent::QuickUpdate(float deltaSeconds)
+{
+	PROFILER_PUSH();
+
+	int priorityIncreaseAmount = 1;
+
+	m_animationSet->Update(deltaSeconds);
+
+	//if we are walking at the moment, keep walking in the same direction (physics will handle the rest)
+	if (m_currentPath.size() > 0)
+	{
+		m_forward = m_intermediateGoalPosition - m_position;
+		m_forward.NormalizeAndGetLength();
+
+		m_position += (m_forward * (m_movespeed * GetMasterDeltaSeconds() * 0.5f));
+	}
+
+	TODO("Later add more criteria to better define this data");
+	if(m_planner->GetActionStackSize() == 0)
+		priorityIncreaseAmount = 10; //increase a significant amount
+
+	IncreaseUpdatePriority(priorityIncreaseAmount);
+}
+
 //  =========================================================================================
 void Agent::Render()
 {
@@ -159,7 +184,7 @@ bool Agent::GetPathToDestination(const Vector2& goalDestination)
 	m_currentPath.push_back(goalDestination);
 
 	//add the location
-	if (g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized())
+	if (GetIsOptimized())
 	{
 		isDestinationFound = AStarSearchOnGrid(m_currentPath, startCoord, endCoord, m_planner->m_map->m_mapAsGrid, m_planner->m_map);
 	}		
@@ -295,6 +320,27 @@ void Agent::TakeDamage(int damageAmount)
 {
 	m_health -= damageAmount;
 	m_health = ClampInt(m_health, 0, 100);
+}
+
+//  =============================================================================
+void Agent::IncreaseUpdatePriority(int amount)
+{
+	//if we overflow past max, set to max
+	int tempUpdateAmount = m_updatePriority + amount;
+	if (tempUpdateAmount < m_updatePriority)
+	{
+		m_updatePriority = INT_MAX;
+	}
+	else
+	{
+		m_updatePriority += amount;
+	}
+}
+
+//  =============================================================================
+void Agent::ResetPriority()
+{
+	m_updatePriority = 1;
 }
 
 //  =========================================================================================

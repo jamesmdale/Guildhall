@@ -35,11 +35,15 @@ public:
 
 	//overriden classes
 	void Update(float deltaSeconds);
+	void QuickUpdate(float deltaSeconds);
 	void Render();
 
 	void UpdateSpriteRenderDirection();
 
 	void TakeDamage(int damageAmount);
+	void IncreaseUpdatePriority(int amount = 1);
+
+	void ResetPriority();
 
 	//pathing
 	bool GetPathToDestination(const Vector2& goalDestination);
@@ -53,6 +57,7 @@ public:
 	void UpdateHealPerformanceTime();
 
 public:
+	int m_updatePriority = 1;
 
 	int m_id = -1;
 	int m_health = 100;
@@ -77,7 +82,7 @@ public:
 	int m_bandageCount = 0;
 	int m_lumberCount = 0;
 
-	// position logic
+	// position logic ----------------------------------------------
 	Vector2 m_position;
 	Vector2 m_forward;
 	Vector2 m_intermediateGoalPosition;	//used for temp locations while pathing
@@ -85,20 +90,22 @@ public:
 	Transform2D m_transform;
 	float m_movespeed = 1.f;
 
-	//goal logic	
+	//goal logic ----------------------------------------------
 	std::vector<Vector2> m_currentPath;
 	uint8_t m_currentPathIndex = UINT8_MAX;
 
-	//sprites
-	IntVector2 m_spriteDirection;
+	//sprites ----------------------------------------------
+	IntVector2 m_spriteDirection = IntVector2::UP;
 	IsoSpriteAnimSet* m_animationSet = nullptr;			
 
-	//helper references
+	//helper references ----------------------------------------------
 	Planner* m_planner = nullptr;
 	uint16_t m_indexInSortedXList = UINT16_MAX;
 	uint16_t m_indexInSortedYList = UINT16_MAX;
+	uint16_t m_indexInPriorityList = UINT16_MAX;
 
 	//optimization members
+
 	//std::vector<Agent*> m_subordinateAgents;
 	//Agent* m_commandingAgent = nullptr;
 };

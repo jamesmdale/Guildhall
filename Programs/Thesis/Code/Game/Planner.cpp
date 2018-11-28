@@ -25,7 +25,7 @@ Planner::Planner(Map* mapReference, Agent* agentReference)
 	m_map = mapReference;
 	m_agent = agentReference;
 
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		m_distanceUtilityStorage = new UtilityStorage(0.f, 1.f, 20.f);
 		m_buildingHealthUtilityStorage = new UtilityStorage(0.f, 1.f, 20.f);
@@ -44,7 +44,7 @@ Planner::~Planner()
 	m_map = nullptr;
 	m_agent = nullptr;
 
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		delete(m_distanceUtilityStorage);
 		m_distanceUtilityStorage = nullptr;
@@ -331,7 +331,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 
 
 		//figure out if we can skip doing an A* by borrowing someone else's path
-		if (g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized())
+		if (GetIsOptimized())
 		{
 			PROFILER_PUSH();
 			bool success = FindAgentAndCopyPath();
@@ -452,7 +452,7 @@ UtilityInfo Planner::GetHighestGatherArrowsUtility()
 {
 	UtilityInfo highestGatherArrowsUtility;
 
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		if (m_agent->m_arrowCount == g_maxResourceCarryAmount)
 		{
@@ -480,7 +480,7 @@ UtilityInfo Planner::GetHighestGatherLumberUtility()
 {
 	UtilityInfo highestGatherLumberUtility;
 
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		if (m_agent->m_lumberCount == g_maxResourceCarryAmount)
 		{
@@ -508,7 +508,7 @@ UtilityInfo Planner::GetHighestGatherBandagesUtility()
 {
 	UtilityInfo highestGatherBandagesUtility;
 
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		if (m_agent->m_bandageCount == g_maxResourceCarryAmount)
 		{
@@ -536,7 +536,7 @@ UtilityInfo Planner::GetHighestShootUtility()
 {
 	UtilityInfo info;
 
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		if (m_map->m_threat == 0 || m_agent->m_arrowCount == 0)
 		{
@@ -579,7 +579,7 @@ UtilityInfo Planner::GetHighestRepairUtility()
 {
 	UtilityInfo highestRepairUtility;
 
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		if (m_agent->m_lumberCount == 0)
 		{
@@ -737,7 +737,7 @@ float Planner::CalculateDistanceUtility(float normalizedDistance)
 {
 	// dynamic programming solution ----------------------------------------------
 	int outIndex = 0;
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		float outValue;
 		if (m_distanceUtilityStorage->DoesValueExistForInput(normalizedDistance, outValue, outIndex))
@@ -753,7 +753,7 @@ float Planner::CalculateDistanceUtility(float normalizedDistance)
 
 
 	// dynamic programming solution ----------------------------------------------
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		m_distanceUtilityStorage->StoreValueForInputAtIndex(utility, outIndex);
 	}
@@ -767,7 +767,7 @@ float Planner::CalculateBuildingHealthUtility(float normalizedBuildingHealth)
 {
 	// dynamic programming solution ----------------------------------------------
 	int outIndex = 0;
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		float outValue;
 		if (m_buildingHealthUtilityStorage->DoesValueExistForInput(normalizedBuildingHealth, outValue, outIndex))
@@ -783,7 +783,7 @@ float Planner::CalculateBuildingHealthUtility(float normalizedBuildingHealth)
 	float utility = poweredHealth * 0.8f;
 
 	// dynamic programming solution ----------------------------------------------
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		m_buildingHealthUtilityStorage->StoreValueForInputAtIndex(utility, outIndex);
 	}
@@ -797,7 +797,7 @@ float Planner::CalculateAgentHealthUtility(float normalizedAgentHealth)
 {
 	// dynamic programming solution ----------------------------------------------
 	int outIndex = 0;
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		float outValue;
 		if (m_agentHealthUitilityStorage->DoesValueExistForInput(normalizedAgentHealth, outValue, outIndex))
@@ -814,7 +814,7 @@ float Planner::CalculateAgentHealthUtility(float normalizedAgentHealth)
 	float utility = poweredHealth * 0.8f;
 
 	// dynamic programming solution ----------------------------------------------
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		m_agentHealthUitilityStorage->StoreValueForInputAtIndex(utility, outIndex);
 	}
@@ -828,7 +828,7 @@ float Planner::CalculateAgentGatherUtility(float normalizedResourceCarryAmount)
 {
 	// dynamic programming solution ----------------------------------------------
 	int outIndex = 0;
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		float outValue;
 		if (m_agentGatherUtilityStorage->DoesValueExistForInput(normalizedResourceCarryAmount, outValue, outIndex))
@@ -845,7 +845,7 @@ float Planner::CalculateAgentGatherUtility(float normalizedResourceCarryAmount)
 	float utility = poweredGather * 0.8f;
 
 	// dynamic programming solution ----------------------------------------------
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		m_agentGatherUtilityStorage->StoreValueForInputAtIndex(utility, outIndex);
 	}
@@ -859,7 +859,7 @@ float Planner::CalculateShootUtility(float normalizedThreatUtility)
 {
 	// dynamic programming solution ----------------------------------------------
 	int outIndex = 0;
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		float outValue;
 		if (m_shootUtilityStorageUtility->DoesValueExistForInput(normalizedThreatUtility, outValue, outIndex))
@@ -876,7 +876,7 @@ float Planner::CalculateShootUtility(float normalizedThreatUtility)
 	float utility = poweredThreat * 0.8f;
 
 	// dynamic programming solution ----------------------------------------------
-	if (g_currentSimulationDefinition->m_isOptimized)
+	if (GetIsOptimized())
 	{
 		m_shootUtilityStorageUtility->StoreValueForInputAtIndex(utility, outIndex);
 	}

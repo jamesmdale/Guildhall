@@ -20,6 +20,7 @@ SimulationDefinition::SimulationDefinition( const tinyxml2::XMLElement& element 
 	m_startingThreat = ParseXmlAttribute(element, "startingThreat", m_startingThreat);	
 	m_totalProcessingTimeInSeconds = ParseXmlAttribute(element, "processTimerInSeconds", m_totalProcessingTimeInSeconds);
 	m_isOptimized = ParseXmlAttribute(element, "isOptimized", m_isOptimized);
+	m_isUpdateBudgeted = ParseXmlAttribute(element, "isBudgeted", m_isUpdateBudgeted);
 
 	m_mapDefinition = MapDefinition::GetMapDefinitionByName(m_mapName);
 }

@@ -22,6 +22,7 @@ enum eAgentSortType
 {
 	X_AGENT_SORT_TYPE,
 	Y_AGENT_SORT_TYPE,
+	PRIORITY_AGENT_SORT_TYPE,
 	NUM_SORT_TYPES
 };
 
@@ -35,6 +36,9 @@ public:
 	void Initialize();
 
 	void Update(float deltaSeconds);
+
+	void UpdateAgents(float deltaSeconds);
+	void UpdateAgentsBudgeted(float deltaSeconds);
 	void Render();
 
 	void Reload(SimulationDefinition* definition);
@@ -55,6 +59,8 @@ public:
 	//agent sorting
 	void SortAgentsByX();
 	void SortAgentsByY();
+	void QuickSortAgentByPriority(std::vector<Agent*>& agents, int startIndex, int endIndex);
+	int QuickSortPivot(std::vector<Agent*>& agents, int startIndex, int endIndex);
 	void SwapAgents(int indexI, int indexJ, eAgentSortType type);
 
 	//Conversion functions for Tile Coordinates to World Coordinates
@@ -90,6 +96,7 @@ public:
 	AABB2 m_mapWorldBounds;
 
 	//lists
+	std::vector<Agent*> m_agentsOrderedByPriority;
 	std::vector<Agent*> m_agentsOrderedByXPosition;
 	std::vector<Agent*> m_agentsOrderedByYPosition;
 

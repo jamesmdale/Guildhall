@@ -38,6 +38,7 @@ public:
 	void ProcessActionStack(float deltaSeconds);
 	void AddActionToStack(ActionData* actionData);
 	void ClearStack();
+	inline size_t GetActionStackSize() { return m_actionStack.size(); }
 
 	//planning
 	void UpdatePlan();	

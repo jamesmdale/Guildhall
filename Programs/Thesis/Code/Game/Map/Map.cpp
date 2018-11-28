@@ -18,6 +18,7 @@
 #include "Engine\Profiler\Profiler.hpp"
 #include "Engine\Renderer\MeshBuilder.hpp"
 #include "Engine\Renderer\Mesh.hpp"
+#include "Engine\Time\SimpleTimer.hpp"
 
 //  =========================================================================================
 Map::Map(SimulationDefinition* simulationDefinition, const std::string & mapName, RenderScene2D* renderScene)
@@ -121,7 +122,6 @@ Map::~Map()
 		m_pointsOfInterest[poiIndex] = nullptr;
 	}
 
-
 	//cleanup agents
 	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByXPosition.size(); ++agentIndex)
 	{
@@ -130,8 +130,13 @@ Map::~Map()
 
 	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByYPosition.size(); ++agentIndex)
 	{
-		delete(m_agentsOrderedByYPosition[agentIndex]);
 		m_agentsOrderedByYPosition[agentIndex] = nullptr;
+	}
+
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByPriority.size(); ++agentIndex)
+	{
+		delete(m_agentsOrderedByPriority[agentIndex]);
+		m_agentsOrderedByPriority[agentIndex] = nullptr;
 	}
 
 	//tiles
@@ -194,6 +199,7 @@ void Map::Initialize()
 		Agent* agent = new Agent(randomStartingLocation, animSet, this);
 		m_agentsOrderedByXPosition.push_back(agent);
 		m_agentsOrderedByYPosition.push_back(agent);
+		m_agentsOrderedByPriority.push_back(agent);
 
 		agent->m_indexInSortedXList = agentIndex;
 		agent->m_indexInSortedYList = agentIndex;
@@ -236,25 +242,11 @@ void Map::Update(float deltaSeconds)
 		}		
 	}		
 
-	//update agents
+	UpdateAgents(deltaSeconds);
 
-	TODO("Time this loop per frame");
-	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByXPosition.size(); ++agentIndex)
-	{
-		TODO("Time per agent per frame");
-		m_agentsOrderedByXPosition[agentIndex]->Update(deltaSeconds);
-	}
-
-	//check optimization flags
-	//sort for Y drawing for render AND for next frame's agent update
-	if (g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized())
-	{		
-		if (m_sortTimer->CheckAndReset())
-		{
-			SortAgentsByX();
-			SortAgentsByY();
-		}		
-	}
+	//get timer excluding how long it took to update the agent
+	SimpleTimer nonAgentUpdateTimer;
+	nonAgentUpdateTimer.Start();
 
 	// Update bombardments
 	if (m_bombardmentTimer->DecrementAll() > 0)
@@ -266,6 +258,95 @@ void Map::Update(float deltaSeconds)
 	for (int bombardmentIndex = 0; bombardmentIndex < (int)m_activeBombardments.size(); ++bombardmentIndex)
 	{
 		m_activeBombardments[bombardmentIndex]->Update(deltaSeconds);
+	}
+
+	nonAgentUpdateTimer.Stop();
+	g_previousFrameNonAgentUpdateTime = nonAgentUpdateTimer.GetRunningTime();
+}
+
+//  =============================================================================
+void Map::UpdateAgents(float deltaSeconds)
+{
+	//update agents
+
+	if (!GetIsAgentUpdateBudgeted())
+	{
+		for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByXPosition.size(); ++agentIndex)
+		{
+			m_agentsOrderedByXPosition[agentIndex]->Update(deltaSeconds);
+		}
+	}
+	else
+	{
+		UpdateAgentsBudgeted(deltaSeconds);
+	}
+	
+	//check optimization flags
+	//sort for Y drawing for render AND for next frame's agent update
+	if (GetIsOptimized())
+	{		
+		if (m_sortTimer->CheckAndReset())
+		{
+			SortAgentsByX();
+			SortAgentsByY();
+		}		
+	}
+}
+
+//  =============================================================================
+void Map::UpdateAgentsBudgeted(float deltaSeconds)
+{
+	TODO("WARNING: Could possibly overflow but very unlikely");
+	int64_t remainingAgentUpdateBudget = int64_t(g_perFrameHPCBudget - g_previousFrameNonAgentUpdateTime - g_previousFrameRenderTime);
+	g_agentsUpdatedThisFrame = 0;
+
+	//if this is the first frame, there is no point in sorting because we have no criteria to decide on
+	if (g_previousFrameNonAgentUpdateTime != 0 && g_previousFrameRenderTime != 0)
+	{
+		QuickSortAgentByPriority(m_agentsOrderedByPriority, 0, (int)m_agentsOrderedByPriority.size() - 1);
+	}	
+
+	SimpleTimer agentUpdateTimer;
+	bool canUpdate = true;
+	for (int agentIndex = 0; agentIndex < (int)m_agentsOrderedByPriority.size(); ++agentIndex)
+	{
+		//if there is still budget left for update
+		if (canUpdate)
+		{
+			agentUpdateTimer.Start();
+
+			//do udpate work
+			m_agentsOrderedByPriority[agentIndex]->Update(deltaSeconds);
+
+			agentUpdateTimer.Stop();
+			uint64_t totalUpdateTime = agentUpdateTimer.GetRunningTime();
+			agentUpdateTimer.Reset();
+
+			remainingAgentUpdateBudget -= totalUpdateTime;
+			m_agentsOrderedByPriority[agentIndex]->ResetPriority();
+
+			if (remainingAgentUpdateBudget <= 0)
+			{
+				canUpdate = false;
+			}	
+
+			g_agentsUpdatedThisFrame++;
+		}	
+		else
+		{
+			//update by one
+			m_agentsOrderedByPriority[agentIndex]->QuickUpdate(deltaSeconds);
+		}				
+	}
+
+	//sort if we are optimized
+	if (GetIsOptimized())
+	{		
+		if (m_sortTimer->CheckAndReset())
+		{
+			SortAgentsByX();
+			SortAgentsByY();
+		}		
 	}
 }
 
@@ -608,6 +689,41 @@ void Map::SortAgentsByY()
 	}
 }
 
+//  =============================================================================
+void Map::QuickSortAgentByPriority(std::vector<Agent*>& agents, int startIndex, int endIndex)
+{
+	if (startIndex < endIndex)
+	{
+		int divisorIndex = QuickSortPivot(agents, startIndex, endIndex);
+
+		QuickSortAgentByPriority(agents, startIndex, divisorIndex - 1);  //sort everything BEFORE the split
+		QuickSortAgentByPriority(agents, divisorIndex + 1, endIndex);	   //sort everything AFTER the split
+	}
+}
+
+//  =============================================================================
+int Map::QuickSortPivot(std::vector<Agent*>& agents, int startIndex, int endIndex)
+{
+	int pivotValue = agents[endIndex]->m_updatePriority;
+
+	int lessIndex = (startIndex - 1);
+
+	for (int agentIndex = startIndex; agentIndex <= endIndex - 1; ++agentIndex)
+	{
+		//only swap if agent priority is higher than pivot
+		if (agents[agentIndex]->m_updatePriority > pivotValue)
+		{
+			++lessIndex;
+
+			SwapAgents(lessIndex, agentIndex, PRIORITY_AGENT_SORT_TYPE);						
+		}
+	}
+
+	//final swap for pivot
+	SwapAgents(lessIndex + 1, endIndex, PRIORITY_AGENT_SORT_TYPE);
+	return lessIndex + 1;
+}
+
 //  =========================================================================================
 void Map::SwapAgents(int indexI, int indexJ, eAgentSortType type)
 {
@@ -637,6 +753,17 @@ void Map::SwapAgents(int indexI, int indexJ, eAgentSortType type)
 		//set new indexes
 		m_agentsOrderedByYPosition[indexI]->m_indexInSortedYList = indexI;
 		m_agentsOrderedByYPosition[indexJ]->m_indexInSortedYList = indexJ;
+		break;
+	case PRIORITY_AGENT_SORT_TYPE:
+		tempAgent = m_agentsOrderedByPriority[indexI];
+
+		//swap first
+		m_agentsOrderedByPriority[indexI] = m_agentsOrderedByPriority[indexJ];
+		m_agentsOrderedByPriority[indexJ] = tempAgent;
+
+		//set new indexes
+		m_agentsOrderedByPriority[indexI]->m_indexInPriorityList = indexI;
+		m_agentsOrderedByPriority[indexJ]->m_indexInPriorityList = indexJ;
 		break;
 	}
 

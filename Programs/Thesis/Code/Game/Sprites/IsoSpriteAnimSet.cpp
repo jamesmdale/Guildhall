@@ -30,7 +30,7 @@ void IsoSpriteAnimSet::Update( float deltaSeconds )
 
 	if(m_currentAnim->IsFinished())
 	{
-		//SetCurrentAnim("idle");
+		SetCurrentAnim("idle");
 	}
 }
 

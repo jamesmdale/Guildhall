@@ -3,6 +3,9 @@
 #include "Game\Definitions\SimulationDefinition.hpp"
 #include "Engine\Window\Window.hpp"
 
+
+
+
 //#include AudioSystem
 SimulationDefinition* g_currentSimulationDefinition = nullptr;
 
@@ -23,21 +26,25 @@ uint g_numQueueActionPathCalls = 0;
 
 int g_currentSimDefinitionIndex = 0;
 
-//debug keys
+//debug globals
 bool g_isDebug = false;
 bool g_isQuitting = false;
 bool g_isIdShown = false;
 bool g_isBlockedTileDataShown = false;
-bool g_isFPSCounterShown = true;
-
+bool g_isDebugDataShown = true;
 
 //data set in game startup after window has been initialized
 float g_tileSize = 1.f;
 float g_divideTileSize = 1.f;
 float g_halfTileSize = 1.f;
-
-
 float g_maxCoordinateDistanceSquared = 0.f;
+
+//time globals
+uint64_t g_perFrameHPCBudget = 0.0;
+uint64_t g_previousFrameRenderTime = 0.0;
+uint64_t g_previousFrameNonAgentUpdateTime = 0.0;
+uint64_t g_agentUpdateBudgetThisFrame = 0.0;
+int g_agentsUpdatedThisFrame = 0;
 
 //general globals
 int g_maxHealth = 100;
@@ -82,3 +89,27 @@ Rgba ARMORY_TINT = Rgba(1.f, 0.f, 0.f, 0.3f);
 Rgba LUMBER_TINT = Rgba(0.f, 1.f, 0.f, 0.3f);
 Rgba MED_TINT = Rgba(0.f, 0.f, 1.f, 0.3f);
 
+//  =============================================================================
+// Methods =============================================================================
+//  =============================================================================
+bool GetIsOptimized()
+{
+	if (g_currentSimulationDefinition != nullptr)
+	{
+		return g_currentSimulationDefinition->m_isOptimized;
+	}
+
+	//else
+	return false;
+}
+
+bool GetIsAgentUpdateBudgeted()
+{
+	if (g_currentSimulationDefinition != nullptr)
+	{
+		return g_currentSimulationDefinition->m_isUpdateBudgeted;
+	}
+
+	//else
+	return false;
+}

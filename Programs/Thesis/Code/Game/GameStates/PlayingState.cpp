@@ -9,6 +9,7 @@
 #include "Engine\File\FileHelpers.hpp"
 #include "Engine\Renderer\Mesh.hpp"
 #include "Engine\Math\AABB2.hpp"
+#include "Engine\Time\SimpleTimer.hpp"
 #include <map>
 #include <string>
 #include "Game\GameStates\PlayingState.hpp"
@@ -75,6 +76,9 @@ void PlayingState::Initialize()
 	CreateMapForSimulation(g_currentSimulationDefinition);
 	InitializeSimulation(g_currentSimulationDefinition);
 
+	//set per frame budget for 60fps
+	g_perFrameHPCBudget = SecondsToPerformanceCounter(1.0 / 100.0);
+
 	//cleanup
 	theRenderer = nullptr;
 	theWindow = nullptr;
@@ -99,12 +103,18 @@ void PlayingState::PreRender()
 //  =============================================================================
 void PlayingState::Render()
 {
+	SimpleTimer timer;
+	timer.Start();
+
 	Renderer* theRenderer = Renderer::GetInstance();
 
 	Game::GetInstance()->m_forwardRenderingPath2D->Render(m_renderScene2D);
 
 	RenderGame();
 	RenderUI();
+
+	timer.Stop();
+	g_previousFrameRenderTime = timer.GetRunningTime();
 
 	theRenderer = nullptr;
 }
@@ -215,7 +225,7 @@ float PlayingState::UpdateFromInput(float deltaSeconds)
 
 	if (theInput->WasKeyJustPressed(theInput->KEYBOARD_F))
 	{
-		g_isFPSCounterShown = !g_isFPSCounterShown;
+		g_isDebugDataShown = !g_isDebugDataShown;
 	}
 	
 	return deltaSeconds; //new deltaSeconds
@@ -444,7 +454,7 @@ void PlayingState::FinalizeGeneralSimulationData()
 	std::string optimizationString = "";
 	g_generalSimulationData->CreateComprehensiveDataSet();
 
-	g_generalSimulationData->m_simulationDefinitionReference->GetIsOptimized() ? optimizationString = "true" : optimizationString = "false";
+	GetIsOptimized() ? optimizationString = "true" : optimizationString = "false";
 	g_generalSimulationData->AddCell("Is Optimized?", false);
 	g_generalSimulationData->AddCell(Stringf("%s", optimizationString.c_str()));
 	g_generalSimulationData->AddNewLine();
@@ -491,15 +501,21 @@ Mesh* PlayingState::CreateTextMesh()
 {
 	MeshBuilder* builder = new MeshBuilder();
 	Mesh* textMesh = nullptr;
+	Window* theWindow = Window::GetInstance();
 
-	//agent ids
-	if (g_isFPSCounterShown)
+	//fps counter
+	if (g_isDebugDataShown)
 	{
-		Window* theWindow = Window::GetInstance();
+		AABB2 fpsBox = AABB2(theWindow->GetClientWindow(), Vector2(0.8f, 0.9f), Vector2(0.95f, 0.975f));
 
-		AABB2 fpsBox = AABB2(theWindow->GetClientWindow(), Vector2(0.7f, 0.85f), Vector2(0.9f, 0.9f));
+		builder->CreateText2DInAABB2( fpsBox.GetCenter(), fpsBox.GetDimensions(), 1.f, Stringf("FPS: %f", GetUnclampedFPS()), Rgba::WHITE);
+	}
 
-		builder->CreateText2DInAABB2( fpsBox.GetCenter(), fpsBox.GetDimensions(), 1.f, Stringf("%f", GetUnclampedFPS()), Rgba::WHITE);
+	if (GetIsAgentUpdateBudgeted() && g_isDebugDataShown)
+	{
+		AABB2 agentsUpdatedBox = AABB2(theWindow->GetClientWindow(), Vector2(0.8f, 0.8f), Vector2(0.95f, 0.875f));
+
+		builder->CreateText2DInAABB2( agentsUpdatedBox.GetCenter(), agentsUpdatedBox.GetDimensions(), 1.f, Stringf("Agents Updated: %i", g_agentsUpdatedThisFrame), Rgba::WHITE);
 	}
 
 	//draw other things
