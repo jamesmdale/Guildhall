@@ -596,12 +596,14 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 			}		
 
 			//if the message requires the correct order, decide how to process the message
+
 			if (message->m_definition->IsInOrder())
 			{
 				uint8_t channelIndex = message->m_definition->m_messageChannelIndex;
-				bool shouldProcessMessage = connection->m_netMessageChannels[channelIndex]->ShouldProcessMessage(message);
-				
-				while (shouldProcessMessage)
+				message->ReadBytes(&message->m_header->m_sequenceId, sizeof(uint16_t), false);
+
+				bool shouldProcessMessageInorderMessage = connection->m_netMessageChannels[channelIndex]->ShouldProcessMessage(message);				
+				while (shouldProcessMessageInorderMessage)
 				{
 					ExecuteNetMessage(message, connection);
 
@@ -609,7 +611,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 					message = connection->m_netMessageChannels[channelIndex]->GetNextMessageToProcess();
 					if (message == nullptr)
 					{
-						shouldProcessMessage = false;
+						shouldProcessMessageInorderMessage = false;
 					}
 				}
 			}

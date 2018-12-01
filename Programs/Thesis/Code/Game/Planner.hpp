@@ -81,7 +81,7 @@ public:
 	IntVector2 GetNearestTileCoordinateOfMapEdgeFromCoordinate(const IntVector2& coordinate);					//O(1)
 
 	//optimizations
-	bool FindAgentAndCopyPath();
+	bool FindAgentAndCopyPath(const Vector2& endPostion);
 	void CopyPath(Agent* toAgent, Agent* fromAgent, uint8_t startingIndex);
 	Agent* GetAgentFromSortedList(uint16_t agentIndex, eAgentSortType sortType);
 

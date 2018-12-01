@@ -102,8 +102,8 @@ bool NetPacket::WriteMessage(NetMessage& netMessage, NetConnection* connection, 
 
 		ASSERT_RECOVERABLE(connection != nullptr, "CONNECTION INVALID: DEFINITION REQUIRES CONNECTION");
 
-		/*netMessage.m_header->m_sequenceId = connection->GetAndIncrementNextSequenceIdForChannel(channelId);
-		success = WriteBytes(sizeof(netMessage.m_header->m_sequenceId), &netMessage.m_header->m_sequenceId, false);*/
+		netMessage.m_header->m_sequenceId = connection->GetAndIncrementNextSequenceIdForChannel(channelId);
+		success = WriteBytes(sizeof(netMessage.m_header->m_sequenceId), &netMessage.m_header->m_sequenceId, false);
 	}
 
 	//write payload

@@ -334,13 +334,7 @@ void Planner::QueueActionsFromCurrentPlan(ePlanTypes planType, const UtilityInfo
 		if (GetIsOptimized())
 		{
 			PROFILER_PUSH();
-			bool success = FindAgentAndCopyPath();
-
-			//Generate our own path and queue move action
-			if (!success)
-			{
-				m_agent->GetPathToDestination(info.endPosition);
-			}
+			bool success = FindAgentAndCopyPath(info.endPosition);
 		}
 		else
 		{
@@ -735,6 +729,17 @@ void Planner::SkewUtilityForBias(UtilityInfo& outInfo, float biasValue)
 //  =========================================================================================
 float Planner::CalculateDistanceUtility(float normalizedDistance)
 {
+
+#ifdef DistanceMemoizationDataAnalysis
+	// profiling ----------------------------------------------
+	static int iterations = 0;
+	static uint64_t timeAverage = 0.f;
+	static uint64_t iterationStartHPC = GetPerformanceCounter();
+	uint64_t startHPC = GetPerformanceCounter();
+	++iterations;
+	//  ----------------------------------------------
+#endif
+
 	// dynamic programming solution ----------------------------------------------
 	int outIndex = 0;
 	if (GetIsOptimized())
@@ -758,6 +763,35 @@ float Planner::CalculateDistanceUtility(float normalizedDistance)
 		m_distanceUtilityStorage->StoreValueForInputAtIndex(utility, outIndex);
 	}
 	//  ----------------------------------------------
+
+
+
+#ifdef DistanceMemoizationDataAnalysis
+	// profiling ----------------------------------------------
+	uint64_t totalHPC = GetPerformanceCounter() - startHPC;
+
+	timeAverage = ((timeAverage * (iterations - 1)) + totalHPC) / iterations;
+	if (iterations == 1)
+	{
+		float totalSeconds = (float)PerformanceCounterToSeconds(GetPerformanceCounter() - iterationStartHPC);
+		float iterationsPerSecond = totalSeconds / 100.f;
+		iterationStartHPC = GetPerformanceCounter();
+
+		float secondsAverage = (float)PerformanceCounterToSeconds(timeAverage);
+		//DevConsolePrintf(Rgba::GREEN, "Average Time After 100 iterations (Copy path) %f", secondsAverage);
+		//DevConsolePrintf(Rgba::GREEN, "Iterations per second %f (Copy Path) (total time %f)", iterationsPerSecond, totalSeconds);
+
+		g_distanceMemoizationData->AddCell(Stringf("%f", secondsAverage), true);
+
+		//g_generalSimulationData->WriteEntryWithTimeStamp(Stringf("Iterations per second %f (Distance Utility Pathing) (total time between: %f)", iterationsPerSecond, totalSeconds));
+
+		//reset data
+		iterationStartHPC = GetPerformanceCounter();
+		iterations = 0;
+		timeAverage = 0.0;
+	}
+	//  ---------------------------------------------
+#endif
 
 	return utility;
 }
@@ -952,7 +986,7 @@ IntVector2 Planner::GetNearestTileCoordinateOfMapEdgeFromCoordinate(const IntVec
 //  =========================================================================================
 // Optimizations
 //  =========================================================================================
-bool Planner::FindAgentAndCopyPath()
+bool Planner::FindAgentAndCopyPath(const Vector2& endPosition)
 {
 	++g_numCopyPathCalls;
 
@@ -985,7 +1019,7 @@ bool Planner::FindAgentAndCopyPath()
 		matchingAgents[4] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 2, X_AGENT_SORT_TYPE);
 		matchingAgents[5] = GetAgentFromSortedList(m_agent->m_indexInSortedXList + 3, X_AGENT_SORT_TYPE);
 
-		//get 3 closest on the Y Plane
+		//get 6 closest on the Y Plane
 		matchingAgents[6] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 1, Y_AGENT_SORT_TYPE);
 		matchingAgents[7] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 2, Y_AGENT_SORT_TYPE);
 		matchingAgents[8] = GetAgentFromSortedList(m_agent->m_indexInSortedXList - 3, Y_AGENT_SORT_TYPE);
@@ -1053,6 +1087,12 @@ bool Planner::FindAgentAndCopyPath()
 		// cleanup ----------------------------------------------
 		//should all be marked as nullptr by the end
 		mostResembledAgent = nullptr;
+	}
+
+	//Generate our own path and queue move action
+	if (!didSuccessfullyCopyMatchingAgent)
+	{
+		m_agent->GetPathToDestination(endPosition);
 	}
 
 #ifdef CopyPathAnalysis

@@ -17,8 +17,8 @@ NetMessageChannel::~NetMessageChannel()
 //  =============================================================================
 uint16_t NetMessageChannel::GetAndIncrementSequenceId()
 {
-	uint16_t sequenceId = m_nextExpectedSequenceId;
-	++m_nextExpectedSequenceId;
+	uint16_t sequenceId = m_nextSequenceId;
+	++m_nextSequenceId;
 	
 	return sequenceId;
 }

@@ -77,7 +77,7 @@ void PlayingState::Initialize()
 	InitializeSimulation(g_currentSimulationDefinition);
 
 	//set per frame budget for 60fps
-	g_perFrameHPCBudget = SecondsToPerformanceCounter(1.0 / 100.0);
+	g_perFrameHPCBudget = SecondsToPerformanceCounter(1.0 / 70.0);
 
 	//cleanup
 	theRenderer = nullptr;
@@ -334,6 +334,12 @@ void PlayingState::InitializeSimulationData()
 	g_queueActionPathingData = new SimulationData();
 	g_queueActionPathingData->Initialize(g_currentSimulationDefinition);
 #endif // QueueActionPathingDataAnalysis
+
+#ifdef DistanceMemoizationDataAnalysis
+	//queue path data
+	g_distanceMemoizationData = new SimulationData();
+	g_distanceMemoizationData->Initialize(g_currentSimulationDefinition);
+#endif // DistanceMemoizationDataAnalysis
 }
 
 //  =============================================================================
@@ -370,6 +376,11 @@ void PlayingState::ResetCurrentSimulationData()
 #ifdef QueueActionPathingDataAnalysis
 	delete(g_queueActionPathingData);
 	g_queueActionPathingData = nullptr;
+#endif
+
+#ifdef DistanceMemoizationDataAnalysis
+	delete(g_distanceMemoizationData);
+	g_distanceMemoizationData = nullptr;
 #endif
 
 	g_numUpdatePlanCalls = 0;
@@ -444,6 +455,12 @@ void PlayingState::ExportSimulationData()
 #ifdef QueueActionPathingDataAnalysis
 	fileName = Stringf("QueueActionPathingTimes_%s.csv", g_currentSimulationDefinition->m_name.c_str());
 	success = g_queueActionPathingData ->ExportCSV(finalFilePath, fileName.c_str());
+	ASSERT_OR_DIE(success, "Copy path data broken");
+#endif
+
+#ifdef DistanceMemoizationDataAnalysis
+	fileName = Stringf("DistanceMemoizationUtilityTimes_%s.csv", g_currentSimulationDefinition->m_name.c_str());
+	success = g_distanceMemoizationData ->ExportCSV(finalFilePath, fileName.c_str());
 	ASSERT_OR_DIE(success, "Copy path data broken");
 #endif
 }

@@ -11,6 +11,7 @@
 #define PathingDataAnalysis
 #define CopyPathAnalysis
 #define QueueActionPathingDataAnalysis
+#define DistanceMemoizationDataAnalysis
 
 class SimulationData;
 class SimulationDefinition;
@@ -31,6 +32,7 @@ extern SimulationData* g_agentUpdateData;
 extern SimulationData* g_pathingData;
 extern SimulationData* g_copyPathData;
 extern SimulationData* g_queueActionPathingData;
+extern SimulationData* g_distanceMemoizationData;
 
 extern uint g_numUpdatePlanCalls;
 extern uint g_numActionStackProcessCalls;

@@ -16,6 +16,7 @@ SimulationData* g_agentUpdateData = nullptr;
 SimulationData* g_pathingData = nullptr;
 SimulationData* g_copyPathData = nullptr;
 SimulationData* g_queueActionPathingData = nullptr;
+SimulationData* g_distanceMemoizationData = nullptr;
 
 uint g_numUpdatePlanCalls = 0;
 uint g_numActionStackProcessCalls = 0;
@@ -31,7 +32,7 @@ bool g_isDebug = false;
 bool g_isQuitting = false;
 bool g_isIdShown = false;
 bool g_isBlockedTileDataShown = false;
-bool g_isDebugDataShown = true;
+bool g_isDebugDataShown = false;
 
 //data set in game startup after window has been initialized
 float g_tileSize = 1.f;

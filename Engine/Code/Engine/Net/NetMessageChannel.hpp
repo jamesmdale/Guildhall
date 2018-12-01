@@ -15,7 +15,7 @@ public:
 	bool ShouldProcessMessage(NetMessage* message);
 
 public:
-	uint16_t m_nextSequenceId = UINT16_MAX;			//used for sending
+	uint16_t m_nextSequenceId = 0;			//used for sending
 	uint16_t m_nextExpectedSequenceId = 0;			//used for receiving
 	std::vector<NetMessage*> m_outOfOrderMessages;	//used for receiving
 };

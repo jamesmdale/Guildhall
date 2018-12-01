@@ -10,7 +10,7 @@
   bombardmentRatePerSecond="5.0"
   threatRatePerSecond = "10.0"
   startingThreat="100"
-  processTimerInSeconds="60"
+  processTimerInSeconds="30"
   isOptimized="true" 
   isBudgeted="true"
   />
@@ -25,10 +25,11 @@
   bombardmentRatePerSecond="5.0"
   threatRatePerSecond = "10.0"
   startingThreat="100"
-  processTimerInSeconds="60"
+  processTimerInSeconds="30"
   isOptimized="false" 
   isBudgeted="false"
   />  
+</SimulationDefinitions>
 
  <!-->
   <SimulationDefinition
@@ -76,4 +77,3 @@
   />
    <!-->
 
-</SimulationDefinitions>
