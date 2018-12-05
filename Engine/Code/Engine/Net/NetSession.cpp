@@ -408,7 +408,8 @@ NetConnection * NetSession::GetConnectionByAddress(const NetAddress & address)
 	{
 		if (m_boundConnections[connectionIndex] != nullptr)
 		{
-			if (m_boundConnections[connectionIndex]->GetNetAddress() == address)
+			NetAddress connAddress = m_boundConnections[connectionIndex]->GetNetAddress();
+			if (connAddress == address)
 			{
 				return m_boundConnections[connectionIndex];
 			}
@@ -1471,7 +1472,7 @@ bool OnJoinAccepted(NetMessage& message, NetConnection* fromConnection)
 	NetSession* theNetSession = NetSession::GetInstance();
 
 	//connection already accepted
-	if(theNetSession->GetConnectionByAddress(fromConnection->GetNetAddress()) == nullptr)
+	if (theNetSession->m_myConnection->GetState() == CONNECTION_CONNECTED)
 	{
 		return false;
 	}
@@ -1490,6 +1491,7 @@ bool OnJoinAccepted(NetMessage& message, NetConnection* fromConnection)
 
 	theNetSession->BindConnection(theNetSession->m_myConnection->m_info.m_connectionIndex, theNetSession->m_myConnection);
 	theNetSession->m_myConnection->SetState(CONNECTION_CONNECTED);
+	theNetSession->SetState(SESSION_STATE_JOINING);
 
 	return true;
 }
