@@ -78,6 +78,8 @@ NetConnection::~NetConnection()
 		delete(m_trackedPackets[packetIndex]);
 		m_trackedPackets[packetIndex] = nullptr;
 	}
+
+	int i = 0;
 }
 
 //  =============================================================================

@@ -921,11 +921,16 @@ void NetSession::SetSimulatedLatency(uint minLatencyInMilliseconds, uint maxLate
 //  =============================================================================
 void NetSession::DisconnectNetSession()
 {
+	bool isAlsoHost = m_myConnection->IsHost();
+
 	//cleanup self and host
 	delete(m_myConnection);
 	m_myConnection = nullptr;
 
-	delete(m_hostConnection);
+	if (!isAlsoHost)
+	{
+		delete(m_hostConnection);
+	}
 	m_hostConnection = nullptr;
 
 	//cleanup any remaining connections
