@@ -26,6 +26,7 @@ enum eCoreNetMessageType
 	NEW_CONNECTION_CORE_NET_MESSAGE_TYPE, 
 	JOIN_FINISHED_CORE_NET_MESSAGE_TYPE, 
 	UPDATE_CONNECTION_STATE_CORE_NET_MESSAGE_TYPE,
+	HANGUP_CORE_NET_MESSAGE_TYPE,
 	NUM_CORE_NET_MESSAGE_TYPES
 };
 
@@ -137,7 +138,7 @@ public:
 
 	void AssignFinalDefinitionIds();
 
-	NetConnection* GetConnectionById(uint8_t id);
+	NetConnection* GetBoundConnectionById(uint8_t id);
 
 	// helpers ----------------------------------------------
 	void SetHeartbeatRate(float hertz);

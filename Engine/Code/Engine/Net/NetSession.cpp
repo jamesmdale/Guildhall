@@ -140,6 +140,7 @@ void NetSession::UpdateConnecting()
 		m_hostConnection->QueueMessage(joinMessage);
 	}
 	
+	//timeout timer
 	if (timeoutTimer->ResetAndDecrementIfElapsed())
 	{
 		//cleanup timers
@@ -289,6 +290,8 @@ void NetSession::Join(const char* myId, const NetConnectionInfo& hostInfo)
 void NetSession::Disconnect()
 {
 	m_myConnection->SetState(CONNECTION_DISCONNECTED);
+	
+	m_myConnection->FlushOutgoingMessages();
 }
 
 //  =============================================================================
@@ -492,7 +495,7 @@ void NetSession::SendHeartBeat(int index)
 {
 	NetSession* theNetSession = NetSession::GetInstance();
 
-	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)index);
+	NetConnection* connection = theNetSession->GetBoundConnectionById((uint8_t)index);
 	if (connection == nullptr)
 	{
 		DevConsolePrintf("No connection at index %u", index);
@@ -581,7 +584,7 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 	//get the header data
 	packet->m_packet->ReadHeader(packet->m_packet->m_packetHeader);
 
-	NetConnection* connection = GetConnectionById(packet->m_packet->m_packetHeader.m_senderIndex);
+	NetConnection* connection = GetBoundConnectionById(packet->m_packet->m_packetHeader.m_senderIndex);
 
 	//we don't have a connection on this index (probably invalid)
 	if ((packet->m_packet->m_packetHeader.m_senderIndex != UINT8_MAX) && (connection == nullptr))
@@ -864,7 +867,7 @@ void NetSession::AssignFinalDefinitionIds()
 }
 
 //  =========================================================================================
-NetConnection* NetSession::GetConnectionById(uint8_t id)
+NetConnection* NetSession::GetBoundConnectionById(uint8_t id)
 {
 	if (id < MAX_NUM_NET_CONNECTIONS )
 	{
@@ -1134,7 +1137,7 @@ void SendPing(Command& cmd)
 
 	NetSession* theNetSession = NetSession::GetInstance();
 
-	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)index);
+	NetConnection* connection = theNetSession->GetBoundConnectionById((uint8_t)index);
 	if (connection == nullptr)
 	{
 		DevConsolePrintf("No connection at index %u", index);
@@ -1174,7 +1177,7 @@ void SendMultiPing(Command & cmd)
 
 	NetSession* theNetSession = NetSession::GetInstance();
 
-	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)index);
+	NetConnection* connection = theNetSession->GetBoundConnectionById((uint8_t)index);
 	if (connection == nullptr)
 	{
 		DevConsolePrintf("No connection at index %u", index);
@@ -1226,7 +1229,7 @@ void SendAdd(Command& cmd)
 	}
 	NetSession* theNetSession = NetSession::GetInstance();
 	
-	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)index);
+	NetConnection* connection = theNetSession->GetBoundConnectionById((uint8_t)index);
 	if (connection == nullptr) 
 	{
 		DevConsolePrintf( "No connection at index %u", index ); 
@@ -1326,7 +1329,7 @@ void SetConnectionSendRate(Command& cmd)
 
 	NetSession* theNetSession = NetSession::GetInstance();
 
-	NetConnection* connection = theNetSession->GetConnectionById((uint8_t)connectionIndex);
+	NetConnection* connection = theNetSession->GetBoundConnectionById((uint8_t)connectionIndex);
 	if (connection == nullptr)
 	{
 		DevConsolePrintf("No connection at index %u", connectionIndex);
@@ -1638,7 +1641,7 @@ bool OnJoinFinished(NetMessage& message, NetConnection* fromConnection)
 bool OnUpdateConnectionState(NetMessage& message, NetConnection* fromConnection)
 {
 	NetSession* theNetSession = NetSession::GetInstance();	
-	NetConnection* connection = theNetSession->GetConnectionById(fromConnection->GetConnectionIndex());
+	NetConnection* connection = theNetSession->GetBoundConnectionById(fromConnection->GetConnectionIndex());
 
 	if(connection == nullptr)
 		return false;

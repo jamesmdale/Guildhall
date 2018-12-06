@@ -236,7 +236,7 @@ void UnreliableTest(Command& cmd)
 
 	int connectionIndex = cmd.GetNextInt();
 
-	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
+	NetConnection* connection = theNetSession->GetBoundConnectionById(connectionIndex);
 	if(connection == nullptr)
 		DevConsolePrintf(Rgba::RED, "Connection index (%i) is invalid!!", connectionIndex);
 
@@ -265,7 +265,7 @@ void ReliableTest(Command& cmd)
 
 	int connectionIndex = cmd.GetNextInt();
 
-	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
+	NetConnection* connection = theNetSession->GetBoundConnectionById(connectionIndex);
 	if (connection == nullptr)
 		DevConsolePrintf(Rgba::RED, "Connection index (%i) is invalid!!", connectionIndex);
 
@@ -300,7 +300,7 @@ void OutOfOrderTest(Command& cmd)
 
 	int connectionIndex = cmd.GetNextInt();
 
-	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
+	NetConnection* connection = theNetSession->GetBoundConnectionById(connectionIndex);
 	if (connection == nullptr)
 		DevConsolePrintf(Rgba::RED, "Connection index (%i) is invalid!!", connectionIndex);
 
@@ -335,7 +335,7 @@ void ReliableSequenceTest(Command& cmd)
 
 	int connectionIndex = cmd.GetNextInt();
 
-	NetConnection* connection = theNetSession->GetConnectionById(connectionIndex);
+	NetConnection* connection = theNetSession->GetBoundConnectionById(connectionIndex);
 	if (connection == nullptr)
 		DevConsolePrintf(Rgba::RED, "Connection index (%i) is invalid!!", connectionIndex);
 

@@ -467,8 +467,11 @@ void DevConsole::RenderNetSession()
 			Renderer::GetInstance()->CreateOrGetBitmapFont("SquirrelFixedFont"));
 		netSessionTextCount++;
 
-		for (int connectionIndex = 0; connectionIndex < connectionCount; ++connectionIndex)
+		for (int connectionIndex = 0; connectionIndex < MAX_NUM_NET_CONNECTIONS; ++connectionIndex)
 		{
+			if(theNetSession->m_boundConnections[connectionIndex] == nullptr)
+				continue;
+
 			std::string connectionIP = theNetSession->m_boundConnections[connectionIndex]->GetNetAddress().ToString();
 			std::bitset<16> bitsForReceived(theNetSession->m_boundConnections[connectionIndex]->m_receivedAckHistoryBitfield);
 			std::string bitsetString = bitsForReceived.to_string();

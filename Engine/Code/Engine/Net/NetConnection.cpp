@@ -531,7 +531,7 @@ void NetConnection::SetState(eNetConnectionState state)
 
 	m_state = state;
 
-	if (IsMe() && !IsHost())
+	if (IsMe())// && !IsHost())
 	{
 		NetMessage* message = new NetMessage("update_state");
 		eNetConnectionState state = GetState();
