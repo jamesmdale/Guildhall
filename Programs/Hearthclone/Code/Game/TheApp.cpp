@@ -85,7 +85,7 @@ void TheApp::Update()
 	float deltaSeconds = GetMasterDeltaSeconds();
 	deltaSeconds = UpdateInput(deltaSeconds);
 
-	NetSession::GetInstance()->Update();
+	NetSession::GetInstance()->Update(deltaSeconds);
 	
 	if(DebugRender::GetInstance()->IsEnabled())
 	{

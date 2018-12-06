@@ -452,6 +452,12 @@ float NetConnection::GetRoundTripTimeInSeconds()
 }
 
 //  =============================================================================
+float NetConnection::GetRoundTripTimeMilliseconds()
+{
+	return m_rttInSeconds * 1000.f;
+}
+
+//  =============================================================================
 float NetConnection::UpdateLossPercentage()
 {
 	return ((float)m_numLostPackets / (float)MAX_TRACKED_PACKETS) * 100.f;

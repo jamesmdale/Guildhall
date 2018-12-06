@@ -90,13 +90,16 @@ void NetSession::Shutdown()
 }
 
 //  =========================================================================================
-void NetSession::Update()
+void NetSession::Update(float deltaSeconds)
 {
 	//all registrations must be done BEFORE the first update
 	if (!m_isDefinitionRegistrationLocked)
 	{
 		LockMessageDefinitionRegistration();
-	}	
+	}
+
+	if(!m_myConnection->IsHost())
+		UpdateNetClock(deltaSeconds);
 
 	CheckHeartbeats();
 	ProcessOutgoingMessages();
@@ -502,12 +505,16 @@ void NetSession::SendHeartBeat(int index)
 		return;
 	}
 
+	//only really used by the host. Client reads on other end
+	uint netTime = GetNetTimeInMilliseconds();
 	NetMessage* message = new NetMessage("heartbeat");
+	bool success = message->WriteBytes(sizeof(uint), &netTime, false);
 
 	// messages are sent to connections (not sessions)
 	connection->QueueMessage(message);	
-
 	message = nullptr;
+
+
 	theNetSession = nullptr;
 }
 
@@ -948,6 +955,55 @@ void NetSession::DisconnectNetSession()
 	}
 
 	SetState(SESSION_STATE_DISCONNECTED);
+}
+
+//  =============================================================================
+void NetSession::UpdateNetClock(float deltaSeconds)
+{
+	uint deltaMilliseconds = SecondsToMilliseconds(deltaSeconds);
+
+	m_desiredClientTimeInMilliseconds += deltaMilliseconds;
+
+	if (deltaMilliseconds + m_currentClientTimeInMilliseconds > m_desiredClientTimeInMilliseconds)
+	{
+		m_currentClientTimeInMilliseconds += (1.f - MAX_NET_TIME_DILATION) * deltaMilliseconds;
+	}
+	else if (deltaMilliseconds + m_currentClientTimeInMilliseconds < m_desiredClientTimeInMilliseconds)
+	{
+		m_currentClientTimeInMilliseconds += (1.f + MAX_NET_TIME_DILATION) * deltaMilliseconds;
+	}
+}
+
+//  =============================================================================
+uint NetSession::GetNetTimeInMilliseconds()
+{
+	if(m_myConnection == nullptr)
+		return UINT_MAX;
+
+	if(m_myConnection->IsHost())
+		return (uint)GetMasterClock()->GetRunningTimeInMilliseconds();
+
+	if(!m_myConnection->IsHost())
+		return m_currentClientTimeInMilliseconds;
+}
+
+//  =============================================================================
+void NetSession::UpdateClientNetClock(uint hostTime)
+{
+	static bool isFirstUpdate = true;
+
+	if(hostTime < m_lastReceivedHostTimeInMilliseconds)
+		return;
+
+	//only happens on the first pass
+	if (isFirstUpdate)
+	{
+		m_currentClientTimeInMilliseconds = hostTime;
+		isFirstUpdate = false;
+	}		
+
+	m_lastReceivedHostTimeInMilliseconds = hostTime + (m_myConnection->GetRoundTripTimeMilliseconds() * 0.5f);
+	m_desiredClientTimeInMilliseconds = hostTime;
 }
 
 //  =========================================================================================
@@ -1498,8 +1554,19 @@ bool OnAddResponse(NetMessage& message, NetConnection* fromConnection)
 }
 
 //  =========================================================================================
-bool OnHeartbeat(NetMessage& message, NetConnection * fromConnection)
+bool OnHeartbeat(NetMessage& message, NetConnection* fromConnection)
 {
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	//we need to read the hosts time that they passed
+	if (!theNetSession->m_myConnection->IsHost() && !fromConnection->IsMe())
+	{
+		uint hostTime = UINT_MAX;
+		message.ReadBytes(&hostTime, sizeof(uint), false);
+
+		theNetSession->UpdateClientNetClock(hostTime);
+	}
+
 	return true;
 }
 

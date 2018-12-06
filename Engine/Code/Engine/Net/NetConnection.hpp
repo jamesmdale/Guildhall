@@ -76,6 +76,7 @@ public:
 
 	//getter helpers
 	float GetRoundTripTimeInSeconds();
+	float GetRoundTripTimeMilliseconds();
 	float UpdateLossPercentage();
 	float GetLossPercentage();
 	float GetLastReceivedTimeInSeconds();

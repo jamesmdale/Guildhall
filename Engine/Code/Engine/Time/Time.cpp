@@ -88,6 +88,18 @@ double PerformanceCounterToMilliseconds(const uint64_t hpc)
 	return(double)hpc * GetSecondsPerCount() * 1000.0;
 }
 
+//  =============================================================================
+uint SecondsToMilliseconds(float seconds)
+{
+	return (uint)(seconds * 1000.f);
+}
+
+//  =============================================================================
+uint MillisecondsToSeconds(float milliseconds)
+{
+	return (uint)(milliseconds / 1000.f);
+}
+
 // converts given seconds to the number of HPCS it represents =============================================================================
 uint64_t SecondsToPerformanceCounter(const double seconds)
 {

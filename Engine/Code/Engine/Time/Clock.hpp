@@ -6,7 +6,7 @@
 struct TimeUnit
 {
 	uint64_t hpc; 
-	double hpcSeconds;  // high precision seconds
+	double seconds;  // high precision seconds
 	//float seconds;      // convenience float seconds
 };
 
@@ -42,14 +42,15 @@ public:
 
 	float GetDeltaSeconds()
 	{ 
-		float deltaSeconds = ClampFloat((float)m_frame.hpcSeconds, 0.0f, 0.05f);
+		float deltaSeconds = ClampFloat((float)m_frame.seconds, 0.0f, 0.05f);
 		return deltaSeconds;
 	}; //frame time is deltaseconds
 
 	uint64_t GetStartHPC(){return m_startHPC;}
 	uint64_t GetLastHPC(){return m_lastFrameHPC;}
 
-	double GetRunningTime();
+	double GetRunningTimeInSeconds();
+	double GetRunningTimeInMilliseconds();
 
 	float GetFPS();
 

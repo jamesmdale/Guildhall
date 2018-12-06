@@ -24,7 +24,7 @@ const double minFrameHPC = 1.0/1024.0;
 static Clock* g_masterClock = new Clock();
 float cumulativeHPC;
 
-
+//  =============================================================================
 Clock::Clock(Clock* parent)
 {
 	m_parentClock = nullptr;
@@ -39,11 +39,13 @@ Clock::Clock(Clock* parent)
 	}
 }
 
+//  =============================================================================
 Clock::~Clock()
 {
 	m_parentClock = nullptr;
 }
 
+//  =============================================================================
 void Clock::BeginFrame()
 {
 	uint64_t currentHPC = GetPerformanceCounter();
@@ -54,6 +56,7 @@ void Clock::BeginFrame()
 	AdvanceClock(elapsedHPC, elapsedSeconds);
 }
 
+//  =============================================================================
 void Clock::AdvanceClock(uint64_t elapsedHPC, double elapsedSeconds)
 {
 	m_frameCount++;
@@ -71,20 +74,11 @@ void Clock::AdvanceClock(uint64_t elapsedHPC, double elapsedSeconds)
 		elapsedSeconds = elapsedSeconds * m_timeScale;
 	}
 
-	////handle scenarious where the float conversion will be too low to read
-	//double hpcSeconds = 0.0;
-	//cumulativeHPC += elapsedSeconds;
-	//if(cumulativeHPC >= minFrameHPC )
-	//{
-	//	hpcSeconds = cumulativeHPC;
-	//	cumulativeHPC = cumulativeHPC - minFrameHPC;
-	//}
-
 	//update frame first
-	m_frame.hpcSeconds = elapsedSeconds;
+	m_frame.seconds = elapsedSeconds;
 	m_frame.hpc = elapsedHPC;
 
-	m_total.hpcSeconds += m_frame.hpcSeconds;
+	m_total.seconds += m_frame.seconds;
 	m_total.hpc += m_frame.hpc;
 
 	m_lastFrameHPC = m_lastFrameHPC + elapsedHPC;
@@ -95,75 +89,85 @@ void Clock::AdvanceClock(uint64_t elapsedHPC, double elapsedSeconds)
 	}
 }
 
+//  =============================================================================
 void Clock::AddChildClock(Clock* childClock)
 {
 	childClock->m_parentClock = this;
 	m_childrenClocks.push_back(childClock);
 }
 
+//  =============================================================================
 void Clock::Reset()
 {
 	m_startHPC = GetPerformanceCounter();
 	m_lastFrameHPC = m_startHPC;
 
 	m_frame.hpc = 0;
-	m_frame.hpcSeconds = 0;
+	m_frame.seconds = 0;
 
 	m_total.hpc = 0;
-	m_total.hpcSeconds = 0;
+	m_total.seconds = 0;
 }
 
-double Clock::GetRunningTime()
+//  =============================================================================
+double Clock::GetRunningTimeInSeconds()
 {
 	uint64_t elapsedHPC = GetMasterClock()->m_total.hpc;
 
 	return PerformanceCounterToSeconds(elapsedHPC);
 }
 
+//  =============================================================================
+double Clock::GetRunningTimeInMilliseconds()
+{
+	uint64_t elapsedHPC = GetMasterClock()->m_total.hpc;
+
+	return PerformanceCounterToMilliseconds(elapsedHPC);
+}
+
+//  =============================================================================
 float GetMasterFPS()
 {
 	return 1.f/GetMasterDeltaSeconds();
 }
 
+//  =============================================================================
 float GetMasterDeltaSeconds()
 {
-	if((float)g_masterClock->m_frame.hpcSeconds < std::numeric_limits<float>::min())
+	if((float)g_masterClock->m_frame.seconds < std::numeric_limits<float>::min())
 	{
 		return std::numeric_limits<float>::min();
 	}
 
-	float deltaSeconds = ClampFloat((float)g_masterClock->m_frame.hpcSeconds, 0.0f, 0.1f);
+	float deltaSeconds = ClampFloat((float)g_masterClock->m_frame.seconds, 0.0f, 0.1f);
 	return deltaSeconds;
 }
 
+//  =============================================================================
 float GetUnclampedFPS()
 {
 	return 1.f/GetUnclampedMasterDeltaSeconds();
 }
 
+//  =============================================================================
 float GetUnclampedMasterDeltaSeconds()
 {
-	if ((float)g_masterClock->m_frame.hpcSeconds < std::numeric_limits<float>::min())
+	if ((float)g_masterClock->m_frame.seconds < std::numeric_limits<float>::min())
 	{
 		return std::numeric_limits<float>::min();
 	}
 
-	float deltaSeconds = g_masterClock->m_frame.hpcSeconds;;
+	float deltaSeconds = g_masterClock->m_frame.seconds;;
 	return deltaSeconds;
 }
 
+//  =============================================================================
 void MasterClockBeginFrame()
 {
 	g_masterClock->BeginFrame();
 }
 
-//double GetCurrentTime()
-//{
-//	//g_masterClock.
-//
-//	return 0.0f;
-//}
-
+//  =============================================================================
 Clock* GetMasterClock()
 {
 	return g_masterClock;

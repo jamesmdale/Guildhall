@@ -326,7 +326,7 @@ void DevConsole::RenderRemoteCommandService()
 	RemoteCommandService* theRemoteCommandService = RemoteCommandService::GetInstance();
 
 	AABB2 consoleBounds = AABB2(0.f, 0.f, theWindow->m_clientWidth, theWindow->m_clientHeight);
-	AABB2 remoteConnectionBounds = AABB2(consoleBounds, Vector2(0.75f, 0.f), Vector2(0.75f, 1.f));
+	AABB2 remoteConnectionBounds = AABB2(consoleBounds, Vector2(0.75f, 0.0f), Vector2(1.f, 0.5f));
 
 	theRenderer->SetTexture(*theRenderer->m_defaultTexture);
 	theRenderer->DrawAABB(AABB2(consoleBounds, Vector2(0.0f, 0.8f), Vector2(1.f, 1.f)), Rgba::LIGHT_BLUE_TRANSPARENT);
@@ -414,7 +414,7 @@ void DevConsole::RenderNetSession()
 		netSessionTextCount++;
 
 		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-			Stringf("Sim Lag: %ims-%ims  Sim Loss: %3.2f %%", theNetSession->m_minAddedLatencyInMilliseconds, theNetSession->m_maxAddedLatencyInMilliseconds, theNetSession->m_simulationLossAmount),
+			Stringf("Sim Lag: %ims-%ims  Sim Loss: %3.2f %%  Net Clock: %ims", theNetSession->m_minAddedLatencyInMilliseconds, theNetSession->m_maxAddedLatencyInMilliseconds, theNetSession->m_simulationLossAmount, theNetSession->GetNetTimeInMilliseconds()),
 			REMOTE_TEXT_CELL_HEIGHT,
 			Rgba::WHITE,
 			1.f,

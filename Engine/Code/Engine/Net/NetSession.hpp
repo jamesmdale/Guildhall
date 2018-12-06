@@ -12,8 +12,9 @@
 
 
 #define MAX_NUM_NET_CONNECTIONS (17)
+#define MAX_NET_TIME_DILATION (0.1f)		// this controls how much the clock is allowed to speed up/slow down to match a snapshot
 
-constexpr float DEFAULT_CONNECTION_TIMEOUT_IN_SECONDS(10.f);
+constexpr float DEFAULT_CONNECTION_TIMEOUT_IN_SECONDS(100.f);
 
 enum eCoreNetMessageType
 {
@@ -78,7 +79,7 @@ public:
 	void Startup();
 	void Shutdown();
 
-	void Update();
+	void Update(float deltaSeconds);
 	void UpdateConnecting();
 	void UpdateJoining();
 	void UpdateReady();
@@ -146,6 +147,10 @@ public:
 	void SetSimulatedLatency(uint minLatencyInMilliseconds, uint maxLatencyInMilliseconds);
 	void DisconnectNetSession();
 
+	void UpdateNetClock(float deltaSeconds);
+	uint GetNetTimeInMilliseconds();
+	void UpdateClientNetClock(uint hostTime);
+
 public:
 	UDPSocket* m_socket = nullptr;
 	NetConnection* m_boundConnections[MAX_NUM_NET_CONNECTIONS];
@@ -163,12 +168,21 @@ public:
 	std::string m_errorString;
 
 	//simulation variables
-	float m_simulationLossAmount = 0.f;
-	
+	/*float m_simulationLossAmount = 0.2f;	
+	uint m_minAddedLatencyInMilliseconds = 100;
+	uint m_maxAddedLatencyInMilliseconds = 120;*/
+
+	float m_simulationLossAmount = 0.0f;	
 	uint m_minAddedLatencyInMilliseconds = 50;
 	uint m_maxAddedLatencyInMilliseconds = 100;
 
 	float m_sessionSendLatencyInMilliseconds = 0.1;
+
+	// netclock variables ----------------------------------------------
+	//ONLY USED BY CLIENT
+	uint m_lastReceivedHostTimeInMilliseconds;	// this is the time we received from the host + (RTT / 2)
+	uint m_desiredClientTimeInMilliseconds;		// Time we want the the client to eventually be
+	uint m_currentClientTimeInMilliseconds = UINT_MAX;	  // what the client will actually report when returning
 
 public:
 	bool m_isDefinitionRegistrationLocked = false;

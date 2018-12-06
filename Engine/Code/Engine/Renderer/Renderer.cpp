@@ -991,7 +991,7 @@ void Renderer::DrawMesh(Mesh* mesh, const Matrix44& modelMatrix)
 	SetMatrix44Uniform(programHandle, "MODEL", modelMatrix);
 
 	//pass game time to shader
-	float value = (float)GetMasterClock()->GetRunningTime();
+	float value = (float)GetMasterClock()->GetRunningTimeInSeconds();
 	SetFloatUniform(programHandle, "TIME", value);
 
 	m_lightBuffer->UpdateGPU();
