@@ -451,11 +451,12 @@ void NetSession::CleanupConnections()
 		if(m_boundConnections[connectionIndex] == nullptr)
 			continue;
 
-		if (m_boundConnections[connectionIndex]->GetState() == CONNECTION_DISCONNECTED)
+		if (m_boundConnections[connectionIndex]->GetState() == CONNECTION_DISCONNECTED || m_boundConnections[connectionIndex]->IsTimedOut())
 		{
 			if (m_boundConnections[connectionIndex] == m_myConnection || m_boundConnections[connectionIndex] == m_hostConnection)
 			{
 				DisconnectNetSession();
+				return;
 			}
 			else
 			{		

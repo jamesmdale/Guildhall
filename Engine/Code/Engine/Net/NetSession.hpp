@@ -13,6 +13,8 @@
 
 #define MAX_NUM_NET_CONNECTIONS (17)
 
+constexpr float DEFAULT_CONNECTION_TIMEOUT_IN_SECONDS(10.f);
+
 enum eCoreNetMessageType
 {
 	PING_CORE_NET_MESSAGE_TYPE = 0,

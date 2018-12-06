@@ -448,7 +448,7 @@ void DevConsole::RenderNetSession()
 		netSessionTextCount++;
 
 		theRenderer->DrawText2D(Vector2(netSessionBounds.mins.x, netSessionBounds.maxs.y - (startingPostionFromTop * netSessionTextCount)),
-			Stringf("%-5s %-7s %-5s %-20s %-8s %-5s %-5s %-20s %-20s %-8s %-8s %-16s",
+			Stringf("%-5s %-9s %-5s %-20s %-8s %-5s %-5s %-20s %-20s %-8s %-8s %-16s",
 				"",
 				"(type)",
 				"index",
@@ -474,12 +474,18 @@ void DevConsole::RenderNetSession()
 			std::string bitsetString = bitsForReceived.to_string();
 
 			std::string type = "";
-			theNetSession->m_boundConnections[connectionIndex]->IsHost() ? type = " (HOST)" : type = "(CLIENT)";
+			
+			if (theNetSession->m_boundConnections[connectionIndex]->IsMe())
+			{
+				type = "L";
+			}
+
+			theNetSession->m_boundConnections[connectionIndex]->IsHost() ? type = Stringf("(%sHOST)", type.c_str()) : type = Stringf("(%sCLIENT)", type.c_str());
 
 			std::string netAddressAsString = theNetSession->m_boundConnections[connectionIndex]->GetNetAddress().ToString().c_str();
 
 			//format string entry
-			std::string formattedConnectionInput = Stringf("%-5s %-7s %-8i %-20s %-8i %-5.2f %-5.2f %-20.2f %-20.2f %-8i %-8i %-16s",
+			std::string formattedConnectionInput = Stringf("%-5s %-9s %-8i %-20s %-8i %-5.2f %-5.2f %-20.2f %-20.2f %-8i %-8i %-16s",
 				"",
 				type.c_str(),
 				theNetSession->m_boundConnections[connectionIndex]->GetConnectionIndex(),				

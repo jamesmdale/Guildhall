@@ -399,7 +399,6 @@ void NetConnection::OnMyAckReceived(uint16_t ack)
 			m_rttInSeconds = PerformanceCounterToMilliseconds(rttInHPC);
 		}
 		
-
 		m_myLastReceivedTimeInHPC = GetMasterClock()->GetLastHPC();
 
 		for (int messageIndex = 0; messageIndex < MAX_RELIABLES_PER_PACKET; ++messageIndex)
@@ -506,6 +505,21 @@ bool NetConnection::IsHost() const
 bool NetConnection::IsClient() const
 {
 	return NetSession::GetInstance()->m_myConnection != (this) ? true : false;
+}
+
+//  =============================================================================
+bool NetConnection::IsTimedOut()
+{
+	//hasn't been started yet
+	if(m_myLastReceivedTimeInHPC == 0)
+		return false;
+
+	if (GetLastReceivedTimeInSeconds() >= DEFAULT_CONNECTION_TIMEOUT_IN_SECONDS)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 //  =============================================================================

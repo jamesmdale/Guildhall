@@ -86,6 +86,8 @@ public:
 	bool IsHost() const;
 	bool IsClient() const;
 
+	bool IsTimedOut();
+
 	void SetState(eNetConnectionState state);
 	inline eNetConnectionState GetState() const { return m_state; }
 	inline bool IsConnected() const { return m_state == CONNECTION_CONNECTED; }
