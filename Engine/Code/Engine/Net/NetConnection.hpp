@@ -13,6 +13,8 @@
 
 constexpr uint16_t RELIABLE_WINDOW(64);
 
+constexpr float HEARTBEAT_TIMER(2.5f);
+
 enum eNetConnectionState
 {
 	CONNECTION_DISCONNECTED = 0,
@@ -127,7 +129,7 @@ public:
 	// reflects numbers from debug simulation on session ----------------------------------------------
 	int m_numLostPackets = 0; //loss rate we perceive
 	float m_lossPercentage = 0.f;
-	float m_rttInMilliseconds = -1.f;	//latency perceived on this connection
+	float m_rttInSeconds = -1.f;	//latency perceived on this connection
 	float m_connectionSendLatencyInMilliseconds = 0.f;
 	//float m_connectionResendRateInSeconds = NET_RELIABLE_RESEND_RATE_PER_MILLISECOND;
 	

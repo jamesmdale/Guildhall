@@ -43,6 +43,41 @@ NetConnection::~NetConnection()
 			CloseMessageChannel((int)channelIndex);
 		}
 	}
+
+	//delete unsent unreliable messages lingering
+	for (int messageIndex = 0; messageIndex < (int)m_unsentUnreliableMessages.size(); ++messageIndex)
+	{
+		m_unsentUnreliableMessages.erase(m_unsentUnreliableMessages.begin() + messageIndex);
+		--messageIndex;
+	}
+
+	//delete unsent reliable messages lingering
+	for (int messageIndex = 0; messageIndex < (int)m_unsentReliableMessages.size(); ++messageIndex)
+	{
+		m_unsentReliableMessages.erase(m_unsentReliableMessages.begin() + messageIndex);
+		--messageIndex;
+	}
+
+	//delete unsent unconfirmed reliable messages lingering
+	for (int messageIndex = 0; messageIndex < (int)m_unconfirmedSentReliablesMessages.size(); ++messageIndex)
+	{
+		m_unconfirmedSentReliablesMessages.erase(m_unconfirmedSentReliablesMessages.begin() + messageIndex);
+		--messageIndex;
+	}
+
+	//sent packet cleanup
+	for (int packetIndex = 0; packetIndex < (int)m_sentPackets.size(); ++packetIndex)
+	{
+		m_sentPackets.erase(m_sentPackets.begin() + packetIndex);
+		--packetIndex;
+	}
+
+	//cleanup packet trackeres
+	for (int packetIndex = 0; packetIndex < MAX_TRACKED_PACKETS; ++packetIndex)
+	{
+		delete(m_trackedPackets[packetIndex]);
+		m_trackedPackets[packetIndex] = nullptr;
+	}
 }
 
 //  =============================================================================
@@ -75,7 +110,7 @@ void NetConnection::Initialize()
 
 	//setup heartbeat timer
 	m_heartbeatTimer = new Stopwatch(GetMasterClock());
-	m_heartbeatTimer->SetTimer(5.f);
+	m_heartbeatTimer->SetTimer(HEARTBEAT_TIMER);
 
 	m_unsentUnreliableMessages.clear();
 	m_unsentReliableMessages.clear();
@@ -355,13 +390,13 @@ void NetConnection::OnMyAckReceived(uint16_t ack)
 		uint64_t rttInHPC = GetMasterClock()->GetLastHPC() - m_trackedPackets[index]->m_sendTime;
 
 		//take blend of the two
-		if (m_rttInMilliseconds > 0.f)
+		if (rttInHPC > 0.f)
 		{
-			m_rttInMilliseconds = (m_rttInMilliseconds * 0.9f) + (PerformanceCounterToMilliseconds(rttInHPC) * 0.1f);
+			m_rttInSeconds = (m_rttInSeconds * 0.9f) + (PerformanceCounterToSeconds(rttInHPC) * 0.1f);
 		}			
 		else
 		{
-			m_rttInMilliseconds = PerformanceCounterToMilliseconds(rttInHPC);
+			m_rttInSeconds = PerformanceCounterToMilliseconds(rttInHPC);
 		}
 		
 
@@ -414,7 +449,7 @@ void NetConnection::AddPacketTracker(PacketTracker* tracker, uint16_t ack)
 //  =============================================================================
 float NetConnection::GetRoundTripTimeInSeconds()
 {
-	return 0.0f;
+	return m_rttInSeconds;
 }
 
 //  =============================================================================

@@ -107,7 +107,9 @@ public:
 	NetConnection* CreateConnection(const NetConnectionInfo& info);
 	void DestroyConnection(NetConnection* connection); 
 	void BindConnection(uint8_t connectionIndex, NetConnection* connection);
-	NetConnection* GetConnectionByAddress(const NetAddress& address);
+	NetConnection* GetBoundConnectionByAddress(const NetAddress& address);
+	int GetConnectionIndexFromAllConnectionsByAddress(const NetAddress & address);
+	void CleanupConnections();
 
 	// send and process incoming  ----------------------------------------------
 
@@ -139,6 +141,7 @@ public:
 	void SetHeartbeatRate(float hertz);
 	void SetSimulatedLossAmount(float lossAmount);
 	void SetSimulatedLatency(uint minLatencyInMilliseconds, uint maxLatencyInMilliseconds);
+	void DisconnectNetSession();
 
 public:
 	UDPSocket* m_socket = nullptr;
@@ -184,6 +187,7 @@ NetMessageDefinition* GetRegisteredDefinitionByName(const std::string& name);
 // console commands ----------------------------------------------
 void AddConnectionToIndex(Command& cmd);
 void SetToHost(Command& cmd);
+void SetToDisconnect(Command& cmd);
 void SetToJoin(Command& cmd);
 void SendPing(Command& cmd);
 void SendMultiPing(Command& cmd);

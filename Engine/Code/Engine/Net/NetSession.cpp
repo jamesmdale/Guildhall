@@ -73,6 +73,7 @@ void NetSession::Startup()
 	//RegisterCommand("add_connection", CommandRegistration(AddConnectionToIndex, ": Attempt to add connection at index: idx IP", "Successfully added connection!"));
 	RegisterCommand("host", CommandRegistration(SetToHost, ": Set this machine to host for game", ""));
 	RegisterCommand("join", CommandRegistration(SetToJoin, ": Set this machine to join the given address", ""));
+	RegisterCommand("disconnect", CommandRegistration(SetToDisconnect, ": Disconnect my connection from the session", ""));
 	RegisterCommand("send_ping", CommandRegistration(SendPing, ": Send ping to index: idx", ""));
 	RegisterCommand("send_add", CommandRegistration(SendAdd, ": Send add request to index: idx var1 var2", ""));
 	RegisterCommand("send_multi_ping", CommandRegistration(SendMultiPing, ": Send two pings to index (tests multi message in single packet): idx", ""));
@@ -119,6 +120,9 @@ void NetSession::Update()
 		UpdateReady();
 		break;
 	}
+
+	//cleanup
+	CleanupConnections();
 }
 
 //  =============================================================================
@@ -284,7 +288,7 @@ void NetSession::Join(const char* myId, const NetConnectionInfo& hostInfo)
 //  =============================================================================
 void NetSession::Disconnect()
 {
-	
+	m_myConnection->SetState(CONNECTION_DISCONNECTED);
 }
 
 //  =============================================================================
@@ -404,7 +408,7 @@ void NetSession::BindConnection(uint8_t connectionIndex, NetConnection* connecti
 }
 
 //  =============================================================================
-NetConnection * NetSession::GetConnectionByAddress(const NetAddress & address)
+NetConnection * NetSession::GetBoundConnectionByAddress(const NetAddress & address)
 {
 	for (int connectionIndex = 0; connectionIndex < MAX_NUM_NET_CONNECTIONS; ++connectionIndex)
 	{
@@ -419,6 +423,52 @@ NetConnection * NetSession::GetConnectionByAddress(const NetAddress & address)
 	}
 
 	return nullptr;
+}
+
+//  =============================================================================
+int NetSession::GetConnectionIndexFromAllConnectionsByAddress(const NetAddress& address)
+{
+	for (int connectionIndex = 0; connectionIndex < (int)m_allConnections.size(); ++connectionIndex)
+	{
+		if (m_allConnections[connectionIndex] != nullptr)
+		{
+			NetAddress connAddress = m_allConnections[connectionIndex]->GetNetAddress();
+			if (connAddress == address)
+			{
+				return connectionIndex;
+			}
+		}		
+	}
+
+	return -1;
+}
+
+//  =============================================================================
+void NetSession::CleanupConnections()
+{
+	for (int connectionIndex = 0; connectionIndex < MAX_NUM_NET_CONNECTIONS; ++connectionIndex)
+	{
+		if(m_boundConnections[connectionIndex] == nullptr)
+			continue;
+
+		if (m_boundConnections[connectionIndex]->GetState() == CONNECTION_DISCONNECTED)
+		{
+			if (m_boundConnections[connectionIndex] == m_myConnection || m_boundConnections[connectionIndex] == m_hostConnection)
+			{
+				DisconnectNetSession();
+			}
+			else
+			{		
+				int foundConnectionIndex = GetConnectionIndexFromAllConnectionsByAddress(m_boundConnections[connectionIndex]->GetNetAddress());
+				m_boundConnections[connectionIndex] = nullptr;
+
+				ASSERT_OR_DIE(foundConnectionIndex != -1, "INVALID CONNECTION DURING CLEANUP: CONNECTION DOESN'T EXIST IN LIST");
+
+				delete(m_allConnections[foundConnectionIndex]);
+				m_allConnections[foundConnectionIndex] = nullptr;
+			}
+		}
+	}
 }
 
 //  =========================================================================================
@@ -857,6 +907,45 @@ void NetSession::SetSimulatedLatency(uint minLatencyInMilliseconds, uint maxLate
 	m_maxAddedLatencyInMilliseconds = maxLatencyInMilliseconds;
 }
 
+//  =============================================================================
+void NetSession::DisconnectNetSession()
+{
+	//cleanup self and host
+	delete(m_myConnection);
+	m_myConnection = nullptr;
+
+	delete(m_hostConnection);
+	m_hostConnection = nullptr;
+
+	//cleanup any remaining connections
+	for (int connectionIndex = 0; connectionIndex < MAX_NUM_NET_CONNECTIONS; ++connectionIndex)
+	{
+		m_boundConnections[connectionIndex] = nullptr;
+	}
+
+	//call final delete across all connections
+	for (int connectionIndex = 0; connectionIndex < (int)m_allConnections.size(); ++connectionIndex)
+	{
+		if (m_allConnections[connectionIndex] != nullptr)
+		{
+			m_allConnections.erase(m_allConnections.begin() + connectionIndex);
+			--connectionIndex;
+		}
+	}
+
+	//cleanup socket
+	delete(m_socket);
+	m_socket = nullptr;
+
+	for (int packetIndex = 0; packetIndex < m_delayedPackets.size(); ++packetIndex)
+	{
+		m_delayedPackets.erase(m_delayedPackets.begin() + packetIndex);
+		--packetIndex;
+	}
+
+	SetState(SESSION_STATE_DISCONNECTED);
+}
+
 //  =========================================================================================
 //  Callback
 //  =========================================================================================
@@ -984,6 +1073,23 @@ void SetToHost(Command& cmd)
 	{
 		DevConsolePrintf("SESSION ERROR: CODE(%i): %s", (int)theNetSesssion->m_errorCode, theNetSesssion->m_errorString.c_str());
 	}
+}
+
+//  =============================================================================
+void SetToDisconnect(Command& cmd)
+{
+	NetSession* theNetSession = NetSession::GetInstance();
+
+	if (theNetSession->m_myConnection == nullptr)
+	{
+		DevConsolePrintf(Rgba::RED, "INVALID DISCONNECT: Not currently connected to a host");	
+	}
+
+	theNetSession->Disconnect();
+	DevConsolePrintf(Rgba::GREEN, "Successfully disconnected from host.");	
+
+	//cleanup
+	theNetSession = nullptr;
 }
 
 //  =============================================================================
@@ -1422,7 +1528,7 @@ bool OnJoinRequest(NetMessage& message, NetConnection* fromConnection)
 	}
 	
 	//ignore the request if they are already connected
-	else if(theNetSession->GetConnectionByAddress(fromConnection->GetNetAddress()) != nullptr)
+	else if(theNetSession->GetBoundConnectionByAddress(fromConnection->GetNetAddress()) != nullptr)
 	{
 		return false;
 	}
@@ -1443,6 +1549,7 @@ bool OnJoinRequest(NetMessage& message, NetConnection* fromConnection)
 		{
 			theNetSession->m_allConnections.push_back(newConnection);
 			theNetSession->BindConnection(info.m_connectionIndex, newConnection);
+			newConnection->SetState(CONNECTION_CONNECTING);
 
 			NetMessage* successMessage = new NetMessage("join_accept");
 
