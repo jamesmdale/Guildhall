@@ -104,6 +104,9 @@ void NetConnection::FlushOutgoingMessages()
 	if(!m_latencySendTimer->ResetAndDecrementIfElapsed() || !DoesHaveMessagesToSend())
 		return;
 
+
+	int totalMessagesQueued  = GetTotalMessagesQueued();
+
 	NetSession* theNetSession = NetSession::GetInstance();
 
 	//setup header
@@ -216,11 +219,21 @@ void NetConnection::FlushOutgoingMessages()
 	}
 
 	//clear unsent unreliables OTHERWISE, we will get any we missed on the next pass
-
 	m_unsentUnreliableMessages.clear();
+
+	if (totalMessagesQueued == 0 && m_forceSend)
+	{
+		packet->m_packetHeader.m_ack = INVALID_PACKET_ACK;
+		packet->WriteUpdatedPacketHeaderData();
+		packetTracker = nullptr;
+	}
+
 	SendPacket(packetTracker, packet);
 
 	theNetSession = nullptr;
+
+	//reset force send flag
+	m_forceSend = false;
 }
 
 //  =========================================================================================
@@ -244,7 +257,14 @@ bool NetConnection::DoesHaveMessagesToSend()
 	//if we have any messages queued return true;
 	return m_unconfirmedSentReliablesMessages.size() > 0 ||
 		m_unsentReliableMessages.size() > 0 ||
-		m_unsentUnreliableMessages.size() > 0;
+		m_unsentUnreliableMessages.size() > 0 || m_forceSend == true;
+}
+
+//  =============================================================================
+int NetConnection::GetTotalMessagesQueued()
+{
+	int messageCount = (int) (m_unconfirmedSentReliablesMessages.size() + m_unsentReliableMessages.size() + m_unsentUnreliableMessages.size());
+	return messageCount;
 }
 
 //  =========================================================================================
@@ -258,7 +278,8 @@ void NetConnection::OnPacketSend(PacketTracker* packetTracker, NetPacket* packet
 
 	m_lastSendTimeInHPC = GetMasterClock()->GetLastHPC();
 
-	AddPacketTracker(packetTracker, packet->GetAck());
+	if(packetTracker != nullptr)
+		AddPacketTracker(packetTracker, packet->GetAck());
 }
 
 //  =========================================================================================
@@ -455,6 +476,10 @@ bool NetConnection::IsClient() const
 //  =============================================================================
 void NetConnection::SetState(eNetConnectionState state)
 {
+	//if our state is already the set state, we don't need to send another message.
+	if(m_state == state)
+		return;
+
 	m_state = state;
 
 	if (IsMe() && !IsHost())
@@ -551,14 +576,20 @@ bool NetConnection::CanSendNewReliableMessage()
 
 	uint16_t oldestUnconfirmedReliableId = m_unconfirmedSentReliablesMessages[0]->m_header->m_reliableId;
 
-	uint16_t diff = nextReliableId - oldestUnconfirmedReliableId;
-	return (diff < RELIABLE_WINDOW);
+	int diff = (int)nextReliableId - (int)oldestUnconfirmedReliableId;
+	if (diff < (int)RELIABLE_WINDOW)
+	{
+		return true;
+	}
+	
+	return false;
+	
 }
 
 //  =============================================================================
 uint64_t NetConnection::GetResendThresholdInHPC()
 {
-	return SecondsToPerformanceCounter(m_connectionResendRateInMilliseconds / 1000.0f);
+	return SecondsToPerformanceCounter(NET_RELIABLE_RESEND_RATE_PER_SECOND);
 }
 
 //  =============================================================================

@@ -155,6 +155,8 @@ void NetSession::UpdateJoining()
 void NetSession::UpdateReady()
 {
 	ResetConnectionTimers();
+
+	//foreach connection in connections where connection.isready...start doing stuff
 }
 
 //  =============================================================================
@@ -575,6 +577,9 @@ void NetSession::ProcessDelayedPacket(DelayedReceivedPacket* packet)
 			//get reliable id and adjust remaining size 
 			if (message->m_definition->IsReliable())
 			{
+				//we need to send a response next frame
+				connection->m_forceSend = true;
+
 				packet->m_packet->ReadBytes(&reliableId, sizeof(uint16_t), false);
 				message->m_header->m_reliableId = reliableId;
 
@@ -1472,7 +1477,7 @@ bool OnJoinAccepted(NetMessage& message, NetConnection* fromConnection)
 	NetSession* theNetSession = NetSession::GetInstance();
 
 	//connection already accepted
-	if (theNetSession->m_myConnection->GetState() == CONNECTION_CONNECTED)
+	if ((theNetSession->m_myConnection->GetState() == CONNECTION_CONNECTED || theNetSession->m_myConnection->GetState() == CONNECTION_READY))
 	{
 		return false;
 	}
@@ -1490,6 +1495,8 @@ bool OnJoinAccepted(NetMessage& message, NetConnection* fromConnection)
 	theNetSession->m_myConnection->m_info.SetUniqueId(myInfo.m_uniqueId);
 
 	theNetSession->BindConnection(theNetSession->m_myConnection->m_info.m_connectionIndex, theNetSession->m_myConnection);
+
+	//update state
 	theNetSession->m_myConnection->SetState(CONNECTION_CONNECTED);
 	theNetSession->SetState(SESSION_STATE_JOINING);
 
@@ -1508,7 +1515,7 @@ bool OnJoinFinished(NetMessage& message, NetConnection* fromConnection)
 	NetSession* theNetSession = NetSession::GetInstance();
 
 	//we are already finished joining.
-	if (theNetSession->m_myConnection->GetState() == CONNECTION_READY && theNetSession->GetState() == SESSION_STATE_READY)
+	if (theNetSession->m_myConnection->GetState() == CONNECTION_READY)
 	{
 		return false;
 	}

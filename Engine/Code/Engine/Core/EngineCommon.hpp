@@ -27,7 +27,7 @@ constexpr int REMOTE_SERVICE_MAX_BUFFER_SIZE = 256 - 1U;
 constexpr char* LOGGER_DATA_FILE = "Data/Log/log.txt";
 
 //Net Globals =============================================================================
-constexpr float NET_RELIABLE_RESEND_RATE_PER_MILLISECOND = 500.f;
+constexpr float NET_RELIABLE_RESEND_RATE_PER_SECOND = 0.001f;
 
 constexpr char* DEFAULT_SERVICE_PORT = "12345";
 

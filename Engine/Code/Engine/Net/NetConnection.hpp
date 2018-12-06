@@ -60,6 +60,7 @@ public:
 	void SendPacket(PacketTracker* packetTracker, NetPacket* packet);
 
 	bool DoesHaveMessagesToSend();
+	int GetTotalMessagesQueued();
 	
 	//state management on send
 	void OnPacketSend(PacketTracker* packetTracker, NetPacket* packet);
@@ -112,6 +113,7 @@ private:
 
 public:
 	// sending = updated duringa  send/flush ----------------------------------------------
+	bool m_forceSend = false;
 	uint16_t m_nextSentAck = 0U;
 	uint64_t m_lastSendTimeInHPC = 0U;
 
@@ -127,7 +129,7 @@ public:
 	float m_lossPercentage = 0.f;
 	float m_rttInMilliseconds = -1.f;	//latency perceived on this connection
 	float m_connectionSendLatencyInMilliseconds = 0.f;
-	float m_connectionResendRateInMilliseconds = NET_RELIABLE_RESEND_RATE_PER_MILLISECOND;
+	//float m_connectionResendRateInSeconds = NET_RELIABLE_RESEND_RATE_PER_MILLISECOND;
 	
 	// timers ----------------------------------------------
 	Stopwatch* m_latencySendTimer = nullptr;
